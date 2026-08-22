@@ -1,0 +1,17 @@
+[package]
+name = "locus-core"
+description = "Geometry and evaluation boundary for Locus"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+license.workspace = true
+readme.workspace = true
+publish = false
+
+[dependencies]
+locus-syntax = { path = "../locus-syntax" }
+
+[lints]
+workspace = true
+

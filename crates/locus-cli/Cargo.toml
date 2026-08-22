@@ -1,0 +1,25 @@
+[package]
+name = "locus-cli"
+description = "Command-line interface for Locus"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+license.workspace = true
+readme.workspace = true
+publish = false
+
+[[bin]]
+name = "locus"
+path = "src/main.rs"
+
+[dependencies]
+locus-core = { path = "../locus-core" }
+locus-layout = { path = "../locus-layout" }
+locus-render = { path = "../locus-render" }
+locus-syntax = { path = "../locus-syntax" }
+locus-tex = { path = "../locus-tex" }
+
+[lints]
+workspace = true
+

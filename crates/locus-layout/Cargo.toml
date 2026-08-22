@@ -1,0 +1,18 @@
+[package]
+name = "locus-layout"
+description = "Deterministic annotation layout boundary for Locus"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+license.workspace = true
+readme.workspace = true
+publish = false
+
+[dependencies]
+locus-core = { path = "../locus-core" }
+locus-tex = { path = "../locus-tex" }
+
+[lints]
+workspace = true
+

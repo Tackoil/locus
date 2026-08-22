@@ -1,0 +1,19 @@
+[package]
+name = "locus-render"
+description = "Rendering backend boundary for Locus"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+license.workspace = true
+readme.workspace = true
+publish = false
+
+[dependencies]
+locus-core = { path = "../locus-core" }
+locus-layout = { path = "../locus-layout" }
+locus-tex = { path = "../locus-tex" }
+
+[lints]
+workspace = true
+

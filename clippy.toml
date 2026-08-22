@@ -1,0 +1,5 @@
+disallowed-types = [
+  { path = "std::collections::HashMap", reason = "iteration order can make output nondeterministic; use IndexMap or BTreeMap" },
+  { path = "std::collections::HashSet", reason = "iteration order can make output nondeterministic; use IndexSet or BTreeSet" },
+]
+
