@@ -1,0 +1,46 @@
+---
+source: crates/locus-syntax/tests/format_json.rs
+expression: formatted.source
+---
+locus 2
+
+meta {
+  title "Inscribed angle theorem"
+}
+
+style textbook
+
+// ---- objects ----------------------------------------------
+point O  = free ~(0, 0)
+circle c = circle(O, 3)
+
+point P = on_circle(c, 110deg)
+point A = on_circle(c, 200deg)
+point B = on_circle(c, 340deg)
+
+segment pa = seg(P, A)
+segment pb = seg(P, B)
+segment oa = seg(O, A) [auxiliary]
+segment ob = seg(O, B) [auxiliary]
+
+arc sub = arc(c, A, B, false) [highlight]  // the subtended arc, CW side
+
+arc inscribed = angle_arc(A, P, B, 0.55)
+arc central   = angle_arc(A, O, B, 0.4)
+
+// ---- annotation ------------------------------------------
+label lP = label(P, $P$)
+label lA = label(A, $A$)
+label lB = label(B, $B$)
+label lO = label(O, $O$) { dir: N }
+
+label li = label(P, $\theta$) { dir: S, gap: 0.8 }
+label lc = label(O, $2\theta$) { dir: S, gap: 0.6 }
+
+arrow see = arrow(li.center, lc.center) [construction] { head: ->, bend: -30deg }
+
+text_block thm = text_block($\angle AOB = 2\,\angle APB$) { place: below }
+
+// ---- intent ----------------------------------------------
+assert on(P, c) and on(A, c) and on(B, c)
+assert angle(A, O, B) == 2 * angle(A, P, B) tol 1e-9

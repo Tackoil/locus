@@ -1,10 +1,13 @@
 //! Syntax frontend for the Locus language.
 //!
-//! This crate deliberately stops at syntax and source-level validation. Geometry evaluation,
-//! dimensional inference, formatting, and JSON interchange belong to downstream phases.
+//! This crate deliberately stops at syntax and source-level validation. Geometry evaluation
+//! belongs to downstream phases; canonical source formatting and syntax-level JSON interchange
+//! live here so every caller shares one representation.
 
 pub mod ast;
 pub mod diag;
+pub mod format;
+pub mod json;
 pub mod lexer;
 pub mod parser;
 pub mod span;
@@ -12,6 +15,8 @@ pub mod vocabulary;
 
 pub use ast::*;
 pub use diag::Diagnostic;
+pub use format::{FormatOutput, format, format_file, format_parsed};
+pub use json::{Interchange, to_interchange, to_json, to_json_pretty};
 pub use lexer::{LexOutput, Token, TokenKind, lex};
 pub use parser::{ParseOutput, parse};
 pub use span::Span;

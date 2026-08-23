@@ -1,0 +1,805 @@
+---
+source: crates/locus-syntax/tests/format_json.rs
+expression: json
+---
+{
+  "version": 2,
+  "meta": [
+    {
+      "key": "title",
+      "value": [
+        {
+          "kind": "plain",
+          "source": "Inscribed angle theorem"
+        }
+      ]
+    }
+  ],
+  "style": "textbook",
+  "classes": [],
+  "ops": [
+    {
+      "id": "O",
+      "kind": "point",
+      "def": null,
+      "hint": [
+        {
+          "kind": "number",
+          "source": "0",
+          "value": 0.0,
+          "dimension": "length"
+        },
+        {
+          "kind": "number",
+          "source": "0",
+          "value": 0.0,
+          "dimension": "length"
+        }
+      ],
+      "where": [],
+      "attr": null,
+      "props": []
+    },
+    {
+      "id": "c",
+      "kind": "circle",
+      "def": {
+        "source": "circle(O, 3)",
+        "tree": {
+          "kind": "call",
+          "name": "circle",
+          "args": [
+            {
+              "kind": "ref",
+              "id": "O"
+            },
+            {
+              "kind": "number",
+              "source": "3",
+              "value": 3.0,
+              "dimension": "length"
+            }
+          ]
+        }
+      },
+      "hint": null,
+      "where": [],
+      "attr": null,
+      "props": []
+    },
+    {
+      "id": "P",
+      "kind": "point",
+      "def": {
+        "source": "on_circle(c, 110deg)",
+        "tree": {
+          "kind": "call",
+          "name": "on_circle",
+          "args": [
+            {
+              "kind": "ref",
+              "id": "c"
+            },
+            {
+              "kind": "number",
+              "source": "110deg",
+              "value": 110.0,
+              "dimension": "angle"
+            }
+          ]
+        }
+      },
+      "hint": null,
+      "where": [],
+      "attr": null,
+      "props": []
+    },
+    {
+      "id": "A",
+      "kind": "point",
+      "def": {
+        "source": "on_circle(c, 200deg)",
+        "tree": {
+          "kind": "call",
+          "name": "on_circle",
+          "args": [
+            {
+              "kind": "ref",
+              "id": "c"
+            },
+            {
+              "kind": "number",
+              "source": "200deg",
+              "value": 200.0,
+              "dimension": "angle"
+            }
+          ]
+        }
+      },
+      "hint": null,
+      "where": [],
+      "attr": null,
+      "props": []
+    },
+    {
+      "id": "B",
+      "kind": "point",
+      "def": {
+        "source": "on_circle(c, 340deg)",
+        "tree": {
+          "kind": "call",
+          "name": "on_circle",
+          "args": [
+            {
+              "kind": "ref",
+              "id": "c"
+            },
+            {
+              "kind": "number",
+              "source": "340deg",
+              "value": 340.0,
+              "dimension": "angle"
+            }
+          ]
+        }
+      },
+      "hint": null,
+      "where": [],
+      "attr": null,
+      "props": []
+    },
+    {
+      "id": "pa",
+      "kind": "segment",
+      "def": {
+        "source": "seg(P, A)",
+        "tree": {
+          "kind": "call",
+          "name": "seg",
+          "args": [
+            {
+              "kind": "ref",
+              "id": "P"
+            },
+            {
+              "kind": "ref",
+              "id": "A"
+            }
+          ]
+        }
+      },
+      "hint": null,
+      "where": [],
+      "attr": null,
+      "props": []
+    },
+    {
+      "id": "pb",
+      "kind": "segment",
+      "def": {
+        "source": "seg(P, B)",
+        "tree": {
+          "kind": "call",
+          "name": "seg",
+          "args": [
+            {
+              "kind": "ref",
+              "id": "P"
+            },
+            {
+              "kind": "ref",
+              "id": "B"
+            }
+          ]
+        }
+      },
+      "hint": null,
+      "where": [],
+      "attr": null,
+      "props": []
+    },
+    {
+      "id": "oa",
+      "kind": "segment",
+      "def": {
+        "source": "seg(O, A)",
+        "tree": {
+          "kind": "call",
+          "name": "seg",
+          "args": [
+            {
+              "kind": "ref",
+              "id": "O"
+            },
+            {
+              "kind": "ref",
+              "id": "A"
+            }
+          ]
+        }
+      },
+      "hint": null,
+      "where": [],
+      "attr": "auxiliary",
+      "props": []
+    },
+    {
+      "id": "ob",
+      "kind": "segment",
+      "def": {
+        "source": "seg(O, B)",
+        "tree": {
+          "kind": "call",
+          "name": "seg",
+          "args": [
+            {
+              "kind": "ref",
+              "id": "O"
+            },
+            {
+              "kind": "ref",
+              "id": "B"
+            }
+          ]
+        }
+      },
+      "hint": null,
+      "where": [],
+      "attr": "auxiliary",
+      "props": []
+    },
+    {
+      "id": "sub",
+      "kind": "arc",
+      "def": {
+        "source": "arc(c, A, B, false)",
+        "tree": {
+          "kind": "call",
+          "name": "arc",
+          "args": [
+            {
+              "kind": "ref",
+              "id": "c"
+            },
+            {
+              "kind": "ref",
+              "id": "A"
+            },
+            {
+              "kind": "ref",
+              "id": "B"
+            },
+            {
+              "kind": "boolean",
+              "value": false
+            }
+          ]
+        }
+      },
+      "hint": null,
+      "where": [],
+      "attr": "highlight",
+      "props": []
+    },
+    {
+      "id": "inscribed",
+      "kind": "arc",
+      "def": {
+        "source": "angle_arc(A, P, B, 0.55)",
+        "tree": {
+          "kind": "call",
+          "name": "angle_arc",
+          "args": [
+            {
+              "kind": "ref",
+              "id": "A"
+            },
+            {
+              "kind": "ref",
+              "id": "P"
+            },
+            {
+              "kind": "ref",
+              "id": "B"
+            },
+            {
+              "kind": "number",
+              "source": "0.55",
+              "value": 0.55,
+              "dimension": "length"
+            }
+          ]
+        }
+      },
+      "hint": null,
+      "where": [],
+      "attr": null,
+      "props": []
+    },
+    {
+      "id": "central",
+      "kind": "arc",
+      "def": {
+        "source": "angle_arc(A, O, B, 0.4)",
+        "tree": {
+          "kind": "call",
+          "name": "angle_arc",
+          "args": [
+            {
+              "kind": "ref",
+              "id": "A"
+            },
+            {
+              "kind": "ref",
+              "id": "O"
+            },
+            {
+              "kind": "ref",
+              "id": "B"
+            },
+            {
+              "kind": "number",
+              "source": "0.4",
+              "value": 0.4,
+              "dimension": "length"
+            }
+          ]
+        }
+      },
+      "hint": null,
+      "where": [],
+      "attr": null,
+      "props": []
+    },
+    {
+      "id": "lP",
+      "kind": "label",
+      "def": {
+        "source": "label(P, $P$)",
+        "tree": {
+          "kind": "call",
+          "name": "label",
+          "args": [
+            {
+              "kind": "ref",
+              "id": "P"
+            },
+            {
+              "kind": "text",
+              "segments": [
+                {
+                  "kind": "tex",
+                  "source": "P"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "hint": null,
+      "where": [],
+      "attr": null,
+      "props": []
+    },
+    {
+      "id": "lA",
+      "kind": "label",
+      "def": {
+        "source": "label(A, $A$)",
+        "tree": {
+          "kind": "call",
+          "name": "label",
+          "args": [
+            {
+              "kind": "ref",
+              "id": "A"
+            },
+            {
+              "kind": "text",
+              "segments": [
+                {
+                  "kind": "tex",
+                  "source": "A"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "hint": null,
+      "where": [],
+      "attr": null,
+      "props": []
+    },
+    {
+      "id": "lB",
+      "kind": "label",
+      "def": {
+        "source": "label(B, $B$)",
+        "tree": {
+          "kind": "call",
+          "name": "label",
+          "args": [
+            {
+              "kind": "ref",
+              "id": "B"
+            },
+            {
+              "kind": "text",
+              "segments": [
+                {
+                  "kind": "tex",
+                  "source": "B"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "hint": null,
+      "where": [],
+      "attr": null,
+      "props": []
+    },
+    {
+      "id": "lO",
+      "kind": "label",
+      "def": {
+        "source": "label(O, $O$)",
+        "tree": {
+          "kind": "call",
+          "name": "label",
+          "args": [
+            {
+              "kind": "ref",
+              "id": "O"
+            },
+            {
+              "kind": "text",
+              "segments": [
+                {
+                  "kind": "tex",
+                  "source": "O"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "hint": null,
+      "where": [],
+      "attr": null,
+      "props": [
+        {
+          "name": "dir",
+          "value": {
+            "kind": "expr",
+            "expr": {
+              "kind": "ref",
+              "id": "N"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "li",
+      "kind": "label",
+      "def": {
+        "source": "label(P, $\\theta$)",
+        "tree": {
+          "kind": "call",
+          "name": "label",
+          "args": [
+            {
+              "kind": "ref",
+              "id": "P"
+            },
+            {
+              "kind": "text",
+              "segments": [
+                {
+                  "kind": "tex",
+                  "source": "\\theta"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "hint": null,
+      "where": [],
+      "attr": null,
+      "props": [
+        {
+          "name": "dir",
+          "value": {
+            "kind": "expr",
+            "expr": {
+              "kind": "ref",
+              "id": "S"
+            }
+          }
+        },
+        {
+          "name": "gap",
+          "value": {
+            "kind": "expr",
+            "expr": {
+              "kind": "number",
+              "source": "0.8",
+              "value": 0.8,
+              "dimension": "length"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "lc",
+      "kind": "label",
+      "def": {
+        "source": "label(O, $2\\theta$)",
+        "tree": {
+          "kind": "call",
+          "name": "label",
+          "args": [
+            {
+              "kind": "ref",
+              "id": "O"
+            },
+            {
+              "kind": "text",
+              "segments": [
+                {
+                  "kind": "tex",
+                  "source": "2\\theta"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "hint": null,
+      "where": [],
+      "attr": null,
+      "props": [
+        {
+          "name": "dir",
+          "value": {
+            "kind": "expr",
+            "expr": {
+              "kind": "ref",
+              "id": "S"
+            }
+          }
+        },
+        {
+          "name": "gap",
+          "value": {
+            "kind": "expr",
+            "expr": {
+              "kind": "number",
+              "source": "0.6",
+              "value": 0.6,
+              "dimension": "length"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "see",
+      "kind": "arrow",
+      "def": {
+        "source": "arrow(li.center, lc.center)",
+        "tree": {
+          "kind": "call",
+          "name": "arrow",
+          "args": [
+            {
+              "kind": "property",
+              "base": {
+                "kind": "ref",
+                "id": "li"
+              },
+              "name": "center",
+              "args": []
+            },
+            {
+              "kind": "property",
+              "base": {
+                "kind": "ref",
+                "id": "lc"
+              },
+              "name": "center",
+              "args": []
+            }
+          ]
+        }
+      },
+      "hint": null,
+      "where": [],
+      "attr": "construction",
+      "props": [
+        {
+          "name": "head",
+          "value": {
+            "kind": "head",
+            "value": "forward"
+          }
+        },
+        {
+          "name": "bend",
+          "value": {
+            "kind": "expr",
+            "expr": {
+              "kind": "unary",
+              "op": "neg",
+              "expr": {
+                "kind": "number",
+                "source": "30deg",
+                "value": 30.0,
+                "dimension": "angle"
+              },
+              "dimension": "angle"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "thm",
+      "kind": "text_block",
+      "def": {
+        "source": "text_block($\\angle AOB = 2\\,\\angle APB$)",
+        "tree": {
+          "kind": "call",
+          "name": "text_block",
+          "args": [
+            {
+              "kind": "text",
+              "segments": [
+                {
+                  "kind": "tex",
+                  "source": "\\angle AOB = 2\\,\\angle APB"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "hint": null,
+      "where": [],
+      "attr": null,
+      "props": [
+        {
+          "name": "place",
+          "value": {
+            "kind": "expr",
+            "expr": {
+              "kind": "ref",
+              "id": "below"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "rels": [],
+  "asserts": [
+    {
+      "expr": {
+        "kind": "binary",
+        "op": "and",
+        "lhs": {
+          "kind": "binary",
+          "op": "and",
+          "lhs": {
+            "kind": "call",
+            "name": "on",
+            "args": [
+              {
+                "kind": "ref",
+                "id": "P"
+              },
+              {
+                "kind": "ref",
+                "id": "c"
+              }
+            ]
+          },
+          "rhs": {
+            "kind": "call",
+            "name": "on",
+            "args": [
+              {
+                "kind": "ref",
+                "id": "A"
+              },
+              {
+                "kind": "ref",
+                "id": "c"
+              }
+            ]
+          }
+        },
+        "rhs": {
+          "kind": "call",
+          "name": "on",
+          "args": [
+            {
+              "kind": "ref",
+              "id": "B"
+            },
+            {
+              "kind": "ref",
+              "id": "c"
+            }
+          ]
+        }
+      },
+      "tolerance": null
+    },
+    {
+      "expr": {
+        "kind": "binary",
+        "op": "eq",
+        "lhs": {
+          "kind": "call",
+          "name": "angle",
+          "args": [
+            {
+              "kind": "ref",
+              "id": "A"
+            },
+            {
+              "kind": "ref",
+              "id": "O"
+            },
+            {
+              "kind": "ref",
+              "id": "B"
+            }
+          ],
+          "dimension": "angle"
+        },
+        "rhs": {
+          "kind": "binary",
+          "op": "mul",
+          "lhs": {
+            "kind": "number",
+            "source": "2",
+            "value": 2.0,
+            "dimension": "scalar"
+          },
+          "rhs": {
+            "kind": "call",
+            "name": "angle",
+            "args": [
+              {
+                "kind": "ref",
+                "id": "A"
+              },
+              {
+                "kind": "ref",
+                "id": "P"
+              },
+              {
+                "kind": "ref",
+                "id": "B"
+              }
+            ],
+            "dimension": "angle"
+          },
+          "dimension": "angle"
+        }
+      },
+      "tolerance": {
+        "source": "1e-9",
+        "value": 1e-9,
+        "dimension": "scalar"
+      }
+    }
+  ]
+}

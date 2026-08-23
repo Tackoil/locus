@@ -1,0 +1,867 @@
+---
+source: crates/locus-syntax/tests/format_json.rs
+expression: json
+---
+{
+  "version": 2,
+  "meta": [
+    {
+      "key": "title",
+      "value": [
+        {
+          "kind": "plain",
+          "source": "Golden ratio in the regular pentagon"
+        }
+      ]
+    },
+    {
+      "key": "note",
+      "value": [
+        {
+          "kind": "plain",
+          "source": "Vertices by rotation (exact); diagonal intersection is relational"
+        }
+      ]
+    }
+  ],
+  "style": "textbook",
+  "classes": [],
+  "ops": [
+    {
+      "id": "O",
+      "kind": "point",
+      "def": null,
+      "hint": [
+        {
+          "kind": "number",
+          "source": "0",
+          "value": 0.0,
+          "dimension": "length"
+        },
+        {
+          "kind": "number",
+          "source": "0",
+          "value": 0.0,
+          "dimension": "length"
+        }
+      ],
+      "where": [],
+      "attr": null,
+      "props": []
+    },
+    {
+      "id": "A",
+      "kind": "point",
+      "def": null,
+      "hint": [
+        {
+          "kind": "number",
+          "source": "0",
+          "value": 0.0,
+          "dimension": "length"
+        },
+        {
+          "kind": "number",
+          "source": "3",
+          "value": 3.0,
+          "dimension": "length"
+        }
+      ],
+      "where": [],
+      "attr": null,
+      "props": []
+    },
+    {
+      "id": "B",
+      "kind": "point",
+      "def": {
+        "source": "rotate(A, O, 72deg)",
+        "tree": {
+          "kind": "call",
+          "name": "rotate",
+          "args": [
+            {
+              "kind": "ref",
+              "id": "A"
+            },
+            {
+              "kind": "ref",
+              "id": "O"
+            },
+            {
+              "kind": "number",
+              "source": "72deg",
+              "value": 72.0,
+              "dimension": "angle"
+            }
+          ]
+        }
+      },
+      "hint": null,
+      "where": [],
+      "attr": null,
+      "props": []
+    },
+    {
+      "id": "C",
+      "kind": "point",
+      "def": {
+        "source": "rotate(A, O, 144deg)",
+        "tree": {
+          "kind": "call",
+          "name": "rotate",
+          "args": [
+            {
+              "kind": "ref",
+              "id": "A"
+            },
+            {
+              "kind": "ref",
+              "id": "O"
+            },
+            {
+              "kind": "number",
+              "source": "144deg",
+              "value": 144.0,
+              "dimension": "angle"
+            }
+          ]
+        }
+      },
+      "hint": null,
+      "where": [],
+      "attr": null,
+      "props": []
+    },
+    {
+      "id": "D",
+      "kind": "point",
+      "def": {
+        "source": "rotate(A, O, 216deg)",
+        "tree": {
+          "kind": "call",
+          "name": "rotate",
+          "args": [
+            {
+              "kind": "ref",
+              "id": "A"
+            },
+            {
+              "kind": "ref",
+              "id": "O"
+            },
+            {
+              "kind": "number",
+              "source": "216deg",
+              "value": 216.0,
+              "dimension": "angle"
+            }
+          ]
+        }
+      },
+      "hint": null,
+      "where": [],
+      "attr": null,
+      "props": []
+    },
+    {
+      "id": "E",
+      "kind": "point",
+      "def": {
+        "source": "rotate(A, O, 288deg)",
+        "tree": {
+          "kind": "call",
+          "name": "rotate",
+          "args": [
+            {
+              "kind": "ref",
+              "id": "A"
+            },
+            {
+              "kind": "ref",
+              "id": "O"
+            },
+            {
+              "kind": "number",
+              "source": "288deg",
+              "value": 288.0,
+              "dimension": "angle"
+            }
+          ]
+        }
+      },
+      "hint": null,
+      "where": [],
+      "attr": null,
+      "props": []
+    },
+    {
+      "id": "pent",
+      "kind": "polygon",
+      "def": {
+        "source": "polygon(A, B, C, D, E)",
+        "tree": {
+          "kind": "call",
+          "name": "polygon",
+          "args": [
+            {
+              "kind": "ref",
+              "id": "A"
+            },
+            {
+              "kind": "ref",
+              "id": "B"
+            },
+            {
+              "kind": "ref",
+              "id": "C"
+            },
+            {
+              "kind": "ref",
+              "id": "D"
+            },
+            {
+              "kind": "ref",
+              "id": "E"
+            }
+          ]
+        }
+      },
+      "hint": null,
+      "where": [],
+      "attr": null,
+      "props": []
+    },
+    {
+      "id": "d1",
+      "kind": "segment",
+      "def": {
+        "source": "seg(A, C)",
+        "tree": {
+          "kind": "call",
+          "name": "seg",
+          "args": [
+            {
+              "kind": "ref",
+              "id": "A"
+            },
+            {
+              "kind": "ref",
+              "id": "C"
+            }
+          ]
+        }
+      },
+      "hint": null,
+      "where": [],
+      "attr": "highlight",
+      "props": []
+    },
+    {
+      "id": "d2",
+      "kind": "segment",
+      "def": {
+        "source": "seg(B, E)",
+        "tree": {
+          "kind": "call",
+          "name": "seg",
+          "args": [
+            {
+              "kind": "ref",
+              "id": "B"
+            },
+            {
+              "kind": "ref",
+              "id": "E"
+            }
+          ]
+        }
+      },
+      "hint": null,
+      "where": [],
+      "attr": "highlight",
+      "props": []
+    },
+    {
+      "id": "P",
+      "kind": "point",
+      "def": null,
+      "hint": [
+        {
+          "kind": "unary",
+          "op": "neg",
+          "expr": {
+            "kind": "number",
+            "source": "0.7",
+            "value": 0.7,
+            "dimension": "length"
+          },
+          "dimension": "length"
+        },
+        {
+          "kind": "number",
+          "source": "0.9",
+          "value": 0.9,
+          "dimension": "length"
+        }
+      ],
+      "where": [
+        {
+          "kind": "call",
+          "name": "on",
+          "args": [
+            {
+              "kind": "ref",
+              "id": "P"
+            },
+            {
+              "kind": "ref",
+              "id": "d1"
+            }
+          ]
+        },
+        {
+          "kind": "call",
+          "name": "on",
+          "args": [
+            {
+              "kind": "ref",
+              "id": "P"
+            },
+            {
+              "kind": "ref",
+              "id": "d2"
+            }
+          ]
+        }
+      ],
+      "attr": null,
+      "props": []
+    },
+    {
+      "id": "t1",
+      "kind": "tick",
+      "def": {
+        "source": "tick(seg(A, B), 1)",
+        "tree": {
+          "kind": "call",
+          "name": "tick",
+          "args": [
+            {
+              "kind": "call",
+              "name": "seg",
+              "args": [
+                {
+                  "kind": "ref",
+                  "id": "A"
+                },
+                {
+                  "kind": "ref",
+                  "id": "B"
+                }
+              ]
+            },
+            {
+              "kind": "number",
+              "source": "1",
+              "value": 1.0,
+              "dimension": "scalar"
+            }
+          ]
+        }
+      },
+      "hint": null,
+      "where": [],
+      "attr": null,
+      "props": []
+    },
+    {
+      "id": "t2",
+      "kind": "tick",
+      "def": {
+        "source": "tick(seg(B, C), 1)",
+        "tree": {
+          "kind": "call",
+          "name": "tick",
+          "args": [
+            {
+              "kind": "call",
+              "name": "seg",
+              "args": [
+                {
+                  "kind": "ref",
+                  "id": "B"
+                },
+                {
+                  "kind": "ref",
+                  "id": "C"
+                }
+              ]
+            },
+            {
+              "kind": "number",
+              "source": "1",
+              "value": 1.0,
+              "dimension": "scalar"
+            }
+          ]
+        }
+      },
+      "hint": null,
+      "where": [],
+      "attr": null,
+      "props": []
+    },
+    {
+      "id": "lA",
+      "kind": "label",
+      "def": {
+        "source": "label(A, $A$)",
+        "tree": {
+          "kind": "call",
+          "name": "label",
+          "args": [
+            {
+              "kind": "ref",
+              "id": "A"
+            },
+            {
+              "kind": "text",
+              "segments": [
+                {
+                  "kind": "tex",
+                  "source": "A"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "hint": null,
+      "where": [],
+      "attr": null,
+      "props": []
+    },
+    {
+      "id": "lB",
+      "kind": "label",
+      "def": {
+        "source": "label(B, $B$)",
+        "tree": {
+          "kind": "call",
+          "name": "label",
+          "args": [
+            {
+              "kind": "ref",
+              "id": "B"
+            },
+            {
+              "kind": "text",
+              "segments": [
+                {
+                  "kind": "tex",
+                  "source": "B"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "hint": null,
+      "where": [],
+      "attr": null,
+      "props": []
+    },
+    {
+      "id": "lC",
+      "kind": "label",
+      "def": {
+        "source": "label(C, $C$)",
+        "tree": {
+          "kind": "call",
+          "name": "label",
+          "args": [
+            {
+              "kind": "ref",
+              "id": "C"
+            },
+            {
+              "kind": "text",
+              "segments": [
+                {
+                  "kind": "tex",
+                  "source": "C"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "hint": null,
+      "where": [],
+      "attr": null,
+      "props": []
+    },
+    {
+      "id": "lD",
+      "kind": "label",
+      "def": {
+        "source": "label(D, $D$)",
+        "tree": {
+          "kind": "call",
+          "name": "label",
+          "args": [
+            {
+              "kind": "ref",
+              "id": "D"
+            },
+            {
+              "kind": "text",
+              "segments": [
+                {
+                  "kind": "tex",
+                  "source": "D"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "hint": null,
+      "where": [],
+      "attr": null,
+      "props": []
+    },
+    {
+      "id": "lE",
+      "kind": "label",
+      "def": {
+        "source": "label(E, $E$)",
+        "tree": {
+          "kind": "call",
+          "name": "label",
+          "args": [
+            {
+              "kind": "ref",
+              "id": "E"
+            },
+            {
+              "kind": "text",
+              "segments": [
+                {
+                  "kind": "tex",
+                  "source": "E"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "hint": null,
+      "where": [],
+      "attr": null,
+      "props": []
+    },
+    {
+      "id": "lP",
+      "kind": "label",
+      "def": {
+        "source": "label(P, $P$)",
+        "tree": {
+          "kind": "call",
+          "name": "label",
+          "args": [
+            {
+              "kind": "ref",
+              "id": "P"
+            },
+            {
+              "kind": "text",
+              "segments": [
+                {
+                  "kind": "tex",
+                  "source": "P"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "hint": null,
+      "where": [],
+      "attr": null,
+      "props": [
+        {
+          "name": "dir",
+          "value": {
+            "kind": "expr",
+            "expr": {
+              "kind": "ref",
+              "id": "N"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "phi",
+      "kind": "text_block",
+      "def": {
+        "source": "text_block($\\dfrac{AC}{AB} = \\varphi = \\dfrac{1+\\sqrt5}{2}$)",
+        "tree": {
+          "kind": "call",
+          "name": "text_block",
+          "args": [
+            {
+              "kind": "text",
+              "segments": [
+                {
+                  "kind": "tex",
+                  "source": "\\dfrac{AC}{AB} = \\varphi = \\dfrac{1+\\sqrt5}{2}"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "hint": null,
+      "where": [],
+      "attr": null,
+      "props": [
+        {
+          "name": "place",
+          "value": {
+            "kind": "expr",
+            "expr": {
+              "kind": "ref",
+              "id": "below"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "rels": [],
+  "asserts": [
+    {
+      "expr": {
+        "kind": "binary",
+        "op": "eq",
+        "lhs": {
+          "kind": "call",
+          "name": "dist",
+          "args": [
+            {
+              "kind": "ref",
+              "id": "A"
+            },
+            {
+              "kind": "ref",
+              "id": "B"
+            }
+          ],
+          "dimension": "length"
+        },
+        "rhs": {
+          "kind": "call",
+          "name": "dist",
+          "args": [
+            {
+              "kind": "ref",
+              "id": "B"
+            },
+            {
+              "kind": "ref",
+              "id": "C"
+            }
+          ],
+          "dimension": "length"
+        }
+      },
+      "tolerance": null
+    },
+    {
+      "expr": {
+        "kind": "binary",
+        "op": "eq",
+        "lhs": {
+          "kind": "call",
+          "name": "ratio",
+          "args": [
+            {
+              "kind": "call",
+              "name": "dist",
+              "args": [
+                {
+                  "kind": "ref",
+                  "id": "A"
+                },
+                {
+                  "kind": "ref",
+                  "id": "C"
+                }
+              ],
+              "dimension": "length"
+            },
+            {
+              "kind": "call",
+              "name": "dist",
+              "args": [
+                {
+                  "kind": "ref",
+                  "id": "A"
+                },
+                {
+                  "kind": "ref",
+                  "id": "B"
+                }
+              ],
+              "dimension": "length"
+            }
+          ],
+          "dimension": "scalar"
+        },
+        "rhs": {
+          "kind": "binary",
+          "op": "div",
+          "lhs": {
+            "kind": "group",
+            "expr": {
+              "kind": "binary",
+              "op": "add",
+              "lhs": {
+                "kind": "number",
+                "source": "1",
+                "value": 1.0,
+                "dimension": "scalar"
+              },
+              "rhs": {
+                "kind": "call",
+                "name": "sqrt",
+                "args": [
+                  {
+                    "kind": "number",
+                    "source": "5",
+                    "value": 5.0,
+                    "dimension": "scalar"
+                  }
+                ],
+                "dimension": "scalar"
+              },
+              "dimension": "scalar"
+            },
+            "dimension": "scalar"
+          },
+          "rhs": {
+            "kind": "number",
+            "source": "2",
+            "value": 2.0,
+            "dimension": "scalar"
+          },
+          "dimension": "scalar"
+        }
+      },
+      "tolerance": null
+    },
+    {
+      "expr": {
+        "kind": "binary",
+        "op": "eq",
+        "lhs": {
+          "kind": "call",
+          "name": "ratio",
+          "args": [
+            {
+              "kind": "call",
+              "name": "dist",
+              "args": [
+                {
+                  "kind": "ref",
+                  "id": "A"
+                },
+                {
+                  "kind": "ref",
+                  "id": "P"
+                }
+              ],
+              "dimension": "length"
+            },
+            {
+              "kind": "call",
+              "name": "dist",
+              "args": [
+                {
+                  "kind": "ref",
+                  "id": "P"
+                },
+                {
+                  "kind": "ref",
+                  "id": "C"
+                }
+              ],
+              "dimension": "length"
+            }
+          ],
+          "dimension": "scalar"
+        },
+        "rhs": {
+          "kind": "binary",
+          "op": "div",
+          "lhs": {
+            "kind": "group",
+            "expr": {
+              "kind": "binary",
+              "op": "add",
+              "lhs": {
+                "kind": "number",
+                "source": "1",
+                "value": 1.0,
+                "dimension": "scalar"
+              },
+              "rhs": {
+                "kind": "call",
+                "name": "sqrt",
+                "args": [
+                  {
+                    "kind": "number",
+                    "source": "5",
+                    "value": 5.0,
+                    "dimension": "scalar"
+                  }
+                ],
+                "dimension": "scalar"
+              },
+              "dimension": "scalar"
+            },
+            "dimension": "scalar"
+          },
+          "rhs": {
+            "kind": "number",
+            "source": "2",
+            "value": 2.0,
+            "dimension": "scalar"
+          },
+          "dimension": "scalar"
+        }
+      },
+      "tolerance": null
+    },
+    {
+      "expr": {
+        "kind": "call",
+        "name": "inside",
+        "args": [
+          {
+            "kind": "ref",
+            "id": "P"
+          },
+          {
+            "kind": "ref",
+            "id": "pent"
+          }
+        ]
+      },
+      "tolerance": null
+    }
+  ]
+}
