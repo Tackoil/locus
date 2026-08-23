@@ -1,0 +1,3534 @@
+---
+source: crates/locus-cli/tests/cli.rs
+expression: stdout
+---
+{
+  "command": "describe",
+  "path": "fixtures/figures/aec3_filter_alignment.locus",
+  "objects": [
+    {
+      "id": "fw",
+      "kind": "num",
+      "span": {
+        "line": 19,
+        "col": 1,
+        "byte_start": 760,
+        "byte_end": 773
+      },
+      "definition": "4",
+      "resolved": {
+        "kind": "number",
+        "value": 4.0,
+        "dimension": "length"
+      }
+    },
+    {
+      "id": "ov",
+      "kind": "num",
+      "span": {
+        "line": 20,
+        "col": 1,
+        "byte_start": 806,
+        "byte_end": 819
+      },
+      "definition": "1",
+      "resolved": {
+        "kind": "number",
+        "value": 1.0,
+        "dimension": "length"
+      }
+    },
+    {
+      "id": "bh",
+      "kind": "num",
+      "span": {
+        "line": 21,
+        "col": 1,
+        "byte_start": 847,
+        "byte_end": 862
+      },
+      "definition": "1.2",
+      "resolved": {
+        "kind": "number",
+        "value": 1.2,
+        "dimension": "length"
+      }
+    },
+    {
+      "id": "pitch",
+      "kind": "num",
+      "span": {
+        "line": 22,
+        "col": 1,
+        "byte_start": 891,
+        "byte_end": 906
+      },
+      "definition": "1.8",
+      "resolved": {
+        "kind": "number",
+        "value": 1.8,
+        "dimension": "length"
+      }
+    },
+    {
+      "id": "A0",
+      "kind": "point",
+      "span": {
+        "line": 25,
+        "col": 1,
+        "byte_start": 1012,
+        "byte_end": 1108
+      },
+      "definition": "free ~(0, 0)",
+      "resolved": {
+        "kind": "point",
+        "x": 0.0,
+        "y": 0.0,
+        "mark": "cross"
+      }
+    },
+    {
+      "id": "A512",
+      "kind": "point",
+      "span": {
+        "line": 26,
+        "col": 1,
+        "byte_start": 1109,
+        "byte_end": 1205
+      },
+      "definition": "free ~(16, 0)",
+      "resolved": {
+        "kind": "point",
+        "x": 16.0,
+        "y": 0.0,
+        "mark": "cross"
+      }
+    },
+    {
+      "id": "axis",
+      "kind": "arrow",
+      "span": {
+        "line": 28,
+        "col": 1,
+        "byte_start": 1207,
+        "byte_end": 1265
+      },
+      "definition": "arrow(A0, offset(A512, 0.6, 0))",
+      "resolved": {
+        "kind": "annotation",
+        "value": {
+          "kind": "arrow",
+          "from": {
+            "kind": "point",
+            "point": {
+              "x": 0.0,
+              "y": 0.0
+            }
+          },
+          "to": {
+            "kind": "point",
+            "point": {
+              "x": 16.6,
+              "y": 0.0
+            }
+          },
+          "head": "forward",
+          "bend": 0.0
+        }
+      }
+    },
+    {
+      "id": "lax",
+      "kind": "label",
+      "span": {
+        "line": 29,
+        "col": 1,
+        "byte_start": 1266,
+        "byte_end": 1333
+      },
+      "definition": "label(A0, \"render history x[t]\")",
+      "resolved": {
+        "kind": "annotation",
+        "value": {
+          "kind": "label",
+          "anchor": {
+            "kind": "point",
+            "point": {
+              "x": 0.0,
+              "y": 0.0
+            }
+          },
+          "text": {
+            "segments": [
+              {
+                "kind": "plain",
+                "source": "render history x[t]",
+                "span": {
+                  "line": 29,
+                  "col": 25,
+                  "byte_start": 1290,
+                  "byte_end": 1309
+                }
+              }
+            ],
+            "span": {
+              "line": 29,
+              "col": 24,
+              "byte_start": 1289,
+              "byte_end": 1310
+            }
+          },
+          "direction": "compass(w)",
+          "gap": 0.4
+        }
+      }
+    },
+    {
+      "id": "t96",
+      "kind": "point",
+      "span": {
+        "line": 32,
+        "col": 1,
+        "byte_start": 1394,
+        "byte_end": 1447
+      },
+      "definition": "lerp(A0, A512,  96/512)",
+      "resolved": {
+        "kind": "point",
+        "x": 3.0,
+        "y": 0.0,
+        "mark": "cross"
+      }
+    },
+    {
+      "id": "t128",
+      "kind": "point",
+      "span": {
+        "line": 33,
+        "col": 1,
+        "byte_start": 1448,
+        "byte_end": 1501
+      },
+      "definition": "lerp(A0, A512, 128/512)",
+      "resolved": {
+        "kind": "point",
+        "x": 4.0,
+        "y": 0.0,
+        "mark": "cross"
+      }
+    },
+    {
+      "id": "t192",
+      "kind": "point",
+      "span": {
+        "line": 34,
+        "col": 1,
+        "byte_start": 1502,
+        "byte_end": 1555
+      },
+      "definition": "lerp(A0, A512, 192/512)",
+      "resolved": {
+        "kind": "point",
+        "x": 6.0,
+        "y": 0.0,
+        "mark": "cross"
+      }
+    },
+    {
+      "id": "t224",
+      "kind": "point",
+      "span": {
+        "line": 35,
+        "col": 1,
+        "byte_start": 1556,
+        "byte_end": 1609
+      },
+      "definition": "lerp(A0, A512, 224/512)",
+      "resolved": {
+        "kind": "point",
+        "x": 7.0,
+        "y": 0.0,
+        "mark": "cross"
+      }
+    },
+    {
+      "id": "t288",
+      "kind": "point",
+      "span": {
+        "line": 36,
+        "col": 1,
+        "byte_start": 1610,
+        "byte_end": 1663
+      },
+      "definition": "lerp(A0, A512, 288/512)",
+      "resolved": {
+        "kind": "point",
+        "x": 9.0,
+        "y": 0.0,
+        "mark": "cross"
+      }
+    },
+    {
+      "id": "t320",
+      "kind": "point",
+      "span": {
+        "line": 37,
+        "col": 1,
+        "byte_start": 1664,
+        "byte_end": 1717
+      },
+      "definition": "lerp(A0, A512, 320/512)",
+      "resolved": {
+        "kind": "point",
+        "x": 10.0,
+        "y": 0.0,
+        "mark": "cross"
+      }
+    },
+    {
+      "id": "t384",
+      "kind": "point",
+      "span": {
+        "line": 38,
+        "col": 1,
+        "byte_start": 1718,
+        "byte_end": 1771
+      },
+      "definition": "lerp(A0, A512, 384/512)",
+      "resolved": {
+        "kind": "point",
+        "x": 12.0,
+        "y": 0.0,
+        "mark": "cross"
+      }
+    },
+    {
+      "id": "t416",
+      "kind": "point",
+      "span": {
+        "line": 39,
+        "col": 1,
+        "byte_start": 1772,
+        "byte_end": 1825
+      },
+      "definition": "lerp(A0, A512, 416/512)",
+      "resolved": {
+        "kind": "point",
+        "x": 13.0,
+        "y": 0.0,
+        "mark": "cross"
+      }
+    },
+    {
+      "id": "lt0",
+      "kind": "label",
+      "span": {
+        "line": 41,
+        "col": 1,
+        "byte_start": 1827,
+        "byte_end": 1884
+      },
+      "definition": "label(A0,   \"0 ms\")",
+      "resolved": {
+        "kind": "annotation",
+        "value": {
+          "kind": "label",
+          "anchor": {
+            "kind": "point",
+            "point": {
+              "x": 0.0,
+              "y": 0.0
+            }
+          },
+          "text": {
+            "segments": [
+              {
+                "kind": "plain",
+                "source": "0 ms",
+                "span": {
+                  "line": 41,
+                  "col": 28,
+                  "byte_start": 1854,
+                  "byte_end": 1858
+                }
+              }
+            ],
+            "span": {
+              "line": 41,
+              "col": 27,
+              "byte_start": 1853,
+              "byte_end": 1859
+            }
+          },
+          "direction": "compass(s)",
+          "gap": 0.3
+        }
+      }
+    },
+    {
+      "id": "lt96",
+      "kind": "label",
+      "span": {
+        "line": 42,
+        "col": 1,
+        "byte_start": 1885,
+        "byte_end": 1942
+      },
+      "definition": "label(t96,  \"96\")",
+      "resolved": {
+        "kind": "annotation",
+        "value": {
+          "kind": "label",
+          "anchor": {
+            "kind": "point",
+            "point": {
+              "x": 3.0,
+              "y": 0.0
+            }
+          },
+          "text": {
+            "segments": [
+              {
+                "kind": "plain",
+                "source": "96",
+                "span": {
+                  "line": 42,
+                  "col": 28,
+                  "byte_start": 1912,
+                  "byte_end": 1914
+                }
+              }
+            ],
+            "span": {
+              "line": 42,
+              "col": 27,
+              "byte_start": 1911,
+              "byte_end": 1915
+            }
+          },
+          "direction": "compass(s)",
+          "gap": 0.3
+        }
+      }
+    },
+    {
+      "id": "lt128",
+      "kind": "label",
+      "span": {
+        "line": 43,
+        "col": 1,
+        "byte_start": 1943,
+        "byte_end": 2000
+      },
+      "definition": "label(t128, \"128\")",
+      "resolved": {
+        "kind": "annotation",
+        "value": {
+          "kind": "label",
+          "anchor": {
+            "kind": "point",
+            "point": {
+              "x": 4.0,
+              "y": 0.0
+            }
+          },
+          "text": {
+            "segments": [
+              {
+                "kind": "plain",
+                "source": "128",
+                "span": {
+                  "line": 43,
+                  "col": 28,
+                  "byte_start": 1970,
+                  "byte_end": 1973
+                }
+              }
+            ],
+            "span": {
+              "line": 43,
+              "col": 27,
+              "byte_start": 1969,
+              "byte_end": 1974
+            }
+          },
+          "direction": "compass(s)",
+          "gap": 0.3
+        }
+      }
+    },
+    {
+      "id": "lt192",
+      "kind": "label",
+      "span": {
+        "line": 44,
+        "col": 1,
+        "byte_start": 2001,
+        "byte_end": 2058
+      },
+      "definition": "label(t192, \"192\")",
+      "resolved": {
+        "kind": "annotation",
+        "value": {
+          "kind": "label",
+          "anchor": {
+            "kind": "point",
+            "point": {
+              "x": 6.0,
+              "y": 0.0
+            }
+          },
+          "text": {
+            "segments": [
+              {
+                "kind": "plain",
+                "source": "192",
+                "span": {
+                  "line": 44,
+                  "col": 28,
+                  "byte_start": 2028,
+                  "byte_end": 2031
+                }
+              }
+            ],
+            "span": {
+              "line": 44,
+              "col": 27,
+              "byte_start": 2027,
+              "byte_end": 2032
+            }
+          },
+          "direction": "compass(s)",
+          "gap": 0.3
+        }
+      }
+    },
+    {
+      "id": "lt224",
+      "kind": "label",
+      "span": {
+        "line": 45,
+        "col": 1,
+        "byte_start": 2059,
+        "byte_end": 2116
+      },
+      "definition": "label(t224, \"224\")",
+      "resolved": {
+        "kind": "annotation",
+        "value": {
+          "kind": "label",
+          "anchor": {
+            "kind": "point",
+            "point": {
+              "x": 7.0,
+              "y": 0.0
+            }
+          },
+          "text": {
+            "segments": [
+              {
+                "kind": "plain",
+                "source": "224",
+                "span": {
+                  "line": 45,
+                  "col": 28,
+                  "byte_start": 2086,
+                  "byte_end": 2089
+                }
+              }
+            ],
+            "span": {
+              "line": 45,
+              "col": 27,
+              "byte_start": 2085,
+              "byte_end": 2090
+            }
+          },
+          "direction": "compass(s)",
+          "gap": 0.3
+        }
+      }
+    },
+    {
+      "id": "lt288",
+      "kind": "label",
+      "span": {
+        "line": 46,
+        "col": 1,
+        "byte_start": 2117,
+        "byte_end": 2174
+      },
+      "definition": "label(t288, \"288\")",
+      "resolved": {
+        "kind": "annotation",
+        "value": {
+          "kind": "label",
+          "anchor": {
+            "kind": "point",
+            "point": {
+              "x": 9.0,
+              "y": 0.0
+            }
+          },
+          "text": {
+            "segments": [
+              {
+                "kind": "plain",
+                "source": "288",
+                "span": {
+                  "line": 46,
+                  "col": 28,
+                  "byte_start": 2144,
+                  "byte_end": 2147
+                }
+              }
+            ],
+            "span": {
+              "line": 46,
+              "col": 27,
+              "byte_start": 2143,
+              "byte_end": 2148
+            }
+          },
+          "direction": "compass(s)",
+          "gap": 0.3
+        }
+      }
+    },
+    {
+      "id": "lt320",
+      "kind": "label",
+      "span": {
+        "line": 47,
+        "col": 1,
+        "byte_start": 2175,
+        "byte_end": 2232
+      },
+      "definition": "label(t320, \"320\")",
+      "resolved": {
+        "kind": "annotation",
+        "value": {
+          "kind": "label",
+          "anchor": {
+            "kind": "point",
+            "point": {
+              "x": 10.0,
+              "y": 0.0
+            }
+          },
+          "text": {
+            "segments": [
+              {
+                "kind": "plain",
+                "source": "320",
+                "span": {
+                  "line": 47,
+                  "col": 28,
+                  "byte_start": 2202,
+                  "byte_end": 2205
+                }
+              }
+            ],
+            "span": {
+              "line": 47,
+              "col": 27,
+              "byte_start": 2201,
+              "byte_end": 2206
+            }
+          },
+          "direction": "compass(s)",
+          "gap": 0.3
+        }
+      }
+    },
+    {
+      "id": "lt384",
+      "kind": "label",
+      "span": {
+        "line": 48,
+        "col": 1,
+        "byte_start": 2233,
+        "byte_end": 2290
+      },
+      "definition": "label(t384, \"384\")",
+      "resolved": {
+        "kind": "annotation",
+        "value": {
+          "kind": "label",
+          "anchor": {
+            "kind": "point",
+            "point": {
+              "x": 12.0,
+              "y": 0.0
+            }
+          },
+          "text": {
+            "segments": [
+              {
+                "kind": "plain",
+                "source": "384",
+                "span": {
+                  "line": 48,
+                  "col": 28,
+                  "byte_start": 2260,
+                  "byte_end": 2263
+                }
+              }
+            ],
+            "span": {
+              "line": 48,
+              "col": 27,
+              "byte_start": 2259,
+              "byte_end": 2264
+            }
+          },
+          "direction": "compass(s)",
+          "gap": 0.3
+        }
+      }
+    },
+    {
+      "id": "lt416",
+      "kind": "label",
+      "span": {
+        "line": 49,
+        "col": 1,
+        "byte_start": 2291,
+        "byte_end": 2348
+      },
+      "definition": "label(t416, \"416\")",
+      "resolved": {
+        "kind": "annotation",
+        "value": {
+          "kind": "label",
+          "anchor": {
+            "kind": "point",
+            "point": {
+              "x": 13.0,
+              "y": 0.0
+            }
+          },
+          "text": {
+            "segments": [
+              {
+                "kind": "plain",
+                "source": "416",
+                "span": {
+                  "line": 49,
+                  "col": 28,
+                  "byte_start": 2318,
+                  "byte_end": 2321
+                }
+              }
+            ],
+            "span": {
+              "line": 49,
+              "col": 27,
+              "byte_start": 2317,
+              "byte_end": 2322
+            }
+          },
+          "direction": "compass(s)",
+          "gap": 0.3
+        }
+      }
+    },
+    {
+      "id": "lt512",
+      "kind": "label",
+      "span": {
+        "line": 50,
+        "col": 1,
+        "byte_start": 2349,
+        "byte_end": 2406
+      },
+      "definition": "label(A512, \"512 ms\")",
+      "resolved": {
+        "kind": "annotation",
+        "value": {
+          "kind": "label",
+          "anchor": {
+            "kind": "point",
+            "point": {
+              "x": 16.0,
+              "y": 0.0
+            }
+          },
+          "text": {
+            "segments": [
+              {
+                "kind": "plain",
+                "source": "512 ms",
+                "span": {
+                  "line": 50,
+                  "col": 28,
+                  "byte_start": 2376,
+                  "byte_end": 2382
+                }
+              }
+            ],
+            "span": {
+              "line": 50,
+              "col": 27,
+              "byte_start": 2375,
+              "byte_end": 2383
+            }
+          },
+          "direction": "compass(s)",
+          "gap": 0.3
+        }
+      }
+    },
+    {
+      "id": "F0c",
+      "kind": "point",
+      "span": {
+        "line": 54,
+        "col": 1,
+        "byte_start": 2550,
+        "byte_end": 2651
+      },
+      "definition": "free ~(2, 8.8)",
+      "resolved": {
+        "kind": "point",
+        "x": 2.0,
+        "y": 8.8,
+        "mark": "none"
+      }
+    },
+    {
+      "id": "f0",
+      "kind": "rect",
+      "span": {
+        "line": 55,
+        "col": 1,
+        "byte_start": 2652,
+        "byte_end": 2695
+      },
+      "definition": "rect(F0c, fw, bh)",
+      "resolved": {
+        "kind": "rect",
+        "vertices": [
+          {
+            "x": 0.0,
+            "y": 8.200000000000001
+          },
+          {
+            "x": 4.0,
+            "y": 8.200000000000001
+          },
+          {
+            "x": 4.0,
+            "y": 9.4
+          },
+          {
+            "x": 0.0,
+            "y": 9.4
+          }
+        ]
+      }
+    },
+    {
+      "id": "n0",
+      "kind": "label",
+      "span": {
+        "line": 56,
+        "col": 1,
+        "byte_start": 2696,
+        "byte_end": 2766
+      },
+      "definition": "label(offset(f0.n, 0, -0.28), \"Filter 0\")",
+      "resolved": {
+        "kind": "annotation",
+        "value": {
+          "kind": "label",
+          "anchor": {
+            "kind": "point",
+            "point": {
+              "x": 2.0,
+              "y": 9.120000000000001
+            }
+          },
+          "text": {
+            "segments": [
+              {
+                "kind": "plain",
+                "source": "Filter 0",
+                "span": {
+                  "line": 56,
+                  "col": 44,
+                  "byte_start": 2739,
+                  "byte_end": 2747
+                }
+              }
+            ],
+            "span": {
+              "line": 56,
+              "col": 43,
+              "byte_start": 2738,
+              "byte_end": 2748
+            }
+          },
+          "direction": "center",
+          "gap": null
+        }
+      }
+    },
+    {
+      "id": "r0",
+      "kind": "label",
+      "span": {
+        "line": 57,
+        "col": 1,
+        "byte_start": 2767,
+        "byte_end": 2841
+      },
+      "definition": "label(offset(f0.w, 0.9, -0.25), \"0–128 ms\")",
+      "resolved": {
+        "kind": "annotation",
+        "value": {
+          "kind": "label",
+          "anchor": {
+            "kind": "point",
+            "point": {
+              "x": 0.9,
+              "y": 8.55
+            }
+          },
+          "text": {
+            "segments": [
+              {
+                "kind": "plain",
+                "source": "0–128 ms",
+                "span": {
+                  "line": 57,
+                  "col": 46,
+                  "byte_start": 2812,
+                  "byte_end": 2822
+                }
+              }
+            ],
+            "span": {
+              "line": 57,
+              "col": 45,
+              "byte_start": 2811,
+              "byte_end": 2823
+            }
+          },
+          "direction": "center",
+          "gap": null
+        }
+      }
+    },
+    {
+      "id": "F1c",
+      "kind": "point",
+      "span": {
+        "line": 59,
+        "col": 1,
+        "byte_start": 2843,
+        "byte_end": 2944
+      },
+      "definition": "free ~(5, 7)",
+      "resolved": {
+        "kind": "point",
+        "x": 5.0,
+        "y": 7.0,
+        "mark": "none"
+      }
+    },
+    {
+      "id": "f1",
+      "kind": "rect",
+      "span": {
+        "line": 60,
+        "col": 1,
+        "byte_start": 2945,
+        "byte_end": 2988
+      },
+      "definition": "rect(F1c, fw, bh)",
+      "resolved": {
+        "kind": "rect",
+        "vertices": [
+          {
+            "x": 3.0,
+            "y": 6.4
+          },
+          {
+            "x": 7.0,
+            "y": 6.4
+          },
+          {
+            "x": 7.0,
+            "y": 7.6
+          },
+          {
+            "x": 3.0,
+            "y": 7.6
+          }
+        ]
+      }
+    },
+    {
+      "id": "n1",
+      "kind": "label",
+      "span": {
+        "line": 61,
+        "col": 1,
+        "byte_start": 2989,
+        "byte_end": 3059
+      },
+      "definition": "label(offset(f1.n, 0, -0.28), \"Filter 1\")",
+      "resolved": {
+        "kind": "annotation",
+        "value": {
+          "kind": "label",
+          "anchor": {
+            "kind": "point",
+            "point": {
+              "x": 5.0,
+              "y": 7.319999999999999
+            }
+          },
+          "text": {
+            "segments": [
+              {
+                "kind": "plain",
+                "source": "Filter 1",
+                "span": {
+                  "line": 61,
+                  "col": 44,
+                  "byte_start": 3032,
+                  "byte_end": 3040
+                }
+              }
+            ],
+            "span": {
+              "line": 61,
+              "col": 43,
+              "byte_start": 3031,
+              "byte_end": 3041
+            }
+          },
+          "direction": "center",
+          "gap": null
+        }
+      }
+    },
+    {
+      "id": "r1",
+      "kind": "label",
+      "span": {
+        "line": 62,
+        "col": 1,
+        "byte_start": 3060,
+        "byte_end": 3135
+      },
+      "definition": "label(offset(f1.w, 0.9, -0.25), \"96–224 ms\")",
+      "resolved": {
+        "kind": "annotation",
+        "value": {
+          "kind": "label",
+          "anchor": {
+            "kind": "point",
+            "point": {
+              "x": 3.9,
+              "y": 6.75
+            }
+          },
+          "text": {
+            "segments": [
+              {
+                "kind": "plain",
+                "source": "96–224 ms",
+                "span": {
+                  "line": 62,
+                  "col": 46,
+                  "byte_start": 3105,
+                  "byte_end": 3116
+                }
+              }
+            ],
+            "span": {
+              "line": 62,
+              "col": 45,
+              "byte_start": 3104,
+              "byte_end": 3117
+            }
+          },
+          "direction": "center",
+          "gap": null
+        }
+      }
+    },
+    {
+      "id": "F2c",
+      "kind": "point",
+      "span": {
+        "line": 64,
+        "col": 1,
+        "byte_start": 3137,
+        "byte_end": 3240
+      },
+      "definition": "free ~(8, 5.2)",
+      "resolved": {
+        "kind": "point",
+        "x": 8.0,
+        "y": 5.2,
+        "mark": "none"
+      }
+    },
+    {
+      "id": "f2",
+      "kind": "rect",
+      "span": {
+        "line": 65,
+        "col": 1,
+        "byte_start": 3241,
+        "byte_end": 3284
+      },
+      "definition": "rect(F2c, fw, bh)",
+      "resolved": {
+        "kind": "rect",
+        "vertices": [
+          {
+            "x": 6.0,
+            "y": 4.6000000000000005
+          },
+          {
+            "x": 10.0,
+            "y": 4.6000000000000005
+          },
+          {
+            "x": 10.0,
+            "y": 5.8
+          },
+          {
+            "x": 6.0,
+            "y": 5.8
+          }
+        ]
+      }
+    },
+    {
+      "id": "n2",
+      "kind": "label",
+      "span": {
+        "line": 66,
+        "col": 1,
+        "byte_start": 3285,
+        "byte_end": 3355
+      },
+      "definition": "label(offset(f2.n, 0, -0.28), \"Filter 2\")",
+      "resolved": {
+        "kind": "annotation",
+        "value": {
+          "kind": "label",
+          "anchor": {
+            "kind": "point",
+            "point": {
+              "x": 8.0,
+              "y": 5.52
+            }
+          },
+          "text": {
+            "segments": [
+              {
+                "kind": "plain",
+                "source": "Filter 2",
+                "span": {
+                  "line": 66,
+                  "col": 44,
+                  "byte_start": 3328,
+                  "byte_end": 3336
+                }
+              }
+            ],
+            "span": {
+              "line": 66,
+              "col": 43,
+              "byte_start": 3327,
+              "byte_end": 3337
+            }
+          },
+          "direction": "center",
+          "gap": null
+        }
+      }
+    },
+    {
+      "id": "r2",
+      "kind": "label",
+      "span": {
+        "line": 67,
+        "col": 1,
+        "byte_start": 3356,
+        "byte_end": 3432
+      },
+      "definition": "label(offset(f2.w, 0.9, -0.25), \"192–320 ms\")",
+      "resolved": {
+        "kind": "annotation",
+        "value": {
+          "kind": "label",
+          "anchor": {
+            "kind": "point",
+            "point": {
+              "x": 6.9,
+              "y": 4.95
+            }
+          },
+          "text": {
+            "segments": [
+              {
+                "kind": "plain",
+                "source": "192–320 ms",
+                "span": {
+                  "line": 67,
+                  "col": 46,
+                  "byte_start": 3401,
+                  "byte_end": 3413
+                }
+              }
+            ],
+            "span": {
+              "line": 67,
+              "col": 45,
+              "byte_start": 3400,
+              "byte_end": 3414
+            }
+          },
+          "direction": "center",
+          "gap": null
+        }
+      }
+    },
+    {
+      "id": "F3c",
+      "kind": "point",
+      "span": {
+        "line": 69,
+        "col": 1,
+        "byte_start": 3434,
+        "byte_end": 3538
+      },
+      "definition": "free ~(11, 3.4)",
+      "resolved": {
+        "kind": "point",
+        "x": 11.0,
+        "y": 3.4,
+        "mark": "none"
+      }
+    },
+    {
+      "id": "f3",
+      "kind": "rect",
+      "span": {
+        "line": 70,
+        "col": 1,
+        "byte_start": 3539,
+        "byte_end": 3582
+      },
+      "definition": "rect(F3c, fw, bh)",
+      "resolved": {
+        "kind": "rect",
+        "vertices": [
+          {
+            "x": 9.0,
+            "y": 2.8
+          },
+          {
+            "x": 13.0,
+            "y": 2.8
+          },
+          {
+            "x": 13.0,
+            "y": 4.0
+          },
+          {
+            "x": 9.0,
+            "y": 4.0
+          }
+        ]
+      }
+    },
+    {
+      "id": "n3",
+      "kind": "label",
+      "span": {
+        "line": 71,
+        "col": 1,
+        "byte_start": 3583,
+        "byte_end": 3653
+      },
+      "definition": "label(offset(f3.n, 0, -0.28), \"Filter 3\")",
+      "resolved": {
+        "kind": "annotation",
+        "value": {
+          "kind": "label",
+          "anchor": {
+            "kind": "point",
+            "point": {
+              "x": 11.0,
+              "y": 3.7199999999999998
+            }
+          },
+          "text": {
+            "segments": [
+              {
+                "kind": "plain",
+                "source": "Filter 3",
+                "span": {
+                  "line": 71,
+                  "col": 44,
+                  "byte_start": 3626,
+                  "byte_end": 3634
+                }
+              }
+            ],
+            "span": {
+              "line": 71,
+              "col": 43,
+              "byte_start": 3625,
+              "byte_end": 3635
+            }
+          },
+          "direction": "center",
+          "gap": null
+        }
+      }
+    },
+    {
+      "id": "r3",
+      "kind": "label",
+      "span": {
+        "line": 72,
+        "col": 1,
+        "byte_start": 3654,
+        "byte_end": 3730
+      },
+      "definition": "label(offset(f3.w, 0.9, -0.25), \"288–416 ms\")",
+      "resolved": {
+        "kind": "annotation",
+        "value": {
+          "kind": "label",
+          "anchor": {
+            "kind": "point",
+            "point": {
+              "x": 9.9,
+              "y": 3.15
+            }
+          },
+          "text": {
+            "segments": [
+              {
+                "kind": "plain",
+                "source": "288–416 ms",
+                "span": {
+                  "line": 72,
+                  "col": 46,
+                  "byte_start": 3699,
+                  "byte_end": 3711
+                }
+              }
+            ],
+            "span": {
+              "line": 72,
+              "col": 45,
+              "byte_start": 3698,
+              "byte_end": 3712
+            }
+          },
+          "direction": "center",
+          "gap": null
+        }
+      }
+    },
+    {
+      "id": "F4c",
+      "kind": "point",
+      "span": {
+        "line": 74,
+        "col": 1,
+        "byte_start": 3732,
+        "byte_end": 3836
+      },
+      "definition": "free ~(14, 1.6)",
+      "resolved": {
+        "kind": "point",
+        "x": 14.0,
+        "y": 1.6,
+        "mark": "none"
+      }
+    },
+    {
+      "id": "f4",
+      "kind": "rect",
+      "span": {
+        "line": 75,
+        "col": 1,
+        "byte_start": 3837,
+        "byte_end": 3880
+      },
+      "definition": "rect(F4c, fw, bh)",
+      "resolved": {
+        "kind": "rect",
+        "vertices": [
+          {
+            "x": 12.0,
+            "y": 1.0
+          },
+          {
+            "x": 16.0,
+            "y": 1.0
+          },
+          {
+            "x": 16.0,
+            "y": 2.2
+          },
+          {
+            "x": 12.0,
+            "y": 2.2
+          }
+        ]
+      }
+    },
+    {
+      "id": "n4",
+      "kind": "label",
+      "span": {
+        "line": 76,
+        "col": 1,
+        "byte_start": 3881,
+        "byte_end": 3951
+      },
+      "definition": "label(offset(f4.n, 0, -0.28), \"Filter 4\")",
+      "resolved": {
+        "kind": "annotation",
+        "value": {
+          "kind": "label",
+          "anchor": {
+            "kind": "point",
+            "point": {
+              "x": 14.0,
+              "y": 1.9200000000000002
+            }
+          },
+          "text": {
+            "segments": [
+              {
+                "kind": "plain",
+                "source": "Filter 4",
+                "span": {
+                  "line": 76,
+                  "col": 44,
+                  "byte_start": 3924,
+                  "byte_end": 3932
+                }
+              }
+            ],
+            "span": {
+              "line": 76,
+              "col": 43,
+              "byte_start": 3923,
+              "byte_end": 3933
+            }
+          },
+          "direction": "center",
+          "gap": null
+        }
+      }
+    },
+    {
+      "id": "r4",
+      "kind": "label",
+      "span": {
+        "line": 77,
+        "col": 1,
+        "byte_start": 3952,
+        "byte_end": 4028
+      },
+      "definition": "label(offset(f4.w, 0.9, -0.25), \"384–512 ms\")",
+      "resolved": {
+        "kind": "annotation",
+        "value": {
+          "kind": "label",
+          "anchor": {
+            "kind": "point",
+            "point": {
+              "x": 12.9,
+              "y": 1.35
+            }
+          },
+          "text": {
+            "segments": [
+              {
+                "kind": "plain",
+                "source": "384–512 ms",
+                "span": {
+                  "line": 77,
+                  "col": 46,
+                  "byte_start": 3997,
+                  "byte_end": 4009
+                }
+              }
+            ],
+            "span": {
+              "line": 77,
+              "col": 45,
+              "byte_start": 3996,
+              "byte_end": 4010
+            }
+          },
+          "direction": "center",
+          "gap": null
+        }
+      }
+    },
+    {
+      "id": "s0e",
+      "kind": "rect",
+      "span": {
+        "line": 80,
+        "col": 1,
+        "byte_start": 4096,
+        "byte_end": 4155
+      },
+      "definition": "rect(offset(f0.e, -ov/2, 0), ov, bh)",
+      "resolved": {
+        "kind": "rect",
+        "vertices": [
+          {
+            "x": 3.0,
+            "y": 8.200000000000001
+          },
+          {
+            "x": 4.0,
+            "y": 8.200000000000001
+          },
+          {
+            "x": 4.0,
+            "y": 9.4
+          },
+          {
+            "x": 3.0,
+            "y": 9.4
+          }
+        ]
+      }
+    },
+    {
+      "id": "s1w",
+      "kind": "rect",
+      "span": {
+        "line": 81,
+        "col": 1,
+        "byte_start": 4156,
+        "byte_end": 4215
+      },
+      "definition": "rect(offset(f1.w,  ov/2, 0), ov, bh)",
+      "resolved": {
+        "kind": "rect",
+        "vertices": [
+          {
+            "x": 3.0,
+            "y": 6.4
+          },
+          {
+            "x": 4.0,
+            "y": 6.4
+          },
+          {
+            "x": 4.0,
+            "y": 7.6
+          },
+          {
+            "x": 3.0,
+            "y": 7.6
+          }
+        ]
+      }
+    },
+    {
+      "id": "s1e",
+      "kind": "rect",
+      "span": {
+        "line": 82,
+        "col": 1,
+        "byte_start": 4216,
+        "byte_end": 4275
+      },
+      "definition": "rect(offset(f1.e, -ov/2, 0), ov, bh)",
+      "resolved": {
+        "kind": "rect",
+        "vertices": [
+          {
+            "x": 6.0,
+            "y": 6.4
+          },
+          {
+            "x": 7.0,
+            "y": 6.4
+          },
+          {
+            "x": 7.0,
+            "y": 7.6
+          },
+          {
+            "x": 6.0,
+            "y": 7.6
+          }
+        ]
+      }
+    },
+    {
+      "id": "s2w",
+      "kind": "rect",
+      "span": {
+        "line": 83,
+        "col": 1,
+        "byte_start": 4276,
+        "byte_end": 4335
+      },
+      "definition": "rect(offset(f2.w,  ov/2, 0), ov, bh)",
+      "resolved": {
+        "kind": "rect",
+        "vertices": [
+          {
+            "x": 6.0,
+            "y": 4.6000000000000005
+          },
+          {
+            "x": 7.0,
+            "y": 4.6000000000000005
+          },
+          {
+            "x": 7.0,
+            "y": 5.8
+          },
+          {
+            "x": 6.0,
+            "y": 5.8
+          }
+        ]
+      }
+    },
+    {
+      "id": "s2e",
+      "kind": "rect",
+      "span": {
+        "line": 84,
+        "col": 1,
+        "byte_start": 4336,
+        "byte_end": 4395
+      },
+      "definition": "rect(offset(f2.e, -ov/2, 0), ov, bh)",
+      "resolved": {
+        "kind": "rect",
+        "vertices": [
+          {
+            "x": 9.0,
+            "y": 4.6000000000000005
+          },
+          {
+            "x": 10.0,
+            "y": 4.6000000000000005
+          },
+          {
+            "x": 10.0,
+            "y": 5.8
+          },
+          {
+            "x": 9.0,
+            "y": 5.8
+          }
+        ]
+      }
+    },
+    {
+      "id": "s3w",
+      "kind": "rect",
+      "span": {
+        "line": 85,
+        "col": 1,
+        "byte_start": 4396,
+        "byte_end": 4455
+      },
+      "definition": "rect(offset(f3.w,  ov/2, 0), ov, bh)",
+      "resolved": {
+        "kind": "rect",
+        "vertices": [
+          {
+            "x": 9.0,
+            "y": 2.8
+          },
+          {
+            "x": 10.0,
+            "y": 2.8
+          },
+          {
+            "x": 10.0,
+            "y": 4.0
+          },
+          {
+            "x": 9.0,
+            "y": 4.0
+          }
+        ]
+      }
+    },
+    {
+      "id": "s3e",
+      "kind": "rect",
+      "span": {
+        "line": 86,
+        "col": 1,
+        "byte_start": 4456,
+        "byte_end": 4515
+      },
+      "definition": "rect(offset(f3.e, -ov/2, 0), ov, bh)",
+      "resolved": {
+        "kind": "rect",
+        "vertices": [
+          {
+            "x": 12.0,
+            "y": 2.8
+          },
+          {
+            "x": 13.0,
+            "y": 2.8
+          },
+          {
+            "x": 13.0,
+            "y": 4.0
+          },
+          {
+            "x": 12.0,
+            "y": 4.0
+          }
+        ]
+      }
+    },
+    {
+      "id": "s4w",
+      "kind": "rect",
+      "span": {
+        "line": 87,
+        "col": 1,
+        "byte_start": 4516,
+        "byte_end": 4575
+      },
+      "definition": "rect(offset(f4.w,  ov/2, 0), ov, bh)",
+      "resolved": {
+        "kind": "rect",
+        "vertices": [
+          {
+            "x": 12.0,
+            "y": 1.0
+          },
+          {
+            "x": 13.0,
+            "y": 1.0
+          },
+          {
+            "x": 13.0,
+            "y": 2.2
+          },
+          {
+            "x": 12.0,
+            "y": 2.2
+          }
+        ]
+      }
+    },
+    {
+      "id": "cap_top",
+      "kind": "point",
+      "span": {
+        "line": 90,
+        "col": 1,
+        "byte_start": 4643,
+        "byte_end": 4698
+      },
+      "definition": "offset(f0.w, -1.2, 0.6)",
+      "resolved": {
+        "kind": "point",
+        "x": -1.2,
+        "y": 9.4,
+        "mark": "none"
+      }
+    },
+    {
+      "id": "cap_bot",
+      "kind": "point",
+      "span": {
+        "line": 91,
+        "col": 1,
+        "byte_start": 4699,
+        "byte_end": 4811
+      },
+      "definition": "free ~(-1.2, 1.6)",
+      "resolved": {
+        "kind": "point",
+        "x": -1.2,
+        "y": 1.6,
+        "mark": "none"
+      }
+    },
+    {
+      "id": "cap",
+      "kind": "segment",
+      "span": {
+        "line": 92,
+        "col": 1,
+        "byte_start": 4812,
+        "byte_end": 4847
+      },
+      "definition": "seg(cap_top, cap_bot)",
+      "resolved": {
+        "kind": "segment",
+        "start": {
+          "x": -1.2,
+          "y": 9.4
+        },
+        "end": {
+          "x": -1.2,
+          "y": 1.6
+        }
+      }
+    },
+    {
+      "id": "lcap",
+      "kind": "label",
+      "span": {
+        "line": 93,
+        "col": 1,
+        "byte_start": 4848,
+        "byte_end": 4914
+      },
+      "definition": "label(cap_top, \"capture y[t]\")",
+      "resolved": {
+        "kind": "annotation",
+        "value": {
+          "kind": "label",
+          "anchor": {
+            "kind": "point",
+            "point": {
+              "x": -1.2,
+              "y": 9.4
+            }
+          },
+          "text": {
+            "segments": [
+              {
+                "kind": "plain",
+                "source": "capture y[t]",
+                "span": {
+                  "line": 93,
+                  "col": 30,
+                  "byte_start": 4877,
+                  "byte_end": 4889
+                }
+              }
+            ],
+            "span": {
+              "line": 93,
+              "col": 29,
+              "byte_start": 4876,
+              "byte_end": 4890
+            }
+          },
+          "direction": "compass(nw)",
+          "gap": 0.2
+        }
+      }
+    },
+    {
+      "id": "c0",
+      "kind": "arrow",
+      "span": {
+        "line": 95,
+        "col": 1,
+        "byte_start": 4916,
+        "byte_end": 4968
+      },
+      "definition": "arrow(foot(F0c, cap), f0.w)",
+      "resolved": {
+        "kind": "annotation",
+        "value": {
+          "kind": "arrow",
+          "from": {
+            "kind": "point",
+            "point": {
+              "x": -1.2,
+              "y": 8.8
+            }
+          },
+          "to": {
+            "kind": "point",
+            "point": {
+              "x": 0.0,
+              "y": 8.8
+            }
+          },
+          "head": "forward",
+          "bend": 0.0
+        }
+      }
+    },
+    {
+      "id": "c1",
+      "kind": "arrow",
+      "span": {
+        "line": 96,
+        "col": 1,
+        "byte_start": 4969,
+        "byte_end": 5021
+      },
+      "definition": "arrow(foot(F1c, cap), f1.w)",
+      "resolved": {
+        "kind": "annotation",
+        "value": {
+          "kind": "arrow",
+          "from": {
+            "kind": "point",
+            "point": {
+              "x": -1.2,
+              "y": 7.0
+            }
+          },
+          "to": {
+            "kind": "point",
+            "point": {
+              "x": 3.0,
+              "y": 7.0
+            }
+          },
+          "head": "forward",
+          "bend": 0.0
+        }
+      }
+    },
+    {
+      "id": "c2",
+      "kind": "arrow",
+      "span": {
+        "line": 97,
+        "col": 1,
+        "byte_start": 5022,
+        "byte_end": 5074
+      },
+      "definition": "arrow(foot(F2c, cap), f2.w)",
+      "resolved": {
+        "kind": "annotation",
+        "value": {
+          "kind": "arrow",
+          "from": {
+            "kind": "point",
+            "point": {
+              "x": -1.2,
+              "y": 5.2
+            }
+          },
+          "to": {
+            "kind": "point",
+            "point": {
+              "x": 6.0,
+              "y": 5.2
+            }
+          },
+          "head": "forward",
+          "bend": 0.0
+        }
+      }
+    },
+    {
+      "id": "c3",
+      "kind": "arrow",
+      "span": {
+        "line": 98,
+        "col": 1,
+        "byte_start": 5075,
+        "byte_end": 5127
+      },
+      "definition": "arrow(foot(F3c, cap), f3.w)",
+      "resolved": {
+        "kind": "annotation",
+        "value": {
+          "kind": "arrow",
+          "from": {
+            "kind": "point",
+            "point": {
+              "x": -1.2,
+              "y": 3.4000000000000004
+            }
+          },
+          "to": {
+            "kind": "point",
+            "point": {
+              "x": 9.0,
+              "y": 3.4
+            }
+          },
+          "head": "forward",
+          "bend": 0.0
+        }
+      }
+    },
+    {
+      "id": "c4",
+      "kind": "arrow",
+      "span": {
+        "line": 99,
+        "col": 1,
+        "byte_start": 5128,
+        "byte_end": 5180
+      },
+      "definition": "arrow(foot(F4c, cap), f4.w)",
+      "resolved": {
+        "kind": "annotation",
+        "value": {
+          "kind": "arrow",
+          "from": {
+            "kind": "point",
+            "point": {
+              "x": -1.2,
+              "y": 1.5999999999999996
+            }
+          },
+          "to": {
+            "kind": "point",
+            "point": {
+              "x": 12.0,
+              "y": 1.6
+            }
+          },
+          "head": "forward",
+          "bend": 0.0
+        }
+      }
+    },
+    {
+      "id": "sb0",
+      "kind": "point",
+      "span": {
+        "line": 102,
+        "col": 1,
+        "byte_start": 5248,
+        "byte_end": 5302
+      },
+      "definition": "offset(f2.sw, 0.35, 0.25)",
+      "resolved": {
+        "kind": "point",
+        "x": 6.35,
+        "y": 4.8500000000000005,
+        "mark": "none"
+      }
+    },
+    {
+      "id": "sb1",
+      "kind": "point",
+      "span": {
+        "line": 103,
+        "col": 1,
+        "byte_start": 5303,
+        "byte_end": 5357
+      },
+      "definition": "offset(f2.se, -0.35, 0.25)",
+      "resolved": {
+        "kind": "point",
+        "x": 9.65,
+        "y": 4.8500000000000005,
+        "mark": "none"
+      }
+    },
+    {
+      "id": "coef_base",
+      "kind": "segment",
+      "span": {
+        "line": 104,
+        "col": 1,
+        "byte_start": 5358,
+        "byte_end": 5405
+      },
+      "definition": "seg(sb0, sb1)",
+      "resolved": {
+        "kind": "segment",
+        "start": {
+          "x": 6.35,
+          "y": 4.8500000000000005
+        },
+        "end": {
+          "x": 9.65,
+          "y": 4.8500000000000005
+        }
+      }
+    },
+    {
+      "id": "q1",
+      "kind": "point",
+      "span": {
+        "line": 106,
+        "col": 1,
+        "byte_start": 5407,
+        "byte_end": 5479
+      },
+      "definition": "offset(lerp(sb0, sb1, 0.05), 0, 0.22)",
+      "resolved": {
+        "kind": "point",
+        "x": 6.515,
+        "y": 5.07,
+        "mark": "dot"
+      }
+    },
+    {
+      "id": "st1",
+      "kind": "segment",
+      "span": {
+        "line": 107,
+        "col": 1,
+        "byte_start": 5480,
+        "byte_end": 5532
+      },
+      "definition": "seg(lerp(sb0, sb1, 0.05), q1)",
+      "resolved": {
+        "kind": "segment",
+        "start": {
+          "x": 6.515,
+          "y": 4.8500000000000005
+        },
+        "end": {
+          "x": 6.515,
+          "y": 5.07
+        }
+      }
+    },
+    {
+      "id": "q2",
+      "kind": "point",
+      "span": {
+        "line": 108,
+        "col": 1,
+        "byte_start": 5533,
+        "byte_end": 5605
+      },
+      "definition": "offset(lerp(sb0, sb1, 0.18), 0, 0.30)",
+      "resolved": {
+        "kind": "point",
+        "x": 6.944,
+        "y": 5.15,
+        "mark": "dot"
+      }
+    },
+    {
+      "id": "st2",
+      "kind": "segment",
+      "span": {
+        "line": 109,
+        "col": 1,
+        "byte_start": 5606,
+        "byte_end": 5658
+      },
+      "definition": "seg(lerp(sb0, sb1, 0.18), q2)",
+      "resolved": {
+        "kind": "segment",
+        "start": {
+          "x": 6.944,
+          "y": 4.8500000000000005
+        },
+        "end": {
+          "x": 6.944,
+          "y": 5.15
+        }
+      }
+    },
+    {
+      "id": "q3",
+      "kind": "point",
+      "span": {
+        "line": 110,
+        "col": 1,
+        "byte_start": 5659,
+        "byte_end": 5731
+      },
+      "definition": "offset(lerp(sb0, sb1, 0.32), 0, 0.24)",
+      "resolved": {
+        "kind": "point",
+        "x": 7.406,
+        "y": 5.090000000000001,
+        "mark": "dot"
+      }
+    },
+    {
+      "id": "st3",
+      "kind": "segment",
+      "span": {
+        "line": 111,
+        "col": 1,
+        "byte_start": 5732,
+        "byte_end": 5784
+      },
+      "definition": "seg(lerp(sb0, sb1, 0.32), q3)",
+      "resolved": {
+        "kind": "segment",
+        "start": {
+          "x": 7.406,
+          "y": 4.8500000000000005
+        },
+        "end": {
+          "x": 7.406,
+          "y": 5.090000000000001
+        }
+      }
+    },
+    {
+      "id": "q4",
+      "kind": "point",
+      "span": {
+        "line": 112,
+        "col": 1,
+        "byte_start": 5785,
+        "byte_end": 5857
+      },
+      "definition": "offset(lerp(sb0, sb1, 0.66), 0, 0.28)",
+      "resolved": {
+        "kind": "point",
+        "x": 8.528,
+        "y": 5.130000000000001,
+        "mark": "dot"
+      }
+    },
+    {
+      "id": "st4",
+      "kind": "segment",
+      "span": {
+        "line": 113,
+        "col": 1,
+        "byte_start": 5858,
+        "byte_end": 5910
+      },
+      "definition": "seg(lerp(sb0, sb1, 0.66), q4)",
+      "resolved": {
+        "kind": "segment",
+        "start": {
+          "x": 8.528,
+          "y": 4.8500000000000005
+        },
+        "end": {
+          "x": 8.528,
+          "y": 5.130000000000001
+        }
+      }
+    },
+    {
+      "id": "q5",
+      "kind": "point",
+      "span": {
+        "line": 114,
+        "col": 1,
+        "byte_start": 5911,
+        "byte_end": 5983
+      },
+      "definition": "offset(lerp(sb0, sb1, 0.80), 0, 0.20)",
+      "resolved": {
+        "kind": "point",
+        "x": 8.99,
+        "y": 5.050000000000001,
+        "mark": "dot"
+      }
+    },
+    {
+      "id": "st5",
+      "kind": "segment",
+      "span": {
+        "line": 115,
+        "col": 1,
+        "byte_start": 5984,
+        "byte_end": 6036
+      },
+      "definition": "seg(lerp(sb0, sb1, 0.80), q5)",
+      "resolved": {
+        "kind": "segment",
+        "start": {
+          "x": 8.99,
+          "y": 4.8500000000000005
+        },
+        "end": {
+          "x": 8.99,
+          "y": 5.050000000000001
+        }
+      }
+    },
+    {
+      "id": "q6",
+      "kind": "point",
+      "span": {
+        "line": 116,
+        "col": 1,
+        "byte_start": 6037,
+        "byte_end": 6109
+      },
+      "definition": "offset(lerp(sb0, sb1, 0.93), 0, 0.26)",
+      "resolved": {
+        "kind": "point",
+        "x": 9.419,
+        "y": 5.11,
+        "mark": "dot"
+      }
+    },
+    {
+      "id": "st6",
+      "kind": "segment",
+      "span": {
+        "line": 117,
+        "col": 1,
+        "byte_start": 6110,
+        "byte_end": 6162
+      },
+      "definition": "seg(lerp(sb0, sb1, 0.93), q6)",
+      "resolved": {
+        "kind": "segment",
+        "start": {
+          "x": 9.419,
+          "y": 4.8500000000000005
+        },
+        "end": {
+          "x": 9.419,
+          "y": 5.11
+        }
+      }
+    },
+    {
+      "id": "kb",
+      "kind": "point",
+      "span": {
+        "line": 120,
+        "col": 1,
+        "byte_start": 6206,
+        "byte_end": 6256
+      },
+      "definition": "lerp(sb0, sb1, 0.5)",
+      "resolved": {
+        "kind": "point",
+        "x": 8.0,
+        "y": 4.8500000000000005,
+        "mark": "none"
+      }
+    },
+    {
+      "id": "kstar",
+      "kind": "point",
+      "span": {
+        "line": 121,
+        "col": 1,
+        "byte_start": 6257,
+        "byte_end": 6314
+      },
+      "definition": "offset(kb, 0, 0.45)",
+      "resolved": {
+        "kind": "point",
+        "x": 8.0,
+        "y": 5.300000000000001,
+        "mark": "dot"
+      }
+    },
+    {
+      "id": "stk",
+      "kind": "segment",
+      "span": {
+        "line": 122,
+        "col": 1,
+        "byte_start": 6315,
+        "byte_end": 6357
+      },
+      "definition": "seg(kb, kstar)",
+      "resolved": {
+        "kind": "segment",
+        "start": {
+          "x": 8.0,
+          "y": 4.8500000000000005
+        },
+        "end": {
+          "x": 8.0,
+          "y": 5.300000000000001
+        }
+      }
+    },
+    {
+      "id": "lk",
+      "kind": "label",
+      "span": {
+        "line": 123,
+        "col": 1,
+        "byte_start": 6358,
+        "byte_end": 6428
+      },
+      "definition": "label(kstar, \"local peak k*\")",
+      "resolved": {
+        "kind": "annotation",
+        "value": {
+          "kind": "label",
+          "anchor": {
+            "kind": "point",
+            "point": {
+              "x": 8.0,
+              "y": 5.300000000000001
+            }
+          },
+          "text": {
+            "segments": [
+              {
+                "kind": "plain",
+                "source": "local peak k*",
+                "span": {
+                  "line": 123,
+                  "col": 26,
+                  "byte_start": 6383,
+                  "byte_end": 6396
+                }
+              }
+            ],
+            "span": {
+              "line": 123,
+              "col": 25,
+              "byte_start": 6382,
+              "byte_end": 6397
+            }
+          },
+          "direction": "compass(e)",
+          "gap": 2.2
+        }
+      }
+    },
+    {
+      "id": "ak",
+      "kind": "arrow",
+      "span": {
+        "line": 124,
+        "col": 1,
+        "byte_start": 6429,
+        "byte_end": 6485
+      },
+      "definition": "arrow(lk.center, kstar)",
+      "resolved": {
+        "kind": "annotation",
+        "value": {
+          "kind": "arrow",
+          "from": {
+            "kind": "annotation_center",
+            "id": "lk",
+            "span": {
+              "line": 124,
+              "col": 18,
+              "byte_start": 6446,
+              "byte_end": 6455
+            }
+          },
+          "to": {
+            "kind": "point",
+            "point": {
+              "x": 8.0,
+              "y": 5.300000000000001
+            }
+          },
+          "head": "forward",
+          "bend": 0.0
+        }
+      }
+    },
+    {
+      "id": "o2drop",
+      "kind": "segment",
+      "span": {
+        "line": 127,
+        "col": 1,
+        "byte_start": 6555,
+        "byte_end": 6601
+      },
+      "definition": "seg(f2.sw, t192)",
+      "resolved": {
+        "kind": "segment",
+        "start": {
+          "x": 6.0,
+          "y": 4.6000000000000005
+        },
+        "end": {
+          "x": 6.0,
+          "y": 0.0
+        }
+      }
+    },
+    {
+      "id": "lo2",
+      "kind": "label",
+      "span": {
+        "line": 128,
+        "col": 1,
+        "byte_start": 6602,
+        "byte_end": 6694
+      },
+      "definition": "label(o2drop.midpoint, \"filter offset $O_2$\")",
+      "resolved": {
+        "kind": "annotation",
+        "value": {
+          "kind": "label",
+          "anchor": {
+            "kind": "point",
+            "point": {
+              "x": 6.0,
+              "y": 2.3000000000000003
+            }
+          },
+          "text": {
+            "segments": [
+              {
+                "kind": "plain",
+                "source": "filter offset ",
+                "span": {
+                  "line": 128,
+                  "col": 37,
+                  "byte_start": 6638,
+                  "byte_end": 6652
+                }
+              },
+              {
+                "kind": "tex",
+                "source": "O_2",
+                "span": {
+                  "line": 128,
+                  "col": 51,
+                  "byte_start": 6652,
+                  "byte_end": 6657
+                }
+              },
+              {
+                "kind": "plain",
+                "source": "",
+                "span": {
+                  "line": 128,
+                  "col": 56,
+                  "byte_start": 6657,
+                  "byte_end": 6657
+                }
+              }
+            ],
+            "span": {
+              "line": 128,
+              "col": 36,
+              "byte_start": 6637,
+              "byte_end": 6658
+            }
+          },
+          "direction": "compass(w)",
+          "gap": 0.25
+        }
+      }
+    },
+    {
+      "id": "kdrop",
+      "kind": "point",
+      "span": {
+        "line": 130,
+        "col": 1,
+        "byte_start": 6696,
+        "byte_end": 6749
+      },
+      "definition": "foot(kb, seg(A0, A512))",
+      "resolved": {
+        "kind": "point",
+        "x": 8.0,
+        "y": 0.0,
+        "mark": "none"
+      }
+    },
+    {
+      "id": "kline",
+      "kind": "segment",
+      "span": {
+        "line": 131,
+        "col": 1,
+        "byte_start": 6750,
+        "byte_end": 6794
+      },
+      "definition": "seg(kb, kdrop)",
+      "resolved": {
+        "kind": "segment",
+        "start": {
+          "x": 8.0,
+          "y": 4.8500000000000005
+        },
+        "end": {
+          "x": 8.0,
+          "y": 0.0
+        }
+      }
+    },
+    {
+      "id": "TDc",
+      "kind": "point",
+      "span": {
+        "line": 134,
+        "col": 1,
+        "byte_start": 6862,
+        "byte_end": 6959
+      },
+      "definition": "free ~(8, -1.9)",
+      "resolved": {
+        "kind": "point",
+        "x": 8.0,
+        "y": -1.9,
+        "mark": "none"
+      }
+    },
+    {
+      "id": "td",
+      "kind": "rect",
+      "span": {
+        "line": 135,
+        "col": 1,
+        "byte_start": 6960,
+        "byte_end": 6987
+      },
+      "definition": "rect(TDc, 9.5, 1)",
+      "resolved": {
+        "kind": "rect",
+        "vertices": [
+          {
+            "x": 3.25,
+            "y": -2.4
+          },
+          {
+            "x": 12.75,
+            "y": -2.4
+          },
+          {
+            "x": 12.75,
+            "y": -1.4
+          },
+          {
+            "x": 3.25,
+            "y": -1.4
+          }
+        ]
+      }
+    },
+    {
+      "id": "ltd",
+      "kind": "label",
+      "span": {
+        "line": 136,
+        "col": 1,
+        "byte_start": 6988,
+        "byte_end": 7089
+      },
+      "definition": "label(td.center, \"total delay = filter offset $O_2$ + local peak $k^*$\")",
+      "resolved": {
+        "kind": "annotation",
+        "value": {
+          "kind": "label",
+          "anchor": {
+            "kind": "point",
+            "point": {
+              "x": 8.0,
+              "y": -1.9
+            }
+          },
+          "text": {
+            "segments": [
+              {
+                "kind": "plain",
+                "source": "total delay = filter offset ",
+                "span": {
+                  "line": 136,
+                  "col": 31,
+                  "byte_start": 7018,
+                  "byte_end": 7046
+                }
+              },
+              {
+                "kind": "tex",
+                "source": "O_2",
+                "span": {
+                  "line": 136,
+                  "col": 59,
+                  "byte_start": 7046,
+                  "byte_end": 7051
+                }
+              },
+              {
+                "kind": "plain",
+                "source": " + local peak ",
+                "span": {
+                  "line": 136,
+                  "col": 64,
+                  "byte_start": 7051,
+                  "byte_end": 7065
+                }
+              },
+              {
+                "kind": "tex",
+                "source": "k^*",
+                "span": {
+                  "line": 136,
+                  "col": 78,
+                  "byte_start": 7065,
+                  "byte_end": 7070
+                }
+              },
+              {
+                "kind": "plain",
+                "source": "",
+                "span": {
+                  "line": 136,
+                  "col": 83,
+                  "byte_start": 7070,
+                  "byte_end": 7070
+                }
+              }
+            ],
+            "span": {
+              "line": 136,
+              "col": 30,
+              "byte_start": 7017,
+              "byte_end": 7071
+            }
+          },
+          "direction": "center",
+          "gap": null
+        }
+      }
+    },
+    {
+      "id": "LGc",
+      "kind": "point",
+      "span": {
+        "line": 139,
+        "col": 1,
+        "byte_start": 7159,
+        "byte_end": 7254
+      },
+      "definition": "free ~(16, 8.8)",
+      "resolved": {
+        "kind": "point",
+        "x": 16.0,
+        "y": 8.8,
+        "mark": "none"
+      }
+    },
+    {
+      "id": "lg",
+      "kind": "rect",
+      "span": {
+        "line": 140,
+        "col": 1,
+        "byte_start": 7255,
+        "byte_end": 7297
+      },
+      "definition": "rect(LGc, 0.6, 0.45)",
+      "resolved": {
+        "kind": "rect",
+        "vertices": [
+          {
+            "x": 15.7,
+            "y": 8.575000000000001
+          },
+          {
+            "x": 16.3,
+            "y": 8.575000000000001
+          },
+          {
+            "x": 16.3,
+            "y": 9.025
+          },
+          {
+            "x": 15.7,
+            "y": 9.025
+          }
+        ]
+      }
+    },
+    {
+      "id": "llg",
+      "kind": "label",
+      "span": {
+        "line": 141,
+        "col": 1,
+        "byte_start": 7298,
+        "byte_end": 7360
+      },
+      "definition": "label(lg.e, \"32 ms overlap\")",
+      "resolved": {
+        "kind": "annotation",
+        "value": {
+          "kind": "label",
+          "anchor": {
+            "kind": "point",
+            "point": {
+              "x": 16.3,
+              "y": 8.8
+            }
+          },
+          "text": {
+            "segments": [
+              {
+                "kind": "plain",
+                "source": "32 ms overlap",
+                "span": {
+                  "line": 141,
+                  "col": 26,
+                  "byte_start": 7323,
+                  "byte_end": 7336
+                }
+              }
+            ],
+            "span": {
+              "line": 141,
+              "col": 25,
+              "byte_start": 7322,
+              "byte_end": 7337
+            }
+          },
+          "direction": "compass(e)",
+          "gap": 0.2
+        }
+      }
+    },
+    {
+      "id": "lg1",
+      "kind": "label",
+      "span": {
+        "line": 143,
+        "col": 1,
+        "byte_start": 7362,
+        "byte_end": 7463
+      },
+      "definition": "label(offset(TDc, -3, -1.3), \"coefficient position → delay\")",
+      "resolved": {
+        "kind": "annotation",
+        "value": {
+          "kind": "label",
+          "anchor": {
+            "kind": "point",
+            "point": {
+              "x": 5.0,
+              "y": -3.2
+            }
+          },
+          "text": {
+            "segments": [
+              {
+                "kind": "plain",
+                "source": "coefficient position → delay",
+                "span": {
+                  "line": 143,
+                  "col": 43,
+                  "byte_start": 7404,
+                  "byte_end": 7434
+                }
+              }
+            ],
+            "span": {
+              "line": 143,
+              "col": 42,
+              "byte_start": 7403,
+              "byte_end": 7435
+            }
+          },
+          "direction": "center",
+          "gap": null
+        }
+      }
+    },
+    {
+      "id": "lg2",
+      "kind": "label",
+      "span": {
+        "line": 144,
+        "col": 1,
+        "byte_start": 7464,
+        "byte_end": 7565
+      },
+      "definition": "label(offset(TDc,  4, -1.3), \"coefficient height → echo gain\")",
+      "resolved": {
+        "kind": "annotation",
+        "value": {
+          "kind": "label",
+          "anchor": {
+            "kind": "point",
+            "point": {
+              "x": 12.0,
+              "y": -3.2
+            }
+          },
+          "text": {
+            "segments": [
+              {
+                "kind": "plain",
+                "source": "coefficient height → echo gain",
+                "span": {
+                  "line": 144,
+                  "col": 43,
+                  "byte_start": 7506,
+                  "byte_end": 7538
+                }
+              }
+            ],
+            "span": {
+              "line": 144,
+              "col": 42,
+              "byte_start": 7505,
+              "byte_end": 7539
+            }
+          },
+          "direction": "center",
+          "gap": null
+        }
+      }
+    },
+    {
+      "id": "sub",
+      "kind": "text_block",
+      "span": {
+        "line": 146,
+        "col": 1,
+        "byte_start": 7567,
+        "byte_end": 7692
+      },
+      "definition": "text_block(\"Each filter reads a different, overlapping region of the same render history\")",
+      "resolved": {
+        "kind": "annotation",
+        "value": {
+          "kind": "text_block",
+          "text": {
+            "segments": [
+              {
+                "kind": "plain",
+                "source": "Each filter reads a different, overlapping region of the same render history",
+                "span": {
+                  "line": 146,
+                  "col": 30,
+                  "byte_start": 7596,
+                  "byte_end": 7672
+                }
+              }
+            ],
+            "span": {
+              "line": 146,
+              "col": 29,
+              "byte_start": 7595,
+              "byte_end": 7673
+            }
+          },
+          "placement": "above"
+        }
+      }
+    },
+    {
+      "id": "eq",
+      "kind": "text_block",
+      "span": {
+        "line": 147,
+        "col": 1,
+        "byte_start": 7693,
+        "byte_end": 7797
+      },
+      "definition": "text_block($\\hat{y}[t] = \\textstyle\\sum_n h_n[k]\\, x[t - (O_n + k)]$)",
+      "resolved": {
+        "kind": "annotation",
+        "value": {
+          "kind": "text_block",
+          "text": {
+            "segments": [
+              {
+                "kind": "tex",
+                "source": "\\hat{y}[t] = \\textstyle\\sum_n h_n[k]\\, x[t - (O_n + k)]",
+                "span": {
+                  "line": 147,
+                  "col": 29,
+                  "byte_start": 7721,
+                  "byte_end": 7778
+                }
+              }
+            ],
+            "span": {
+              "line": 147,
+              "col": 29,
+              "byte_start": 7721,
+              "byte_end": 7778
+            }
+          },
+          "placement": "below"
+        }
+      }
+    }
+  ],
+  "solve": {
+    "unknowns": 20,
+    "equations": 18,
+    "rank": 18,
+    "attempts": 0,
+    "accepted_steps": 0,
+    "max_normalized_residual": 3.1560400103842584e-17,
+    "final_damping": 0.001,
+    "dof": {
+      "global_remaining": 2,
+      "objects": [
+        {
+          "id": "A0",
+          "span": {
+            "line": 25,
+            "col": 1,
+            "byte_start": 1012,
+            "byte_end": 1108
+          },
+          "hint_settled_dofs": 2,
+          "suggestion": "add a relation if unintended, e.g. on(A0, …) or vdist(…) == …"
+        },
+        {
+          "id": "A512",
+          "span": {
+            "line": 26,
+            "col": 1,
+            "byte_start": 1109,
+            "byte_end": 1205
+          },
+          "hint_settled_dofs": 2,
+          "suggestion": "add a relation if unintended, e.g. on(A512, …) or vdist(…) == …"
+        },
+        {
+          "id": "F0c",
+          "span": {
+            "line": 54,
+            "col": 1,
+            "byte_start": 2550,
+            "byte_end": 2651
+          },
+          "hint_settled_dofs": 2,
+          "suggestion": "add a relation if unintended, e.g. on(F0c, …) or vdist(…) == …"
+        },
+        {
+          "id": "F1c",
+          "span": {
+            "line": 59,
+            "col": 1,
+            "byte_start": 2843,
+            "byte_end": 2944
+          },
+          "hint_settled_dofs": 2,
+          "suggestion": "add a relation if unintended, e.g. on(F1c, …) or vdist(…) == …"
+        },
+        {
+          "id": "F2c",
+          "span": {
+            "line": 64,
+            "col": 1,
+            "byte_start": 3137,
+            "byte_end": 3240
+          },
+          "hint_settled_dofs": 2,
+          "suggestion": "add a relation if unintended, e.g. on(F2c, …) or vdist(…) == …"
+        },
+        {
+          "id": "F3c",
+          "span": {
+            "line": 69,
+            "col": 1,
+            "byte_start": 3434,
+            "byte_end": 3538
+          },
+          "hint_settled_dofs": 2,
+          "suggestion": "add a relation if unintended, e.g. on(F3c, …) or vdist(…) == …"
+        },
+        {
+          "id": "F4c",
+          "span": {
+            "line": 74,
+            "col": 1,
+            "byte_start": 3732,
+            "byte_end": 3836
+          },
+          "hint_settled_dofs": 2,
+          "suggestion": "add a relation if unintended, e.g. on(F4c, …) or vdist(…) == …"
+        },
+        {
+          "id": "cap_bot",
+          "span": {
+            "line": 91,
+            "col": 1,
+            "byte_start": 4699,
+            "byte_end": 4811
+          },
+          "hint_settled_dofs": 2,
+          "suggestion": "add a relation if unintended, e.g. on(cap_bot, …) or vdist(…) == …"
+        },
+        {
+          "id": "TDc",
+          "span": {
+            "line": 134,
+            "col": 1,
+            "byte_start": 6862,
+            "byte_end": 6959
+          },
+          "hint_settled_dofs": 2,
+          "suggestion": "add a relation if unintended, e.g. on(TDc, …) or vdist(…) == …"
+        },
+        {
+          "id": "LGc",
+          "span": {
+            "line": 139,
+            "col": 1,
+            "byte_start": 7159,
+            "byte_end": 7254
+          },
+          "hint_settled_dofs": 2,
+          "suggestion": "add a relation if unintended, e.g. on(LGc, …) or vdist(…) == …"
+        }
+      ]
+    },
+    "branch_resolutions": [],
+    "hint_displacements": [
+      {
+        "id": "A0",
+        "span": {
+          "line": 25,
+          "col": 1,
+          "byte_start": 1012,
+          "byte_end": 1108
+        },
+        "source_components": [
+          0.0,
+          0.0
+        ],
+        "normalized_components": [
+          0.0,
+          0.0
+        ],
+        "max_normalized_component": 0.0,
+        "hint_far": false,
+        "hint_far_threshold": 0.25
+      },
+      {
+        "id": "A512",
+        "span": {
+          "line": 26,
+          "col": 1,
+          "byte_start": 1109,
+          "byte_end": 1205
+        },
+        "source_components": [
+          0.0,
+          0.0
+        ],
+        "normalized_components": [
+          0.0,
+          0.0
+        ],
+        "max_normalized_component": 0.0,
+        "hint_far": false,
+        "hint_far_threshold": 0.25
+      },
+      {
+        "id": "F0c",
+        "span": {
+          "line": 54,
+          "col": 1,
+          "byte_start": 2550,
+          "byte_end": 2651
+        },
+        "source_components": [
+          0.0,
+          0.0
+        ],
+        "normalized_components": [
+          0.0,
+          0.0
+        ],
+        "max_normalized_component": 0.0,
+        "hint_far": false,
+        "hint_far_threshold": 0.25
+      },
+      {
+        "id": "F1c",
+        "span": {
+          "line": 59,
+          "col": 1,
+          "byte_start": 2843,
+          "byte_end": 2944
+        },
+        "source_components": [
+          0.0,
+          0.0
+        ],
+        "normalized_components": [
+          0.0,
+          0.0
+        ],
+        "max_normalized_component": 0.0,
+        "hint_far": false,
+        "hint_far_threshold": 0.25
+      },
+      {
+        "id": "F2c",
+        "span": {
+          "line": 64,
+          "col": 1,
+          "byte_start": 3137,
+          "byte_end": 3240
+        },
+        "source_components": [
+          0.0,
+          0.0
+        ],
+        "normalized_components": [
+          0.0,
+          0.0
+        ],
+        "max_normalized_component": 0.0,
+        "hint_far": false,
+        "hint_far_threshold": 0.25
+      },
+      {
+        "id": "F3c",
+        "span": {
+          "line": 69,
+          "col": 1,
+          "byte_start": 3434,
+          "byte_end": 3538
+        },
+        "source_components": [
+          0.0,
+          0.0
+        ],
+        "normalized_components": [
+          0.0,
+          0.0
+        ],
+        "max_normalized_component": 0.0,
+        "hint_far": false,
+        "hint_far_threshold": 0.25
+      },
+      {
+        "id": "F4c",
+        "span": {
+          "line": 74,
+          "col": 1,
+          "byte_start": 3732,
+          "byte_end": 3836
+        },
+        "source_components": [
+          0.0,
+          0.0
+        ],
+        "normalized_components": [
+          0.0,
+          0.0
+        ],
+        "max_normalized_component": 0.0,
+        "hint_far": false,
+        "hint_far_threshold": 0.25
+      },
+      {
+        "id": "cap_bot",
+        "span": {
+          "line": 91,
+          "col": 1,
+          "byte_start": 4699,
+          "byte_end": 4811
+        },
+        "source_components": [
+          0.0,
+          0.0
+        ],
+        "normalized_components": [
+          0.0,
+          0.0
+        ],
+        "max_normalized_component": 0.0,
+        "hint_far": false,
+        "hint_far_threshold": 0.25
+      },
+      {
+        "id": "TDc",
+        "span": {
+          "line": 134,
+          "col": 1,
+          "byte_start": 6862,
+          "byte_end": 6959
+        },
+        "source_components": [
+          0.0,
+          0.0
+        ],
+        "normalized_components": [
+          0.0,
+          0.0
+        ],
+        "max_normalized_component": 0.0,
+        "hint_far": false,
+        "hint_far_threshold": 0.25
+      },
+      {
+        "id": "LGc",
+        "span": {
+          "line": 139,
+          "col": 1,
+          "byte_start": 7159,
+          "byte_end": 7254
+        },
+        "source_components": [
+          0.0,
+          0.0
+        ],
+        "normalized_components": [
+          0.0,
+          0.0
+        ],
+        "max_normalized_component": 0.0,
+        "hint_far": false,
+        "hint_far_threshold": 0.25
+      }
+    ],
+    "redundant_relations": [],
+    "relation_residuals": [
+      {
+        "span": {
+          "line": 26,
+          "col": 36,
+          "byte_start": 1144,
+          "byte_end": 1164
+        },
+        "max_normalized_residual": 0.0,
+        "implicated_unknowns": [
+          "A0",
+          "A512"
+        ]
+      },
+      {
+        "span": {
+          "line": 26,
+          "col": 58,
+          "byte_start": 1166,
+          "byte_end": 1187
+        },
+        "max_normalized_residual": 0.0,
+        "implicated_unknowns": [
+          "A0",
+          "A512"
+        ]
+      },
+      {
+        "span": {
+          "line": 54,
+          "col": 36,
+          "byte_start": 2585,
+          "byte_end": 2609
+        },
+        "max_normalized_residual": 0.0,
+        "implicated_unknowns": [
+          "A0",
+          "F0c"
+        ]
+      },
+      {
+        "span": {
+          "line": 54,
+          "col": 62,
+          "byte_start": 2611,
+          "byte_end": 2632
+        },
+        "max_normalized_residual": 0.0,
+        "implicated_unknowns": [
+          "A0",
+          "F0c"
+        ]
+      },
+      {
+        "span": {
+          "line": 59,
+          "col": 34,
+          "byte_start": 2876,
+          "byte_end": 2900
+        },
+        "max_normalized_residual": 0.0,
+        "implicated_unknowns": [
+          "A0",
+          "A512",
+          "F1c"
+        ]
+      },
+      {
+        "span": {
+          "line": 59,
+          "col": 60,
+          "byte_start": 2902,
+          "byte_end": 2926
+        },
+        "max_normalized_residual": 3.1560400103842584e-17,
+        "implicated_unknowns": [
+          "F0c",
+          "F1c"
+        ]
+      },
+      {
+        "span": {
+          "line": 64,
+          "col": 36,
+          "byte_start": 3172,
+          "byte_end": 3196
+        },
+        "max_normalized_residual": 0.0,
+        "implicated_unknowns": [
+          "A0",
+          "A512",
+          "F2c"
+        ]
+      },
+      {
+        "span": {
+          "line": 64,
+          "col": 62,
+          "byte_start": 3198,
+          "byte_end": 3222
+        },
+        "max_normalized_residual": 1.0520133367947528e-17,
+        "implicated_unknowns": [
+          "F1c",
+          "F2c"
+        ]
+      },
+      {
+        "span": {
+          "line": 69,
+          "col": 37,
+          "byte_start": 3470,
+          "byte_end": 3494
+        },
+        "max_normalized_residual": 0.0,
+        "implicated_unknowns": [
+          "A0",
+          "A512",
+          "F3c"
+        ]
+      },
+      {
+        "span": {
+          "line": 69,
+          "col": 63,
+          "byte_start": 3496,
+          "byte_end": 3520
+        },
+        "max_normalized_residual": 1.0520133367947528e-17,
+        "implicated_unknowns": [
+          "F2c",
+          "F3c"
+        ]
+      },
+      {
+        "span": {
+          "line": 74,
+          "col": 37,
+          "byte_start": 3768,
+          "byte_end": 3792
+        },
+        "max_normalized_residual": 0.0,
+        "implicated_unknowns": [
+          "A0",
+          "A512",
+          "F4c"
+        ]
+      },
+      {
+        "span": {
+          "line": 74,
+          "col": 63,
+          "byte_start": 3794,
+          "byte_end": 3818
+        },
+        "max_normalized_residual": 1.0520133367947528e-17,
+        "implicated_unknowns": [
+          "F3c",
+          "F4c"
+        ]
+      },
+      {
+        "span": {
+          "line": 91,
+          "col": 43,
+          "byte_start": 4741,
+          "byte_end": 4767
+        },
+        "max_normalized_residual": 0.0,
+        "implicated_unknowns": [
+          "F0c",
+          "cap_bot"
+        ]
+      },
+      {
+        "span": {
+          "line": 91,
+          "col": 71,
+          "byte_start": 4769,
+          "byte_end": 4793
+        },
+        "max_normalized_residual": 0.0,
+        "implicated_unknowns": [
+          "F4c",
+          "cap_bot"
+        ]
+      },
+      {
+        "span": {
+          "line": 134,
+          "col": 37,
+          "byte_start": 6898,
+          "byte_end": 6918
+        },
+        "max_normalized_residual": 0.0,
+        "implicated_unknowns": [
+          "A0",
+          "A512",
+          "F2c",
+          "TDc"
+        ]
+      },
+      {
+        "span": {
+          "line": 134,
+          "col": 59,
+          "byte_start": 6920,
+          "byte_end": 6941
+        },
+        "max_normalized_residual": 0.0,
+        "implicated_unknowns": [
+          "A0",
+          "TDc"
+        ]
+      },
+      {
+        "span": {
+          "line": 139,
+          "col": 37,
+          "byte_start": 7195,
+          "byte_end": 7215
+        },
+        "max_normalized_residual": 0.0,
+        "implicated_unknowns": [
+          "F0c",
+          "LGc"
+        ]
+      },
+      {
+        "span": {
+          "line": 139,
+          "col": 59,
+          "byte_start": 7217,
+          "byte_end": 7236
+        },
+        "max_normalized_residual": 0.0,
+        "implicated_unknowns": [
+          "A512",
+          "LGc"
+        ]
+      }
+    ]
+  }
+}

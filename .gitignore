@@ -1,4 +1,4 @@
 /target/
 *.locus.svg
 *.locus.png
-
+*.pending-snap
