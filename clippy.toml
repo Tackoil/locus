@@ -3,3 +3,32 @@ disallowed-types = [
   { path = "std::collections::HashSet", reason = "iteration order can make output nondeterministic; use IndexSet or BTreeSet" },
 ]
 
+# Normative geometry and solver code must use the workspace-pinned `libm` crate.
+disallowed-methods = [
+  { path = "f64::sqrt", reason = "use pinned libm::sqrt for cross-platform determinism" },
+  { path = "f64::cbrt", reason = "use pinned libm::cbrt for cross-platform determinism" },
+  { path = "f64::hypot", reason = "use pinned libm::hypot for cross-platform determinism" },
+  { path = "f64::sin", reason = "use pinned libm::sin for cross-platform determinism" },
+  { path = "f64::cos", reason = "use pinned libm::cos for cross-platform determinism" },
+  { path = "f64::tan", reason = "use pinned libm::tan for cross-platform determinism" },
+  { path = "f64::asin", reason = "use pinned libm::asin for cross-platform determinism" },
+  { path = "f64::acos", reason = "use pinned libm::acos for cross-platform determinism" },
+  { path = "f64::atan", reason = "use pinned libm::atan for cross-platform determinism" },
+  { path = "f64::atan2", reason = "use pinned libm::atan2 for cross-platform determinism" },
+  { path = "f64::sin_cos", reason = "use separate pinned libm::sin/libm::cos calls" },
+  { path = "f64::exp", reason = "use pinned libm::exp for cross-platform determinism" },
+  { path = "f64::exp2", reason = "use pinned libm::exp2 for cross-platform determinism" },
+  { path = "f64::ln", reason = "use pinned libm::log for cross-platform determinism" },
+  { path = "f64::log", reason = "use pinned libm functions for cross-platform determinism" },
+  { path = "f64::log2", reason = "use pinned libm::log2 for cross-platform determinism" },
+  { path = "f64::log10", reason = "use pinned libm::log10 for cross-platform determinism" },
+  { path = "f64::powf", reason = "use pinned libm::pow for cross-platform determinism" },
+  { path = "f64::powi", reason = "use pinned libm::pow for cross-platform determinism" },
+  { path = "f64::sinh", reason = "use pinned libm::sinh for cross-platform determinism" },
+  { path = "f64::cosh", reason = "use pinned libm::cosh for cross-platform determinism" },
+  { path = "f64::tanh", reason = "use pinned libm::tanh for cross-platform determinism" },
+  { path = "f64::asinh", reason = "use pinned libm::asinh for cross-platform determinism" },
+  { path = "f64::acosh", reason = "use pinned libm::acosh for cross-platform determinism" },
+  { path = "f64::atanh", reason = "use pinned libm::atanh for cross-platform determinism" },
+  { path = "f64::mul_add", reason = "the normative path forbids fused multiply-add contraction" },
+]

@@ -21,6 +21,7 @@ ryu = "1.0"
 insta = "1.43"
 assert_cmd = "2.0"
 proptest = "1.7"
+libm = "=0.2.15"
 
 [workspace.lints.rust]
 missing_docs = "warn"
@@ -37,4 +38,3 @@ unwrap_used = "deny"
 [profile.release]
 lto = "thin"
 strip = "symbols"
-

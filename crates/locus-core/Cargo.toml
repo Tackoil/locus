@@ -10,8 +10,11 @@ readme.workspace = true
 publish = false
 
 [dependencies]
-locus-syntax = { path = "../locus-syntax" }
+libm.workspace = true
+thiserror.workspace = true
+
+[dev-dependencies]
+proptest.workspace = true
 
 [lints]
 workspace = true
-
