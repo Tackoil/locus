@@ -9,6 +9,15 @@ license.workspace = true
 readme.workspace = true
 publish = false
 
+[features]
+default = []
+rex = []
+
+[dependencies]
+rustybuzz = "=0.20.1"
+ryu.workspace = true
+thiserror.workspace = true
+ttf-parser = "=0.25.1"
+
 [lints]
 workspace = true
-
