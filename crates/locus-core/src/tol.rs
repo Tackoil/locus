@@ -40,7 +40,8 @@ impl Tolerance {
             positive_lengths
                 .iter()
                 .copied()
-                .find(|value| value.is_finite() && *value > 0.0)
+                .filter(|value| value.is_finite() && *value > 0.0)
+                .max_by(f64::total_cmp)
                 .unwrap_or(1.0)
         };
         Self {
@@ -127,6 +128,18 @@ impl Tolerance {
             self.diameter * self.diameter,
             CONSTRUCTION_EPSILON,
         )
+    }
+
+    /// Tests a constructor's dimensionless scalar threshold (`1e-12`).
+    #[must_use]
+    pub fn construction_scalar_zero(self, residual: f64) -> bool {
+        normalized_zero(residual, 1.0, CONSTRUCTION_EPSILON)
+    }
+
+    /// Tests a constructor's angular threshold (`1e-12` radians).
+    #[must_use]
+    pub fn construction_angle_zero(self, residual: f64) -> bool {
+        normalized_zero(residual, 1.0, CONSTRUCTION_EPSILON)
     }
 
     /// Tests whether two nonzero directions are parallel using `abs(sin(theta))`.
@@ -239,10 +252,10 @@ mod tests {
     }
 
     #[test]
-    fn zero_bbox_uses_first_positive_fallback() {
+    fn zero_bbox_uses_largest_positive_fallback() {
         let bbox = BBox::from_points([Point::new(2.0, 2.0)]).expect("finite bbox");
         let tolerance = Tolerance::from_bbox_with_fallbacks(&bbox, &[0.0, 7.0, 9.0]);
-        assert_eq!(tolerance.diameter(), 7.0);
+        assert_eq!(tolerance.diameter(), 9.0);
     }
 
     #[test]

@@ -116,10 +116,15 @@ pub(crate) fn signed_area_vertices(vertices: &[Point]) -> f64 {
 pub(crate) fn normalize_angle(angle: f64) -> f64 {
     let tau = 2.0 * core::f64::consts::PI;
     let reduced = angle % tau;
-    if reduced < 0.0 {
+    let normalized = if reduced < 0.0 {
         reduced + tau
     } else {
         reduced
+    };
+    if normalized >= tau || normalized == 0.0 {
+        0.0
+    } else {
+        normalized
     }
 }
 
@@ -143,6 +148,14 @@ mod tests {
         let direction =
             dir_angle(Point::new(0.0, 0.0), Point::new(0.0, 2.0), tol).expect("nonzero direction");
         assert!(tol.angle_zero(direction - core::f64::consts::FRAC_PI_2));
+    }
+
+    #[test]
+    fn normalized_angles_are_strictly_below_one_turn() {
+        let tau = 2.0 * core::f64::consts::PI;
+        assert_eq!(normalize_angle(tau), 0.0);
+        assert_eq!(normalize_angle(-f64::MIN_POSITIVE), 0.0);
+        assert!(normalize_angle(-0.25) < tau);
     }
 
     #[test]

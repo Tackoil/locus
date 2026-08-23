@@ -10,10 +10,13 @@ readme.workspace = true
 publish = false
 
 [dependencies]
+indexmap.workspace = true
 libm.workspace = true
+locus-syntax = { path = "../locus-syntax" }
 thiserror.workspace = true
 
 [dev-dependencies]
+insta.workspace = true
 proptest.workspace = true
 
 [lints]

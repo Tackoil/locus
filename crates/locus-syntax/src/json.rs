@@ -183,6 +183,12 @@ pub fn to_interchange(file: &File) -> Interchange {
     output
 }
 
+/// Returns inferred numeric dimensions keyed by each expression's UTF-8 byte range.
+#[must_use]
+pub fn inferred_expression_dimensions(file: &File) -> BTreeMap<(usize, usize), Dimension> {
+    Dimensions::infer(file).expression_dimensions()
+}
+
 /// Serializes interchange JSON without insignificant whitespace.
 ///
 /// # Errors
@@ -1015,6 +1021,13 @@ impl Dimensions {
         self.exprs
             .get(&key)
             .and_then(|variable| self.known(*variable))
+    }
+
+    fn expression_dimensions(&self) -> BTreeMap<ExprKey, Dimension> {
+        self.exprs
+            .iter()
+            .filter_map(|(key, variable)| self.known(*variable).map(|dimension| (*key, dimension)))
+            .collect()
     }
 }
 
