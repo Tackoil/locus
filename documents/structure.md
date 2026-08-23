@@ -14,12 +14,14 @@ A Cargo workspace with focused crates along the natural seams — syntax, semant
 locus/
 ├── Cargo.toml                     # [workspace] members, shared deps, lints
 ├── rust-toolchain.toml            # pin toolchain for reproducible builds
+├── documents/
+│   ├── specification.md           # the normative v0.3 relational spec
+│   └── structure.md               # this document
 ├── spec/
-│   ├── locus-spec-v0.2.md         # the normative spec (what we drafted)
-│   └── grammar.ebnf               # extracted machine-readable grammar
+│   └── test/                      # *.locus stress-test figures (format version 2)
 ├── crates/
 │   ├── locus-syntax/              # lexer, parser, AST, formatter, spans
-│   ├── locus-core/                # geometry kernel, evaluator, inspect/assert
+│   ├── locus-core/                # geometry kernel, constraint solver, evaluator, inspect/assert
 │   ├── locus-layout/              # label placement, TeX box measurement
 │   ├── locus-render/              # SVG / TikZ backends
 │   ├── locus-tex/                 # TeX fragment → measured SVG box
@@ -117,8 +119,9 @@ locus-core/src/
 
 Key decisions:
 
-- **`f64` everywhere, no exact arithmetic in v0.2.** Rationals/symbolic angles were considered in the earlier draft; for the spec's tolerance model (relative epsilon) doubles are sufficient and vastly simpler. The `tol.rs` module is the *single* place tolerance logic lives — never inline epsilons.
-- **Determinism discipline (normative per spec §5.4):** use `IndexMap` / `BTreeMap` only — **never `HashMap` iteration** anywhere that affects output. Branch ordering rules live in `intersect.rs` next to the intersection math, with unit tests per type-pair.
+- **`f64` everywhere, no exact arithmetic.** Rationals/symbolic angles were considered in the earlier draft; for the spec's tolerance model (relative epsilon) doubles are sufficient and vastly simpler. The `tol.rs` module is the *single* place tolerance logic lives — never inline epsilons.
+- **The relational solver (spec §7) lives here**, in a `solve/` module: Levenberg–Marquardt with the fixed schedule from the spec, Jacobian-rank DOF accounting, and the under/over-constraint reporters. Math functions come from the pinned `libm` crate — never system libm — so solves are bit-identical across platforms (spec §7.6).
+- **Determinism discipline (normative per spec §7.6):** use `IndexMap` / `BTreeMap` only — **never `HashMap` iteration** anywhere that affects output. Unknown and equation ordering is file order; branch ordering rules for explicit `k` live in `intersect.rs` next to the intersection math, with unit tests per type-pair.
 - **`Value` enum for expressions**, with `Angle` as a distinct variant from `Scalar` — this is how the "mandatory `deg`/`rad`" rule is enforced at evaluation, not just parse time (e.g. `rotate(P, O, 2 * 30deg)` type-checks; `rotate(P, O, 60)` fails).
 - `inspect.rs` implements the spec's incidence detection (tangency, on-ness, ratio detection along shared lines) — this is the agent's eyes, treat it as a first-class module with its own fixture tests, not an afterthought.
 
@@ -149,7 +152,7 @@ locus-layout/src/
 └── report.rs        # residual collisions → diagnostics for inspect
 ```
 
-Small on purpose. Takes `ResolvedScene` + measured text boxes, returns `LayoutScene` (every annotation gets a final box + leader info). No solver dependency in v0.2 — the candidate/scoring heuristic per spec §6.1. If a Cassowary-ish layer ever arrives, it slots in here without touching `locus-core`.
+Small on purpose. Takes `ResolvedScene` + measured text boxes, returns `LayoutScene` (every annotation gets a final box + leader info). No solver dependency — label placement stays the candidate/scoring heuristic per spec §8.1. The geometric constraint solver is `locus-core`'s (spec §7); layout runs strictly after it and must never feed back into geometry.
 
 ### 2.4 `locus-tex` — TeX measurement & rendering
 
@@ -164,7 +167,7 @@ pub trait TexEngine {
 
 Implementation options, in order of preference:
 
-1. **`ReX`** (Rust TeX math renderer) — pure Rust, renders to SVG with real font metrics. Covers the KaTeX-subset ambition for v0.2; its supported-command list *becomes* your spec Appendix whitelist.
+1. **`ReX`** (Rust TeX math renderer) — pure Rust, renders to SVG with real font metrics. Covers the spec's KaTeX-subset ambition; its supported-command list *becomes* your spec Appendix whitelist.
 2. Fallback feature flag: shell out to a bundled KaTeX via Node/QuickJS — only if ReX's coverage proves insufficient.
 3. A `plaintext` engine for `label(A, "A")` non-TeX labels — just font metrics via `rustybuzz`/`ttf-parser`.
 
@@ -195,10 +198,10 @@ locus-cli/src/
 │   ├── describe.rs  inspect.rs  check.rs
 │   ├── fmt.rs   render.rs
 ├── output.rs        # human (miette-style, source-annotated) vs --json
-└── exit.rs          # ExitCode mapping: 0/1/2/3 per spec §7.2
+└── exit.rs          # ExitCode mapping: 0/1/2/3 per spec §9.2
 ```
 
-- **`clap`** (derive) for args; **`miette`** for the human diagnostic rendering (source snippet + caret + suggestion — exactly the spec §5.3 format, nearly free).
+- **`clap`** (derive) for args; **`miette`** for the human diagnostic rendering (source snippet + caret + suggestion — exactly the spec §7.5 format, nearly free).
 - `output.rs` owns the human/JSON dual-format rule: every command's result is a `Serialize` struct first, then either serialized (`--json`, to stdout) or pretty-printed. Never format prose ad-hoc inside commands — this keeps agent output stable.
 - Each subcommand is a thin function: parse → eval → (layout → render) → report. All logic lives in library crates, so the CLI stays testable end-to-end via `assert_cmd`.
 
@@ -272,10 +275,11 @@ Error strategy: `thiserror` enums per crate (`SyntaxError`, `ConstructError`, `L
 | Lexer/parser | unit tests + `proptest` round-trip: `parse(fmt(parse(x))) == parse(x)` |
 | Formatter | idempotence: `fmt(fmt(x)) == fmt(x)` |
 | Geometry kernel | unit tests per constructor with known-answer figures; branch-ordering tests per intersect type-pair |
+| Solver | known-answer relational fixtures (tangency, alignment, mixed); DOF-accounting tests (under/over/conflicting); hint-branch-selection tests (same relations, different hints → different documented branches) |
 | Determinism | run full pipeline twice on every fixture, assert byte-equal SVG; CI runs on Linux+macOS to catch platform float drift early |
 | Golden files | `fixtures/figures/*.locus` → `insta` snapshots of `describe --json`, `inspect --json`, and rendered SVG |
 | Error quality | `fixtures/errors/*.locus` → snapshot the *diagnostics* (error UX is a feature; test it like one) |
-| CLI | `assert_cmd`: exit codes 0/1/2/3, stdin `add` flow, the full agent loop from spec §7.5 |
+| CLI | `assert_cmd`: exit codes 0/1/2/3, stdin `add` flow, the full agent loop from spec §9.5 |
 | Language server | in-memory JSON-RPC transcript tests for initialization, edits, diagnostics, completion, navigation, formatting, rename, shutdown, stale-version suppression, and UTF-16/byte-span edge cases |
 
 The two stress-test figures we discussed (tangent circles, angle bisector with ratio ticks) go straight into `fixtures/figures/` as the first golden tests — spec validation and regression suite in one.

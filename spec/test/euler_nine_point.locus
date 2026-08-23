@@ -1,0 +1,62 @@
+locus 2
+
+meta {
+  title "Euler line and the nine-point circle"
+  note  "Almost entirely derived-tier: construct when you can, relate when you must"
+}
+
+style textbook
+
+// ---- objects ----------------------------------------------
+// Generic-position triangle: hint-settled by design.
+point A = free ~(0, 3.5)
+point B = free ~(-2, 0)
+point C = free ~(4.5, 0)
+
+polygon tri = polygon(A, B, C)
+
+point O = circumcenter(A, B, C)
+point G = centroid(A, B, C)
+point H = orthocenter(A, B, C)
+
+circle circ  = circumcircle(A, B, C)     [auxiliary]
+line   euler = line(O, H)                [highlight]
+
+// side midpoints
+point M_a = midpoint(B, C)
+point M_b = midpoint(A, C)
+point M_c = midpoint(A, B)
+
+// altitude feet
+point H_a = foot(A, line(B, C))
+point H_b = foot(B, line(A, C))
+point H_c = foot(C, line(A, B))
+
+// Euler points (midpoints of vertex-to-orthocenter)
+point E_a = midpoint(A, H)
+point E_b = midpoint(B, H)
+point E_c = midpoint(C, H)
+
+circle nine = circumcircle(M_a, M_b, M_c)   [highlight]
+point  N    = center(nine)
+
+// bonus: reflection of H over BC lies on the circumcircle
+point H' = reflect(H, line(B, C))           [construction]
+
+// ---- annotation ------------------------------------------
+label lO = label(O, $O$)
+label lG = label(G, $G$)
+label lH = label(H, $H$)
+label lN = label(N, $N$)  { dir: NE }
+label lA = label(A, $A$)
+label lB = label(B, $B$)
+label lC = label(C, $C$)
+
+// ---- intent ----------------------------------------------
+assert collinear(O, G, H)
+assert collinear(O, N, H)
+assert ratio(dist(H, G), dist(G, O)) == 2
+assert coincident(N, midpoint(O, H))           // was finding F4 — now a predicate
+assert radius(nine) == radius(circ) / 2
+assert concyclic(M_a, M_b, M_c, H_a, H_b, H_c, E_a, E_b, E_c)
+assert on(H', circ)
