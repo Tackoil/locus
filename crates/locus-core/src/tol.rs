@@ -20,6 +20,12 @@ pub(crate) const JACOBI_SKIP_FACTOR: f64 = 3.552_713_678_800_501e-15;
 /// Normative normalized component threshold for `hint_far`.
 pub(crate) const HINT_FAR_THRESHOLD: f64 = 0.25;
 
+/// Normalized separation below which distinct named points are visually crowded.
+const CROWDING_FACTOR: f64 = 0.02;
+
+/// Largest integer considered when describing a detected line ratio.
+const MAX_DETECTED_RATIO_TERM: u32 = 12;
+
 /// A normalized tolerance together with the scene characteristic length.
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Tolerance {
@@ -160,6 +166,12 @@ impl Tolerance {
         normalized_direction_cross(lhs, rhs) <= self.epsilon
     }
 
+    /// Tests whether two nonzero directions are perpendicular using `abs(cos(theta))`.
+    #[must_use]
+    pub fn directions_perpendicular(self, lhs: Vec2, rhs: Vec2) -> bool {
+        normalized_direction_dot(lhs, rhs) <= self.epsilon
+    }
+
     /// Tests direction parallelism at the constructor threshold (`1e-12`).
     #[must_use]
     pub fn construction_directions_parallel(self, lhs: Vec2, rhs: Vec2) -> bool {
@@ -207,6 +219,52 @@ impl Tolerance {
         value >= -self.epsilon * scale
     }
 
+    /// Tests the tolerance-shrunk open interval required by strict `between`.
+    #[must_use]
+    pub fn parameter_strictly_inside_unit(self, value: f64) -> bool {
+        value > self.epsilon && value < 1.0 - self.epsilon
+    }
+
+    /// Tests whether a length margin is strictly positive beyond the tolerance dead band.
+    #[must_use]
+    pub fn length_strictly_positive(self, margin: f64) -> bool {
+        margin / self.diameter > self.epsilon
+    }
+
+    /// Tests whether `inner` is contained in `outer`, including tolerance at each edge.
+    #[must_use]
+    pub fn bbox_contains(self, outer: BBox, inner: BBox) -> bool {
+        self.length_nonnegative(inner.min.x - outer.min.x)
+            && self.length_nonnegative(inner.min.y - outer.min.y)
+            && self.length_nonnegative(outer.max.x - inner.max.x)
+            && self.length_nonnegative(outer.max.y - inner.max.y)
+    }
+
+    /// Tests whether two points are close enough to merit a visual-crowding diagnostic.
+    #[must_use]
+    pub fn points_crowded(self, lhs: crate::geom::Point, rhs: crate::geom::Point) -> bool {
+        normalized_length(measure_distance(lhs, rhs), self.diameter) <= CROWDING_FACTOR
+    }
+
+    /// Detects a small positive integer ratio at incidence tolerance.
+    #[must_use]
+    pub fn small_integer_ratio(self, lhs: f64, rhs: f64) -> Option<(u32, u32)> {
+        if !lhs.is_finite() || !rhs.is_finite() || lhs <= 0.0 || rhs <= 0.0 {
+            return None;
+        }
+        let ratio = lhs / rhs;
+        for denominator in 1..=MAX_DETECTED_RATIO_TERM {
+            for numerator in 1..=MAX_DETECTED_RATIO_TERM {
+                let candidate = f64::from(numerator) / f64::from(denominator);
+                if self.scalar_zero(ratio - candidate, ratio, candidate) {
+                    let divisor = greatest_common_divisor(numerator, denominator);
+                    return Some((numerator / divisor, denominator / divisor));
+                }
+            }
+        }
+        None
+    }
+
     /// Tests point equality using independent normalized coordinate residuals.
     #[must_use]
     pub fn points_eq(self, lhs: crate::geom::Point, rhs: crate::geom::Point) -> bool {
@@ -217,6 +275,10 @@ impl Tolerance {
     #[must_use]
     pub fn construction_points_eq(self, lhs: crate::geom::Point, rhs: crate::geom::Point) -> bool {
         self.construction_length_zero(lhs.x - rhs.x) && self.construction_length_zero(lhs.y - rhs.y)
+    }
+
+    fn length_nonnegative(self, value: f64) -> bool {
+        value / self.diameter >= -self.epsilon
     }
 }
 
@@ -236,6 +298,32 @@ fn normalized_direction_cross(lhs: Vec2, rhs: Vec2) -> f64 {
     } else {
         lhs.cross(rhs).abs() / norm_product
     }
+}
+
+fn normalized_direction_dot(lhs: Vec2, rhs: Vec2) -> f64 {
+    let norm_product = lhs.norm() * rhs.norm();
+    if norm_product == 0.0 {
+        f64::INFINITY
+    } else {
+        lhs.dot(rhs).abs() / norm_product
+    }
+}
+
+fn normalized_length(value: f64, diameter: f64) -> f64 {
+    value.abs() / diameter.max(value.abs())
+}
+
+fn measure_distance(lhs: crate::geom::Point, rhs: crate::geom::Point) -> f64 {
+    (rhs - lhs).norm()
+}
+
+const fn greatest_common_divisor(mut lhs: u32, mut rhs: u32) -> u32 {
+    while rhs != 0 {
+        let remainder = lhs % rhs;
+        lhs = rhs;
+        rhs = remainder;
+    }
+    lhs
 }
 
 fn normalized_vector_distance(offset: Vec2, direction: Vec2, diameter: f64, epsilon: f64) -> bool {

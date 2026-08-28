@@ -1,0 +1,94 @@
+---
+source: crates/locus-core/src/assert.rs
+assertion_line: 972
+expression: report
+---
+AssertionReport {
+    passed: false,
+    assertions: [
+        AssertionResult {
+            index: 0,
+            span: Span {
+                line: 5,
+                col: 1,
+                byte_start: 71,
+                byte_end: 111,
+            },
+            tolerance: 1e-9,
+            passed: false,
+            actuals: [
+                SubtermActual {
+                    span: Span {
+                        line: 5,
+                        col: 12,
+                        byte_start: 82,
+                        byte_end: 92,
+                    },
+                    actual: Number {
+                        value: 5.0,
+                        dimension: Length,
+                    },
+                },
+                SubtermActual {
+                    span: Span {
+                        line: 5,
+                        col: 25,
+                        byte_start: 95,
+                        byte_end: 103,
+                    },
+                    actual: Number {
+                        value: 6.0,
+                        dimension: Length,
+                    },
+                },
+                SubtermActual {
+                    span: Span {
+                        line: 5,
+                        col: 12,
+                        byte_start: 82,
+                        byte_end: 103,
+                    },
+                    actual: Number {
+                        value: -1.0,
+                        dimension: Length,
+                    },
+                },
+                SubtermActual {
+                    span: Span {
+                        line: 5,
+                        col: 8,
+                        byte_start: 78,
+                        byte_end: 104,
+                    },
+                    actual: Number {
+                        value: 1.0,
+                        dimension: Length,
+                    },
+                },
+                SubtermActual {
+                    span: Span {
+                        line: 5,
+                        col: 38,
+                        byte_start: 108,
+                        byte_end: 111,
+                    },
+                    actual: Number {
+                        value: 0.5,
+                        dimension: Length,
+                    },
+                },
+                SubtermActual {
+                    span: Span {
+                        line: 5,
+                        col: 8,
+                        byte_start: 78,
+                        byte_end: 111,
+                    },
+                    actual: Boolean {
+                        value: false,
+                    },
+                },
+            ],
+        },
+    ],
+}

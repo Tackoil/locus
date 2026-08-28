@@ -192,6 +192,8 @@ dependencies = [
  "libm",
  "locus-syntax",
  "proptest",
+ "serde",
+ "serde_json",
  "thiserror",
 ]
 
