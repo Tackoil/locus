@@ -10,12 +10,17 @@
 pub mod eval;
 pub mod geom;
 pub mod scene;
+pub mod solve;
 pub mod tol;
 
 pub use eval::{DependencyError, DependencyGraph, EvalError, Value, evaluate};
 pub use geom::{Arc, BBox, Circle, ConstructError, Line, Point, Polygon, Ray, Segment, Vec2};
 pub use scene::{
     AnchorSpec, AnnotationSpec, Dimension, Evaluation, NumericValue, PointMark, ResolvedArc,
-    ResolvedObject, ResolvedPoint, ResolvedScene, Scene, UnresolvedScene,
+    ResolvedObject, ResolvedPoint, ResolvedScene, Scene,
+};
+pub use solve::{
+    BranchResolution, DofReport, HintDisplacement, ObjectDof, RelationReport, SolveSummary, Solved,
+    solve,
 };
 pub use tol::Tolerance;

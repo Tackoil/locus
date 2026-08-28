@@ -8,6 +8,18 @@ pub const DEFAULT_EPSILON: f64 = 1.0e-9;
 /// Normalized threshold for constructor preconditions called out by the spec.
 pub const CONSTRUCTION_EPSILON: f64 = 1.0e-12;
 
+/// Normative maximum normalized relation residual for solve convergence.
+pub(crate) const SOLVE_EPSILON: f64 = 1.0e-12;
+
+/// Normative relative singular-value threshold for Jacobian rank.
+pub(crate) const RANK_FACTOR: f64 = 1.0e-10;
+
+/// Normative one-sided Jacobi pair skip factor (`2^-48`).
+pub(crate) const JACOBI_SKIP_FACTOR: f64 = 3.552_713_678_800_501e-15;
+
+/// Normative normalized component threshold for `hint_far`.
+pub(crate) const HINT_FAR_THRESHOLD: f64 = 0.25;
+
 /// A normalized tolerance together with the scene characteristic length.
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Tolerance {

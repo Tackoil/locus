@@ -5,6 +5,7 @@ use locus_syntax::{File, HeadKind, Ident, Span, TextValue};
 
 use crate::eval::{EvalError, evaluate};
 use crate::geom::{Arc, BBox, Circle, Line, Point, Polygon, Ray, Segment};
+use crate::solve::SolveSummary;
 
 /// A numeric semantic dimension.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -255,24 +256,18 @@ pub struct ResolvedScene {
     pub bbox: BBox,
 }
 
-/// Solver hand-off produced when evaluation encounters a free declaration.
-#[derive(Clone, Debug, PartialEq)]
-pub struct UnresolvedScene {
-    /// Derived declarations resolved before the first unknown.
-    pub derived_prefix: ResolvedScene,
-    /// First free object requiring solver values.
-    pub first_unknown: Ident,
-    /// Full free-constructor source span.
-    pub span: Span,
-}
-
-/// Result of direct evaluation, including the future-solver seam.
+/// Result of direct evaluation or relational solving.
 #[derive(Clone, Debug, PartialEq)]
 pub enum Evaluation {
     /// All declarations were derived and resolved.
     Resolved(ResolvedScene),
-    /// A free declaration requires the relational solver.
-    RequiresSolve(UnresolvedScene),
+    /// Free declarations were solved and carry a reusable report.
+    Solved {
+        /// Complete geometry and annotations after final evaluation.
+        scene: ResolvedScene,
+        /// Normative solver statistics and diagnostics.
+        summary: SolveSummary,
+    },
 }
 
 /// Parsed source together with its latest evaluation state.
@@ -301,8 +296,16 @@ impl Scene {
     #[must_use]
     pub const fn resolved(&self) -> Option<&ResolvedScene> {
         match &self.evaluation {
-            Evaluation::Resolved(scene) => Some(scene),
-            Evaluation::RequiresSolve(_) => None,
+            Evaluation::Resolved(scene) | Evaluation::Solved { scene, .. } => Some(scene),
+        }
+    }
+
+    /// Returns the solve summary for a relational scene.
+    #[must_use]
+    pub const fn solve_summary(&self) -> Option<&SolveSummary> {
+        match &self.evaluation {
+            Evaluation::Solved { summary, .. } => Some(summary),
+            Evaluation::Resolved(_) => None,
         }
     }
 }
