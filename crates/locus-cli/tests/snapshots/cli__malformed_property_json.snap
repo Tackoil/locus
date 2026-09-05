@@ -1,0 +1,30 @@
+---
+source: crates/locus-cli/tests/cli.rs
+expression: output_text(json.stdout)?
+---
+{
+  "command": "check",
+  "strict": false,
+  "passed": false,
+  "files": [
+    {
+      "path": "fixtures/errors/malformed_property.locus",
+      "passed": false,
+      "diagnostics": [
+        {
+          "code": "E113",
+          "severity": "error",
+          "path": "fixtures/errors/malformed_property.locus",
+          "span": {
+            "line": 3,
+            "col": 31,
+            "byte_start": 61,
+            "byte_end": 63
+          },
+          "message": "expected `:` after property name",
+          "notes": []
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+locus 2
+
+meta {
+  title "Angle bisector theorem: BD/DC = AB/AC"
+}
+
+style textbook
+
+// ---- objects ----------------------------------------------
+// Generic-position triangle: hint-settled by design (info, not error).
+point A = free ~(1, 4.5)
+point B = free ~(-2, 0)
+point C = free ~(5, 0)
+
+polygon tri = polygon(A, B, C)
+
+line bis = angle_bisector(B, A, C)   [construction]
+
+// D: relational intersection — no branch index, the hint picks the point
+// (this replaces v0.2's intersect(bis, seg(B, C), 0) — finding F1)
+point D = free ~(1.3, 0) where { on(D, bis), on(D, seg(B, C)) }
+
+segment ad = seg(A, D)               [auxiliary]
+
+// equal-angle marks at vertex A (n: multiplicity — finding F2 resolved)
+arc m1 = angle_arc(B, A, D, 0.5)  { n: 1 }
+arc m2 = angle_arc(D, A, C, 0.5)  { n: 1 }
+
+// ---- annotation ------------------------------------------
+label lA = label(A, $A$)
+label lB = label(B, $B$)
+label lC = label(C, $C$)
+label lD = label(D, $D$)  { dir: S }
+
+label lbd = label(seg(B, D).midpoint, $m$)  { dir: S, gap: 0.35 }
+label ldc = label(seg(D, C).midpoint, $n$)  { dir: S, gap: 0.35 }
+
+text_block eq = text_block($\dfrac{m}{n} = \dfrac{AB}{AC}$)  { place: below }
+
+// ---- intent ----------------------------------------------
+assert between(B, D, C)
+assert angle(B, A, D) == angle(D, A, C)
+assert ratio(dist(B, D), dist(D, C)) == ratio(dist(A, B), dist(A, C))

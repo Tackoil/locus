@@ -1,0 +1,279 @@
+---
+source: crates/locus-cli/tests/cli.rs
+expression: stdout
+---
+{
+  "command": "inspect",
+  "path": "fixtures/figures/angle_bisector_ratio.locus",
+  "measurements": {
+    "distances": [
+      {
+        "first": "A",
+        "second": "B",
+        "distance": 5.406037461853541
+      },
+      {
+        "first": "A",
+        "second": "C",
+        "distance": 6.022441194288597
+      },
+      {
+        "first": "A",
+        "second": "D",
+        "distance": 4.5101187357183115
+      },
+      {
+        "first": "B",
+        "second": "C",
+        "distance": 7.000575297070313
+      },
+      {
+        "first": "B",
+        "second": "D",
+        "distance": 3.311496958534273
+      },
+      {
+        "first": "C",
+        "second": "D",
+        "distance": 3.68907833853604
+      }
+    ],
+    "triangle_angles": [
+      {
+        "first": "B",
+        "vertex": "A",
+        "second": "C",
+        "radians": 1.3148121713198504
+      },
+      {
+        "first": "A",
+        "vertex": "B",
+        "second": "C",
+        "radians": 0.9831457592601964
+      },
+      {
+        "first": "A",
+        "vertex": "C",
+        "second": "B",
+        "radians": 0.8436347230097463
+      },
+      {
+        "first": "B",
+        "vertex": "A",
+        "second": "D",
+        "radians": 0.6574060856599243
+      },
+      {
+        "first": "A",
+        "vertex": "B",
+        "second": "D",
+        "radians": 0.9831457592601954
+      },
+      {
+        "first": "A",
+        "vertex": "D",
+        "second": "B",
+        "radians": 1.5010408086696736
+      },
+      {
+        "first": "C",
+        "vertex": "A",
+        "second": "D",
+        "radians": 0.6574060856599261
+      },
+      {
+        "first": "A",
+        "vertex": "C",
+        "second": "D",
+        "radians": 0.8436347230097455
+      },
+      {
+        "first": "A",
+        "vertex": "D",
+        "second": "C",
+        "radians": 1.6405518449201217
+      },
+      {
+        "first": "C",
+        "vertex": "B",
+        "second": "D",
+        "radians": 1.0496317550000102e-15
+      },
+      {
+        "first": "B",
+        "vertex": "C",
+        "second": "D",
+        "radians": 9.422679169554042e-16
+      },
+      {
+        "first": "B",
+        "vertex": "D",
+        "second": "C",
+        "radians": 3.1415926535897913
+      }
+    ],
+    "line_ratios": [
+      {
+        "start": "B",
+        "point": "D",
+        "end": "C",
+        "ratio": 0.8976488582371485,
+        "integer_ratio": null
+      }
+    ]
+  },
+  "incidences": [
+    {
+      "kind": "point_on_object",
+      "point": "A",
+      "object": "tri"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "A",
+      "object": "bis"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "A",
+      "object": "ad"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "B",
+      "object": "tri"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "C",
+      "object": "tri"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "D",
+      "object": "tri"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "D",
+      "object": "bis"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "D",
+      "object": "ad"
+    }
+  ],
+  "diagnostics": [
+    {
+      "kind": "unreferenced",
+      "id": "tri",
+      "span": {
+        "line": 15,
+        "col": 9,
+        "byte_start": 299,
+        "byte_end": 302
+      }
+    },
+    {
+      "kind": "unreferenced",
+      "id": "ad",
+      "span": {
+        "line": 23,
+        "col": 9,
+        "byte_start": 595,
+        "byte_end": 597
+      }
+    },
+    {
+      "kind": "unreferenced",
+      "id": "m1",
+      "span": {
+        "line": 26,
+        "col": 5,
+        "byte_start": 716,
+        "byte_end": 718
+      }
+    },
+    {
+      "kind": "unreferenced",
+      "id": "m2",
+      "span": {
+        "line": 27,
+        "col": 5,
+        "byte_start": 759,
+        "byte_end": 761
+      }
+    },
+    {
+      "kind": "unreferenced",
+      "id": "lA",
+      "span": {
+        "line": 30,
+        "col": 7,
+        "byte_start": 867,
+        "byte_end": 869
+      }
+    },
+    {
+      "kind": "unreferenced",
+      "id": "lB",
+      "span": {
+        "line": 31,
+        "col": 7,
+        "byte_start": 892,
+        "byte_end": 894
+      }
+    },
+    {
+      "kind": "unreferenced",
+      "id": "lC",
+      "span": {
+        "line": 32,
+        "col": 7,
+        "byte_start": 917,
+        "byte_end": 919
+      }
+    },
+    {
+      "kind": "unreferenced",
+      "id": "lD",
+      "span": {
+        "line": 33,
+        "col": 7,
+        "byte_start": 942,
+        "byte_end": 944
+      }
+    },
+    {
+      "kind": "unreferenced",
+      "id": "lbd",
+      "span": {
+        "line": 35,
+        "col": 7,
+        "byte_start": 980,
+        "byte_end": 983
+      }
+    },
+    {
+      "kind": "unreferenced",
+      "id": "ldc",
+      "span": {
+        "line": 36,
+        "col": 7,
+        "byte_start": 1046,
+        "byte_end": 1049
+      }
+    },
+    {
+      "kind": "unreferenced",
+      "id": "eq",
+      "span": {
+        "line": 38,
+        "col": 12,
+        "byte_start": 1118,
+        "byte_end": 1120
+      }
+    }
+  ]
+}

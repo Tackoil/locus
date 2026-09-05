@@ -1,0 +1,921 @@
+---
+source: crates/locus-cli/tests/cli.rs
+expression: stdout
+---
+{
+  "command": "inspect",
+  "path": "fixtures/figures/pentagon_golden.locus",
+  "measurements": {
+    "distances": [
+      {
+        "first": "O",
+        "second": "A",
+        "distance": 3.013271520002812
+      },
+      {
+        "first": "O",
+        "second": "B",
+        "distance": 3.013271520002812
+      },
+      {
+        "first": "O",
+        "second": "C",
+        "distance": 3.013271520002812
+      },
+      {
+        "first": "O",
+        "second": "D",
+        "distance": 3.013271520002812
+      },
+      {
+        "first": "O",
+        "second": "E",
+        "distance": 3.0132715200028115
+      },
+      {
+        "first": "O",
+        "second": "P",
+        "distance": 1.1509673033090115
+      },
+      {
+        "first": "A",
+        "second": "B",
+        "distance": 3.5423131212211536
+      },
+      {
+        "first": "A",
+        "second": "C",
+        "distance": 5.731583028930553
+      },
+      {
+        "first": "A",
+        "second": "D",
+        "distance": 5.731583028930554
+      },
+      {
+        "first": "A",
+        "second": "E",
+        "distance": 3.542313121221154
+      },
+      {
+        "first": "A",
+        "second": "P",
+        "distance": 2.18926990770942
+      },
+      {
+        "first": "B",
+        "second": "C",
+        "distance": 3.542313121221153
+      },
+      {
+        "first": "B",
+        "second": "D",
+        "distance": 5.731583028930553
+      },
+      {
+        "first": "B",
+        "second": "E",
+        "distance": 5.731583028930554
+      },
+      {
+        "first": "B",
+        "second": "P",
+        "distance": 2.1892699077093836
+      },
+      {
+        "first": "C",
+        "second": "D",
+        "distance": 3.542313121221154
+      },
+      {
+        "first": "C",
+        "second": "E",
+        "distance": 5.731583028930554
+      },
+      {
+        "first": "C",
+        "second": "P",
+        "distance": 3.542313121221133
+      },
+      {
+        "first": "D",
+        "second": "E",
+        "distance": 3.542313121221153
+      },
+      {
+        "first": "D",
+        "second": "P",
+        "distance": 4.164238823311823
+      },
+      {
+        "first": "E",
+        "second": "P",
+        "distance": 3.5423131212211696
+      }
+    ],
+    "triangle_angles": [
+      {
+        "first": "A",
+        "vertex": "O",
+        "second": "B",
+        "radians": 1.2566370614359172
+      },
+      {
+        "first": "O",
+        "vertex": "A",
+        "second": "B",
+        "radians": 0.9424777960769379
+      },
+      {
+        "first": "O",
+        "vertex": "B",
+        "second": "A",
+        "radians": 0.942477796076938
+      },
+      {
+        "first": "A",
+        "vertex": "O",
+        "second": "C",
+        "radians": 2.5132741228718345
+      },
+      {
+        "first": "O",
+        "vertex": "A",
+        "second": "C",
+        "radians": 0.3141592653589794
+      },
+      {
+        "first": "O",
+        "vertex": "C",
+        "second": "A",
+        "radians": 0.3141592653589794
+      },
+      {
+        "first": "A",
+        "vertex": "O",
+        "second": "D",
+        "radians": 2.5132741228718345
+      },
+      {
+        "first": "O",
+        "vertex": "A",
+        "second": "D",
+        "radians": 0.31415926535897926
+      },
+      {
+        "first": "O",
+        "vertex": "D",
+        "second": "A",
+        "radians": 0.3141592653589793
+      },
+      {
+        "first": "A",
+        "vertex": "O",
+        "second": "E",
+        "radians": 1.2566370614359175
+      },
+      {
+        "first": "O",
+        "vertex": "A",
+        "second": "E",
+        "radians": 0.9424777960769378
+      },
+      {
+        "first": "O",
+        "vertex": "E",
+        "second": "A",
+        "radians": 0.9424777960769379
+      },
+      {
+        "first": "A",
+        "vertex": "O",
+        "second": "P",
+        "radians": 0.6283185307179779
+      },
+      {
+        "first": "O",
+        "vertex": "A",
+        "second": "P",
+        "radians": 0.31415926535898386
+      },
+      {
+        "first": "O",
+        "vertex": "P",
+        "second": "A",
+        "radians": 2.199114857512831
+      },
+      {
+        "first": "B",
+        "vertex": "O",
+        "second": "C",
+        "radians": 1.2566370614359172
+      },
+      {
+        "first": "O",
+        "vertex": "B",
+        "second": "C",
+        "radians": 0.942477796076938
+      },
+      {
+        "first": "O",
+        "vertex": "C",
+        "second": "B",
+        "radians": 0.9424777960769379
+      },
+      {
+        "first": "B",
+        "vertex": "O",
+        "second": "D",
+        "radians": 2.5132741228718345
+      },
+      {
+        "first": "O",
+        "vertex": "B",
+        "second": "D",
+        "radians": 0.31415926535897937
+      },
+      {
+        "first": "O",
+        "vertex": "D",
+        "second": "B",
+        "radians": 0.3141592653589793
+      },
+      {
+        "first": "B",
+        "vertex": "O",
+        "second": "E",
+        "radians": 2.513274122871835
+      },
+      {
+        "first": "O",
+        "vertex": "B",
+        "second": "E",
+        "radians": 0.3141592653589793
+      },
+      {
+        "first": "O",
+        "vertex": "E",
+        "second": "B",
+        "radians": 0.3141592653589793
+      },
+      {
+        "first": "B",
+        "vertex": "O",
+        "second": "P",
+        "radians": 0.6283185307179392
+      },
+      {
+        "first": "O",
+        "vertex": "B",
+        "second": "P",
+        "radians": 0.3141592653589719
+      },
+      {
+        "first": "O",
+        "vertex": "P",
+        "second": "B",
+        "radians": 2.199114857512882
+      },
+      {
+        "first": "C",
+        "vertex": "O",
+        "second": "D",
+        "radians": 1.2566370614359172
+      },
+      {
+        "first": "O",
+        "vertex": "C",
+        "second": "D",
+        "radians": 0.9424777960769379
+      },
+      {
+        "first": "O",
+        "vertex": "D",
+        "second": "C",
+        "radians": 0.9424777960769379
+      },
+      {
+        "first": "C",
+        "vertex": "O",
+        "second": "E",
+        "radians": 2.5132741228718345
+      },
+      {
+        "first": "O",
+        "vertex": "C",
+        "second": "E",
+        "radians": 0.3141592653589793
+      },
+      {
+        "first": "O",
+        "vertex": "E",
+        "second": "C",
+        "radians": 0.31415926535897937
+      },
+      {
+        "first": "C",
+        "vertex": "O",
+        "second": "P",
+        "radians": 1.8849555921538566
+      },
+      {
+        "first": "O",
+        "vertex": "C",
+        "second": "P",
+        "radians": 0.31415926535898214
+      },
+      {
+        "first": "O",
+        "vertex": "P",
+        "second": "C",
+        "radians": 0.9424777960769548
+      },
+      {
+        "first": "D",
+        "vertex": "O",
+        "second": "E",
+        "radians": 1.2566370614359172
+      },
+      {
+        "first": "O",
+        "vertex": "D",
+        "second": "E",
+        "radians": 0.9424777960769379
+      },
+      {
+        "first": "O",
+        "vertex": "E",
+        "second": "D",
+        "radians": 0.9424777960769379
+      },
+      {
+        "first": "D",
+        "vertex": "O",
+        "second": "P",
+        "radians": 3.1415926535897736
+      },
+      {
+        "first": "O",
+        "vertex": "D",
+        "second": "P",
+        "radians": 5.30869267718399e-15
+      },
+      {
+        "first": "O",
+        "vertex": "P",
+        "second": "D",
+        "radians": 1.4176304621989315e-14
+      },
+      {
+        "first": "E",
+        "vertex": "O",
+        "second": "P",
+        "radians": 1.8849555921538956
+      },
+      {
+        "first": "O",
+        "vertex": "E",
+        "second": "P",
+        "radians": 0.3141592653589747
+      },
+      {
+        "first": "O",
+        "vertex": "P",
+        "second": "E",
+        "radians": 0.9424777960769231
+      },
+      {
+        "first": "B",
+        "vertex": "A",
+        "second": "C",
+        "radians": 0.6283185307179586
+      },
+      {
+        "first": "A",
+        "vertex": "B",
+        "second": "C",
+        "radians": 1.8849555921538763
+      },
+      {
+        "first": "A",
+        "vertex": "C",
+        "second": "B",
+        "radians": 0.6283185307179585
+      },
+      {
+        "first": "B",
+        "vertex": "A",
+        "second": "D",
+        "radians": 1.2566370614359172
+      },
+      {
+        "first": "A",
+        "vertex": "B",
+        "second": "D",
+        "radians": 1.2566370614359175
+      },
+      {
+        "first": "A",
+        "vertex": "D",
+        "second": "B",
+        "radians": 0.6283185307179586
+      },
+      {
+        "first": "B",
+        "vertex": "A",
+        "second": "E",
+        "radians": 1.884955592153876
+      },
+      {
+        "first": "A",
+        "vertex": "B",
+        "second": "E",
+        "radians": 0.6283185307179588
+      },
+      {
+        "first": "A",
+        "vertex": "E",
+        "second": "B",
+        "radians": 0.6283185307179586
+      },
+      {
+        "first": "B",
+        "vertex": "A",
+        "second": "P",
+        "radians": 0.6283185307179542
+      },
+      {
+        "first": "A",
+        "vertex": "B",
+        "second": "P",
+        "radians": 0.6283185307179662
+      },
+      {
+        "first": "A",
+        "vertex": "P",
+        "second": "B",
+        "radians": 1.884955592153873
+      },
+      {
+        "first": "C",
+        "vertex": "A",
+        "second": "D",
+        "radians": 0.6283185307179586
+      },
+      {
+        "first": "A",
+        "vertex": "C",
+        "second": "D",
+        "radians": 1.2566370614359172
+      },
+      {
+        "first": "A",
+        "vertex": "D",
+        "second": "C",
+        "radians": 1.2566370614359172
+      },
+      {
+        "first": "C",
+        "vertex": "A",
+        "second": "E",
+        "radians": 1.2566370614359172
+      },
+      {
+        "first": "A",
+        "vertex": "C",
+        "second": "E",
+        "radians": 0.6283185307179588
+      },
+      {
+        "first": "A",
+        "vertex": "E",
+        "second": "C",
+        "radians": 1.2566370614359172
+      },
+      {
+        "first": "C",
+        "vertex": "A",
+        "second": "P",
+        "radians": 4.4239105643199455e-15
+      },
+      {
+        "first": "A",
+        "vertex": "C",
+        "second": "P",
+        "radians": 2.7122540752039796e-15
+      },
+      {
+        "first": "A",
+        "vertex": "P",
+        "second": "C",
+        "radians": 3.141592653589786
+      },
+      {
+        "first": "D",
+        "vertex": "A",
+        "second": "E",
+        "radians": 0.6283185307179586
+      },
+      {
+        "first": "A",
+        "vertex": "D",
+        "second": "E",
+        "radians": 0.6283185307179587
+      },
+      {
+        "first": "A",
+        "vertex": "E",
+        "second": "D",
+        "radians": 1.8849555921538759
+      },
+      {
+        "first": "D",
+        "vertex": "A",
+        "second": "P",
+        "radians": 0.6283185307179631
+      },
+      {
+        "first": "A",
+        "vertex": "D",
+        "second": "P",
+        "radians": 0.3141592653589846
+      },
+      {
+        "first": "A",
+        "vertex": "P",
+        "second": "D",
+        "radians": 2.1991148575128454
+      },
+      {
+        "first": "E",
+        "vertex": "A",
+        "second": "P",
+        "radians": 1.2566370614359217
+      },
+      {
+        "first": "A",
+        "vertex": "E",
+        "second": "P",
+        "radians": 0.6283185307179632
+      },
+      {
+        "first": "A",
+        "vertex": "P",
+        "second": "E",
+        "radians": 1.2566370614359084
+      },
+      {
+        "first": "C",
+        "vertex": "B",
+        "second": "D",
+        "radians": 0.6283185307179586
+      },
+      {
+        "first": "B",
+        "vertex": "C",
+        "second": "D",
+        "radians": 1.884955592153876
+      },
+      {
+        "first": "B",
+        "vertex": "D",
+        "second": "C",
+        "radians": 0.6283185307179586
+      },
+      {
+        "first": "C",
+        "vertex": "B",
+        "second": "E",
+        "radians": 1.2566370614359172
+      },
+      {
+        "first": "B",
+        "vertex": "C",
+        "second": "E",
+        "radians": 1.2566370614359172
+      },
+      {
+        "first": "B",
+        "vertex": "E",
+        "second": "C",
+        "radians": 0.6283185307179586
+      },
+      {
+        "first": "C",
+        "vertex": "B",
+        "second": "P",
+        "radians": 1.25663706143591
+      },
+      {
+        "first": "B",
+        "vertex": "C",
+        "second": "P",
+        "radians": 0.6283185307179558
+      },
+      {
+        "first": "B",
+        "vertex": "P",
+        "second": "C",
+        "radians": 1.2566370614359275
+      },
+      {
+        "first": "D",
+        "vertex": "B",
+        "second": "E",
+        "radians": 0.6283185307179586
+      },
+      {
+        "first": "B",
+        "vertex": "D",
+        "second": "E",
+        "radians": 1.2566370614359172
+      },
+      {
+        "first": "B",
+        "vertex": "E",
+        "second": "D",
+        "radians": 1.2566370614359172
+      },
+      {
+        "first": "D",
+        "vertex": "B",
+        "second": "P",
+        "radians": 0.6283185307179513
+      },
+      {
+        "first": "B",
+        "vertex": "D",
+        "second": "P",
+        "radians": 0.314159265358974
+      },
+      {
+        "first": "B",
+        "vertex": "P",
+        "second": "D",
+        "radians": 2.199114857512868
+      },
+      {
+        "first": "E",
+        "vertex": "B",
+        "second": "P",
+        "radians": 7.372861697054715e-15
+      },
+      {
+        "first": "B",
+        "vertex": "E",
+        "second": "P",
+        "radians": 4.556764564603614e-15
+      },
+      {
+        "first": "B",
+        "vertex": "P",
+        "second": "E",
+        "radians": 3.141592653589781
+      },
+      {
+        "first": "D",
+        "vertex": "C",
+        "second": "E",
+        "radians": 0.6283185307179586
+      },
+      {
+        "first": "C",
+        "vertex": "D",
+        "second": "E",
+        "radians": 1.884955592153876
+      },
+      {
+        "first": "C",
+        "vertex": "E",
+        "second": "D",
+        "radians": 0.6283185307179586
+      },
+      {
+        "first": "D",
+        "vertex": "C",
+        "second": "P",
+        "radians": 1.25663706143592
+      },
+      {
+        "first": "C",
+        "vertex": "D",
+        "second": "P",
+        "radians": 0.9424777960769326
+      },
+      {
+        "first": "C",
+        "vertex": "P",
+        "second": "D",
+        "radians": 0.9424777960769405
+      },
+      {
+        "first": "E",
+        "vertex": "C",
+        "second": "P",
+        "radians": 0.6283185307179615
+      },
+      {
+        "first": "C",
+        "vertex": "E",
+        "second": "P",
+        "radians": 0.628318530717954
+      },
+      {
+        "first": "C",
+        "vertex": "P",
+        "second": "E",
+        "radians": 1.8849555921538779
+      },
+      {
+        "first": "E",
+        "vertex": "D",
+        "second": "P",
+        "radians": 0.9424777960769435
+      },
+      {
+        "first": "D",
+        "vertex": "E",
+        "second": "P",
+        "radians": 1.2566370614359126
+      },
+      {
+        "first": "D",
+        "vertex": "P",
+        "second": "E",
+        "radians": 0.942477796076937
+      }
+    ],
+    "line_ratios": [
+      {
+        "start": "A",
+        "point": "P",
+        "end": "C",
+        "ratio": 0.6180339887499042,
+        "integer_ratio": null
+      },
+      {
+        "start": "B",
+        "point": "P",
+        "end": "E",
+        "ratio": 0.6180339887498876,
+        "integer_ratio": null
+      },
+      {
+        "start": "D",
+        "point": "O",
+        "end": "P",
+        "ratio": 2.618033988749904,
+        "integer_ratio": null
+      }
+    ]
+  },
+  "incidences": [
+    {
+      "kind": "point_on_object",
+      "point": "A",
+      "object": "pent"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "A",
+      "object": "d1"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "B",
+      "object": "pent"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "B",
+      "object": "d2"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "C",
+      "object": "pent"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "C",
+      "object": "d1"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "D",
+      "object": "pent"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "E",
+      "object": "pent"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "E",
+      "object": "d2"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "P",
+      "object": "d1"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "P",
+      "object": "d2"
+    }
+  ],
+  "diagnostics": [
+    {
+      "kind": "unreferenced",
+      "id": "t1",
+      "span": {
+        "line": 28,
+        "col": 6,
+        "byte_start": 669,
+        "byte_end": 671
+      }
+    },
+    {
+      "kind": "unreferenced",
+      "id": "t2",
+      "span": {
+        "line": 29,
+        "col": 6,
+        "byte_start": 698,
+        "byte_end": 700
+      }
+    },
+    {
+      "kind": "unreferenced",
+      "id": "lA",
+      "span": {
+        "line": 32,
+        "col": 7,
+        "byte_start": 791,
+        "byte_end": 793
+      }
+    },
+    {
+      "kind": "unreferenced",
+      "id": "lB",
+      "span": {
+        "line": 33,
+        "col": 7,
+        "byte_start": 816,
+        "byte_end": 818
+      }
+    },
+    {
+      "kind": "unreferenced",
+      "id": "lC",
+      "span": {
+        "line": 34,
+        "col": 7,
+        "byte_start": 841,
+        "byte_end": 843
+      }
+    },
+    {
+      "kind": "unreferenced",
+      "id": "lD",
+      "span": {
+        "line": 35,
+        "col": 7,
+        "byte_start": 866,
+        "byte_end": 868
+      }
+    },
+    {
+      "kind": "unreferenced",
+      "id": "lE",
+      "span": {
+        "line": 36,
+        "col": 7,
+        "byte_start": 891,
+        "byte_end": 893
+      }
+    },
+    {
+      "kind": "unreferenced",
+      "id": "lP",
+      "span": {
+        "line": 37,
+        "col": 7,
+        "byte_start": 916,
+        "byte_end": 918
+      }
+    },
+    {
+      "kind": "unreferenced",
+      "id": "phi",
+      "span": {
+        "line": 39,
+        "col": 12,
+        "byte_start": 959,
+        "byte_end": 962
+      }
+    }
+  ]
+}

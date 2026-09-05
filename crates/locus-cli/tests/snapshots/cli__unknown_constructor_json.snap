@@ -1,0 +1,31 @@
+---
+source: crates/locus-cli/tests/cli.rs
+expression: output_text(json.stdout)?
+---
+{
+  "command": "check",
+  "strict": false,
+  "passed": false,
+  "files": [
+    {
+      "path": "fixtures/errors/unknown_constructor.locus",
+      "passed": false,
+      "diagnostics": [
+        {
+          "code": "E140",
+          "severity": "error",
+          "path": "fixtures/errors/unknown_constructor.locus",
+          "span": {
+            "line": 3,
+            "col": 11,
+            "byte_start": 41,
+            "byte_end": 47
+          },
+          "message": "unknown constructor `cricle`",
+          "notes": [],
+          "suggestion": "circle"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+---
+source: crates/locus-cli/tests/cli.rs
+expression: output_text(json.stdout)?
+---
+{
+  "command": "check",
+  "strict": false,
+  "passed": false,
+  "files": [
+    {
+      "path": "fixtures/errors/duplicate_id.locus",
+      "passed": false,
+      "diagnostics": [
+        {
+          "code": "E134",
+          "severity": "error",
+          "path": "fixtures/errors/duplicate_id.locus",
+          "span": {
+            "line": 3,
+            "col": 7,
+            "byte_start": 37,
+            "byte_end": 38
+          },
+          "message": "duplicate identifier `A`",
+          "notes": []
+        }
+      ]
+    }
+  ]
+}

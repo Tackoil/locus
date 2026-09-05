@@ -1,0 +1,14 @@
+---
+source: crates/locus-cli/tests/cli.rs
+expression: output_text(human.stderr)?
+---
+E140
+
+  × unknown constructor `cricle`
+   ╭─[fixtures/errors/unknown_constructor.locus:3:11]
+ 2 │ point A = free ~(0, 0)
+ 3 │ point B = cricle(A, 1)
+   ·           ───┬──
+   ·              ╰── unknown constructor `cricle`
+   ╰────
+  help: circle

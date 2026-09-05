@@ -19,7 +19,10 @@ pub use r#assert::{
     ActualValue, AssertionReport, AssertionResult, ReportDimension, SubtermActual,
     evaluate_assertions,
 };
-pub use eval::{DependencyError, DependencyGraph, EvalError, Value, evaluate};
+pub use eval::{
+    DependencyError, DependencyGraph, EvalError, RemovalImpact, StatementDependency,
+    StatementDependencyKind, Value, evaluate,
+};
 pub use geom::{Arc, BBox, Circle, ConstructError, Line, Point, Polygon, Ray, Segment, Vec2};
 pub use inspect::{
     DistanceMeasurement, GeometryBounds, Incidence, InspectDiagnostic, InspectionReport,

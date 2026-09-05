@@ -1,0 +1,655 @@
+---
+source: crates/locus-cli/tests/cli.rs
+expression: stdout
+---
+{
+  "command": "inspect",
+  "path": "fixtures/figures/tangent_circles.locus",
+  "measurements": {
+    "distances": [
+      {
+        "first": "O_1",
+        "second": "O_2",
+        "distance": 4.999999999999999
+      },
+      {
+        "first": "O_1",
+        "second": "T",
+        "distance": 2.000000000012976
+      },
+      {
+        "first": "O_1",
+        "second": "E",
+        "distance": 9.999999999999998
+      },
+      {
+        "first": "O_1",
+        "second": "P_1",
+        "distance": 2.000000000012272
+      },
+      {
+        "first": "O_1",
+        "second": "P_2",
+        "distance": 5.291502622129154
+      },
+      {
+        "first": "O_2",
+        "second": "T",
+        "distance": 3.000000000008651
+      },
+      {
+        "first": "O_2",
+        "second": "E",
+        "distance": 14.999999999999996
+      },
+      {
+        "first": "O_2",
+        "second": "P_1",
+        "distance": 5.744556651300194
+      },
+      {
+        "first": "O_2",
+        "second": "P_2",
+        "distance": 2.999999999999875
+      },
+      {
+        "first": "T",
+        "second": "E",
+        "distance": 12.000000000002162
+      },
+      {
+        "first": "T",
+        "second": "P_1",
+        "distance": 3.0983867873405955
+      },
+      {
+        "first": "T",
+        "second": "P_2",
+        "distance": 3.794738772807794
+      },
+      {
+        "first": "E",
+        "second": "P_1",
+        "distance": 9.79796600117354
+      },
+      {
+        "first": "E",
+        "second": "P_2",
+        "distance": 14.696938456699089
+      },
+      {
+        "first": "P_1",
+        "second": "P_2",
+        "distance": 4.8989724555255485
+      }
+    ],
+    "triangle_angles": [
+      {
+        "first": "O_2",
+        "vertex": "O_1",
+        "second": "T",
+        "radians": 3.6022637882334217e-6
+      },
+      {
+        "first": "O_1",
+        "vertex": "O_2",
+        "second": "T",
+        "radians": 2.401509192161385e-6
+      },
+      {
+        "first": "O_1",
+        "vertex": "T",
+        "second": "O_2",
+        "radians": 3.141586649816813
+      },
+      {
+        "first": "O_2",
+        "vertex": "O_1",
+        "second": "P_1",
+        "radians": 1.7721507325648125
+      },
+      {
+        "first": "O_1",
+        "vertex": "O_2",
+        "second": "P_1",
+        "radians": 0.3481099630625721
+      },
+      {
+        "first": "O_1",
+        "vertex": "P_1",
+        "second": "O_2",
+        "radians": 1.0213319579624087
+      },
+      {
+        "first": "O_2",
+        "vertex": "O_1",
+        "second": "P_2",
+        "radians": 0.5889546074454881
+      },
+      {
+        "first": "O_1",
+        "vertex": "O_2",
+        "second": "P_2",
+        "radians": 1.3694384060045734
+      },
+      {
+        "first": "O_1",
+        "vertex": "P_2",
+        "second": "O_2",
+        "radians": 1.1831996401397318
+      },
+      {
+        "first": "T",
+        "vertex": "O_1",
+        "second": "E",
+        "radians": 3.141589051326005
+      },
+      {
+        "first": "O_1",
+        "vertex": "T",
+        "second": "E",
+        "radians": 3.0018864901919926e-6
+      },
+      {
+        "first": "O_1",
+        "vertex": "E",
+        "second": "T",
+        "radians": 6.003772980414284e-7
+      },
+      {
+        "first": "T",
+        "vertex": "O_1",
+        "second": "P_1",
+        "radians": 1.7721543348286006
+      },
+      {
+        "first": "O_1",
+        "vertex": "T",
+        "second": "P_1",
+        "radians": 0.6847191593804527
+      },
+      {
+        "first": "O_1",
+        "vertex": "P_1",
+        "second": "T",
+        "radians": 0.68471915938074
+      },
+      {
+        "first": "T",
+        "vertex": "O_1",
+        "second": "P_2",
+        "radians": 0.5889582097092764
+      },
+      {
+        "first": "O_1",
+        "vertex": "T",
+        "second": "P_2",
+        "radians": 2.2555107267805905
+      },
+      {
+        "first": "O_1",
+        "vertex": "P_2",
+        "second": "T",
+        "radians": 0.29712371709992663
+      },
+      {
+        "first": "E",
+        "vertex": "O_1",
+        "second": "P_1",
+        "radians": 1.3694419210249809
+      },
+      {
+        "first": "O_1",
+        "vertex": "E",
+        "second": "P_1",
+        "radians": 0.20135792079032233
+      },
+      {
+        "first": "O_1",
+        "vertex": "P_1",
+        "second": "E",
+        "radians": 1.57079281177449
+      },
+      {
+        "first": "E",
+        "vertex": "O_1",
+        "second": "P_2",
+        "radians": 2.5526380461443052
+      },
+      {
+        "first": "O_1",
+        "vertex": "E",
+        "second": "P_2",
+        "radians": 0.2013579207903224
+      },
+      {
+        "first": "O_1",
+        "vertex": "P_2",
+        "second": "E",
+        "radians": 0.38759668665516583
+      },
+      {
+        "first": "P_1",
+        "vertex": "O_1",
+        "second": "P_2",
+        "radians": 1.1831961251193244
+      },
+      {
+        "first": "O_1",
+        "vertex": "P_1",
+        "second": "P_2",
+        "radians": 1.5707998418153033
+      },
+      {
+        "first": "O_1",
+        "vertex": "P_2",
+        "second": "P_1",
+        "radians": 0.3875966866551658
+      },
+      {
+        "first": "T",
+        "vertex": "O_2",
+        "second": "E",
+        "radians": 2.401509192161385e-6
+      },
+      {
+        "first": "O_2",
+        "vertex": "T",
+        "second": "E",
+        "radians": 3.141589651703303
+      },
+      {
+        "first": "O_2",
+        "vertex": "E",
+        "second": "T",
+        "radians": 6.003772980414283e-7
+      },
+      {
+        "first": "T",
+        "vertex": "O_2",
+        "second": "P_1",
+        "radians": 0.3481123645717643
+      },
+      {
+        "first": "O_2",
+        "vertex": "T",
+        "second": "P_1",
+        "radians": 2.4568674904363603
+      },
+      {
+        "first": "O_2",
+        "vertex": "P_1",
+        "second": "T",
+        "radians": 0.33661279858166876
+      },
+      {
+        "first": "T",
+        "vertex": "O_2",
+        "second": "P_2",
+        "radians": 1.3694408075137656
+      },
+      {
+        "first": "O_2",
+        "vertex": "T",
+        "second": "P_2",
+        "radians": 0.8860759230362225
+      },
+      {
+        "first": "O_2",
+        "vertex": "P_2",
+        "second": "T",
+        "radians": 0.886075923039805
+      },
+      {
+        "first": "E",
+        "vertex": "O_2",
+        "second": "P_1",
+        "radians": 0.34810996306257214
+      },
+      {
+        "first": "O_2",
+        "vertex": "E",
+        "second": "P_1",
+        "radians": 0.20135792079032236
+      },
+      {
+        "first": "O_2",
+        "vertex": "P_1",
+        "second": "E",
+        "radians": 2.5921247697368988
+      },
+      {
+        "first": "E",
+        "vertex": "O_2",
+        "second": "P_2",
+        "radians": 1.3694384060045734
+      },
+      {
+        "first": "O_2",
+        "vertex": "E",
+        "second": "P_2",
+        "radians": 0.20135792079032233
+      },
+      {
+        "first": "O_2",
+        "vertex": "P_2",
+        "second": "E",
+        "radians": 1.5707963267948977
+      },
+      {
+        "first": "P_1",
+        "vertex": "O_2",
+        "second": "P_2",
+        "radians": 1.0213284429420013
+      },
+      {
+        "first": "O_2",
+        "vertex": "P_1",
+        "second": "P_2",
+        "radians": 0.5494678838528946
+      },
+      {
+        "first": "O_2",
+        "vertex": "P_2",
+        "second": "P_1",
+        "radians": 1.5707963267948977
+      },
+      {
+        "first": "E",
+        "vertex": "T",
+        "second": "P_1",
+        "radians": 0.6847221612669429
+      },
+      {
+        "first": "T",
+        "vertex": "E",
+        "second": "P_1",
+        "radians": 0.20135852116762043
+      },
+      {
+        "first": "T",
+        "vertex": "P_1",
+        "second": "E",
+        "radians": 2.25551197115523
+      },
+      {
+        "first": "E",
+        "vertex": "T",
+        "second": "P_2",
+        "radians": 2.2555137286670806
+      },
+      {
+        "first": "T",
+        "vertex": "E",
+        "second": "P_2",
+        "radians": 0.2013585211676204
+      },
+      {
+        "first": "T",
+        "vertex": "P_2",
+        "second": "E",
+        "radians": 0.6847204037550924
+      },
+      {
+        "first": "P_1",
+        "vertex": "T",
+        "second": "P_2",
+        "radians": 1.5707915674001376
+      },
+      {
+        "first": "T",
+        "vertex": "P_1",
+        "second": "P_2",
+        "radians": 0.8860806824345633
+      },
+      {
+        "first": "T",
+        "vertex": "P_2",
+        "second": "P_1",
+        "radians": 0.6847204037550924
+      },
+      {
+        "first": "E",
+        "vertex": "P_2",
+        "second": "P_1",
+        "radians": 2.467165817330379e-17
+      }
+    ],
+    "line_ratios": [
+      {
+        "start": "O_2",
+        "point": "O_1",
+        "end": "E",
+        "ratio": 0.5,
+        "integer_ratio": {
+          "left": 1,
+          "right": 2
+        }
+      },
+      {
+        "start": "E",
+        "point": "P_1",
+        "end": "P_2",
+        "ratio": 2.0000043050093943,
+        "integer_ratio": null
+      }
+    ]
+  },
+  "incidences": [
+    {
+      "kind": "point_on_object",
+      "point": "O_1",
+      "object": "s1"
+    },
+    {
+      "kind": "ratio_along_line",
+      "start": "O_2",
+      "point": "O_1",
+      "end": "E",
+      "left": 1,
+      "right": 2
+    },
+    {
+      "kind": "point_on_object",
+      "point": "O_2",
+      "object": "s2"
+    },
+    {
+      "kind": "tangent",
+      "first": "c1",
+      "second": "c2"
+    },
+    {
+      "kind": "tangent",
+      "first": "c1",
+      "second": "t_int"
+    },
+    {
+      "kind": "tangent",
+      "first": "c1",
+      "second": "t_ext"
+    },
+    {
+      "kind": "tangent",
+      "first": "c2",
+      "second": "t_int"
+    },
+    {
+      "kind": "tangent",
+      "first": "c2",
+      "second": "t_ext"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "T",
+      "object": "c1"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "T",
+      "object": "c2"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "T",
+      "object": "t_int"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "E",
+      "object": "t_ext"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "P_1",
+      "object": "c1"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "P_1",
+      "object": "t_ext"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "P_1",
+      "object": "s1"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "P_2",
+      "object": "c2"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "P_2",
+      "object": "t_ext"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "P_2",
+      "object": "s2"
+    }
+  ],
+  "diagnostics": [
+    {
+      "kind": "unreferenced",
+      "id": "t_int",
+      "span": {
+        "line": 27,
+        "col": 6,
+        "byte_start": 716,
+        "byte_end": 721
+      }
+    },
+    {
+      "kind": "unreferenced",
+      "id": "s1",
+      "span": {
+        "line": 41,
+        "col": 9,
+        "byte_start": 1246,
+        "byte_end": 1248
+      }
+    },
+    {
+      "kind": "unreferenced",
+      "id": "s2",
+      "span": {
+        "line": 42,
+        "col": 9,
+        "byte_start": 1287,
+        "byte_end": 1289
+      }
+    },
+    {
+      "kind": "unreferenced",
+      "id": "q1",
+      "span": {
+        "line": 44,
+        "col": 13,
+        "byte_start": 1333,
+        "byte_end": 1335
+      }
+    },
+    {
+      "kind": "unreferenced",
+      "id": "q2",
+      "span": {
+        "line": 45,
+        "col": 13,
+        "byte_start": 1375,
+        "byte_end": 1377
+      }
+    },
+    {
+      "kind": "unreferenced",
+      "id": "lO1",
+      "span": {
+        "line": 48,
+        "col": 7,
+        "byte_start": 1474,
+        "byte_end": 1477
+      }
+    },
+    {
+      "kind": "unreferenced",
+      "id": "lO2",
+      "span": {
+        "line": 49,
+        "col": 7,
+        "byte_start": 1516,
+        "byte_end": 1519
+      }
+    },
+    {
+      "kind": "unreferenced",
+      "id": "lT",
+      "span": {
+        "line": 50,
+        "col": 7,
+        "byte_start": 1558,
+        "byte_end": 1560
+      }
+    },
+    {
+      "kind": "unreferenced",
+      "id": "lE",
+      "span": {
+        "line": 51,
+        "col": 7,
+        "byte_start": 1601,
+        "byte_end": 1603
+      }
+    },
+    {
+      "kind": "unreferenced",
+      "id": "lP1",
+      "span": {
+        "line": 52,
+        "col": 7,
+        "byte_start": 1643,
+        "byte_end": 1646
+      }
+    },
+    {
+      "kind": "unreferenced",
+      "id": "lP2",
+      "span": {
+        "line": 53,
+        "col": 7,
+        "byte_start": 1673,
+        "byte_end": 1676
+      }
+    },
+    {
+      "kind": "unreferenced",
+      "id": "hint",
+      "span": {
+        "line": 55,
+        "col": 7,
+        "byte_start": 1704,
+        "byte_end": 1708
+      }
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+---
+source: crates/locus-cli/tests/cli.rs
+expression: output_text(json.stdout)?
+---
+{
+  "command": "check",
+  "strict": false,
+  "passed": false,
+  "files": [
+    {
+      "path": "fixtures/errors/bad_version.locus",
+      "passed": false,
+      "diagnostics": [
+        {
+          "code": "E111",
+          "severity": "error",
+          "path": "fixtures/errors/bad_version.locus",
+          "span": {
+            "line": 1,
+            "col": 7,
+            "byte_start": 6,
+            "byte_end": 7
+          },
+          "message": "unsupported Locus format version `3`",
+          "notes": [],
+          "suggestion": "2"
+        }
+      ]
+    }
+  ]
+}

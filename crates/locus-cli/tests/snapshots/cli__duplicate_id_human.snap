@@ -1,0 +1,13 @@
+---
+source: crates/locus-cli/tests/cli.rs
+expression: output_text(human.stderr)?
+---
+E134
+
+  × duplicate identifier `A`
+   ╭─[fixtures/errors/duplicate_id.locus:3:7]
+ 2 │ point A = free ~(0, 0)
+ 3 │ point A = free ~(1, 1)
+   ·       ┬
+   ·       ╰── duplicate identifier `A`
+   ╰────

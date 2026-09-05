@@ -1,0 +1,31 @@
+---
+source: crates/locus-cli/tests/cli.rs
+expression: output_text(json.stdout)?
+---
+{
+  "command": "check",
+  "strict": false,
+  "passed": false,
+  "files": [
+    {
+      "path": "fixtures/errors/forward_reference.locus",
+      "passed": false,
+      "diagnostics": [
+        {
+          "code": "E135",
+          "severity": "error",
+          "path": "fixtures/errors/forward_reference.locus",
+          "span": {
+            "line": 3,
+            "col": 21,
+            "byte_start": 51,
+            "byte_end": 52
+          },
+          "message": "unknown or forward reference `C`",
+          "notes": [],
+          "suggestion": "A"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+---
+source: crates/locus-cli/tests/cli.rs
+expression: output_text(human.stderr)?
+---
+E113
+
+  × expected `:` after property name
+   ╭─[fixtures/errors/malformed_property.locus:3:31]
+ 2 │ point A = free ~(0, 0)
+ 3 │ label l = label(A, $A$) { dir NE }
+   ·                               ─┬
+   ·                                ╰── expected `:` after property name
+   ╰────

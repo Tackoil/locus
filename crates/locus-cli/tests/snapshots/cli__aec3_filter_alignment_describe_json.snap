@@ -2918,7 +2918,9 @@ expression: stdout
               "byte_end": 7673
             }
           },
-          "placement": "above"
+          "placement": {
+            "kind": "above"
+          }
         }
       }
     },
@@ -2956,7 +2958,9 @@ expression: stdout
               "byte_end": 7778
             }
           },
-          "placement": "below"
+          "placement": {
+            "kind": "below"
+          }
         }
       }
     }

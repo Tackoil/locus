@@ -1,0 +1,595 @@
+---
+source: crates/locus-cli/tests/cli.rs
+expression: stdout
+---
+{
+  "command": "inspect",
+  "path": "fixtures/figures/flowchart_agent_loop.locus",
+  "measurements": {
+    "distances": [
+      {
+        "first": "N1",
+        "second": "N2",
+        "distance": 2.3
+      },
+      {
+        "first": "N1",
+        "second": "N3",
+        "distance": 4.6
+      },
+      {
+        "first": "N1",
+        "second": "N4",
+        "distance": 6.9
+      },
+      {
+        "first": "N1",
+        "second": "N5",
+        "distance": 9.2
+      },
+      {
+        "first": "N1",
+        "second": "NF",
+        "distance": 8.886506625215558
+      },
+      {
+        "first": "N2",
+        "second": "N3",
+        "distance": 2.3
+      },
+      {
+        "first": "N2",
+        "second": "N4",
+        "distance": 4.6000000000000005
+      },
+      {
+        "first": "N2",
+        "second": "N5",
+        "distance": 6.8999999999999995
+      },
+      {
+        "first": "N2",
+        "second": "NF",
+        "distance": 7.247068372797375
+      },
+      {
+        "first": "N3",
+        "second": "N4",
+        "distance": 2.3000000000000007
+      },
+      {
+        "first": "N3",
+        "second": "N5",
+        "distance": 4.6
+      },
+      {
+        "first": "N3",
+        "second": "NF",
+        "distance": 6.053924347066125
+      },
+      {
+        "first": "N4",
+        "second": "N5",
+        "distance": 2.299999999999999
+      },
+      {
+        "first": "N4",
+        "second": "NF",
+        "distance": 5.6
+      },
+      {
+        "first": "N5",
+        "second": "NF",
+        "distance": 6.053924347066124
+      }
+    ],
+    "triangle_angles": [
+      {
+        "first": "N2",
+        "vertex": "N1",
+        "second": "NF",
+        "radians": 0.6817707034005767
+      },
+      {
+        "first": "N1",
+        "vertex": "N2",
+        "second": "NF",
+        "radians": 2.2584675828336263
+      },
+      {
+        "first": "N1",
+        "vertex": "NF",
+        "second": "N2",
+        "radians": 0.20135436735559037
+      },
+      {
+        "first": "N3",
+        "vertex": "N1",
+        "second": "NF",
+        "radians": 0.6817707034005767
+      },
+      {
+        "first": "N1",
+        "vertex": "N3",
+        "second": "NF",
+        "radians": 1.9605048981377626
+      },
+      {
+        "first": "N1",
+        "vertex": "NF",
+        "second": "N3",
+        "radians": 0.49931705205145416
+      },
+      {
+        "first": "N4",
+        "vertex": "N1",
+        "second": "NF",
+        "radians": 0.6817707034005767
+      },
+      {
+        "first": "N1",
+        "vertex": "N4",
+        "second": "NF",
+        "radians": 1.5707963267948966
+      },
+      {
+        "first": "N1",
+        "vertex": "NF",
+        "second": "N4",
+        "radians": 0.8890256233943201
+      },
+      {
+        "first": "N5",
+        "vertex": "N1",
+        "second": "NF",
+        "radians": 0.6817707034005767
+      },
+      {
+        "first": "N1",
+        "vertex": "N5",
+        "second": "NF",
+        "radians": 1.181087755452031
+      },
+      {
+        "first": "N1",
+        "vertex": "NF",
+        "second": "N5",
+        "radians": 1.2787341947371857
+      },
+      {
+        "first": "N3",
+        "vertex": "N2",
+        "second": "NF",
+        "radians": 0.883125070756167
+      },
+      {
+        "first": "N2",
+        "vertex": "N3",
+        "second": "NF",
+        "radians": 1.9605048981377626
+      },
+      {
+        "first": "N2",
+        "vertex": "NF",
+        "second": "N3",
+        "radians": 0.2979626846958638
+      },
+      {
+        "first": "N4",
+        "vertex": "N2",
+        "second": "NF",
+        "radians": 0.883125070756167
+      },
+      {
+        "first": "N2",
+        "vertex": "N4",
+        "second": "NF",
+        "radians": 1.5707963267948966
+      },
+      {
+        "first": "N2",
+        "vertex": "NF",
+        "second": "N4",
+        "radians": 0.6876712560387297
+      },
+      {
+        "first": "N5",
+        "vertex": "N2",
+        "second": "NF",
+        "radians": 0.8831250707561669
+      },
+      {
+        "first": "N2",
+        "vertex": "N5",
+        "second": "NF",
+        "radians": 1.181087755452031
+      },
+      {
+        "first": "N2",
+        "vertex": "NF",
+        "second": "N5",
+        "radians": 1.0773798273815953
+      },
+      {
+        "first": "N4",
+        "vertex": "N3",
+        "second": "NF",
+        "radians": 1.1810877554520307
+      },
+      {
+        "first": "N3",
+        "vertex": "N4",
+        "second": "NF",
+        "radians": 1.5707963267948966
+      },
+      {
+        "first": "N3",
+        "vertex": "NF",
+        "second": "N4",
+        "radians": 0.3897085713428659
+      },
+      {
+        "first": "N5",
+        "vertex": "N3",
+        "second": "NF",
+        "radians": 1.1810877554520307
+      },
+      {
+        "first": "N3",
+        "vertex": "N5",
+        "second": "NF",
+        "radians": 1.181087755452031
+      },
+      {
+        "first": "N3",
+        "vertex": "NF",
+        "second": "N5",
+        "radians": 0.7794171426857316
+      },
+      {
+        "first": "N5",
+        "vertex": "N4",
+        "second": "NF",
+        "radians": 1.5707963267948966
+      },
+      {
+        "first": "N4",
+        "vertex": "N5",
+        "second": "NF",
+        "radians": 1.181087755452031
+      },
+      {
+        "first": "N4",
+        "vertex": "NF",
+        "second": "N5",
+        "radians": 0.3897085713428657
+      }
+    ],
+    "line_ratios": [
+      {
+        "start": "N1",
+        "point": "N2",
+        "end": "N3",
+        "ratio": 1.0,
+        "integer_ratio": {
+          "left": 1,
+          "right": 1
+        }
+      },
+      {
+        "start": "N1",
+        "point": "N2",
+        "end": "N4",
+        "ratio": 0.4999999999999999,
+        "integer_ratio": {
+          "left": 1,
+          "right": 2
+        }
+      },
+      {
+        "start": "N1",
+        "point": "N3",
+        "end": "N4",
+        "ratio": 1.9999999999999993,
+        "integer_ratio": {
+          "left": 2,
+          "right": 1
+        }
+      },
+      {
+        "start": "N1",
+        "point": "N2",
+        "end": "N5",
+        "ratio": 0.3333333333333333,
+        "integer_ratio": {
+          "left": 1,
+          "right": 3
+        }
+      },
+      {
+        "start": "N1",
+        "point": "N3",
+        "end": "N5",
+        "ratio": 1.0,
+        "integer_ratio": {
+          "left": 1,
+          "right": 1
+        }
+      },
+      {
+        "start": "N1",
+        "point": "N4",
+        "end": "N5",
+        "ratio": 3.0000000000000013,
+        "integer_ratio": {
+          "left": 3,
+          "right": 1
+        }
+      },
+      {
+        "start": "N2",
+        "point": "N3",
+        "end": "N4",
+        "ratio": 0.9999999999999997,
+        "integer_ratio": {
+          "left": 1,
+          "right": 1
+        }
+      },
+      {
+        "start": "N2",
+        "point": "N3",
+        "end": "N5",
+        "ratio": 0.5,
+        "integer_ratio": {
+          "left": 1,
+          "right": 2
+        }
+      },
+      {
+        "start": "N2",
+        "point": "N4",
+        "end": "N5",
+        "ratio": 2.0000000000000013,
+        "integer_ratio": {
+          "left": 2,
+          "right": 1
+        }
+      },
+      {
+        "start": "N3",
+        "point": "N4",
+        "end": "N5",
+        "ratio": 1.0000000000000007,
+        "integer_ratio": {
+          "left": 1,
+          "right": 1
+        }
+      }
+    ]
+  },
+  "incidences": [
+    {
+      "kind": "ratio_along_line",
+      "start": "N1",
+      "point": "N2",
+      "end": "N3",
+      "left": 1,
+      "right": 1
+    },
+    {
+      "kind": "ratio_along_line",
+      "start": "N1",
+      "point": "N2",
+      "end": "N4",
+      "left": 1,
+      "right": 2
+    },
+    {
+      "kind": "ratio_along_line",
+      "start": "N1",
+      "point": "N2",
+      "end": "N5",
+      "left": 1,
+      "right": 3
+    },
+    {
+      "kind": "ratio_along_line",
+      "start": "N1",
+      "point": "N3",
+      "end": "N4",
+      "left": 2,
+      "right": 1
+    },
+    {
+      "kind": "ratio_along_line",
+      "start": "N1",
+      "point": "N3",
+      "end": "N5",
+      "left": 1,
+      "right": 1
+    },
+    {
+      "kind": "ratio_along_line",
+      "start": "N1",
+      "point": "N4",
+      "end": "N5",
+      "left": 3,
+      "right": 1
+    },
+    {
+      "kind": "ratio_along_line",
+      "start": "N2",
+      "point": "N3",
+      "end": "N4",
+      "left": 1,
+      "right": 1
+    },
+    {
+      "kind": "ratio_along_line",
+      "start": "N2",
+      "point": "N3",
+      "end": "N5",
+      "left": 1,
+      "right": 2
+    },
+    {
+      "kind": "ratio_along_line",
+      "start": "N2",
+      "point": "N4",
+      "end": "N5",
+      "left": 2,
+      "right": 1
+    },
+    {
+      "kind": "ratio_along_line",
+      "start": "N3",
+      "point": "N4",
+      "end": "N5",
+      "left": 1,
+      "right": 1
+    }
+  ],
+  "diagnostics": [
+    {
+      "kind": "unreferenced",
+      "id": "t1",
+      "span": {
+        "line": 19,
+        "col": 7,
+        "byte_start": 570,
+        "byte_end": 572
+      }
+    },
+    {
+      "kind": "unreferenced",
+      "id": "t2",
+      "span": {
+        "line": 23,
+        "col": 7,
+        "byte_start": 752,
+        "byte_end": 754
+      }
+    },
+    {
+      "kind": "unreferenced",
+      "id": "t3",
+      "span": {
+        "line": 27,
+        "col": 7,
+        "byte_start": 945,
+        "byte_end": 947
+      }
+    },
+    {
+      "kind": "unreferenced",
+      "id": "t4",
+      "span": {
+        "line": 31,
+        "col": 9,
+        "byte_start": 1139,
+        "byte_end": 1141
+      }
+    },
+    {
+      "kind": "unreferenced",
+      "id": "t5",
+      "span": {
+        "line": 35,
+        "col": 7,
+        "byte_start": 1332,
+        "byte_end": 1334
+      }
+    },
+    {
+      "kind": "unreferenced",
+      "id": "tf",
+      "span": {
+        "line": 40,
+        "col": 7,
+        "byte_start": 1596,
+        "byte_end": 1598
+      }
+    },
+    {
+      "kind": "unreferenced",
+      "id": "a1",
+      "span": {
+        "line": 43,
+        "col": 7,
+        "byte_start": 1736,
+        "byte_end": 1738
+      }
+    },
+    {
+      "kind": "unreferenced",
+      "id": "a2",
+      "span": {
+        "line": 44,
+        "col": 7,
+        "byte_start": 1779,
+        "byte_end": 1781
+      }
+    },
+    {
+      "kind": "unreferenced",
+      "id": "a3",
+      "span": {
+        "line": 45,
+        "col": 7,
+        "byte_start": 1822,
+        "byte_end": 1824
+      }
+    },
+    {
+      "kind": "unreferenced",
+      "id": "a4",
+      "span": {
+        "line": 46,
+        "col": 7,
+        "byte_start": 1865,
+        "byte_end": 1867
+      }
+    },
+    {
+      "kind": "unreferenced",
+      "id": "ly",
+      "span": {
+        "line": 47,
+        "col": 7,
+        "byte_start": 1908,
+        "byte_end": 1910
+      }
+    },
+    {
+      "kind": "unreferenced",
+      "id": "a5",
+      "span": {
+        "line": 48,
+        "col": 7,
+        "byte_start": 1962,
+        "byte_end": 1964
+      }
+    },
+    {
+      "kind": "unreferenced",
+      "id": "ln",
+      "span": {
+        "line": 49,
+        "col": 7,
+        "byte_start": 2005,
+        "byte_end": 2007
+      }
+    },
+    {
+      "kind": "unreferenced",
+      "id": "a6",
+      "span": {
+        "line": 50,
+        "col": 7,
+        "byte_start": 2059,
+        "byte_end": 2061
+      }
+    }
+  ]
+}

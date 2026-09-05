@@ -1,0 +1,33 @@
+---
+source: crates/locus-cli/tests/cli.rs
+expression: output_text(json.stdout)?
+---
+{
+  "command": "check",
+  "strict": false,
+  "passed": false,
+  "files": [
+    {
+      "path": "fixtures/errors/division_by_zero.locus",
+      "passed": false,
+      "diagnostics": [
+        {
+          "code": "E204",
+          "severity": "error",
+          "path": "fixtures/errors/division_by_zero.locus",
+          "span": {
+            "line": 2,
+            "col": 18,
+            "byte_start": 25,
+            "byte_end": 26
+          },
+          "message": "division denominator is zero under construction tolerance",
+          "notes": [
+            "while evaluating `broken`",
+            "denominator 0.000000"
+          ]
+        }
+      ]
+    }
+  ]
+}

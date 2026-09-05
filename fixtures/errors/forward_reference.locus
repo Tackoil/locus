@@ -1,0 +1,4 @@
+locus 2
+point A = free ~(0, 0)
+segment AC = seg(A, C)
+point C = free ~(1, 0)

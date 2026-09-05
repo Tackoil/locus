@@ -1,0 +1,45 @@
+locus 2
+
+meta {
+  title "Golden ratio in the regular pentagon"
+  note  "Vertices by rotation (exact); diagonal intersection is relational"
+}
+
+style textbook
+
+// ---- objects ----------------------------------------------
+point O = free ~(0, 0)
+point A = free ~(0, 3)
+
+point B = rotate(A, O, 72deg)
+point C = rotate(A, O, 144deg)
+point D = rotate(A, O, 216deg)
+point E = rotate(A, O, 288deg)
+
+polygon pent = polygon(A, B, C, D, E)
+
+segment d1 = seg(A, C)   [highlight]
+segment d2 = seg(B, E)   [highlight]
+
+// diagonal intersection: relational, no branch index (was intersect(..., 0))
+point P = free ~(-0.7, 0.9) where { on(P, d1), on(P, d2) }
+
+// equal-side ticks
+tick t1 = tick(seg(A, B), 1)
+tick t2 = tick(seg(B, C), 1)
+
+// ---- annotation ------------------------------------------
+label lA = label(A, $A$)
+label lB = label(B, $B$)
+label lC = label(C, $C$)
+label lD = label(D, $D$)
+label lE = label(E, $E$)
+label lP = label(P, $P$)  { dir: N }
+
+text_block phi = text_block($\dfrac{AC}{AB} = \varphi = \dfrac{1+\sqrt5}{2}$)  { place: below }
+
+// ---- intent ----------------------------------------------
+assert dist(A, B) == dist(B, C)
+assert ratio(dist(A, C), dist(A, B)) == (1 + sqrt(5)) / 2
+assert ratio(dist(A, P), dist(P, C)) == (1 + sqrt(5)) / 2
+assert inside(P, pent)

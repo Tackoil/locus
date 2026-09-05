@@ -22,6 +22,55 @@ pub struct DependencyError {
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct DependencyGraph {
     dependencies: IndexMap<String, IndexSet<String>>,
+    statement_dependencies: Vec<StatementDependency>,
+}
+
+/// A relation or assertion that references a declaration.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct StatementDependency {
+    /// Kind of top-level statement containing the reference.
+    pub kind: StatementDependencyKind,
+    /// Referenced declaration id.
+    pub referenced_id: String,
+    /// Span of the reference expression.
+    pub span: Span,
+}
+
+/// A non-declaration statement kind that can block removal.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum StatementDependencyKind {
+    /// A solver relation.
+    Relation,
+    /// A post-solve assertion.
+    Assertion,
+}
+
+impl StatementDependencyKind {
+    /// Returns the source keyword for this statement kind.
+    #[must_use]
+    pub const fn as_str(self) -> &'static str {
+        match self {
+            Self::Relation => "rel",
+            Self::Assertion => "assert",
+        }
+    }
+}
+
+/// Deterministic set of declarations and statements affected by a removal.
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
+pub struct RemovalImpact {
+    /// Transitively orphaned declarations in file order.
+    pub orphaned_declarations: Vec<String>,
+    /// Relations and assertions referencing the removed declaration closure in file order.
+    pub dependent_statements: Vec<StatementDependency>,
+}
+
+impl RemovalImpact {
+    /// Returns true when removing the target leaves no dependent source behind.
+    #[must_use]
+    pub const fn is_empty(&self) -> bool {
+        self.orphaned_declarations.is_empty() && self.dependent_statements.is_empty()
+    }
 }
 
 impl DependencyGraph {
@@ -30,6 +79,10 @@ impl DependencyGraph {
         let mut graph = Self::default();
         let mut defined = BTreeSet::new();
         for statement in &file.statements {
+            if let Some((kind, expression)) = statement_expression(statement) {
+                graph.record_statement_dependencies(kind, expression, &defined)?;
+                continue;
+            }
             let Statement::Op(op) = statement else {
                 continue;
             };
@@ -54,6 +107,27 @@ impl DependencyGraph {
             defined.insert(op.id.name.clone());
         }
         Ok(graph)
+    }
+
+    fn record_statement_dependencies(
+        &mut self,
+        kind: StatementDependencyKind,
+        expression: &Expr,
+        defined: &BTreeSet<String>,
+    ) -> Result<(), DependencyError> {
+        let mut refs = IndexMap::new();
+        collect_expr_refs(expression, &mut refs);
+        validate_references(&refs, defined)?;
+        self.statement_dependencies
+            .extend(
+                refs.into_iter()
+                    .map(|(referenced_id, span)| StatementDependency {
+                        kind,
+                        referenced_id,
+                        span,
+                    }),
+            );
+        Ok(())
     }
 
     /// Returns direct dependencies in first-reference order.
@@ -86,11 +160,40 @@ impl DependencyGraph {
             .collect()
     }
 
+    /// Returns every declaration and statement made invalid by removing `id`.
+    #[must_use]
+    pub fn removal_impact(&self, id: &str) -> RemovalImpact {
+        let orphaned_declarations = self.orphans_after_removing(id);
+        let removed = orphaned_declarations
+            .iter()
+            .cloned()
+            .chain(std::iter::once(id.to_owned()))
+            .collect::<BTreeSet<_>>();
+        let dependent_statements = self
+            .statement_dependencies
+            .iter()
+            .filter(|dependency| removed.contains(&dependency.referenced_id))
+            .cloned()
+            .collect();
+        RemovalImpact {
+            orphaned_declarations,
+            dependent_statements,
+        }
+    }
+
     /// Iterates graph nodes and their direct dependencies in file order.
     pub fn iter(&self) -> impl Iterator<Item = (&str, &IndexSet<String>)> {
         self.dependencies
             .iter()
             .map(|(id, dependencies)| (id.as_str(), dependencies))
+    }
+}
+
+fn statement_expression(statement: &Statement) -> Option<(StatementDependencyKind, &Expr)> {
+    match statement {
+        Statement::Rel(relation) => Some((StatementDependencyKind::Relation, &relation.expr)),
+        Statement::Assert(assertion) => Some((StatementDependencyKind::Assertion, &assertion.expr)),
+        Statement::Op(_) | Statement::Meta(_) | Statement::Style(_) | Statement::Class(_) => None,
     }
 }
 
@@ -186,5 +289,24 @@ mod tests {
         let error = DependencyGraph::extract(&parsed.file).expect_err("forward reference");
         assert_eq!(error.code, "E301");
         assert_eq!(error.span.line, 2);
+    }
+
+    #[test]
+    fn removal_impact_includes_relations_and_assertions_in_file_order() {
+        let parsed = parse("locus 2\nnum a = free ~1\nrel a == 1\nassert a == 1\nnum spare = 2\n");
+        let graph = DependencyGraph::extract(&parsed.file).expect("valid dependency graph");
+        let impact = graph.removal_impact("a");
+        assert!(impact.orphaned_declarations.is_empty());
+        assert_eq!(impact.dependent_statements.len(), 2);
+        assert_eq!(
+            impact.dependent_statements[0].kind,
+            StatementDependencyKind::Relation
+        );
+        assert_eq!(impact.dependent_statements[0].span.line, 3);
+        assert_eq!(
+            impact.dependent_statements[1].kind,
+            StatementDependencyKind::Assertion
+        );
+        assert_eq!(impact.dependent_statements[1].span.line, 4);
     }
 }

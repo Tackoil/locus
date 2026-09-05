@@ -1,0 +1,31 @@
+---
+source: crates/locus-cli/tests/cli.rs
+expression: output_text(json.stdout)?
+---
+{
+  "command": "check",
+  "strict": false,
+  "passed": false,
+  "files": [
+    {
+      "path": "fixtures/errors/missing_header.locus",
+      "passed": false,
+      "diagnostics": [
+        {
+          "code": "E110",
+          "severity": "error",
+          "path": "fixtures/errors/missing_header.locus",
+          "span": {
+            "line": 1,
+            "col": 1,
+            "byte_start": 0,
+            "byte_end": 22
+          },
+          "message": "the first statement must be `locus 2`",
+          "notes": [],
+          "suggestion": "locus 2"
+        }
+      ]
+    }
+  ]
+}

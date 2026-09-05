@@ -1,0 +1,14 @@
+---
+source: crates/locus-cli/tests/cli.rs
+expression: output_text(human.stderr)?
+---
+E111
+
+  × unsupported Locus format version `3`
+   ╭─[fixtures/errors/bad_version.locus:1:7]
+ 1 │ locus 3
+   ·       ┬
+   ·       ╰── unsupported Locus format version `3`
+ 2 │ point A = free ~(0, 0)
+   ╰────
+  help: 2
