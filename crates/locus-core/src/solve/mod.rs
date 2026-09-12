@@ -164,8 +164,10 @@ fn solve_prepared_with_attempt_limit(
     let seed_trial = prepared.evaluate_trial(None).map_err(degenerate_seed)?;
     let system = UnknownSystem::from_seed(file, &seed_trial)?;
     let sources = relations::collect(file);
+    validate_relation_primals(&seed_trial, prepared, &sources).map_err(degenerate_seed)?;
     let seed_ad = DifferentiatedFile::evaluate(
         file,
+        &system.normalized_hints,
         &system.normalized_hints,
         &system.scales,
         &system.dimensions,
@@ -178,7 +180,7 @@ fn solve_prepared_with_attempt_limit(
         .map_err(degenerate_seed)?;
     let branches =
         relations::select_circle_branches(&seed_ad, &sources).map_err(degenerate_seed)?;
-    let outcome = run_lm(prepared, &system, &sources, &branches, max_attempts)?;
+    let outcome = run_lm(prepared, &system, &sources, &branches, max_attempts, true)?;
     finish_solve(prepared, &system, &sources, &branches, &outcome)
 }
 
@@ -196,6 +198,7 @@ fn run_lm(
     sources: &[SourceRelation<'_>],
     branches: &[Option<CircleBranch>],
     max_attempts: usize,
+    diagnose_failure: bool,
 ) -> Result<LmOutcome, EvalError> {
     let mut normalized = system.normalized_hints.clone();
     let mut state = evaluate_state(prepared, system, sources, branches, &normalized)?;
@@ -206,10 +209,13 @@ fn run_lm(
         let primary = linear::lm_primary_step(&state.jacobian, &state.residuals, damping)
             .ok_or_else(|| {
                 nonconvergence_error(
+                    prepared,
+                    system,
                     &state,
                     sources,
-                    &system.objects,
+                    branches,
                     "LM Cholesky factorization failed",
+                    diagnose_failure,
                 )
             })?;
         let trial_vector = trial_step(
@@ -232,10 +238,13 @@ fn run_lm(
         } else {
             if damping == MAX_DAMPING {
                 return Err(failed_solve_error(
+                    prepared,
+                    system,
                     &state,
                     sources,
-                    &system.objects,
+                    branches,
                     "LM damping ceiling reached",
+                    diagnose_failure,
                 ));
             }
             damping = (damping * 10.0).min(MAX_DAMPING);
@@ -243,10 +252,13 @@ fn run_lm(
     }
     if max_residual(&state.residuals) >= SOLVE_EPSILON {
         return Err(failed_solve_error(
+            prepared,
+            system,
             &state,
             sources,
-            &system.objects,
+            branches,
             "LM iteration cap reached",
+            diagnose_failure,
         ));
     }
     Ok(LmOutcome {
@@ -268,9 +280,11 @@ fn evaluate_state(
     let file = prepared.file();
     let actual = denormalize(normalized, &system.scales);
     let trial = prepared.evaluate_trial(Some(&actual))?;
+    validate_relation_primals(&trial, prepared, sources)?;
     let differentiated = DifferentiatedFile::evaluate(
         file,
         normalized,
+        &system.normalized_hints,
         &system.scales,
         &system.dimensions,
         prepared.dimensions(),
@@ -303,6 +317,17 @@ fn evaluate_state(
         jacobian,
         analysis,
     })
+}
+
+fn validate_relation_primals(
+    trial: &crate::eval::TrialEvaluation,
+    prepared: &PreparedEvaluation<'_>,
+    sources: &[SourceRelation<'_>],
+) -> Result<(), EvalError> {
+    for source in sources {
+        trial.validate_relation_expression(source.expression, prepared.dimensions())?;
+    }
+    Ok(())
 }
 
 fn trial_step(
@@ -658,12 +683,15 @@ fn implicated(rows: &[&Equation], objects: &[UnknownObject]) -> Vec<String> {
 }
 
 fn failed_solve_error(
+    prepared: &PreparedEvaluation<'_>,
+    system: &UnknownSystem,
     state: &SolveState,
     sources: &[SourceRelation<'_>],
-    objects: &[UnknownObject],
+    branches: &[Option<CircleBranch>],
     reason: &str,
+    diagnose_failure: bool,
 ) -> EvalError {
-    let reports = relation_reports(sources, state, objects);
+    let reports = relation_reports(sources, state, &system.objects);
     let mut ordered = reports.iter().collect::<Vec<_>>();
     ordered.sort_by(|lhs, rhs| {
         rhs.max_normalized_residual
@@ -672,7 +700,6 @@ fn failed_solve_error(
     });
     let details = ordered
         .iter()
-        .take(8)
         .map(|report| {
             format!(
                 "line {} residual {:.6e} [{}]",
@@ -690,7 +717,14 @@ fn failed_solve_error(
     } else {
         "non-convergent"
     };
-    let infeasible_subset = infeasible_subset_note(&ordered, overdetermined);
+    let infeasible_subset = infeasible_subset_note(
+        prepared,
+        system,
+        sources,
+        branches,
+        overdetermined,
+        diagnose_failure,
+    );
     EvalError::new(
         code,
         ordered
@@ -702,32 +736,104 @@ fn failed_solve_error(
     )
 }
 
-fn infeasible_subset_note(reports: &[&RelationReport], overdetermined: bool) -> String {
+fn infeasible_subset_note(
+    prepared: &PreparedEvaluation<'_>,
+    system: &UnknownSystem,
+    sources: &[SourceRelation<'_>],
+    branches: &[Option<CircleBranch>],
+    overdetermined: bool,
+    diagnose_failure: bool,
+) -> String {
     if !overdetermined {
         return String::new();
     }
-    let lines = reports
-        .iter()
-        .filter(|report| report.max_normalized_residual >= SOLVE_EPSILON)
-        .map(|report| report.span.line.to_string())
-        .collect::<Vec<_>>();
-    if lines.is_empty() {
+    if !diagnose_failure {
+        return "; minimal infeasible subset was not isolable".to_owned();
+    }
+    let Some(indices) = isolate_infeasible_subset(prepared, system, sources, branches) else {
+        return "; minimal infeasible subset was not isolable".to_owned();
+    };
+    if indices.len() == sources.len() && sources.len() <= 1 {
         "; minimal infeasible subset was not isolable".to_owned()
     } else {
-        format!(
-            "; minimal infeasible subset candidate from nonzero best-fit rows: lines {}",
-            lines.join(", ")
-        )
+        let lines = indices
+            .iter()
+            .map(|index| sources[*index].span.line.to_string())
+            .collect::<Vec<_>>();
+        format!("; minimal infeasible subset: lines {}", lines.join(", "))
+    }
+}
+
+fn isolate_infeasible_subset(
+    prepared: &PreparedEvaluation<'_>,
+    system: &UnknownSystem,
+    sources: &[SourceRelation<'_>],
+    branches: &[Option<CircleBranch>],
+) -> Option<Vec<usize>> {
+    let mut retained = (0..sources.len()).collect::<Vec<_>>();
+    for candidate in 0..sources.len() {
+        if retained.len() <= 1 || !retained.contains(&candidate) {
+            continue;
+        }
+        let trial = retained
+            .iter()
+            .copied()
+            .filter(|index| *index != candidate)
+            .collect::<Vec<_>>();
+        if subset_is_infeasible(prepared, system, sources, branches, &trial)? {
+            retained = trial;
+        }
+    }
+    Some(retained)
+}
+
+fn subset_is_infeasible(
+    prepared: &PreparedEvaluation<'_>,
+    system: &UnknownSystem,
+    sources: &[SourceRelation<'_>],
+    branches: &[Option<CircleBranch>],
+    indices: &[usize],
+) -> Option<bool> {
+    let subset_sources = indices
+        .iter()
+        .map(|index| sources[*index].clone())
+        .collect::<Vec<_>>();
+    let subset_branches = indices
+        .iter()
+        .map(|index| branches[*index])
+        .collect::<Vec<_>>();
+    match run_lm(
+        prepared,
+        system,
+        &subset_sources,
+        &subset_branches,
+        MAX_ATTEMPTS,
+        false,
+    ) {
+        Ok(_) => Some(false),
+        Err(error) if error.code == "E402" => Some(true),
+        Err(_) => None,
     }
 }
 
 fn nonconvergence_error(
+    prepared: &PreparedEvaluation<'_>,
+    system: &UnknownSystem,
     state: &SolveState,
     sources: &[SourceRelation<'_>],
-    objects: &[UnknownObject],
+    branches: &[Option<CircleBranch>],
     reason: &str,
+    diagnose_failure: bool,
 ) -> EvalError {
-    failed_solve_error(state, sources, objects, reason)
+    failed_solve_error(
+        prepared,
+        system,
+        state,
+        sources,
+        branches,
+        reason,
+        diagnose_failure,
+    )
 }
 
 fn degenerate_seed(mut error: EvalError) -> EvalError {
@@ -748,7 +854,7 @@ fn dimension_from_core(dimension: Dimension) -> NumericDimension {
 }
 
 #[cfg(test)]
-#[allow(clippy::expect_used, clippy::panic)]
+#[allow(clippy::expect_used, clippy::float_cmp, clippy::panic)]
 mod tests {
     use std::fmt::Write as _;
 
@@ -1019,5 +1125,85 @@ mod tests {
         assert_eq!(error.code, "E403");
         assert!(error.message.contains("LM iteration cap reached"));
         assert!(error.message.contains("best-fit residuals worst first"));
+    }
+
+    #[test]
+    fn direction_angles_match_kernel_normalization_in_relations() {
+        let solved = solve_source(
+            "locus 2\npoint A = free ~(0, 0)\npoint B = free ~(0, -1)\nnum theta = dir_angle(A, B)\nrel theta == 270deg\nrel dir_angle(A, B) == 270deg\nrel pin(A, 0, 0)\nrel pin(B, 0, -1)\n",
+        );
+        assert_eq!(
+            scene_point(&solved, "B"),
+            crate::geom::Point::new(0.0, -1.0)
+        );
+        assert_eq!(solved.summary.max_normalized_residual, 0.0);
+    }
+
+    #[test]
+    fn inline_relation_constructors_use_kernel_domain_validation() {
+        let angle = parse(
+            "locus 2\npoint A = free ~(0, 0)\npoint B = free ~(1, 0)\npoint C = free ~(2, 0)\nrel angle(A, B, C) == 180deg\n",
+        );
+        let error = solve(&angle.file).expect_err("collinear angle is degenerate");
+        assert_eq!(error.code, "E404");
+        assert!(error.message.contains("angle"));
+        assert!(!error.measured.is_empty());
+
+        let foot = parse(
+            "locus 2\npoint A = free ~(0, 0)\npoint B = free ~(1, 0)\npoint P = free ~(2, 1)\nsegment ab = seg(A, B)\nrel pin(foot(P, ab), 1, 0)\n",
+        );
+        let error = solve(&foot.file).expect_err("foot lies outside segment");
+        assert_eq!(error.code, "E404");
+        assert!(error.message.contains("outside the segment"));
+    }
+
+    #[test]
+    fn differentiated_primals_preserve_kernel_arithmetic_order() {
+        let solved = solve_source(
+            "locus 2\npoint P = free ~(-2, 0)\npoint C = free ~(-0.9, 0)\npoint reflected = reflect(P, C)\npoint translated = translate(C, P, C)\nnum quotient_delta = (3 / 5 - 0.6) * 100000000\nnum reflect_delta = hdist(reflected, translated) * 100000000\nrel quotient_delta == 0\nrel (3 / 5 - 0.6) * 100000000 == 0\nrel reflect_delta == 0\nrel pin(P, -2, 0)\nrel pin(C, -0.9, 0)\n",
+        );
+        assert_eq!(solved.summary.max_normalized_residual, 0.0);
+    }
+
+    #[test]
+    fn nonsmooth_derivatives_remain_seed_selected_after_crossing() {
+        let crossing = ad::Jet {
+            value: -2.0,
+            seed_value: 2.0,
+            gradient: vec![1.0],
+        };
+        let zero = ad::Jet::constant(0.0, 1);
+        let absolute = crossing.abs();
+        assert_eq!(absolute.value, 2.0);
+        assert_eq!(absolute.gradient, vec![1.0]);
+        let maximum = crossing.max(&zero);
+        assert_eq!(maximum.value, 0.0);
+        assert_eq!(maximum.gradient, vec![1.0]);
+        let minimum = crossing.min(&zero);
+        assert_eq!(minimum.value, -2.0);
+        assert_eq!(minimum.gradient, vec![0.0]);
+    }
+
+    #[test]
+    fn conflicting_subset_is_isolated_and_all_residuals_are_reported() {
+        let conflicting = parse("locus 2\nnum x = free ~0\nrel x == 0\nrel x == 1\nrel x == 2\n");
+        let error = solve(&conflicting.file).expect_err("three values conflict");
+        assert_eq!(error.code, "E402");
+        assert!(
+            error
+                .message
+                .contains("minimal infeasible subset: lines 4, 5"),
+            "{}",
+            error.message
+        );
+
+        let mut source = String::from("locus 2\nnum x = free ~0\n");
+        for value in 0..10 {
+            writeln!(source, "rel x == {value}").expect("write relation");
+        }
+        let parsed = parse(&source);
+        let error = solve(&parsed.file).expect_err("ten values conflict");
+        assert_eq!(error.code, "E402");
+        assert!(error.message.matches(" residual ").count() >= 10);
     }
 }

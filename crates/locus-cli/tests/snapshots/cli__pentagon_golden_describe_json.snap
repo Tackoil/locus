@@ -580,7 +580,7 @@ expression: stdout
     "rank": 2,
     "attempts": 3,
     "accepted_steps": 3,
-    "max_normalized_residual": 2.049681407272214e-15,
+    "max_normalized_residual": 2.0496814072722136e-15,
     "final_damping": 1.0000000000000002e-6,
     "dof": {
       "global_remaining": 4,
@@ -692,7 +692,7 @@ expression: stdout
           "byte_start": 620,
           "byte_end": 629
         },
-        "max_normalized_residual": 1.2298626508543036e-15,
+        "max_normalized_residual": 1.2298626508543034e-15,
         "implicated_unknowns": [
           "O",
           "A",
@@ -706,7 +706,7 @@ expression: stdout
           "byte_start": 631,
           "byte_end": 640
         },
-        "max_normalized_residual": 2.049681407272214e-15,
+        "max_normalized_residual": 2.0496814072722136e-15,
         "implicated_unknowns": [
           "O",
           "A",

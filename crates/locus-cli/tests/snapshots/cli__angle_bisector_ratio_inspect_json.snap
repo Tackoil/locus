@@ -97,13 +97,13 @@ expression: stdout
         "first": "C",
         "vertex": "B",
         "second": "D",
-        "radians": 1.0496317550000102e-15
+        "radians": 1.0489582905532288e-15
       },
       {
         "first": "B",
         "vertex": "C",
         "second": "D",
-        "radians": 9.422679169554042e-16
+        "radians": 9.415290413433062e-16
       },
       {
         "first": "B",

@@ -663,56 +663,87 @@ fn point_linear_residual(point: &DPoint, linear: &DLinear, span: Span) -> Result
     if linear.domain == LinearDomain::Line {
         return Ok(signed);
     }
-    if linear.domain == LinearDomain::Ray && parameter.value >= 0.0
-        || linear.domain == LinearDomain::Segment && (0.0..=1.0).contains(&parameter.value)
-    {
-        return Ok(signed.abs());
-    }
-    let endpoint = if parameter.value < 0.0 {
-        &linear.start
-    } else {
-        &linear.through
-    };
-    point
-        .sub(endpoint)
+    let carrier = signed.abs();
+    let start = point
+        .sub(&linear.start)
         .norm()
-        .map_err(|()| relation_error(span, "point equals linear endpoint"))
+        .map_err(|()| relation_error(span, "distance to linear start is not finite"))?;
+    let end = point
+        .sub(&linear.through)
+        .norm()
+        .map_err(|()| relation_error(span, "distance to linear end is not finite"))?;
+    let live = select_linear_piece(parameter.value, linear.domain, &carrier, &start, &end);
+    let seed = select_linear_piece(parameter.seed_value, linear.domain, &carrier, &start, &end);
+    Ok(seed.clone().with_live_value(live))
+}
+
+fn select_linear_piece<'a>(
+    parameter: f64,
+    domain: LinearDomain,
+    carrier: &'a Jet,
+    start: &'a Jet,
+    end: &'a Jet,
+) -> &'a Jet {
+    match domain {
+        LinearDomain::Line => carrier,
+        LinearDomain::Ray => {
+            if parameter >= 0.0 {
+                carrier
+            } else {
+                start
+            }
+        }
+        LinearDomain::Segment if parameter < 0.0 => start,
+        LinearDomain::Segment if parameter <= 1.0 => carrier,
+        LinearDomain::Segment => end,
+    }
 }
 
 fn point_arc_residual(point: &DPoint, arc: &DArc, span: Span) -> Result<Jet, EvalError> {
-    let radial = point_circle_residual(point, &arc.circle, span)?;
-    if point_angle_in_arc(point, arc) {
-        return Ok(radial.abs());
-    }
+    let radial = point_circle_residual(point, &arc.circle, span)?.abs();
     let start = point
         .sub(&arc.start)
         .norm()
-        .map_err(|()| relation_error(span, "point equals arc endpoint"))?;
+        .map_err(|()| relation_error(span, "distance to arc start is not finite"))?;
     let end = point
         .sub(&arc.end)
         .norm()
-        .map_err(|()| relation_error(span, "point equals arc endpoint"))?;
-    Ok(if start.value <= end.value { start } else { end })
+        .map_err(|()| relation_error(span, "distance to arc end is not finite"))?;
+    let endpoint = start.min(&end);
+    let live = if point_angle_in_arc(point, arc, false) {
+        &radial
+    } else {
+        &endpoint
+    };
+    let seed = if point_angle_in_arc(point, arc, true) {
+        radial.clone()
+    } else {
+        endpoint.clone()
+    };
+    Ok(seed.with_live_value(live))
 }
 
-fn point_angle_in_arc(point: &DPoint, arc: &DArc) -> bool {
-    let angle = angle_value(point, &arc.circle.center);
-    let start = angle_value(&arc.start, &arc.circle.center);
-    let end = angle_value(&arc.end, &arc.circle.center);
+fn point_angle_in_arc(point: &DPoint, arc: &DArc, seed: bool) -> bool {
+    let angle = angle_value(point, &arc.circle.center, seed);
+    let start = angle_value(&arc.start, &arc.circle.center, seed);
+    let end = angle_value(&arc.end, &arc.circle.center, seed);
     let tau = 2.0 * core::f64::consts::PI;
     let ccw_offset = (angle - start).rem_euclid(tau);
     let ccw_sweep = (end - start).rem_euclid(tau);
-    if arc.ccw {
+    if if seed { arc.seed_ccw } else { arc.ccw } {
         ccw_offset <= ccw_sweep
     } else {
         (start - angle).rem_euclid(tau) <= (start - end).rem_euclid(tau)
     }
 }
 
-fn angle_value(point: &DPoint, center: &DPoint) -> f64 {
+fn angle_value(point: &DPoint, center: &DPoint, seed: bool) -> f64 {
+    let component = |value: &Jet| {
+        if seed { value.seed_value } else { value.value }
+    };
     libm::atan2(
-        point.y.value - center.y.value,
-        point.x.value - center.x.value,
+        component(&point.y) - component(&center.y),
+        component(&point.x) - component(&center.x),
     )
 }
 

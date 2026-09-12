@@ -123,12 +123,43 @@ impl TrialEvaluation {
         self.env.objects()
     }
 
+    pub(crate) fn validate_relation_expression(
+        &self,
+        expression: &Expr,
+        dimensions: &DimensionMap,
+    ) -> Result<(), EvalError> {
+        let mut evaluator = ExpressionEvaluator::new(&self.env, self.tolerance(), dimensions);
+        match expression {
+            Expr::Group { expr, .. } => self.validate_relation_expression(expr, dimensions),
+            Expr::Binary { op: BinOp::Eq, .. } => evaluator.eval(expression).map(|_| ()),
+            Expr::Call { name, args, .. } => {
+                validate_relation_arguments(&mut evaluator, &name.name, args)
+            }
+            _ => evaluator.eval(expression).map(|_| ()),
+        }
+    }
+
     pub(crate) fn into_scene(self) -> ResolvedScene {
         ResolvedScene {
             objects: self.env.into_objects(),
             bbox: self.bbox,
         }
     }
+}
+
+fn validate_relation_arguments(
+    evaluator: &mut ExpressionEvaluator<'_>,
+    name: &str,
+    args: &[Expr],
+) -> Result<(), EvalError> {
+    for (index, argument) in args.iter().enumerate() {
+        if name == "pin" && index > 0 {
+            evaluator.eval_number(argument, Dimension::Length)?;
+        } else {
+            evaluator.eval(argument)?;
+        }
+    }
+    Ok(())
 }
 
 struct UnknownCursor<'a> {

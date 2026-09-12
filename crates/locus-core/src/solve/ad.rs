@@ -22,6 +22,7 @@ pub(crate) enum NumericDimension {
 #[derive(Clone, Debug)]
 pub(crate) struct Jet {
     pub(crate) value: f64,
+    pub(crate) seed_value: f64,
     pub(crate) gradient: Vec<f64>,
 }
 
@@ -29,32 +30,56 @@ impl Jet {
     pub(crate) fn constant(value: f64, count: usize) -> Self {
         Self {
             value,
+            seed_value: value,
             gradient: vec![0.0; count],
         }
     }
 
-    fn variable(value: f64, index: usize, scale: f64, count: usize) -> Self {
+    fn variable(value: f64, seed_value: f64, index: usize, scale: f64, count: usize) -> Self {
         let mut result = Self::constant(value, count);
+        result.seed_value = seed_value;
         result.gradient[index] = scale;
         result
     }
 
     pub(crate) fn add(&self, rhs: &Self) -> Self {
-        Self::from_binary(self.value + rhs.value, self, rhs, 1.0, 1.0)
+        Self::from_binary(
+            self.value + rhs.value,
+            self.seed_value + rhs.seed_value,
+            self,
+            rhs,
+            1.0,
+            1.0,
+        )
     }
 
     pub(crate) fn sub(&self, rhs: &Self) -> Self {
-        Self::from_binary(self.value - rhs.value, self, rhs, 1.0, -1.0)
+        Self::from_binary(
+            self.value - rhs.value,
+            self.seed_value - rhs.seed_value,
+            self,
+            rhs,
+            1.0,
+            -1.0,
+        )
     }
 
     pub(crate) fn mul(&self, rhs: &Self) -> Self {
-        Self::from_binary(self.value * rhs.value, self, rhs, rhs.value, self.value)
+        Self::from_binary(
+            self.value * rhs.value,
+            self.seed_value * rhs.seed_value,
+            self,
+            rhs,
+            rhs.value,
+            self.value,
+        )
     }
 
     pub(crate) fn div(&self, rhs: &Self) -> Self {
         let inverse = 1.0 / rhs.value;
         Self::from_binary(
-            self.value * inverse,
+            self.value / rhs.value,
+            self.seed_value / rhs.seed_value,
             self,
             rhs,
             inverse,
@@ -65,6 +90,7 @@ impl Jet {
     pub(crate) fn scale(&self, factor: f64) -> Self {
         Self {
             value: self.value * factor,
+            seed_value: self.seed_value * factor,
             gradient: self.gradient.iter().map(|value| value * factor).collect(),
         }
     }
@@ -78,11 +104,14 @@ impl Jet {
             return Err(());
         }
         if self.value == 0.0 {
-            return Ok(Self::constant(0.0, self.gradient.len()));
+            let mut result = Self::constant(0.0, self.gradient.len());
+            result.seed_value = libm::sqrt(self.seed_value);
+            return Ok(result);
         }
         let value = libm::sqrt(self.value);
         Ok(Self {
             value,
+            seed_value: libm::sqrt(self.seed_value),
             gradient: self
                 .gradient
                 .iter()
@@ -94,6 +123,7 @@ impl Jet {
     fn sin(&self) -> Self {
         Self {
             value: libm::sin(self.value),
+            seed_value: libm::sin(self.seed_value),
             gradient: self
                 .gradient
                 .iter()
@@ -105,6 +135,7 @@ impl Jet {
     fn cos(&self) -> Self {
         Self {
             value: libm::cos(self.value),
+            seed_value: libm::cos(self.seed_value),
             gradient: self
                 .gradient
                 .iter()
@@ -120,6 +151,7 @@ impl Jet {
         }
         Ok(Self::from_binary(
             libm::atan2(self.value, x.value),
+            libm::atan2(self.seed_value, x.seed_value),
             self,
             x,
             x.value / denominator,
@@ -137,6 +169,7 @@ impl Jet {
         }
         Ok(Self {
             value: libm::acos(self.value),
+            seed_value: libm::acos(self.seed_value),
             gradient: self
                 .gradient
                 .iter()
@@ -146,35 +179,68 @@ impl Jet {
     }
 
     pub(crate) fn abs(&self) -> Self {
-        if self.value < 0.0 {
+        let mut result = if self.seed_value < 0.0 {
             self.neg()
         } else {
             self.clone()
-        }
+        };
+        result.value = self.value.abs();
+        result.seed_value = self.seed_value.abs();
+        result
     }
 
     pub(crate) fn max(&self, rhs: &Self) -> Self {
-        if self.value >= rhs.value {
+        let mut result = if self.seed_value >= rhs.seed_value {
             self.clone()
         } else {
             rhs.clone()
-        }
+        };
+        result.value = self.value.max(rhs.value);
+        result.seed_value = self.seed_value.max(rhs.seed_value);
+        result
     }
 
-    fn min(&self, rhs: &Self) -> Self {
-        if self.value <= rhs.value {
+    pub(crate) fn min(&self, rhs: &Self) -> Self {
+        let mut result = if self.seed_value <= rhs.seed_value {
             self.clone()
         } else {
             rhs.clone()
-        }
+        };
+        result.value = self.value.min(rhs.value);
+        result.seed_value = self.seed_value.min(rhs.seed_value);
+        result
     }
 
-    fn from_binary(value: f64, lhs: &Self, rhs: &Self, lhs_factor: f64, rhs_factor: f64) -> Self {
+    fn from_binary(
+        value: f64,
+        seed_value: f64,
+        lhs: &Self,
+        rhs: &Self,
+        lhs_factor: f64,
+        rhs_factor: f64,
+    ) -> Self {
         let mut gradient = Vec::with_capacity(lhs.gradient.len());
         for index in 0..lhs.gradient.len() {
             gradient.push(lhs.gradient[index] * lhs_factor + rhs.gradient[index] * rhs_factor);
         }
-        Self { value, gradient }
+        Self {
+            value,
+            seed_value,
+            gradient,
+        }
+    }
+
+    fn normalize_angle(&self) -> Self {
+        Self {
+            value: normalize_angle(self.value),
+            seed_value: normalize_angle(self.seed_value),
+            gradient: self.gradient.clone(),
+        }
+    }
+
+    pub(crate) fn with_live_value(mut self, live: &Self) -> Self {
+        self.value = live.value;
+        self
     }
 }
 
@@ -279,6 +345,7 @@ pub(crate) struct DArc {
     pub(crate) start: DPoint,
     pub(crate) end: DPoint,
     pub(crate) ccw: bool,
+    pub(crate) seed_ccw: bool,
 }
 
 #[derive(Clone, Debug)]
@@ -293,6 +360,10 @@ pub(crate) enum DObject {
 }
 
 #[derive(Clone, Debug)]
+#[allow(
+    clippy::large_enum_variant,
+    reason = "boxing differentiated objects would add allocation to every expression evaluation"
+)]
 enum DValue {
     Number(Jet, NumericDimension),
     Object(DObject),
@@ -310,6 +381,7 @@ impl DifferentiatedFile {
     pub(crate) fn evaluate(
         file: &File,
         normalized: &[f64],
+        normalized_seed: &[f64],
         scales: &[f64],
         dimensions: &BTreeMap<String, NumericDimension>,
         inferred_dimensions: &DimensionMap,
@@ -318,6 +390,7 @@ impl DifferentiatedFile {
         let mut evaluator = AdEvaluator {
             objects: BTreeMap::new(),
             normalized,
+            normalized_seed,
             scales,
             dimensions,
             inferred_dimensions,
@@ -438,6 +511,7 @@ fn point_primal_matches(lhs: &DPoint, rhs: crate::geom::Point, tolerance: Tolera
 struct AdEvaluator<'a> {
     objects: BTreeMap<String, DObject>,
     normalized: &'a [f64],
+    normalized_seed: &'a [f64],
     scales: &'a [f64],
     dimensions: &'a BTreeMap<String, NumericDimension>,
     inferred_dimensions: &'a DimensionMap,
@@ -502,10 +576,12 @@ impl AdEvaluator<'_> {
             .get(index)
             .copied()
             .ok_or_else(|| solver_error(span, "unknown vector is too short"))?;
+        let normalized_seed = self.normalized_seed[index];
         let scale = self.scales[index];
         self.cursor += 1;
         Ok(Jet::variable(
             normalized * scale,
+            normalized_seed * scale,
             index,
             scale,
             self.normalized.len(),
@@ -759,7 +835,10 @@ impl<'a> RelationEvaluator<'a> {
         let angle = if name == "dir_angle" {
             require_arity(name, args, 2, span)?;
             let direction = self.eval_point(&args[1])?.sub(&self.eval_point(&args[0])?);
-            direction.y.atan2(&direction.x)
+            direction
+                .y
+                .atan2(&direction.x)
+                .map(|value| value.normalize_angle())
         } else {
             require_arity(name, args, 3, span)?;
             let a = self.eval_point(&args[0])?;
@@ -1395,16 +1474,10 @@ impl<'a> RelationEvaluator<'a> {
         require_arity("reflect", args, 2, span)?;
         let point = self.eval_point(&args[0])?;
         match self.eval_object(&args[1])? {
-            DObject::Point(center) => Ok(DPoint {
-                x: center.x.scale(2.0).sub(&point.x),
-                y: center.y.scale(2.0).sub(&point.y),
-            }),
+            DObject::Point(center) => Ok(center.add_vector(&center.sub(&point))),
             DObject::Linear(linear) => {
                 let projection = closest_point(&point, &linear, span)?;
-                Ok(DPoint {
-                    x: projection.x.scale(2.0).sub(&point.x),
-                    y: projection.y.scale(2.0).sub(&point.y),
-                })
+                Ok(projection.add_vector(&projection.sub(&point)))
             }
             _ => Err(solver_error(span, "reflect requires a point or line")),
         }
@@ -1766,6 +1839,7 @@ impl<'a> RelationEvaluator<'a> {
                 start,
                 end,
                 ccw,
+                seed_ccw: ccw,
             });
         }
         require_arity(name, args, 4, span)?;
@@ -1782,6 +1856,7 @@ impl<'a> RelationEvaluator<'a> {
             start,
             end,
             ccw: first.cross(&second).value >= 0.0,
+            seed_ccw: first.cross(&second).seed_value >= 0.0,
         })
     }
 
@@ -1857,6 +1932,21 @@ impl<'a> RelationEvaluator<'a> {
                 format!("circle has no property `{name}`"),
             )),
         }
+    }
+}
+
+fn normalize_angle(angle: f64) -> f64 {
+    let tau = 2.0 * core::f64::consts::PI;
+    let reduced = angle % tau;
+    let normalized = if reduced < 0.0 {
+        reduced + tau
+    } else {
+        reduced
+    };
+    if normalized >= tau || normalized == 0.0 {
+        0.0
+    } else {
+        normalized
     }
 }
 
@@ -2833,5 +2923,42 @@ const fn numeric_dimension(value: InferredDimension) -> NumericDimension {
         InferredDimension::Number(Dimension::Length) => NumericDimension::Length,
         InferredDimension::Number(Dimension::Area) => NumericDimension::Area,
         InferredDimension::Angle => NumericDimension::Angle,
+    }
+}
+
+#[cfg(test)]
+#[allow(clippy::expect_used, clippy::float_cmp)]
+mod tests {
+    use super::*;
+
+    fn jet(value: f64, seed_value: f64, derivative: f64) -> Jet {
+        Jet {
+            value,
+            seed_value,
+            gradient: vec![derivative],
+        }
+    }
+
+    #[test]
+    fn closest_point_keeps_the_seed_selected_projection_derivative() {
+        let point = DPoint {
+            x: jet(-1.0, 0.5, 1.0),
+            y: Jet::constant(1.0, 1),
+        };
+        let segment = DLinear {
+            start: DPoint {
+                x: Jet::constant(0.0, 1),
+                y: Jet::constant(0.0, 1),
+            },
+            through: DPoint {
+                x: Jet::constant(1.0, 1),
+                y: Jet::constant(0.0, 1),
+            },
+            domain: LinearDomain::Segment,
+        };
+        let projection = closest_point(&point, &segment, Span::default()).expect("projection");
+        assert_eq!(projection.x.value, 0.0);
+        assert_eq!(projection.x.seed_value, 0.5);
+        assert_eq!(projection.x.gradient, vec![1.0]);
     }
 }

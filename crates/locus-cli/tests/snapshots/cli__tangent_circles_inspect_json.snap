@@ -10,77 +10,77 @@ expression: stdout
       {
         "first": "O_1",
         "second": "O_2",
-        "distance": 4.999999999999999
+        "distance": 5.0
       },
       {
         "first": "O_1",
         "second": "T",
-        "distance": 2.000000000012976
+        "distance": 2.000000000012682
       },
       {
         "first": "O_1",
         "second": "E",
-        "distance": 9.999999999999998
+        "distance": 10.0
       },
       {
         "first": "O_1",
         "second": "P_1",
-        "distance": 2.000000000012272
+        "distance": 2.0000000000121925
       },
       {
         "first": "O_1",
         "second": "P_2",
-        "distance": 5.291502622129154
+        "distance": 5.2915026221291335
       },
       {
         "first": "O_2",
         "second": "T",
-        "distance": 3.000000000008651
+        "distance": 3.000000000008945
       },
       {
         "first": "O_2",
         "second": "E",
-        "distance": 14.999999999999996
+        "distance": 15.0
       },
       {
         "first": "O_2",
         "second": "P_1",
-        "distance": 5.744556651300194
+        "distance": 5.74455665124172
       },
       {
         "first": "O_2",
         "second": "P_2",
-        "distance": 2.999999999999875
+        "distance": 2.9999999999997553
       },
       {
         "first": "T",
         "second": "E",
-        "distance": 12.000000000002162
+        "distance": 12.000000000001867
       },
       {
         "first": "T",
         "second": "P_1",
-        "distance": 3.0983867873405955
+        "distance": 3.0983867872761977
       },
       {
         "first": "T",
         "second": "P_2",
-        "distance": 3.794738772807794
+        "distance": 3.79473877278248
       },
       {
         "first": "E",
         "second": "P_1",
-        "distance": 9.79796600117354
+        "distance": 9.79796600124206
       },
       {
         "first": "E",
         "second": "P_2",
-        "distance": 14.696938456699089
+        "distance": 14.696938456699117
       },
       {
         "first": "P_1",
         "second": "P_2",
-        "distance": 4.8989724555255485
+        "distance": 4.898972455457057
       }
     ],
     "triangle_angles": [
@@ -88,331 +88,325 @@ expression: stdout
         "first": "O_2",
         "vertex": "O_1",
         "second": "T",
-        "radians": 3.6022637882334217e-6
+        "radians": 3.6022473646853186e-6
       },
       {
         "first": "O_1",
         "vertex": "O_2",
         "second": "T",
-        "radians": 2.401509192161385e-6
+        "radians": 2.4014982431287277e-6
       },
       {
         "first": "O_1",
         "vertex": "T",
         "second": "O_2",
-        "radians": 3.141586649816813
+        "radians": 3.1415866498441853
       },
       {
         "first": "O_2",
         "vertex": "O_1",
         "second": "P_1",
-        "radians": 1.7721507325648125
+        "radians": 1.7721507325305537
       },
       {
         "first": "O_1",
         "vertex": "O_2",
         "second": "P_1",
-        "radians": 0.3481099630625721
+        "radians": 0.34810996306878916
       },
       {
         "first": "O_1",
         "vertex": "P_1",
         "second": "O_2",
-        "radians": 1.0213319579624087
+        "radians": 1.0213319579904505
       },
       {
         "first": "O_2",
         "vertex": "O_1",
         "second": "P_2",
-        "radians": 0.5889546074454881
+        "radians": 0.5889546074454652
       },
       {
         "first": "O_1",
         "vertex": "O_2",
         "second": "P_2",
-        "radians": 1.3694384060045734
+        "radians": 1.3694384060045819
       },
       {
         "first": "O_1",
         "vertex": "P_2",
         "second": "O_2",
-        "radians": 1.1831996401397318
+        "radians": 1.1831996401397462
       },
       {
         "first": "T",
         "vertex": "O_1",
         "second": "E",
-        "radians": 3.141589051326005
+        "radians": 3.1415890513424287
       },
       {
         "first": "O_1",
         "vertex": "T",
         "second": "E",
-        "radians": 3.0018864901919926e-6
+        "radians": 3.001872803901981e-6
       },
       {
         "first": "O_1",
         "vertex": "E",
         "second": "T",
-        "radians": 6.003772980414284e-7
+        "radians": 6.003745607833377e-7
       },
       {
         "first": "T",
         "vertex": "O_1",
         "second": "P_1",
-        "radians": 1.7721543348286006
+        "radians": 1.7721543347779183
       },
       {
         "first": "O_1",
         "vertex": "T",
         "second": "P_1",
-        "radians": 0.6847191593804527
+        "radians": 0.6847191594058376
       },
       {
         "first": "O_1",
         "vertex": "P_1",
         "second": "T",
-        "radians": 0.68471915938074
+        "radians": 0.6847191594060373
       },
       {
         "first": "T",
         "vertex": "O_1",
         "second": "P_2",
-        "radians": 0.5889582097092764
+        "radians": 0.5889582096928299
       },
       {
         "first": "O_1",
         "vertex": "T",
         "second": "P_2",
-        "radians": 2.2555107267805905
+        "radians": 2.2555107268025774
       },
       {
         "first": "O_1",
         "vertex": "P_2",
         "second": "T",
-        "radians": 0.29712371709992663
+        "radians": 0.2971237170943863
       },
       {
         "first": "E",
         "vertex": "O_1",
         "second": "P_1",
-        "radians": 1.3694419210249809
+        "radians": 1.3694419210592397
       },
       {
         "first": "O_1",
         "vertex": "E",
         "second": "P_1",
-        "radians": 0.20135792079032233
+        "radians": 0.20135792079031414
       },
       {
         "first": "O_1",
         "vertex": "P_1",
         "second": "E",
-        "radians": 1.57079281177449
+        "radians": 1.5707928117402394
       },
       {
         "first": "E",
         "vertex": "O_1",
         "second": "P_2",
-        "radians": 2.5526380461443052
+        "radians": 2.552638046144328
       },
       {
         "first": "O_1",
         "vertex": "E",
         "second": "P_2",
-        "radians": 0.2013579207903224
+        "radians": 0.20135792079031414
       },
       {
         "first": "O_1",
         "vertex": "P_2",
         "second": "E",
-        "radians": 0.38759668665516583
+        "radians": 0.38759668665515107
       },
       {
         "first": "P_1",
         "vertex": "O_1",
         "second": "P_2",
-        "radians": 1.1831961251193244
+        "radians": 1.1831961250850884
       },
       {
         "first": "O_1",
         "vertex": "P_1",
         "second": "P_2",
-        "radians": 1.5707998418153033
+        "radians": 1.570799841849554
       },
       {
         "first": "O_1",
         "vertex": "P_2",
         "second": "P_1",
-        "radians": 0.3875966866551658
+        "radians": 0.38759668665515107
       },
       {
         "first": "T",
         "vertex": "O_2",
         "second": "E",
-        "radians": 2.401509192161385e-6
+        "radians": 2.4014982431287277e-6
       },
       {
         "first": "O_2",
         "vertex": "T",
         "second": "E",
-        "radians": 3.141589651703303
+        "radians": 3.1415896517169895
       },
       {
         "first": "O_2",
         "vertex": "E",
         "second": "T",
-        "radians": 6.003772980414283e-7
+        "radians": 6.003745607833377e-7
       },
       {
         "first": "T",
         "vertex": "O_2",
         "second": "P_1",
-        "radians": 0.3481123645717643
+        "radians": 0.34811236456703226
       },
       {
         "first": "O_2",
         "vertex": "T",
         "second": "P_1",
-        "radians": 2.4568674904363603
+        "radians": 2.4568674904383476
       },
       {
         "first": "O_2",
         "vertex": "P_1",
         "second": "T",
-        "radians": 0.33661279858166876
+        "radians": 0.3366127985844131
       },
       {
         "first": "T",
         "vertex": "O_2",
         "second": "P_2",
-        "radians": 1.3694408075137656
+        "radians": 1.369440807502825
       },
       {
         "first": "O_2",
         "vertex": "T",
         "second": "P_2",
-        "radians": 0.8860759230362225
+        "radians": 0.8860759230416083
       },
       {
         "first": "O_2",
         "vertex": "P_2",
         "second": "T",
-        "radians": 0.886075923039805
+        "radians": 0.8860759230453599
       },
       {
         "first": "E",
         "vertex": "O_2",
         "second": "P_1",
-        "radians": 0.34810996306257214
+        "radians": 0.34810996306878916
       },
       {
         "first": "O_2",
         "vertex": "E",
         "second": "P_1",
-        "radians": 0.20135792079032236
+        "radians": 0.20135792079031414
       },
       {
         "first": "O_2",
         "vertex": "P_1",
         "second": "E",
-        "radians": 2.5921247697368988
+        "radians": 2.59212476973069
       },
       {
         "first": "E",
         "vertex": "O_2",
         "second": "P_2",
-        "radians": 1.3694384060045734
+        "radians": 1.3694384060045819
       },
       {
         "first": "O_2",
         "vertex": "E",
         "second": "P_2",
-        "radians": 0.20135792079032233
+        "radians": 0.20135792079031414
       },
       {
         "first": "O_2",
         "vertex": "P_2",
         "second": "E",
-        "radians": 1.5707963267948977
+        "radians": 1.5707963267948972
       },
       {
         "first": "P_1",
         "vertex": "O_2",
         "second": "P_2",
-        "radians": 1.0213284429420013
+        "radians": 1.0213284429357927
       },
       {
         "first": "O_2",
         "vertex": "P_1",
         "second": "P_2",
-        "radians": 0.5494678838528946
+        "radians": 0.5494678838591034
       },
       {
         "first": "O_2",
         "vertex": "P_2",
         "second": "P_1",
-        "radians": 1.5707963267948977
+        "radians": 1.5707963267948972
       },
       {
         "first": "E",
         "vertex": "T",
         "second": "P_1",
-        "radians": 0.6847221612669429
+        "radians": 0.6847221612786414
       },
       {
         "first": "T",
         "vertex": "E",
         "second": "P_1",
-        "radians": 0.20135852116762043
+        "radians": 0.2013585211648749
       },
       {
         "first": "T",
         "vertex": "P_1",
         "second": "E",
-        "radians": 2.25551197115523
+        "radians": 2.2555119711462766
       },
       {
         "first": "E",
         "vertex": "T",
         "second": "P_2",
-        "radians": 2.2555137286670806
+        "radians": 2.255513728675381
       },
       {
         "first": "T",
         "vertex": "E",
         "second": "P_2",
-        "radians": 0.2013585211676204
+        "radians": 0.20135852116487493
       },
       {
         "first": "T",
         "vertex": "P_2",
         "second": "E",
-        "radians": 0.6847204037550924
+        "radians": 0.6847204037495374
       },
       {
         "first": "P_1",
         "vertex": "T",
         "second": "P_2",
-        "radians": 1.5707915674001376
+        "radians": 1.5707915673967394
       },
       {
         "first": "T",
         "vertex": "P_1",
         "second": "P_2",
-        "radians": 0.8860806824345633
+        "radians": 0.8860806824435166
       },
       {
         "first": "T",
         "vertex": "P_2",
         "second": "P_1",
-        "radians": 0.6847204037550924
-      },
-      {
-        "first": "E",
-        "vertex": "P_2",
-        "second": "P_1",
-        "radians": 2.467165817330379e-17
+        "radians": 0.6847204037495371
       }
     ],
     "line_ratios": [
@@ -430,7 +424,7 @@ expression: stdout
         "start": "E",
         "point": "P_1",
         "end": "P_2",
-        "ratio": 2.0000043050093943,
+        "ratio": 2.0000043050513425,
         "integer_ratio": null
       }
     ]
