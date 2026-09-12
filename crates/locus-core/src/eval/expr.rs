@@ -124,6 +124,10 @@ impl<'a> ExpressionEvaluator<'a> {
         self.dimensions.get(name).copied()
     }
 
+    pub(crate) fn expression_dimension(&self, expression: &Expr) -> Option<InferredDimension> {
+        self.dimensions.expression_dimension(expression)
+    }
+
     pub(crate) fn eval(&mut self, expression: &Expr) -> Result<Value, EvalError> {
         if let Some(value) = self.eval_leaf(expression) {
             return value;
@@ -1052,7 +1056,7 @@ fn value_matches_expected(value: &Value, expected: Expected) -> bool {
     }
 }
 
-fn angle_product_operand_expectations(op: BinOp) -> &'static [(Expected, Expected)] {
+pub(crate) fn angle_product_operand_expectations(op: BinOp) -> &'static [(Expected, Expected)] {
     const SCALAR: Expected = Expected::Number(Dimension::Scalar);
 
     match op {
@@ -1062,7 +1066,10 @@ fn angle_product_operand_expectations(op: BinOp) -> &'static [(Expected, Expecte
     }
 }
 
-fn product_operand_expectations(op: BinOp, result: Dimension) -> &'static [(Expected, Expected)] {
+pub(crate) fn product_operand_expectations(
+    op: BinOp,
+    result: Dimension,
+) -> &'static [(Expected, Expected)] {
     use Dimension::{Area, Length, Scalar};
     const SCALAR: Expected = Expected::Number(Dimension::Scalar);
     const LENGTH: Expected = Expected::Number(Dimension::Length);

@@ -5,12 +5,16 @@ use serde::Serialize;
 
 use crate::Tolerance;
 use crate::eval::env::Environment;
-use crate::eval::expr::{DimensionMap, Expected, ExpressionEvaluator};
-use crate::eval::{EvalError, Value, infer_dimensions};
+use crate::eval::expr::{
+    DimensionMap, Expected, ExpressionEvaluator, InferredDimension,
+    angle_product_operand_expectations, product_operand_expectations,
+};
+use crate::eval::{EvalError, Value, constructor_arg_dimension, infer_dimensions};
 use crate::geom::construct;
 use crate::geom::measure;
 use crate::geom::{Arc, Line, Point, Polygon, Ray, Segment, Vec2, arc_contains_angle};
 use crate::scene::{Dimension, ResolvedObject, ResolvedScene};
+use crate::tol::resolved_scene_tolerance;
 
 /// Results for every assertion in source order.
 #[derive(Clone, Debug, PartialEq, Serialize)]
@@ -88,7 +92,7 @@ pub fn evaluate_assertions(
 ) -> Result<AssertionReport, EvalError> {
     let dimensions = infer_dimensions(file)?;
     let environment = environment_from_scene(scene)?;
-    let base_tolerance = scene_tolerance(scene);
+    let base_tolerance = resolved_scene_tolerance(file, scene);
     let mut assertions = Vec::new();
     for assertion in file.statements.iter().filter_map(assertion_statement) {
         assertions.push(evaluate_one(
@@ -121,20 +125,6 @@ fn environment_from_scene(scene: &ResolvedScene) -> Result<Environment, EvalErro
             .map_err(|error| EvalError::new("E302", id.span, error.to_string()))?;
     }
     Ok(environment)
-}
-
-fn scene_tolerance(scene: &ResolvedScene) -> Tolerance {
-    let fallbacks = scene
-        .objects
-        .values()
-        .filter_map(|object| match object {
-            ResolvedObject::Num(number) if number.dimension == Dimension::Length => {
-                Some(number.value)
-            }
-            _ => None,
-        })
-        .collect::<Vec<_>>();
-    Tolerance::from_bbox_with_fallbacks(&scene.bbox, &fallbacks)
 }
 
 fn evaluate_one(
@@ -226,7 +216,7 @@ impl AssertionContext<'_> {
 
     fn collect_actuals(&mut self, expression: &Expr) -> Result<Vec<SubtermActual>, EvalError> {
         let mut actuals = Vec::new();
-        self.walk_actuals(expression, None, &mut actuals)?;
+        self.walk_actuals(expression, Some(Expected::Bool), &mut actuals)?;
         Ok(actuals)
     }
 
@@ -251,7 +241,7 @@ impl AssertionContext<'_> {
         expression: &Expr,
         expected: Option<Expected>,
     ) -> Result<Option<ActualValue>, EvalError> {
-        if is_boolean_expression(expression) {
+        if is_boolean_expression(expression, expected) {
             return self
                 .eval_boolean(expression)
                 .map(|value| Some(ActualValue::Boolean { value }));
@@ -283,6 +273,31 @@ impl AssertionContext<'_> {
             return Some(expected);
         }
         lhs_value.as_ref().map(expected_for_value)
+    }
+
+    fn product_operand_expectations(
+        &mut self,
+        op: BinOp,
+        lhs: &Expr,
+        rhs: &Expr,
+        expected: Option<Expected>,
+    ) -> [Option<Expected>; 2] {
+        let Some(expected) = expected else {
+            return [None, None];
+        };
+        let candidates = match expected {
+            Expected::Angle => angle_product_operand_expectations(op),
+            Expected::Number(dimension) => product_operand_expectations(op, dimension),
+            Expected::Bool | Expected::Object => return [None, None],
+        };
+        for &(lhs_expected, rhs_expected) in candidates {
+            if self.expressions.eval_as(lhs, lhs_expected).is_ok()
+                && self.expressions.eval_as(rhs, rhs_expected).is_ok()
+            {
+                return [Some(lhs_expected), Some(rhs_expected)];
+            }
+        }
+        [None, None]
     }
 
     fn eval_predicate_by_name(
@@ -527,24 +542,53 @@ fn visit_children(
         Expr::Call { name, args, .. } => {
             visit_call_children(context, &name.name, args, expected, actuals)
         }
-        Expr::Property { base, args, .. } => {
-            context.walk_actuals(base, None, actuals)?;
-            visit_list(context, args, actuals)
-        }
+        Expr::Property { base, args, .. } => visit_property_children(context, base, args, actuals),
         Expr::Group { expr, .. } => context.walk_actuals(expr, expected, actuals),
-        Expr::Unary { op, expr, .. } => {
-            let operand_expected = (*op == UnaryOp::Neg).then_some(expected).flatten();
-            context.walk_actuals(expr, operand_expected, actuals)
-        }
+        Expr::Unary { op, expr, .. } => visit_unary_child(context, *op, expr, expected, actuals),
         Expr::Binary { op, lhs, rhs, .. } => {
-            let operand_expected = binary_operand_expected(context, *op, lhs, rhs, expected);
-            context.walk_actuals(lhs, operand_expected, actuals)?;
-            context.walk_actuals(rhs, operand_expected, actuals)
+            visit_binary_children(context, *op, lhs, rhs, expected, actuals)
         }
         Expr::Number(_) | Expr::Boolean { .. } | Expr::String(_) | Expr::Tex(_) | Expr::Ref(_) => {
             Ok(())
         }
     }
+}
+
+fn visit_property_children(
+    context: &mut AssertionContext<'_>,
+    base: &Expr,
+    args: &[Expr],
+    actuals: &mut Vec<SubtermActual>,
+) -> Result<(), EvalError> {
+    context.walk_actuals(base, None, actuals)?;
+    visit_list(context, args, actuals)
+}
+
+fn visit_unary_child(
+    context: &mut AssertionContext<'_>,
+    op: UnaryOp,
+    expression: &Expr,
+    expected: Option<Expected>,
+    actuals: &mut Vec<SubtermActual>,
+) -> Result<(), EvalError> {
+    let operand_expected = match op {
+        UnaryOp::Neg => expected,
+        UnaryOp::Not => Some(Expected::Bool),
+    };
+    context.walk_actuals(expression, operand_expected, actuals)
+}
+
+fn visit_binary_children(
+    context: &mut AssertionContext<'_>,
+    op: BinOp,
+    lhs: &Expr,
+    rhs: &Expr,
+    expected: Option<Expected>,
+    actuals: &mut Vec<SubtermActual>,
+) -> Result<(), EvalError> {
+    let [lhs_expected, rhs_expected] = binary_operand_expectations(context, op, lhs, rhs, expected);
+    context.walk_actuals(lhs, lhs_expected, actuals)?;
+    context.walk_actuals(rhs, rhs_expected, actuals)
 }
 
 fn visit_list(
@@ -586,22 +630,38 @@ fn visit_call_children(
         context.walk_actuals(&args[0], operand_expected, actuals)?;
         return context.walk_actuals(&args[1], operand_expected, actuals);
     }
-    visit_list(context, args, actuals)
+    for (index, argument) in args.iter().enumerate() {
+        let expected = constructor_arg_dimension(name, index).map(expected_for_inferred);
+        context.walk_actuals(argument, expected, actuals)?;
+    }
+    Ok(())
 }
 
-fn binary_operand_expected(
+fn binary_operand_expectations(
     context: &mut AssertionContext<'_>,
     op: BinOp,
     lhs: &Expr,
     rhs: &Expr,
     expected: Option<Expected>,
-) -> Option<Expected> {
+) -> [Option<Expected>; 2] {
     match op {
-        BinOp::Add | BinOp::Sub => expected.or_else(|| context.matching_expected(lhs, rhs)),
-        BinOp::Eq | BinOp::Lt | BinOp::Gt | BinOp::Le | BinOp::Ge => {
-            context.matching_expected(lhs, rhs)
+        BinOp::Add | BinOp::Sub => {
+            let expected = expected.or_else(|| context.matching_expected(lhs, rhs));
+            [expected, expected]
         }
-        BinOp::Mul | BinOp::Div | BinOp::And | BinOp::Or => None,
+        BinOp::Eq | BinOp::Lt | BinOp::Gt | BinOp::Le | BinOp::Ge => {
+            let expected = context.matching_expected(lhs, rhs);
+            [expected, expected]
+        }
+        BinOp::Mul | BinOp::Div => context.product_operand_expectations(op, lhs, rhs, expected),
+        BinOp::And | BinOp::Or => [Some(Expected::Bool), Some(Expected::Bool)],
+    }
+}
+
+const fn expected_for_inferred(dimension: InferredDimension) -> Expected {
+    match dimension {
+        InferredDimension::Number(dimension) => Expected::Number(dimension),
+        InferredDimension::Angle => Expected::Angle,
     }
 }
 
@@ -626,18 +686,20 @@ fn expression_may_need_context(expression: &Expr) -> bool {
     matches!(expression, Expr::Number(_) | Expr::Group { .. })
 }
 
-fn is_boolean_expression(expression: &Expr) -> bool {
+fn is_boolean_expression(expression: &Expr, expected: Option<Expected>) -> bool {
     match expression {
         Expr::Boolean { .. }
         | Expr::Unary {
             op: UnaryOp::Not, ..
         } => true,
-        Expr::Call { name, .. } => is_predicate(&name.name),
+        Expr::Call { name, .. } => {
+            matches!(expected, Some(Expected::Bool)) && is_predicate(&name.name)
+        }
         Expr::Binary { op, .. } => matches!(
             op,
             BinOp::Eq | BinOp::Lt | BinOp::Gt | BinOp::Le | BinOp::Ge | BinOp::And | BinOp::Or
         ),
-        Expr::Group { expr, .. } => is_boolean_expression(expr),
+        Expr::Group { expr, .. } => is_boolean_expression(expr, expected),
         _ => false,
     }
 }
@@ -706,8 +768,10 @@ pub(crate) fn tangent_objects(
         (ResolvedObject::Circle(lhs), ResolvedObject::Circle(rhs)) => {
             let distance = measure::dist(lhs.center, rhs.center);
             let external = (distance - lhs.radius - rhs.radius).abs();
-            let internal = (distance - (lhs.radius - rhs.radius).abs()).abs();
-            Ok(tolerance.length_zero(external) || tolerance.length_zero(internal))
+            let radius_difference = (lhs.radius - rhs.radius).abs();
+            let internal = (distance - radius_difference).abs();
+            Ok(tolerance.length_zero(external)
+                || radius_difference > 0.0 && tolerance.length_zero(internal))
         }
         (ResolvedObject::Circle(circle), linear) | (linear, ResolvedObject::Circle(circle)) => {
             let distance = circle_linear_distance(circle.center, linear, tolerance, span)?;

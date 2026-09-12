@@ -116,6 +116,52 @@ fn failure_report_keeps_every_relation_residual() {
 #[test]
 fn stalled_feasible_nonlinear_system_does_not_claim_a_conflict_subset() {
     let error = failure("locus 2\nnum x = free ~0\nrel x * x == 1\n");
+    assert_eq!(error.code, "E403");
     assert!(!error.message.contains("candidate"), "{error}");
     assert!(!error.message.contains("subset: lines"), "{error}");
+}
+
+#[test]
+fn unrelated_relation_cannot_turn_nonconvergence_into_a_proven_conflict() {
+    let error = failure("locus 2\nnum x = free ~0\nnum y = free ~0\nrel x * x == 1\nrel y == 0\n");
+    assert_eq!(error.code, "E403");
+    assert!(!error.message.contains("subset: lines"), "{error}");
+    assert!(error.message.contains("non-convergent"), "{error}");
+    solved_and_checked("locus 2\nnum x = free ~1\nnum y = free ~0\nrel x * x == 1\nrel y == 0\n");
+}
+
+#[test]
+fn contradictory_pins_retain_an_isolated_pair() {
+    let error = failure("locus 2\npoint P = free ~(0, 0)\nrel pin(P, 0, 0)\nrel pin(P, 1, 0)\n");
+    assert!(
+        error
+            .message
+            .contains("minimal infeasible subset: lines 3, 4"),
+        "{error}"
+    );
+}
+
+#[test]
+fn overlapping_numeric_targets_are_consistent_at_solve_tolerance() {
+    solved_and_checked("locus 2\nnum x = free ~0\nrel x == 0\nrel x == 0.0000000000005\n");
+    solved_and_checked(
+        "locus 2\nnum x = free ~1000000000000\n\
+         rel x == 1000000000000\nrel x == 1000000000000.5\n",
+    );
+    let stalled = failure(
+        "locus 2\nnum x = free ~0\nnum y = free ~0\n\
+         rel x == 0\nrel x == 0.0000000000005\nrel y * y == 1\n",
+    );
+    assert_eq!(stalled.code, "E403");
+    assert!(!stalled.message.contains("subset: lines"), "{stalled}");
+}
+
+#[test]
+fn fixed_false_relation_is_a_proven_singleton_conflict() {
+    let error = failure("locus 2\nnum fixed = 1\nrel fixed == 2\n");
+    assert_eq!(error.code, "E402");
+    assert!(
+        error.message.contains("minimal infeasible subset: lines 3"),
+        "{error}"
+    );
 }

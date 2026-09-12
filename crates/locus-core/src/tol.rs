@@ -1,6 +1,12 @@
 //! The single home of numeric tolerance policy in `locus-core`.
 
+use locus_syntax::{Constructor, Expr, File, OpStmt, PropValue, Statement};
+
+use crate::eval::env::Environment;
+use crate::eval::expr::{ExpressionEvaluator, InferredDimension};
+use crate::eval::{constructor_arg_dimension, infer_dimensions, property_dimension};
 use crate::geom::{BBox, Vec2};
+use crate::scene::{Dimension, ResolvedScene};
 
 /// Default normalized tolerance for assertions and geometric incidence.
 pub const DEFAULT_EPSILON: f64 = 1.0e-9;
@@ -10,6 +16,24 @@ pub const CONSTRUCTION_EPSILON: f64 = 1.0e-12;
 
 /// Normative maximum normalized relation residual for solve convergence.
 pub(crate) const SOLVE_EPSILON: f64 = 1.0e-12;
+
+/// Proves that two equality targets cannot share a value at solve tolerance.
+///
+/// For `|x-t| < e*max(base, |x|, |t|)`, every solution lies inside
+/// `t +/- e*max(base, |t|)/(1-e)`. Outward rounding keeps this conservative.
+/// The same bounds also enclose solutions using a fixed normalization scale.
+pub(crate) fn solve_targets_disjoint(lhs: f64, rhs: f64, base: f64) -> bool {
+    if !base.is_finite() || base <= 0.0 {
+        return false;
+    }
+    let (lower, upper) = if lhs <= rhs { (lhs, rhs) } else { (rhs, lhs) };
+    let margin = |target: f64| {
+        ((SOLVE_EPSILON.next_up() * base.max(target.abs())).next_up()
+            / (1.0 - SOLVE_EPSILON).next_down())
+        .next_up()
+    };
+    (lower + margin(lower)).next_up() < (upper - margin(upper)).next_down()
+}
 
 /// Normative relative singular-value threshold for Jacobian rank.
 pub(crate) const RANK_FACTOR: f64 = 1.0e-10;
@@ -116,7 +140,7 @@ impl Tolerance {
     /// Tests an angle-valued residual (angles normalize by one radian).
     #[must_use]
     pub fn angle_zero(self, residual: f64) -> bool {
-        normalized_zero(residual, 1.0, self.epsilon)
+        fixed_scale_zero(residual, 1.0, self.epsilon)
     }
 
     /// Tests a scalar-valued residual.
@@ -157,7 +181,7 @@ impl Tolerance {
     /// Tests a constructor's angular threshold (`1e-12` radians).
     #[must_use]
     pub fn construction_angle_zero(self, residual: f64) -> bool {
-        normalized_zero(residual, 1.0, CONSTRUCTION_EPSILON)
+        fixed_scale_zero(residual, 1.0, CONSTRUCTION_EPSILON)
     }
 
     /// Tests whether two nonzero directions are parallel using `abs(sin(theta))`.
@@ -282,8 +306,197 @@ impl Tolerance {
     }
 }
 
+/// Derives assertion and inspection tolerance from the same solved geometry and source fallbacks.
+pub(crate) fn resolved_scene_tolerance(file: &File, scene: &ResolvedScene) -> Tolerance {
+    let dimensions = infer_dimensions(file).unwrap_or_default();
+    let mut environment = Environment::new();
+    for (id, object) in &scene.objects {
+        let _ = environment.insert(id.clone(), object.clone());
+    }
+    let mut fallbacks = Vec::new();
+    for op in file.statements.iter().filter_map(operation) {
+        let tolerance = Tolerance::from_bbox_with_fallbacks(&scene.bbox, &fallbacks);
+        let mut evaluator = ExpressionEvaluator::new(&environment, tolerance, &dimensions);
+        fallbacks.extend(length_fallbacks(&mut evaluator, op));
+    }
+    Tolerance::from_bbox_with_fallbacks(&scene.bbox, &fallbacks)
+}
+
+fn operation(statement: &Statement) -> Option<&OpStmt> {
+    match statement {
+        Statement::Op(op) => Some(op),
+        Statement::Rel(_)
+        | Statement::Assert(_)
+        | Statement::Meta(_)
+        | Statement::Style(_)
+        | Statement::Class(_) => None,
+    }
+}
+
+fn length_fallbacks(evaluator: &mut ExpressionEvaluator<'_>, op: &OpStmt) -> Vec<f64> {
+    let mut values = Vec::new();
+    collect_constructor_fallbacks(evaluator, op, &mut values);
+    collect_constructor_length_literals(evaluator, &op.ctor, &mut values);
+    for property in &op.props.items {
+        if property_dimension(&property.name.name)
+            != Some(InferredDimension::Number(Dimension::Length))
+        {
+            continue;
+        }
+        if let PropValue::Expr(expression) = &property.value
+            && let Ok(value) = evaluator.eval_number(expression, Dimension::Length)
+        {
+            values.push(value);
+        }
+        if let PropValue::Expr(expression) = &property.value {
+            collect_expression_length_literals(evaluator, expression, &mut values);
+        }
+    }
+    values
+}
+
+fn collect_constructor_length_literals(
+    evaluator: &mut ExpressionEvaluator<'_>,
+    constructor: &Constructor,
+    values: &mut Vec<f64>,
+) {
+    match constructor {
+        Constructor::Call { args, .. } => collect_expression_list_literals(evaluator, args, values),
+        Constructor::Expr { expr, .. } | Constructor::FreeNum { hint: expr, .. } => {
+            collect_expression_length_literals(evaluator, expr, values);
+        }
+        Constructor::FreePoint { x, y, .. } => {
+            collect_expression_length_literals(evaluator, x, values);
+            collect_expression_length_literals(evaluator, y, values);
+        }
+    }
+}
+
+fn collect_expression_length_literals(
+    evaluator: &mut ExpressionEvaluator<'_>,
+    expression: &Expr,
+    values: &mut Vec<f64>,
+) {
+    if collect_length_literal(evaluator, expression, values) {
+        return;
+    }
+    collect_compound_length_literals(evaluator, expression, values);
+}
+
+fn collect_length_literal(
+    evaluator: &mut ExpressionEvaluator<'_>,
+    expression: &Expr,
+    values: &mut Vec<f64>,
+) -> bool {
+    let Expr::Number(_) = expression else {
+        return false;
+    };
+    if evaluator.expression_dimension(expression)
+        == Some(InferredDimension::Number(Dimension::Length))
+    {
+        push_evaluated_length(evaluator, expression, true, values);
+    }
+    true
+}
+
+fn collect_compound_length_literals(
+    evaluator: &mut ExpressionEvaluator<'_>,
+    expression: &Expr,
+    values: &mut Vec<f64>,
+) {
+    match expression {
+        Expr::Call { args, .. } => collect_expression_list_literals(evaluator, args, values),
+        Expr::Property { base, args, .. } => {
+            collect_expression_length_literals(evaluator, base, values);
+            collect_expression_list_literals(evaluator, args, values);
+        }
+        Expr::Group { expr, .. } | Expr::Unary { expr, .. } => {
+            collect_expression_length_literals(evaluator, expr, values);
+        }
+        Expr::Binary { lhs, rhs, .. } => {
+            collect_expression_length_literals(evaluator, lhs, values);
+            collect_expression_length_literals(evaluator, rhs, values);
+        }
+        Expr::Number(_) | Expr::Boolean { .. } | Expr::String(_) | Expr::Tex(_) | Expr::Ref(_) => {}
+    }
+}
+
+fn collect_expression_list_literals(
+    evaluator: &mut ExpressionEvaluator<'_>,
+    expressions: &[Expr],
+    values: &mut Vec<f64>,
+) {
+    for expression in expressions {
+        collect_expression_length_literals(evaluator, expression, values);
+    }
+}
+
+fn collect_constructor_fallbacks(
+    evaluator: &mut ExpressionEvaluator<'_>,
+    op: &OpStmt,
+    values: &mut Vec<f64>,
+) {
+    match &op.ctor {
+        Constructor::FreePoint { x, y, .. } => {
+            push_evaluated_length(evaluator, x, true, values);
+            push_evaluated_length(evaluator, y, true, values);
+        }
+        Constructor::FreeNum { hint, .. } => {
+            collect_named_length_fallback(evaluator, &op.id.name, hint, true, values);
+        }
+        Constructor::Expr { expr, .. } => {
+            collect_named_length_fallback(evaluator, &op.id.name, expr, false, values);
+        }
+        Constructor::Call { name, args, .. } => {
+            collect_call_length_fallbacks(evaluator, &name.name, args, values);
+        }
+    }
+}
+
+fn collect_named_length_fallback(
+    evaluator: &mut ExpressionEvaluator<'_>,
+    name: &str,
+    expression: &locus_syntax::Expr,
+    absolute: bool,
+    values: &mut Vec<f64>,
+) {
+    if evaluator.dimension_of(name) == Some(InferredDimension::Number(Dimension::Length)) {
+        push_evaluated_length(evaluator, expression, absolute, values);
+    }
+}
+
+fn collect_call_length_fallbacks(
+    evaluator: &mut ExpressionEvaluator<'_>,
+    name: &str,
+    args: &[locus_syntax::Expr],
+    values: &mut Vec<f64>,
+) {
+    for (index, argument) in args.iter().enumerate() {
+        if constructor_arg_dimension(name, index)
+            == Some(InferredDimension::Number(Dimension::Length))
+        {
+            push_evaluated_length(evaluator, argument, false, values);
+        }
+    }
+}
+
+fn push_evaluated_length(
+    evaluator: &mut ExpressionEvaluator<'_>,
+    expression: &locus_syntax::Expr,
+    absolute: bool,
+    values: &mut Vec<f64>,
+) {
+    if let Ok(value) = evaluator.eval_number(expression, Dimension::Length) {
+        values.push(if absolute { value.abs() } else { value });
+    }
+}
+
 fn normalized_zero(residual: f64, dimension_scale: f64, epsilon: f64) -> bool {
     residual.abs() / dimension_scale.max(residual.abs()) <= epsilon
+}
+
+fn fixed_scale_zero(residual: f64, dimension_scale: f64, epsilon: f64) -> bool {
+    residual.abs() / dimension_scale <= epsilon
 }
 
 fn normalized_eq(lhs: f64, rhs: f64, dimension_scale: f64, epsilon: f64) -> bool {

@@ -1,6 +1,7 @@
 //! Deterministic relational solve and DOF reporting.
 
 mod ad;
+mod conflict;
 mod linear;
 mod relations;
 
@@ -710,9 +711,10 @@ fn failed_solve_error(
         })
         .collect::<Vec<_>>()
         .join("; ");
-    let overdetermined = state.equations.len() > state.analysis.rank;
-    let code = if overdetermined { "E402" } else { "E403" };
-    let category = if overdetermined {
+    let indices = (0..sources.len()).collect::<Vec<_>>();
+    let conflicting = system.hints.is_empty() || conflict::certified(sources, system, &indices);
+    let code = if conflicting { "E402" } else { "E403" };
+    let category = if conflicting {
         "over-constrained/conflicting"
     } else {
         "non-convergent"
@@ -722,7 +724,7 @@ fn failed_solve_error(
         system,
         sources,
         branches,
-        overdetermined,
+        conflicting,
         diagnose_failure,
     );
     EvalError::new(
@@ -741,10 +743,10 @@ fn infeasible_subset_note(
     system: &UnknownSystem,
     sources: &[SourceRelation<'_>],
     branches: &[Option<CircleBranch>],
-    overdetermined: bool,
+    conflicting: bool,
     diagnose_failure: bool,
 ) -> String {
-    if !overdetermined {
+    if !conflicting {
         return String::new();
     }
     if !diagnose_failure {
@@ -753,15 +755,11 @@ fn infeasible_subset_note(
     let Some(indices) = isolate_infeasible_subset(prepared, system, sources, branches) else {
         return "; minimal infeasible subset was not isolable".to_owned();
     };
-    if indices.len() == sources.len() && sources.len() <= 1 {
-        "; minimal infeasible subset was not isolable".to_owned()
-    } else {
-        let lines = indices
-            .iter()
-            .map(|index| sources[*index].span.line.to_string())
-            .collect::<Vec<_>>();
-        format!("; minimal infeasible subset: lines {}", lines.join(", "))
-    }
+    let lines = indices
+        .iter()
+        .map(|index| sources[*index].span.line.to_string())
+        .collect::<Vec<_>>();
+    format!("; minimal infeasible subset: lines {}", lines.join(", "))
 }
 
 fn isolate_infeasible_subset(
@@ -771,6 +769,11 @@ fn isolate_infeasible_subset(
     branches: &[Option<CircleBranch>],
 ) -> Option<Vec<usize>> {
     let mut retained = (0..sources.len()).collect::<Vec<_>>();
+    // A stalled nonlinear solve is not evidence that its equations are impossible.
+    // Start deletion only after an algebraic contradiction has been established.
+    if !system.hints.is_empty() && !conflict::certified(sources, system, &retained) {
+        return None;
+    }
     for candidate in 0..sources.len() {
         if retained.len() <= 1 || !retained.contains(&candidate) {
             continue;
@@ -811,7 +814,9 @@ fn subset_is_infeasible(
         false,
     ) {
         Ok(_) => Some(false),
-        Err(error) if error.code == "E402" => Some(true),
+        Err(_) if system.hints.is_empty() || conflict::certified(sources, system, indices) => {
+            Some(true)
+        }
         Err(_) => None,
     }
 }

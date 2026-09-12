@@ -1844,7 +1844,7 @@ fn infer_constructor_args(
     Ok(())
 }
 
-fn constructor_arg_dimension(name: &str, index: usize) -> Option<InferredDimension> {
+pub(crate) fn constructor_arg_dimension(name: &str, index: usize) -> Option<InferredDimension> {
     if matches!(name, "offset") && matches!(index, 1 | 2)
         || matches!(name, "extend") && index == 2
         || matches!(name, "circle") && index == 1
@@ -1881,7 +1881,7 @@ fn infer_props(
     Ok(())
 }
 
-fn property_dimension(name: &str) -> Option<InferredDimension> {
+pub(crate) fn property_dimension(name: &str) -> Option<InferredDimension> {
     match name {
         "gap" | "size" => Some(InferredDimension::Number(Dimension::Length)),
         "bend" => Some(InferredDimension::Angle),

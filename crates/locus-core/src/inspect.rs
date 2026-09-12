@@ -9,8 +9,9 @@ use crate::Tolerance;
 use crate::assert::{point_on_object, tangent_objects};
 use crate::geom::measure;
 use crate::geom::{BBox, Point};
-use crate::scene::{Dimension, Evaluation, ResolvedObject, ResolvedScene, Scene};
+use crate::scene::{Evaluation, ResolvedObject, ResolvedScene, Scene};
 use crate::solve::SolveSummary;
+use crate::tol::resolved_scene_tolerance;
 
 /// Complete `inspect` output.
 #[derive(Clone, Debug, PartialEq, Serialize)]
@@ -205,7 +206,7 @@ pub fn inspect(
     scene: &ResolvedScene,
     solve: Option<&SolveSummary>,
 ) -> InspectionReport {
-    let tolerance = inspection_tolerance(scene);
+    let tolerance = resolved_scene_tolerance(file, scene);
     let viewport = visible_geometry_bbox(scene);
     let points = named_points(scene);
     InspectionReport {
@@ -213,20 +214,6 @@ pub fn inspect(
         incidences: detected_incidences(scene, &points, tolerance),
         diagnostics: diagnostics(file, scene, &points, solve, tolerance, viewport),
     }
-}
-
-fn inspection_tolerance(scene: &ResolvedScene) -> Tolerance {
-    let length_fallbacks = scene
-        .objects
-        .values()
-        .filter_map(|object| match object {
-            ResolvedObject::Num(number) if number.dimension == Dimension::Length => {
-                Some(number.value)
-            }
-            _ => None,
-        })
-        .collect::<Vec<_>>();
-    Tolerance::from_bbox_with_fallbacks(&scene.bbox, &length_fallbacks)
 }
 
 fn visible_geometry_bbox(scene: &ResolvedScene) -> Option<BBox> {
