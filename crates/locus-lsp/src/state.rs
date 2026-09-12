@@ -4,7 +4,7 @@ use std::collections::BTreeMap;
 
 use locus_core::{Evaluation, evaluate};
 use locus_syntax::{File, Statement, parse};
-use lsp_types::{Diagnostic, TextDocumentContentChangeEvent, Uri};
+use lsp_types::{ClientCapabilities, Diagnostic, MarkupKind, TextDocumentContentChangeEvent, Uri};
 
 use crate::diagnostics;
 use crate::document::Document;
@@ -31,9 +31,7 @@ impl Analysis {
             match evaluate(&prefix) {
                 Ok(value) => Some(value),
                 Err(error) => {
-                    if matches!(error.code.as_bytes().get(1), Some(b'2' | b'3')) {
-                        lsp_diagnostics.push(diagnostics::evaluation(document, &error));
-                    }
+                    lsp_diagnostics.push(diagnostics::evaluation(document, &error));
                     None
                 }
             }
@@ -72,9 +70,46 @@ struct OpenDocument {
 #[derive(Default)]
 pub(crate) struct State {
     documents: BTreeMap<Uri, OpenDocument>,
+    client: ClientPreferences,
+}
+
+#[derive(Clone, Debug)]
+struct ClientPreferences {
+    hierarchical_symbols: bool,
+    hover_markup: MarkupKind,
+}
+
+impl Default for ClientPreferences {
+    fn default() -> Self {
+        Self {
+            hierarchical_symbols: false,
+            hover_markup: MarkupKind::PlainText,
+        }
+    }
 }
 
 impl State {
+    pub(crate) fn with_client_capabilities(capabilities: &ClientCapabilities) -> Self {
+        let text = capabilities.text_document.as_ref();
+        let hierarchical_symbols = text
+            .and_then(|value| value.document_symbol.as_ref())
+            .and_then(|value| value.hierarchical_document_symbol_support)
+            .unwrap_or(false);
+        let hover_markup = text
+            .and_then(|value| value.hover.as_ref())
+            .and_then(|value| value.content_format.as_ref())
+            .and_then(|formats| formats.first())
+            .cloned()
+            .unwrap_or(MarkupKind::PlainText);
+        Self {
+            documents: BTreeMap::new(),
+            client: ClientPreferences {
+                hierarchical_symbols,
+                hover_markup,
+            },
+        }
+    }
+
     pub(crate) fn open(&mut self, uri: Uri, version: i32, text: String) -> Analysis {
         let document = Document::new(uri.clone(), version, text);
         let analysis = Analysis::new(&document);
@@ -125,6 +160,14 @@ impl State {
     pub(crate) fn is_current(&self, analysis: &Analysis) -> bool {
         self.document(analysis.uri())
             .is_some_and(|document| document.version() == analysis.version())
+    }
+
+    pub(crate) const fn hierarchical_symbols(&self) -> bool {
+        self.client.hierarchical_symbols
+    }
+
+    pub(crate) const fn hover_markup(&self) -> &MarkupKind {
+        &self.client.hover_markup
     }
 }
 

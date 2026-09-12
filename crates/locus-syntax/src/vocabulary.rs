@@ -1,7 +1,15 @@
 //! Public completion tables shared by the parser, CLI, and future language server.
 
+use crate::ast::Kind;
+
 /// Non-object top-level statement keywords.
 pub const STATEMENT_NAMES: &[&str] = &["locus", "meta", "style", "class", "rel", "assert"];
+
+/// Built-in rendering presets accepted by a `style` statement.
+pub const STYLE_PRESET_NAMES: &[&str] = &["textbook"];
+
+/// The special constructor used by free point and numeric declarations.
+pub const FREE_CONSTRUCTOR_NAME: &str = "free";
 
 /// Object kind keywords.
 pub const KIND_NAMES: &[&str] = &[
@@ -110,6 +118,56 @@ pub const CONSTRUCTOR_SIGNATURES: &[(&str, &str)] = &[
     ("text_block", "text_block(text) -> text_block"),
 ];
 
+/// Returns the result kind of a derived constructor.
+#[must_use]
+pub fn constructor_kind(name: &str) -> Option<Kind> {
+    CONSTRUCTOR_KINDS
+        .iter()
+        .find_map(|(candidate, kind)| (*candidate == name).then_some(*kind))
+}
+
+const CONSTRUCTOR_KINDS: &[(&str, Kind)] = &[
+    ("midpoint", Kind::Point),
+    ("lerp", Kind::Point),
+    ("offset", Kind::Point),
+    ("intersect", Kind::Point),
+    ("foot", Kind::Point),
+    ("project", Kind::Point),
+    ("rotate", Kind::Point),
+    ("reflect", Kind::Point),
+    ("translate", Kind::Point),
+    ("on_circle", Kind::Point),
+    ("extend", Kind::Point),
+    ("centroid", Kind::Point),
+    ("circumcenter", Kind::Point),
+    ("incenter", Kind::Point),
+    ("orthocenter", Kind::Point),
+    ("center", Kind::Point),
+    ("line", Kind::Line),
+    ("ray", Kind::Ray),
+    ("seg", Kind::Segment),
+    ("perpendicular", Kind::Line),
+    ("parallel", Kind::Line),
+    ("perp_bisector", Kind::Line),
+    ("angle_bisector", Kind::Line),
+    ("tangent_line", Kind::Line),
+    ("circle", Kind::Circle),
+    ("circle_through", Kind::Circle),
+    ("circle_diameter", Kind::Circle),
+    ("circumcircle", Kind::Circle),
+    ("incircle", Kind::Circle),
+    ("arc", Kind::Arc),
+    ("angle_arc", Kind::Arc),
+    ("polygon", Kind::Polygon),
+    ("rect", Kind::Rect),
+    ("diamond", Kind::Diamond),
+    ("label", Kind::Label),
+    ("arrow", Kind::Arrow),
+    ("tick", Kind::Tick),
+    ("right_angle", Kind::RightAngle),
+    ("text_block", Kind::TextBlock),
+];
+
 /// Relation and assert predicate names from specification Part 3.
 pub const PREDICATE_NAMES: &[&str] = &[
     "on",
@@ -151,6 +209,34 @@ pub const PROP_NAMES: &[&str] = &[
     "dir", "gap", "head", "bend", "n", "size", "place", "anchor", "mark",
 ];
 
+const PROP_NAMES_BY_KIND: [&[&str]; 15] = [
+    &["mark"],
+    &[],
+    &[],
+    &[],
+    &[],
+    &[],
+    &[],
+    &[],
+    &[],
+    &[],
+    &["dir", "gap"],
+    &["head", "bend"],
+    &[],
+    &["size"],
+    &["place", "anchor", "dir"],
+];
+
+/// Returns the operation properties accepted by an object kind and constructor.
+#[must_use]
+pub fn prop_names_for_kind(kind: Kind, constructor: Option<&str>) -> &'static [&'static str] {
+    if kind == Kind::Arc && constructor == Some("angle_arc") {
+        &["n"]
+    } else {
+        PROP_NAMES_BY_KIND[kind as usize]
+    }
+}
+
 /// Properties accepted by style class declarations.
 pub const STYLE_PROP_NAMES: &[&str] = &[
     "stroke", "weight", "accent", "fill", "opacity", "cap", "join",
@@ -165,6 +251,12 @@ pub const PROPERTY_NAMES: &[&str] = &[
 /// Accepted angle-unit suffixes.
 pub const UNIT_NAMES: &[&str] = &["deg", "rad"];
 
+/// Boolean literals accepted in expressions.
+pub const BOOLEAN_LITERAL_NAMES: &[&str] = &["true", "false"];
+
+/// Boolean operators accepted in relation and assertion expressions.
+pub const BOOLEAN_OPERATOR_NAMES: &[&str] = &["not", "and", "or"];
+
 /// Built-in style attributes.
 pub const BUILTIN_ATTR_NAMES: &[&str] = &["main", "auxiliary", "highlight", "construction"];
 
@@ -175,6 +267,52 @@ pub const ENUM_VALUE_NAMES: &[&str] = &[
     "bold", "ink", "gray", "blue", "orange", "teal", "green", "red", "purple", "tint", "butt",
     "round", "square", "miter", "bevel",
 ];
+
+const DIRECTION_NAMES: &[&str] = &["auto", "center", "N", "NE", "E", "SE", "S", "SW", "W", "NW"];
+const PLACEMENT_NAMES: &[&str] = &["below", "above", "left", "right"];
+const MARK_NAMES: &[&str] = &["dot", "cross", "none"];
+const HEAD_NAMES: &[&str] = &["->", "<->", "-"];
+const STROKE_NAMES: &[&str] = &["solid", "dashed", "dotted"];
+const WEIGHT_NAMES: &[&str] = &["thin", "normal", "bold"];
+const COLOR_NAMES: &[&str] = &[
+    "ink", "gray", "blue", "orange", "teal", "green", "red", "purple",
+];
+const FILL_NAMES: &[&str] = &[
+    "none", "tint", "ink", "gray", "blue", "orange", "teal", "green", "red", "purple",
+];
+const CAP_NAMES: &[&str] = &["butt", "round", "square"];
+const JOIN_NAMES: &[&str] = &["miter", "round", "bevel"];
+const DASH_CALL_NAMES: &[&str] = &["dash"];
+const PROPERTY_ENUM_VALUES: &[(&str, &[&str])] = &[
+    ("dir", DIRECTION_NAMES),
+    ("place", PLACEMENT_NAMES),
+    ("mark", MARK_NAMES),
+    ("head", HEAD_NAMES),
+    ("stroke", STROKE_NAMES),
+    ("weight", WEIGHT_NAMES),
+    ("accent", COLOR_NAMES),
+    ("fill", FILL_NAMES),
+    ("cap", CAP_NAMES),
+    ("join", JOIN_NAMES),
+];
+
+/// Returns the closed-set values accepted by a named property.
+#[must_use]
+pub fn enum_values_for_property(name: &str) -> &'static [&'static str] {
+    PROPERTY_ENUM_VALUES
+        .iter()
+        .find_map(|(candidate, values)| (*candidate == name).then_some(*values))
+        .unwrap_or_default()
+}
+
+/// Returns call names accepted as values by a named property.
+#[must_use]
+pub fn call_names_for_property(name: &str) -> &'static [&'static str] {
+    match name {
+        "stroke" => DASH_CALL_NAMES,
+        _ => &[],
+    }
+}
 
 /// Returns whether a call name belongs to any expression-level vocabulary.
 #[must_use]

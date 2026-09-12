@@ -9,7 +9,7 @@ use crate::diag::did_you_mean;
 use crate::lexer::{LexTextSegment, Token, TokenKind, lex};
 use crate::vocabulary::{
     BUILTIN_ATTR_NAMES, CONSTRUCTOR_NAMES, KIND_NAMES, PREDICATE_NAMES, PROP_NAMES, PROPERTY_NAMES,
-    STYLE_PROP_NAMES, all_call_names, is_known_call,
+    STYLE_PROP_NAMES, all_call_names, is_known_call, prop_names_for_kind,
 };
 use crate::{Diagnostic, Span};
 use std::collections::BTreeSet;
@@ -1362,28 +1362,7 @@ fn validate_props_for_op(op: &OpStmt, diagnostics: &mut Vec<Diagnostic>) {
 }
 
 fn props_for_op(op: &OpStmt) -> &'static [&'static str] {
-    const BY_KIND: [&[&str]; 15] = [
-        &["mark"],
-        &[],
-        &[],
-        &[],
-        &[],
-        &[],
-        &[],
-        &[],
-        &[],
-        &[],
-        &["dir", "gap"],
-        &["head", "bend"],
-        &[],
-        &["size"],
-        &["place", "anchor", "dir"],
-    ];
-    if op.kind == Kind::Arc && constructor_name(&op.ctor) == Some("angle_arc") {
-        &["n"]
-    } else {
-        BY_KIND[op.kind as usize]
-    }
+    prop_names_for_kind(op.kind, constructor_name(&op.ctor))
 }
 
 fn validate_props(

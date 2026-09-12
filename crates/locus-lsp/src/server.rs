@@ -25,13 +25,16 @@ const CHANGE_DEBOUNCE: Duration = Duration::from_millis(40);
 pub(crate) fn run_stdio() -> ServerResult<()> {
     let (connection, io_threads) = Connection::stdio();
     let result = run(&connection);
-    io_threads.join()?;
-    result
+    drop(connection);
+    let io_result = io_threads.join();
+    result?;
+    io_result?;
+    Ok(())
 }
 
 pub(crate) fn run(connection: &Connection) -> ServerResult<()> {
-    initialize(connection)?;
-    let mut state = State::default();
+    let client_capabilities = initialize(connection)?;
+    let mut state = State::with_client_capabilities(&client_capabilities);
     let mut pending = PendingAnalyses::default();
     loop {
         flush_due(connection, &mut state, &mut pending)?;
@@ -49,7 +52,9 @@ fn handle_receive(
     match receive(connection, pending) {
         Receive::Message(message) => dispatch_message(connection, state, pending, message),
         Receive::Timeout => Ok(false),
-        Receive::Disconnected => Ok(true),
+        Receive::Disconnected => {
+            Err(std::io::Error::other("client disconnected before shutdown").into())
+        }
     }
 }
 
@@ -83,7 +88,7 @@ fn dispatch_message(
         }
         Message::Notification(notification) => {
             if notification.method == "exit" {
-                return Ok(true);
+                return Err(std::io::Error::other("received exit before shutdown").into());
             }
             handle_notification(connection, state, pending, notification)?;
         }
@@ -92,8 +97,12 @@ fn dispatch_message(
     Ok(false)
 }
 
-fn initialize(connection: &Connection) -> ServerResult<()> {
-    let (id, _) = connection.initialize_start()?;
+fn initialize(connection: &Connection) -> ServerResult<lsp_types::ClientCapabilities> {
+    let (id, params) = connection.initialize_start()?;
+    let client_capabilities = params.get("capabilities").cloned().map_or_else(
+        || Ok(lsp_types::ClientCapabilities::default()),
+        serde_json::from_value,
+    )?;
     connection.initialize_finish(
         id,
         json!({
@@ -104,7 +113,7 @@ fn initialize(connection: &Connection) -> ServerResult<()> {
             }
         }),
     )?;
-    Ok(())
+    Ok(client_capabilities)
 }
 
 fn handle_request(connection: &Connection, state: &State, request: Request) -> ServerResult<()> {
@@ -331,6 +340,10 @@ mod tests {
 
     impl Transcript {
         fn start() -> Self {
+            Self::start_with_capabilities(&json!({}))
+        }
+
+        fn start_with_capabilities(capabilities: &Value) -> Self {
             let (server, client) = Connection::memory();
             let server_thread = thread::spawn(move || run(&server));
             let mut transcript = Self {
@@ -338,7 +351,7 @@ mod tests {
                 server_thread: Some(server_thread),
                 next_id: 1,
             };
-            let response = transcript.request("initialize", json!({"capabilities": {}}));
+            let response = transcript.request("initialize", json!({"capabilities": capabilities}));
             assert!(response.get("capabilities").is_some());
             transcript.notify("initialized", json!({}));
             transcript
@@ -393,6 +406,16 @@ mod tests {
                         .expect("diagnostic parameters");
                 }
             }
+        }
+
+        fn change(&self, version: i32, text: &str) {
+            self.notify(
+                "textDocument/didChange",
+                json!({
+                    "textDocument": {"uri": URI, "version": version},
+                    "contentChanges": [{"text": text}]
+                }),
+            );
         }
 
         fn finish(mut self) {
@@ -476,20 +499,6 @@ mod tests {
                 .all(|item| item["label"] != "M" && item["label"] != "Z")
         }));
 
-        let style_completion =
-            transcript.request("textDocument/completion", text_position(URI, 4, 0));
-        let style_values = [
-            "solid", "dashed", "dotted", "thin", "normal", "bold", "ink", "gray", "blue", "orange",
-            "teal", "green", "red", "purple", "tint", "butt", "round", "square", "miter", "bevel",
-        ];
-        assert!(style_completion.as_array().is_some_and(|items| {
-            style_values.iter().all(|expected| {
-                items
-                    .iter()
-                    .any(|item| item["label"].as_str() == Some(expected))
-            })
-        }));
-
         let hover = transcript.request("textDocument/hover", text_position(URI, 2, 11));
         assert!(
             hover["contents"]["value"]
@@ -515,6 +524,276 @@ mod tests {
             json!({"textDocument": {"uri": URI}}),
         );
         assert_eq!(symbols.as_array().map(Vec::len), Some(3));
+        transcript.finish();
+    }
+
+    #[test]
+    fn completion_uses_numeric_suffix_edit_ranges() {
+        let mut transcript = Transcript::start();
+        transcript.notify(
+            "textDocument/didOpen",
+            json!({
+                "textDocument": {
+                    "uri": URI,
+                    "languageId": "locus",
+                    "version": 1,
+                    "text": "locus 2\nnum a = 90d\n"
+                }
+            }),
+        );
+        let _ = transcript.diagnostics();
+
+        for (version, source, cursor, expected_start, unit) in [
+            (2, "locus 2\nnum a = 90\n", 10, 10, "deg"),
+            (3, "locus 2\nnum a = 90d\n", 11, 10, "deg"),
+            (4, "locus 2\nnum a = 1.5\n", 11, 11, "rad"),
+            (5, "locus 2\nnum a = 1.5r\n", 12, 11, "rad"),
+            (6, "locus 2\nnum a = 1e-3 d\n", 14, 13, "deg"),
+        ] {
+            transcript.change(version, source);
+            let completion =
+                transcript.request("textDocument/completion", text_position(URI, 1, cursor));
+            let item = completion_item(&completion, unit);
+            assert_eq!(
+                item["textEdit"]["range"]["start"]["character"],
+                expected_start
+            );
+            assert_eq!(item["textEdit"]["range"]["end"]["character"], cursor);
+        }
+
+        transcript.change(7, "locus 2\npoint A = free ~(0, 0)\nnum x = A.\n");
+        let property = transcript.request("textDocument/completion", text_position(URI, 2, 10));
+        assert!(completion_contains(&property, "midpoint"));
+        assert!(!completion_contains(&property, "deg"));
+        transcript.finish();
+    }
+
+    #[test]
+    fn completion_edits_replace_complete_tokens() {
+        let mut transcript = Transcript::start();
+        let mut source = "locus 2\npoint P = free ~(0, 0)\n";
+        transcript.notify(
+            "textDocument/didOpen",
+            json!({"textDocument": {
+                "uri": URI, "languageId": "locus", "version": 1, "text": source
+            }}),
+        );
+        let _ = transcript.diagnostics();
+
+        let statement = transcript.request("textDocument/completion", text_position(URI, 1, 2));
+        assert_eq!(
+            apply_completion(source, completion_item(&statement, "point")),
+            source
+        );
+
+        source = "locus 2\nnum a = 90deg\n";
+        transcript.change(2, source);
+        let unit = transcript.request("textDocument/completion", text_position(URI, 1, 11));
+        assert_eq!(
+            apply_completion(source, completion_item(&unit, "deg")),
+            source
+        );
+
+        source = "locus 2\narrow ar = arrow(A, A) { head: - }\n";
+        transcript.change(3, source);
+        let dash = transcript.request("textDocument/completion", text_position(URI, 1, 32));
+        assert_eq!(
+            apply_completion(source, completion_item(&dash, "->")),
+            "locus 2\narrow ar = arrow(A, A) { head: -> }\n"
+        );
+
+        source = "locus 2\narrow ar = arrow(A, A) { head: <- }\n";
+        transcript.change(4, source);
+        let both = transcript.request("textDocument/completion", text_position(URI, 1, 33));
+        assert_eq!(
+            apply_completion(source, completion_item(&both, "<->")),
+            "locus 2\narrow ar = arrow(A, A) { head: <-> }\n"
+        );
+        transcript.finish();
+    }
+
+    #[test]
+    fn completion_respects_partial_statement_context() {
+        let mut transcript = Transcript::start();
+        transcript.notify(
+            "textDocument/didOpen",
+            json!({
+                "textDocument": {
+                    "uri": URI,
+                    "languageId": "locus",
+                    "version": 1,
+                    "text": "locus 2\npoint A = fr\n"
+                }
+            }),
+        );
+        let _ = transcript.diagnostics();
+
+        let free = transcript.request("textDocument/completion", text_position(URI, 1, 12));
+        assert!(completion_contains(&free, "free"));
+        assert!(!completion_contains(&free, "false"));
+
+        transcript.change(2, "locus 2\nstyle te\n");
+        let style = transcript.request("textDocument/completion", text_position(URI, 1, 8));
+        assert_eq!(completion_labels(&style), ["textbook"]);
+
+        transcript.change(
+            3,
+            "locus 2\npoint A = free ~(0, 0)\nlabel l = label(A, \"hi\") { dir: \n",
+        );
+        let direction = transcript.request("textDocument/completion", text_position(URI, 2, 32));
+        assert!(completion_contains(&direction, "S"));
+        assert!(!completion_contains(&direction, "midpoint"));
+        assert!(!completion_contains(&direction, "min"));
+        assert!(!completion_contains(&direction, "miter"));
+
+        transcript.change(4, "locus 2\npoint P = free ~(0, 0) { he\n");
+        let point_props = transcript.request("textDocument/completion", text_position(URI, 1, 27));
+        assert!(!completion_contains(&point_props, "head"));
+
+        transcript.change(5, "locus 2\nclass signal { stroke: dash(2, \n");
+        let nested = transcript.request("textDocument/completion", text_position(URI, 1, 31));
+        assert!(completion_contains(&nested, "min"));
+        assert!(!completion_contains(&nested, "dashed"));
+        assert!(!completion_contains(&nested, "dash"));
+
+        transcript.change(
+            6,
+            "locus 2\npoint A = free ~(0, 0)\npoint M = free ~(1, 1) where { coincident(M, \n",
+        );
+        let self_reference =
+            transcript.request("textDocument/completion", text_position(URI, 2, 45));
+        assert!(completion_contains(&self_reference, "M"));
+        assert!(completion_contains(&self_reference, "A"));
+        transcript.finish();
+    }
+
+    #[test]
+    fn completion_is_suppressed_in_comments_strings_and_tex() {
+        let mut transcript = Transcript::start();
+        transcript.notify(
+            "textDocument/didOpen",
+            json!({
+                "textDocument": {
+                    "uri": URI,
+                    "languageId": "locus",
+                    "version": 1,
+                    "text": "locus 2\n// mi\n"
+                }
+            }),
+        );
+        let _ = transcript.diagnostics();
+        let comment = transcript.request("textDocument/completion", text_position(URI, 1, 5));
+        assert!(completion_labels(&comment).is_empty());
+
+        transcript.change(2, "locus 2\nlabel l = label(A, \"mi\n");
+        let string = transcript.request("textDocument/completion", text_position(URI, 1, 22));
+        assert!(completion_labels(&string).is_empty());
+
+        transcript.change(3, "locus 2\nlabel l = label(A, $mi\n");
+        let tex = transcript.request("textDocument/completion", text_position(URI, 1, 22));
+        assert!(completion_labels(&tex).is_empty());
+
+        transcript.change(4, "locus 2\nlabel l = label(A, \"$\\text{\"mi\"}$\")\n");
+        let inline_tex = transcript.request("textDocument/completion", text_position(URI, 1, 30));
+        assert!(completion_labels(&inline_tex).is_empty());
+        transcript.finish();
+    }
+
+    #[test]
+    fn initialization_negotiates_hover_and_symbol_shapes() {
+        let capabilities = json!({
+            "textDocument": {
+                "hover": {"contentFormat": ["markdown"]},
+                "documentSymbol": {"hierarchicalDocumentSymbolSupport": true}
+            }
+        });
+        let mut modern = Transcript::start_with_capabilities(&capabilities);
+        modern.notify(
+            "textDocument/didOpen",
+            json!({"textDocument": {
+                "uri": URI, "languageId": "locus", "version": 1,
+                "text": "locus 2\npoint A = free ~(0, 0)\n"
+            }}),
+        );
+        let _ = modern.diagnostics();
+        let hover = modern.request("textDocument/hover", text_position(URI, 1, 6));
+        assert_eq!(hover["contents"]["kind"], "markdown");
+        assert!(
+            hover["contents"]["value"]
+                .as_str()
+                .is_some_and(|value| value.contains('`'))
+        );
+        let symbols = modern.request(
+            "textDocument/documentSymbol",
+            json!({"textDocument": {"uri": URI}}),
+        );
+        assert!(symbols[0].get("selectionRange").is_some());
+        assert!(symbols[0].get("location").is_none());
+        modern.finish();
+
+        let mut fallback = Transcript::start();
+        fallback.notify(
+            "textDocument/didOpen",
+            json!({"textDocument": {
+                "uri": URI, "languageId": "locus", "version": 1,
+                "text": "locus 2\npoint A = free ~(0, 0)\n"
+            }}),
+        );
+        let _ = fallback.diagnostics();
+        let hover = fallback.request("textDocument/hover", text_position(URI, 1, 6));
+        assert_eq!(hover["contents"]["kind"], "plaintext");
+        assert!(
+            !hover["contents"]["value"]
+                .as_str()
+                .is_some_and(|value| value.contains('`'))
+        );
+        let symbols = fallback.request(
+            "textDocument/documentSymbol",
+            json!({"textDocument": {"uri": URI}}),
+        );
+        assert!(symbols[0].get("location").is_some());
+        assert!(symbols[0].get("selectionRange").is_none());
+        fallback.finish();
+    }
+
+    #[test]
+    fn evaluation_diagnostics_follow_the_valid_prefix() {
+        let transcript = Transcript::start();
+        transcript.notify(
+            "textDocument/didOpen",
+            json!({"textDocument": {
+                "uri": URI, "languageId": "locus", "version": 1,
+                "text": "locus 2\npoint A = free ~(0, 0)\ncircle c = circle(A, -1)\n"
+            }}),
+        );
+        assert!(diagnostic_codes(&transcript.diagnostics()).contains(&"E404"));
+
+        transcript.change(2, "locus 2\nnum x = free ~0\nrel x == 1\nrel x == 2\n");
+        assert!(diagnostic_codes(&transcript.diagnostics()).contains(&"E402"));
+
+        transcript.change(3, "locus 2\nnum bad = 1 / 0\npoint broken =\n");
+        let before_diagnostics = transcript.diagnostics();
+        let before = diagnostic_codes(&before_diagnostics);
+        assert!(before.contains(&"E204"));
+        assert!(before.iter().any(|code| code.starts_with("E1")));
+
+        transcript.change(
+            4,
+            "locus 2\npoint A = free ~(0, 0)\npoint broken =\nnum bad = 1 / 0\n",
+        );
+        let after_diagnostics = transcript.diagnostics();
+        let after = diagnostic_codes(&after_diagnostics);
+        assert!(after.iter().any(|code| code.starts_with("E1")));
+        assert!(
+            !after
+                .iter()
+                .any(|code| code.starts_with("E2") || code.starts_with("E4"))
+        );
+
+        transcript.change(5, "locus 2\nnum x = 1\npoint bad = midpoint(x, x)\n");
+        let type_diagnostics = transcript.diagnostics();
+        let type_codes = diagnostic_codes(&type_diagnostics);
+        assert!(type_codes.contains(&"E209"), "actual codes: {type_codes:?}");
         transcript.finish();
     }
 
@@ -700,5 +979,46 @@ mod tests {
                 .iter()
                 .any(|item| item["label"].as_str() == Some(label))
         })
+    }
+
+    fn completion_item<'a>(completion: &'a Value, label: &str) -> &'a Value {
+        completion
+            .as_array()
+            .and_then(|items| items.iter().find(|item| item["label"] == label))
+            .expect("completion item")
+    }
+
+    fn completion_labels(completion: &Value) -> Vec<&str> {
+        completion
+            .as_array()
+            .into_iter()
+            .flatten()
+            .filter_map(|item| item["label"].as_str())
+            .collect()
+    }
+
+    fn diagnostic_codes(params: &PublishDiagnosticsParams) -> Vec<&str> {
+        params
+            .diagnostics
+            .iter()
+            .filter_map(|diagnostic| match diagnostic.code.as_ref() {
+                Some(lsp_types::NumberOrString::String(code)) => Some(code.as_str()),
+                Some(lsp_types::NumberOrString::Number(_)) | None => None,
+            })
+            .collect()
+    }
+
+    fn apply_completion(source: &str, item: &Value) -> String {
+        let edit: lsp_types::TextEdit =
+            serde_json::from_value(item["textEdit"].clone()).expect("completion text edit");
+        let uri = Uri::from_str(URI).expect("test URI");
+        let document = Document::new(uri, 1, source.to_owned());
+        let start = document
+            .position_to_byte(edit.range.start)
+            .expect("edit start");
+        let end = document.position_to_byte(edit.range.end).expect("edit end");
+        let mut result = source.to_owned();
+        result.replace_range(start..end, &edit.new_text);
+        result
     }
 }

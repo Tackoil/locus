@@ -1,7 +1,10 @@
 //! Document symbols for every recovered top-level statement.
 
 use locus_syntax::{Kind, Statement};
-use lsp_types::{DocumentSymbol, DocumentSymbolParams, DocumentSymbolResponse, SymbolKind};
+use lsp_types::{
+    DocumentSymbol, DocumentSymbolParams, DocumentSymbolResponse, Location, SymbolInformation,
+    SymbolKind,
+};
 
 use crate::state::State;
 
@@ -15,25 +18,60 @@ pub(crate) fn handle(
 ) -> Option<DocumentSymbolResponse> {
     let document = state.document(&params.text_document.uri)?;
     let analysis = state.analysis(&params.text_document.uri)?;
-    let symbols = analysis
-        .file
-        .statements
-        .iter()
-        .map(|statement| {
-            let (name, detail, kind, selection) = symbol_parts(statement);
-            DocumentSymbol {
-                name,
-                detail: Some(detail),
-                kind,
-                tags: None,
-                deprecated: None,
-                range: document.span_to_range(statement.span()),
-                selection_range: document.span_to_range(selection),
-                children: None,
-            }
-        })
-        .collect();
-    Some(DocumentSymbolResponse::Nested(symbols))
+    if state.hierarchical_symbols() {
+        let symbols = analysis
+            .file
+            .statements
+            .iter()
+            .map(|statement| nested_symbol(document, statement))
+            .collect();
+        Some(DocumentSymbolResponse::Nested(symbols))
+    } else {
+        let symbols = analysis
+            .file
+            .statements
+            .iter()
+            .map(|statement| flat_symbol(document, statement))
+            .collect();
+        Some(DocumentSymbolResponse::Flat(symbols))
+    }
+}
+
+#[allow(
+    deprecated,
+    reason = "LSP retains this field for protocol compatibility"
+)]
+fn nested_symbol(document: &crate::document::Document, statement: &Statement) -> DocumentSymbol {
+    let (name, detail, kind, selection) = symbol_parts(statement);
+    DocumentSymbol {
+        name,
+        detail: Some(detail),
+        kind,
+        tags: None,
+        deprecated: None,
+        range: document.span_to_range(statement.span()),
+        selection_range: document.span_to_range(selection),
+        children: None,
+    }
+}
+
+#[allow(
+    deprecated,
+    reason = "LSP retains this field for protocol compatibility"
+)]
+fn flat_symbol(document: &crate::document::Document, statement: &Statement) -> SymbolInformation {
+    let (name, _, kind, _) = symbol_parts(statement);
+    SymbolInformation {
+        name,
+        kind,
+        tags: None,
+        deprecated: None,
+        location: Location::new(
+            document.uri().clone(),
+            document.span_to_range(statement.span()),
+        ),
+        container_name: None,
+    }
 }
 
 fn symbol_parts(statement: &Statement) -> (String, String, SymbolKind, locus_syntax::Span) {
