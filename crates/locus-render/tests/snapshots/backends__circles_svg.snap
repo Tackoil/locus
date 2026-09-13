@@ -1,0 +1,32 @@
+---
+source: crates/locus-render/tests/backends.rs
+expression: "render_svg(&scene, &layout, &sheet, RenderOptions::default()).expect(\"SVG\")"
+---
+<svg xmlns="http://www.w3.org/2000/svg" width="183.000000" height="251.500000" viewBox="0 0 183.000000 251.500000">
+  <g id="circle" data-source-start="8" data-source-end="24" opacity="1.000000">
+    <circle cx="91.500000" cy="128.000000" r="64.000000" fill="none" stroke="#111827" stroke-width="1.250000" stroke-linecap="butt" stroke-linejoin="miter"/>
+  </g>
+  <g id="ccw" data-source-start="8" data-source-end="24" opacity="1.000000">
+    <path d="M 155.500000 128.000000 A 64.000000 64.000000 0 1 0 91.500000 192.000000" fill="none" stroke="#2563EB" stroke-width="1.250000" stroke-linecap="butt" stroke-linejoin="miter"/>
+  </g>
+  <g id="cw" data-source-start="8" data-source-end="24" opacity="1.000000">
+    <path d="M 155.500000 128.000000 A 64.000000 64.000000 0 0 1 91.500000 192.000000" fill="none" stroke="#111827" stroke-width="1.250000" stroke-linecap="butt" stroke-linejoin="miter"/>
+    <path d="M 158.500000 128.000000 A 67.000000 67.000000 0 0 1 91.500000 195.000000" fill="none" stroke="#111827" stroke-width="1.250000" stroke-linecap="butt" stroke-linejoin="miter"/>
+  </g>
+  <g id="axis" data-source-start="8" data-source-end="24" opacity="1.000000">
+    <path d="M 0.000000 128.000000 L 183.000000 128.000000" fill="none" stroke="#6B7280" stroke-width="0.750000" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="1.000000 3.000000"/>
+  </g>
+  <g id="ray" data-source-start="8" data-source-end="24" opacity="1.000000">
+    <path d="M 91.500000 128.000000 L 91.500000 0.000000" fill="none" stroke="#111827" stroke-width="0.750000" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="5.000000 3.000000"/>
+  </g>
+  <g id="arrow" data-source-start="8" data-source-end="24" opacity="1.000000">
+    <path d="M 59.500000 160.000000 L 59.500000 144.000000" fill="none" stroke="#111827" stroke-width="1.250000" stroke-linecap="butt" stroke-linejoin="miter"/>
+    <path d="M 27.500000 192.000000 C 70.166667 213.333333 112.833333 213.333333 155.500000 192.000000" fill="none" stroke="#111827" stroke-width="1.250000" stroke-linecap="butt" stroke-linejoin="miter"/>
+    <path d="M 155.500000 192.000000 L 150.412945 198.037384 L 147.617860 192.447214 Z" fill="#111827" stroke="none"/>
+    <path d="M 27.500000 192.000000 L 35.382140 192.447214 L 32.587055 198.037384 Z" fill="#111827" stroke="none"/>
+  </g>
+  <g id="formula" data-source-start="8" data-source-end="24" opacity="1.000000">
+    <path d="M 59.500000 32.000000 L 123.500000 32.000000 L 123.500000 33.600000 L 59.500000 33.600000 Z" fill="#111827" stroke="none"/>
+    <path d="M 59.500000 32.000000 C 75.500000 16.000000 107.500000 16.000000 123.500000 32.000000" fill="#111827" stroke="none"/>
+  </g>
+</svg>

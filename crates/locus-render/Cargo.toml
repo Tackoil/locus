@@ -1,6 +1,6 @@
 [package]
 name = "locus-render"
-description = "Rendering backend boundary for Locus"
+description = "Deterministic SVG, TikZ, and optional PNG backends for Locus"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
@@ -9,11 +9,25 @@ license.workspace = true
 readme.workspace = true
 publish = false
 
+[features]
+default = []
+png = ["dep:resvg"]
+
 [dependencies]
 locus-core = { path = "../locus-core" }
 locus-layout = { path = "../locus-layout" }
+locus-syntax = { path = "../locus-syntax" }
 locus-tex = { path = "../locus-tex" }
+indexmap.workspace = true
+libm.workspace = true
+ryu.workspace = true
+thiserror.workspace = true
+roxmltree = "0.20"
+svgtypes = "0.15"
+resvg = { version = "=0.45.1", optional = true, default-features = false }
+
+[dev-dependencies]
+insta.workspace = true
 
 [lints]
 workspace = true
-

@@ -1,0 +1,41 @@
+---
+source: crates/locus-render/tests/backends.rs
+expression: "render_tikz(&scene, &layout, &sheet, RenderOptions::default()).expect(\"TikZ\")"
+---
+\begin{tikzpicture}[x=0.75pt,y=-0.75pt]
+  \path[use as bounding box] (0,0) rectangle (183.000000,251.500000);
+  \clip (0,0) rectangle (183.000000,251.500000);
+  % source 8..24
+  \begin{scope}[transparency group,opacity=1.000000]
+    \path[draw={rgb,255:red,17;green,24;blue,39},fill=none,line width=0.937500pt,line cap=butt,line join=miter] (91.500000,128.000000) circle[radius=64.000000];
+  \end{scope}
+  % source 8..24
+  \begin{scope}[transparency group,opacity=1.000000]
+    \path[draw={rgb,255:red,37;green,99;blue,235},fill=none,line width=0.937500pt,line cap=butt,line join=miter] (155.500000,128.000000) arc[start angle=0.000000,delta angle=-270.000000,radius=64.000000];
+  \end{scope}
+  % source 8..24
+  \begin{scope}[transparency group,opacity=1.000000]
+    \path[draw={rgb,255:red,17;green,24;blue,39},fill=none,line width=0.937500pt,line cap=butt,line join=miter] (155.500000,128.000000) arc[start angle=0.000000,delta angle=90.000000,radius=64.000000];
+    \path[draw={rgb,255:red,17;green,24;blue,39},fill=none,line width=0.937500pt,line cap=butt,line join=miter] (158.500000,128.000000) arc[start angle=0.000000,delta angle=90.000000,radius=67.000000];
+  \end{scope}
+  % source 8..24
+  \begin{scope}[transparency group,opacity=1.000000]
+    \path[draw={rgb,255:red,107;green,114;blue,128},fill=none,line width=0.562500pt,line cap=butt,line join=miter,dash pattern=on 0.750000pt off 2.250000pt] (0.000000,128.000000) -- (183.000000,128.000000);
+  \end{scope}
+  % source 8..24
+  \begin{scope}[transparency group,opacity=1.000000]
+    \path[draw={rgb,255:red,17;green,24;blue,39},fill=none,line width=0.562500pt,line cap=butt,line join=miter,dash pattern=on 3.750000pt off 2.250000pt] (91.500000,128.000000) -- (91.500000,0.000000);
+  \end{scope}
+  % source 8..24
+  \begin{scope}[transparency group,opacity=1.000000]
+    \path[draw={rgb,255:red,17;green,24;blue,39},fill=none,line width=0.937500pt,line cap=butt,line join=miter] (59.500000,160.000000) -- (59.500000,144.000000);
+    \path[draw={rgb,255:red,17;green,24;blue,39},fill=none,line width=0.937500pt,line cap=butt,line join=miter] (27.500000,192.000000) .. controls (70.166667,213.333333) and (112.833333,213.333333) .. (155.500000,192.000000);
+    \path[draw=none,fill={rgb,255:red,17;green,24;blue,39}] (155.500000,192.000000) -- (150.412945,198.037384) -- (147.617860,192.447214) -- cycle;
+    \path[draw=none,fill={rgb,255:red,17;green,24;blue,39}] (27.500000,192.000000) -- (35.382140,192.447214) -- (32.587055,198.037384) -- cycle;
+  \end{scope}
+  % source 8..24
+  \begin{scope}[transparency group,opacity=1.000000]
+    \path[draw=none,fill={rgb,255:red,17;green,24;blue,39}] (59.500000,32.000000) -- (123.500000,32.000000) -- (123.500000,33.600000) -- (59.500000,33.600000) -- cycle;
+    \path[draw=none,fill={rgb,255:red,17;green,24;blue,39}] (59.500000,32.000000) .. controls (75.500000,16.000000) and (107.500000,16.000000) .. (123.500000,32.000000);
+  \end{scope}
+\end{tikzpicture}

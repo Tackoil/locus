@@ -1,0 +1,30 @@
+---
+source: crates/locus-render/tests/backends.rs
+expression: "render_tikz(&scene, &layout, &sheet, RenderOptions::default()).expect(\"TikZ\")"
+---
+\begin{tikzpicture}[x=0.75pt,y=-0.75pt]
+  \path[use as bounding box] (0,0) rectangle (290.625000,210.625000);
+  \clip (0,0) rectangle (290.625000,210.625000);
+  % source 8..24
+  \begin{scope}[transparency group,opacity=0.850000]
+    \path[draw={rgb,255:red,15;green,118;blue,110},fill={rgb,255:red,231;green,241;blue,240},line width=0.937500pt,line cap=butt,line join=round] (80.000000,192.000000) -- (272.000000,192.000000) -- (80.000000,64.000000) -- cycle;
+  \end{scope}
+  % source 8..24
+  \begin{scope}[transparency group,opacity=1.000000]
+    \path[draw=none,fill={rgb,255:red,17;green,24;blue,39}] (80.000000,192.000000) circle[radius=2.000000];
+  \end{scope}
+  % source 8..24
+  \begin{scope}[transparency group,opacity=1.000000]
+    \path[draw={rgb,255:red,17;green,24;blue,39},fill=none,line width=0.937500pt,line cap=butt,line join=miter] (270.000000,190.000000) -- (274.000000,194.000000);
+    \path[draw={rgb,255:red,17;green,24;blue,39},fill=none,line width=0.937500pt,line cap=butt,line join=miter] (270.000000,194.000000) -- (274.000000,190.000000);
+  \end{scope}
+  % source 8..24
+  \begin{scope}[transparency group,opacity=1.000000]
+    \path[draw={rgb,255:red,37;green,99;blue,235},fill=none,line width=1.125000pt,line cap=rect,line join=miter,dash pattern=on 4.500000pt off 2.250000pt on 1.500000pt off 4.500000pt on 2.250000pt off 1.500000pt] (80.000000,192.000000) -- (272.000000,192.000000);
+  \end{scope}
+  % source 8..24
+  \begin{scope}[transparency group,opacity=1.000000]
+    \path[draw={rgb,255:red,37;green,99;blue,235},fill=none,line width=0.937500pt,line cap=butt,line join=miter] (80.000000,64.000000) -- (48.000000,48.000000);
+    \path[draw=none,fill={rgb,255:red,37;green,99;blue,235}] (16.000000,48.000000) -- (32.000000,16.000000) -- (48.000000,48.000000) -- cycle (24.000000,38.400000) .. controls (29.333333,34.133333) and (34.666667,34.133333) .. (40.000000,38.400000);
+  \end{scope}
+\end{tikzpicture}

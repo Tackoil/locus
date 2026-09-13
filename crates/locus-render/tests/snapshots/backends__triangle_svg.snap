@@ -1,0 +1,23 @@
+---
+source: crates/locus-render/tests/backends.rs
+expression: "render_svg(&scene, &layout, &sheet, RenderOptions::default()).expect(\"SVG\")"
+---
+<svg xmlns="http://www.w3.org/2000/svg" width="290.625000" height="210.625000" viewBox="0 0 290.625000 210.625000">
+  <g id="face" data-source-start="8" data-source-end="24" opacity="0.850000">
+    <path d="M 80.000000 192.000000 L 272.000000 192.000000 L 80.000000 64.000000 Z" fill="#E7F1F0" stroke="#0F766E" stroke-width="1.250000" stroke-linecap="butt" stroke-linejoin="round"/>
+  </g>
+  <g id="a" data-source-start="8" data-source-end="24" opacity="1.000000">
+    <circle cx="80.000000" cy="192.000000" r="2.000000" fill="#111827" stroke="none"/>
+  </g>
+  <g id="b" data-source-start="8" data-source-end="24" opacity="1.000000">
+    <path d="M 270.000000 190.000000 L 274.000000 194.000000" fill="none" stroke="#111827" stroke-width="1.250000" stroke-linecap="butt" stroke-linejoin="miter"/>
+    <path d="M 270.000000 194.000000 L 274.000000 190.000000" fill="none" stroke="#111827" stroke-width="1.250000" stroke-linecap="butt" stroke-linejoin="miter"/>
+  </g>
+  <g id="ab" data-source-start="8" data-source-end="24" opacity="1.000000">
+    <path d="M 80.000000 192.000000 L 272.000000 192.000000" fill="none" stroke="#2563EB" stroke-width="1.500000" stroke-linecap="square" stroke-linejoin="miter" stroke-dasharray="6.000000 3.000000 2.000000 6.000000 3.000000 2.000000"/>
+  </g>
+  <g id="caption" data-source-start="8" data-source-end="24" opacity="1.000000">
+    <path d="M 80.000000 64.000000 L 48.000000 48.000000" fill="none" stroke="#2563EB" stroke-width="1.250000" stroke-linecap="butt" stroke-linejoin="miter"/>
+    <path d="M 16.000000 48.000000 L 32.000000 16.000000 L 48.000000 48.000000 Z M 24.000000 38.400000 C 29.333333 34.133333 34.666667 34.133333 40.000000 38.400000" fill="#2563EB" stroke="none"/>
+  </g>
+</svg>
