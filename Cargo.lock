@@ -426,8 +426,12 @@ dependencies = [
 name = "locus-layout"
 version = "0.0.0"
 dependencies = [
+ "indexmap",
+ "libm",
  "locus-core",
+ "locus-syntax",
  "locus-tex",
+ "thiserror",
 ]
 
 [[package]]

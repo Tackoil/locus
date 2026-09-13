@@ -13,6 +13,11 @@ publish = false
 locus-core = { path = "../locus-core" }
 locus-tex = { path = "../locus-tex" }
 
+locus-syntax = { path = "../locus-syntax" }
+indexmap.workspace = true
+libm.workspace = true
+thiserror.workspace = true
+
 [lints]
 workspace = true
 
