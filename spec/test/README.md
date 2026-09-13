@@ -1,6 +1,6 @@
 # Executable stress examples
 
-All 16 top-level `.locus` files are interconnected stress workloads. They contain
+All 17 top-level `.locus` files are interconnected stress workloads. They contain
 75–316 objects each, with deep construction dependencies, dense annotations,
 shared constraints, and independent geometric or diagram assertions.
 
@@ -86,7 +86,7 @@ distance-only constraints provide insufficient position or angle accuracy.
   examples use `MockEngine` boxes**, because the real TeX backend is unavailable.
   These tests cover their layout/rendering integration, not actual TeX typesetting.
 
-Export all 16 previews into the ignored `target/spec-examples` directory:
+Export all 17 previews into the ignored `target/spec-examples` directory:
 
 ```sh
 LOCUS_EXAMPLE_OUTPUT_DIR="$PWD/target/spec-examples" \

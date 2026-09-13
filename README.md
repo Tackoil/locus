@@ -1,3 +1,9 @@
+<p align="center">
+  <a href="assets/locus-logo.locus">
+    <img src="assets/locus-logo.svg" alt="Locus: deterministic geometry diagrams as code" width="420">
+  </a>
+</p>
+
 # Locus
 
 Locus is an agent-friendly relational language and CLI toolchain for deterministic plane-geometry figures and technical diagrams.
