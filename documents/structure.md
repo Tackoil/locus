@@ -277,12 +277,12 @@ Error strategy: `thiserror` enums per crate (`SyntaxError`, `ConstructError`, `L
 | Geometry kernel | unit tests per constructor with known-answer figures; branch-ordering tests per intersect type-pair |
 | Solver | known-answer relational fixtures (tangency, alignment, mixed); DOF-accounting tests (under/over/conflicting); hint-branch-selection tests (same relations, different hints → different documented branches) |
 | Determinism | run full pipeline twice on every fixture, assert byte-equal SVG; CI runs on Linux+macOS to catch platform float drift early |
-| Golden files | `fixtures/figures/*.locus` → `insta` snapshots of `describe --json`, `inspect --json`, and rendered SVG |
+| Golden files | `spec/test/demonstrations/*.locus` → `insta` snapshots of `describe --json`, `inspect --json`, and rendered SVG |
 | Error quality | `fixtures/errors/*.locus` → snapshot the *diagnostics* (error UX is a feature; test it like one) |
 | CLI | `assert_cmd`: exit codes 0/1/2/3, stdin `add` flow, the full agent loop from spec §9.5 |
 | Language server | in-memory JSON-RPC transcript tests for initialization, edits, diagnostics, completion, navigation, formatting, rename, shutdown, stale-version suppression, and UTF-16/byte-span edge cases |
 
-The two stress-test figures we discussed (tangent circles, angle bisector with ratio ticks) go straight into `fixtures/figures/` as the first golden tests — spec validation and regression suite in one.
+The compact tangent-circles and angle-bisector figures live in `spec/test/demonstrations/` as the first golden tests; their expanded counterparts live in `spec/test/stress/`.
 
 ---
 

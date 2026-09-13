@@ -4,7 +4,7 @@ expression: stdout
 ---
 {
   "command": "inspect",
-  "path": "fixtures/figures/euler_nine_point.locus",
+  "path": "spec/test/demonstrations/euler_nine_point.locus",
   "measurements": {
     "distances": [
       {

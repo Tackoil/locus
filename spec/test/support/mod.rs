@@ -8,7 +8,7 @@ use locus_syntax::{File, Statement};
 
 /// A named workload and the minimum amount of work it must still exercise.
 pub struct Case {
-    /// File stem in the spec example corpus.
+    /// File stem in the stress corpus.
     pub name: &'static str,
     min_objects: usize,
     min_assertions: usize,
@@ -16,15 +16,15 @@ pub struct Case {
     min_attempts: usize,
 }
 
-/// Locate the corpus from either consuming workspace crate.
-pub fn root() -> PathBuf {
-    Path::new(env!("CARGO_MANIFEST_DIR")).join("../../spec/test")
+/// Locate the stress corpus from either consuming workspace crate.
+pub fn stress_root() -> PathBuf {
+    Path::new(env!("CARGO_MANIFEST_DIR")).join("../../spec/test/stress")
 }
 
 impl Case {
     /// Source file corresponding to this workload.
     pub fn path(&self) -> PathBuf {
-        root().join(format!("{}.locus", self.name))
+        stress_root().join(format!("{}.locus", self.name))
     }
 
     /// Parse the workload and reject accidental reductions to a tiny example.
@@ -98,14 +98,14 @@ fn case(line: &'static str) -> Result<Case, Box<dyn Error>> {
 
 /// Load explicit stress contracts and ensure every top-level example is registered exactly once.
 pub fn cases() -> Result<Vec<Case>, Box<dyn Error>> {
-    let cases = include_str!("../stress.tsv")
+    let cases = include_str!("../stress/stress.tsv")
         .lines()
         .filter(|line| !line.trim().is_empty() && !line.starts_with('#'))
         .map(case)
         .collect::<Result<Vec<_>, _>>()?;
     let mut registered = cases.iter().map(Case::path).collect::<Vec<_>>();
     registered.sort();
-    let mut discovered = fs::read_dir(root())?
+    let mut discovered = fs::read_dir(stress_root())?
         .map(|entry| entry.map(|entry| entry.path()))
         .collect::<Result<Vec<_>, _>>()?;
     discovered.retain(|path| {

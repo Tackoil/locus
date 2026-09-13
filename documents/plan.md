@@ -88,7 +88,7 @@ Deliverables, following the module layout in structure.md §2.1:
 
 Testing: unit tests for lexer and parser; recovery tests (multiple bad lines, all reported);
 diagnostic snapshot tests with `insta` covering at least 10 distinct E1xx errors including a
-did-you-mean case; parse every file in `spec/test/*.locus` successfully (they are format
+did-you-mean case; parse every file in `spec/test/stress/*.locus` successfully (they are format
 version 2 stress tests — if any construct is genuinely outside the spec grammar, report it in
 your final message rather than hacking the grammar).
 
@@ -188,7 +188,7 @@ Deliverables:
 Testing (this is the core of the task):
 - `proptest` round-trip: `parse(fmt(parse(x))) == parse(x)` over a generator of valid files.
 - Formatter idempotence: `fmt(fmt(x)) == fmt(x)` on generated files AND on every
-  `spec/test/*.locus` fixture.
+  `spec/test/stress/*.locus` fixture.
 - `insta` snapshots of formatted output and JSON output for at least 3 of the `spec/test`
   fixtures.
 
@@ -313,7 +313,7 @@ scene for tests, construct resolved scenes directly from geom types.
 
 ### T7 — `locus-cli`: the agent-facing binary
 
-**Write scope:** `crates/locus-cli/`, `fixtures/figures/`, `fixtures/errors/`.
+**Write scope:** `crates/locus-cli/`, `spec/test/demonstrations/`, `fixtures/errors/`.
 
 ```text
 Implement the `locus` CLI in `crates/locus-cli` (currently a stub main.rs). All language and
@@ -342,8 +342,8 @@ Testing with `assert_cmd`:
   not-implemented error) as an end-to-end test.
 - Exit-code tests for all four codes.
 - `update`/`remove` flows including orphan detection (exit 2).
-- Copy the `spec/test/*.locus` stress figures into `fixtures/figures/` and add `insta` snapshot
-  tests of `describe --json` and `inspect --json` for each one that solves.
+- Keep compact figures in `spec/test/demonstrations/` and add `insta` snapshot tests of
+  `describe --json` and `inspect --json` for each one that solves.
 - Author at least 8 invalid files in `fixtures/errors/` and snapshot their diagnostics (both
   human and --json forms) — error UX is a feature, test it like one.
 ```
@@ -457,7 +457,7 @@ byte-determinism test (render the same scene twice, assert byte-equal strings).
 
 ### T12 — Render CLI, golden fixtures, determinism gates
 
-**Write scope:** `crates/locus-cli/` (render command + wiring), `fixtures/golden/`, `fixtures/figures/`, `.github/workflows/ci.yml`.
+**Write scope:** `crates/locus-cli/` (render command + wiring), `fixtures/golden/`, `spec/test/demonstrations/`, `.github/workflows/ci.yml`.
 
 ```text
 Complete the pipeline end-to-end: wire `locus render` into the CLI and build the golden-file and
@@ -474,7 +474,7 @@ Deliverables:
 - `commands/render.rs`: parse → eval/solve → layout (with the real text engine by default; the
   deterministic MockEngine under a test/hidden flag such as `--tex-engine=mock` or an env var,
   documented) → render; `-o`, `--png` (behind the png feature), `--tikz`, `--stdout`.
-- Golden suite: for every figure in `fixtures/figures/` (including the stress tests
+- Golden suite: for every figure in `spec/test/demonstrations/` (including
   tangent_circles and angle_bisector_ratio), commit expected `describe --json`,
   `inspect --json`, and rendered SVG (mock text engine) under `fixtures/golden/`, with `insta`
   or file-comparison tests.
@@ -513,7 +513,7 @@ hover, definition, formatting, and symbols already exists — read it first, plu
 
 Part B — hardening and docs:
 - The root README.md references `spec/README.md`, which does not exist — write it: the normative
-  contract summary, how `spec/test/*.locus` fixtures relate to `fixtures/`, and how
+  contract summary, how the demonstration and stress corpora relate to `fixtures/`, and how
   `scripts/check_spec.py` gates spec changes.
 - Update the root README.md: replace the "Phase 0 bootstrap" paragraph with an accurate current
   status, document install/usage (`locus init/add/check/render`, the §9.5 agent loop), and the

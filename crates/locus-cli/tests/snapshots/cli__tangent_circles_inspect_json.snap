@@ -4,7 +4,7 @@ expression: stdout
 ---
 {
   "command": "inspect",
-  "path": "fixtures/figures/tangent_circles.locus",
+  "path": "spec/test/demonstrations/tangent_circles.locus",
   "measurements": {
     "distances": [
       {

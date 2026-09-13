@@ -16,7 +16,7 @@ fn integer(value: &serde_json::Value) -> Result<usize, Box<dyn Error>> {
 }
 
 #[test]
-fn every_spec_example_passes_its_assertions() -> Result<(), Box<dyn Error>> {
+fn every_stress_example_passes_its_assertions() -> Result<(), Box<dyn Error>> {
     let cases = support::cases()?;
     for case in &cases {
         case.parse()?;
@@ -58,7 +58,7 @@ fn every_spec_example_passes_its_assertions() -> Result<(), Box<dyn Error>> {
 
 #[test]
 fn closed_segment_bisectors_report_known_solver_limit() -> Result<(), Box<dyn Error>> {
-    let path = support::root().join("known_limits/closed_segment_bisectors.locus");
+    let path = support::stress_root().join("known_limits/closed_segment_bisectors.locus");
     let output = Command::cargo_bin("locus")?
         .arg("check")
         .arg(&path)

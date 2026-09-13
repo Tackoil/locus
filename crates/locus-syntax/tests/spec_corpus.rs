@@ -1,20 +1,22 @@
-//! Format-version-2 specification corpus tests.
+//! Format-version-2 demonstration and stress corpus tests.
 
 use locus_syntax::parse;
 use std::fs;
 use std::path::PathBuf;
 
 #[test]
-fn parses_every_format_v2_stress_test() -> Result<(), Box<dyn std::error::Error>> {
+fn parses_every_format_v2_example() -> Result<(), Box<dyn std::error::Error>> {
     let corpus = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../spec/test");
     let mut paths = Vec::new();
-    for entry in fs::read_dir(&corpus)? {
-        let path = entry?.path();
-        if path
-            .extension()
-            .is_some_and(|extension| extension == "locus")
-        {
-            paths.push(path);
+    for group in ["demonstrations", "stress"] {
+        for entry in fs::read_dir(corpus.join(group))? {
+            let path = entry?.path();
+            if path
+                .extension()
+                .is_some_and(|extension| extension == "locus")
+            {
+                paths.push(path);
+            }
         }
     }
     paths.sort();

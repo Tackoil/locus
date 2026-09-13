@@ -4,7 +4,7 @@ expression: stdout
 ---
 {
   "command": "describe",
-  "path": "fixtures/figures/pentagon_golden.locus",
+  "path": "spec/test/demonstrations/pentagon_golden.locus",
   "objects": [
     {
       "id": "O",

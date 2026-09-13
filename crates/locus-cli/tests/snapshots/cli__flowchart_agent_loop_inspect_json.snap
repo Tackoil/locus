@@ -4,7 +4,7 @@ expression: stdout
 ---
 {
   "command": "inspect",
-  "path": "fixtures/figures/flowchart_agent_loop.locus",
+  "path": "spec/test/demonstrations/flowchart_agent_loop.locus",
   "measurements": {
     "distances": [
       {

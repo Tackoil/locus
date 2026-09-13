@@ -11,7 +11,11 @@ fn corpus_dir() -> PathBuf {
 }
 
 fn fixture(name: &str) -> Result<String, std::io::Error> {
-    fs::read_to_string(corpus_dir().join(format!("{name}.locus")))
+    fs::read_to_string(
+        corpus_dir()
+            .join("demonstrations")
+            .join(format!("{name}.locus")),
+    )
 }
 
 fn parsed(source: &str) -> locus_syntax::File {
@@ -70,16 +74,20 @@ fn assert_fixture_idempotent(path: &Path) -> Result<(), Box<dyn std::error::Erro
 
 #[test]
 fn formatter_is_idempotent_on_every_spec_fixture() -> Result<(), Box<dyn std::error::Error>> {
-    let entries = fs::read_dir(corpus_dir())?;
-    let mut paths: Vec<_> = entries
-        .collect::<Result<Vec<_>, _>>()?
-        .into_iter()
-        .map(|entry| entry.path())
-        .filter(|path| {
-            path.extension()
-                .is_some_and(|extension| extension == "locus")
-        })
-        .collect();
+    let mut paths = Vec::new();
+    for group in ["demonstrations", "stress"] {
+        let entries = fs::read_dir(corpus_dir().join(group))?;
+        paths.extend(
+            entries
+                .collect::<Result<Vec<_>, _>>()?
+                .into_iter()
+                .map(|entry| entry.path())
+                .filter(|path| {
+                    path.extension()
+                        .is_some_and(|extension| extension == "locus")
+                }),
+        );
+    }
     paths.sort();
     for path in paths {
         assert_fixture_idempotent(&path)?;

@@ -6,7 +6,7 @@ use std::path::{Path, PathBuf};
 
 use assert_cmd::Command;
 
-const FIGURES: &[&str] = &[
+const DEMONSTRATIONS: &[&str] = &[
     "aec3_filter_alignment",
     "angle_bisector_ratio",
     "euler_nine_point",
@@ -487,9 +487,9 @@ fn check_reports_every_input_with_deterministic_exit_precedence() -> Result<(), 
 }
 
 #[test]
-fn solved_figure_reports_are_stable() -> Result<(), Box<dyn Error>> {
-    for name in FIGURES {
-        let fixture = format!("fixtures/figures/{name}.locus");
+fn solved_demonstration_reports_are_stable() -> Result<(), Box<dyn Error>> {
+    for name in DEMONSTRATIONS {
+        let fixture = format!("spec/test/demonstrations/{name}.locus");
         for command_name in ["describe", "inspect"] {
             let output = locus()?.args([command_name, &fixture, "--json"]).output()?;
             assert_eq!(output.status.code(), Some(0), "{command_name} {name}");

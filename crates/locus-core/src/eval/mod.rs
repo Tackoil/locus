@@ -3146,14 +3146,18 @@ mod tests {
     #[test]
     fn every_spec_fixture_solves_relationally() -> Result<(), Box<dyn std::error::Error>> {
         let corpus = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../spec/test");
-        let mut paths = fs::read_dir(corpus)?
-            .filter_map(Result::ok)
-            .map(|entry| entry.path())
-            .filter(|path| {
-                path.extension()
-                    .is_some_and(|extension| extension == "locus")
-            })
-            .collect::<Vec<_>>();
+        let mut paths = Vec::new();
+        for group in ["demonstrations", "stress"] {
+            paths.extend(
+                fs::read_dir(corpus.join(group))?
+                    .filter_map(Result::ok)
+                    .map(|entry| entry.path())
+                    .filter(|path| {
+                        path.extension()
+                            .is_some_and(|extension| extension == "locus")
+                    }),
+            );
+        }
         paths.sort();
         for path in paths {
             let source = fs::read_to_string(&path)?;
