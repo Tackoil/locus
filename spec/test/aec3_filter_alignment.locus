@@ -155,3 +155,286 @@ assert vdist(F1c, F0c) == vdist(F2c, F1c)                 // equal row pitch
 assert on(kdrop, seg(A0, A512))
 assert between(t224, kdrop, t288)                         // the peak lands between 224 and 288 ms
 assert hdist(A0, kdrop) == hdist(A0, t192) + hdist(t192, kdrop)   // total delay = O2 + k*
+
+// ---- stress construction network ----
+// Four additional coefficient banks feed per-filter delay estimates and a comparison strip.
+point coeff0_0 = offset(lerp(f0.sw, f0.se, 0.03125), 0, 0.120) { mark: none }
+segment stem0_0 = seg(foot(coeff0_0, seg(f0.sw, f0.se)), coeff0_0) [coeff]
+assert inside(coeff0_0, f0)
+assert length(stem0_0) == 0.120
+point coeff0_1 = offset(lerp(f0.sw, f0.se, 0.09375), 0, 0.295) { mark: none }
+segment stem0_1 = seg(foot(coeff0_1, seg(f0.sw, f0.se)), coeff0_1) [coeff]
+assert inside(coeff0_1, f0)
+assert length(stem0_1) == 0.295
+point coeff0_2 = offset(lerp(f0.sw, f0.se, 0.15625), 0, 0.195) { mark: none }
+segment stem0_2 = seg(foot(coeff0_2, seg(f0.sw, f0.se)), coeff0_2) [coeff]
+assert inside(coeff0_2, f0)
+assert length(stem0_2) == 0.195
+point coeff0_3 = offset(lerp(f0.sw, f0.se, 0.21875), 0, 0.370) { mark: none }
+segment stem0_3 = seg(foot(coeff0_3, seg(f0.sw, f0.se)), coeff0_3) [coeff]
+assert inside(coeff0_3, f0)
+assert length(stem0_3) == 0.370
+point coeff0_4 = offset(lerp(f0.sw, f0.se, 0.28125), 0, 0.270) { mark: none }
+segment stem0_4 = seg(foot(coeff0_4, seg(f0.sw, f0.se)), coeff0_4) [coeff]
+assert inside(coeff0_4, f0)
+assert length(stem0_4) == 0.270
+point coeff0_5 = offset(lerp(f0.sw, f0.se, 0.34375), 0, 0.170) { mark: none }
+segment stem0_5 = seg(foot(coeff0_5, seg(f0.sw, f0.se)), coeff0_5) [coeff]
+assert inside(coeff0_5, f0)
+assert length(stem0_5) == 0.170
+point coeff0_6 = offset(lerp(f0.sw, f0.se, 0.40625), 0, 0.345) { mark: none }
+segment stem0_6 = seg(foot(coeff0_6, seg(f0.sw, f0.se)), coeff0_6) [coeff]
+assert inside(coeff0_6, f0)
+assert length(stem0_6) == 0.345
+point coeff0_7 = offset(lerp(f0.sw, f0.se, 0.46875), 0, 0.245) { mark: none }
+segment stem0_7 = seg(foot(coeff0_7, seg(f0.sw, f0.se)), coeff0_7) [coeff]
+assert inside(coeff0_7, f0)
+assert length(stem0_7) == 0.245
+point coeff0_8 = offset(lerp(f0.sw, f0.se, 0.53125), 0, 0.145) { mark: none }
+segment stem0_8 = seg(foot(coeff0_8, seg(f0.sw, f0.se)), coeff0_8) [coeff]
+assert inside(coeff0_8, f0)
+assert length(stem0_8) == 0.145
+point coeff0_9 = offset(lerp(f0.sw, f0.se, 0.59375), 0, 0.320) { mark: none }
+segment stem0_9 = seg(foot(coeff0_9, seg(f0.sw, f0.se)), coeff0_9) [coeff]
+assert inside(coeff0_9, f0)
+assert length(stem0_9) == 0.320
+point coeff0_10 = offset(lerp(f0.sw, f0.se, 0.65625), 0, 0.220) { mark: none }
+segment stem0_10 = seg(foot(coeff0_10, seg(f0.sw, f0.se)), coeff0_10) [coeff]
+assert inside(coeff0_10, f0)
+assert length(stem0_10) == 0.220
+point coeff0_11 = offset(lerp(f0.sw, f0.se, 0.71875), 0, 0.120) { mark: none }
+segment stem0_11 = seg(foot(coeff0_11, seg(f0.sw, f0.se)), coeff0_11) [coeff]
+assert inside(coeff0_11, f0)
+assert length(stem0_11) == 0.120
+point coeff0_12 = offset(lerp(f0.sw, f0.se, 0.78125), 0, 0.295) { mark: none }
+segment stem0_12 = seg(foot(coeff0_12, seg(f0.sw, f0.se)), coeff0_12) [coeff]
+assert inside(coeff0_12, f0)
+assert length(stem0_12) == 0.295
+point coeff0_13 = offset(lerp(f0.sw, f0.se, 0.84375), 0, 0.195) { mark: none }
+segment stem0_13 = seg(foot(coeff0_13, seg(f0.sw, f0.se)), coeff0_13) [coeff]
+assert inside(coeff0_13, f0)
+assert length(stem0_13) == 0.195
+point coeff0_14 = offset(lerp(f0.sw, f0.se, 0.90625), 0, 0.370) { mark: none }
+segment stem0_14 = seg(foot(coeff0_14, seg(f0.sw, f0.se)), coeff0_14) [coeff]
+assert inside(coeff0_14, f0)
+assert length(stem0_14) == 0.370
+point coeff0_15 = offset(lerp(f0.sw, f0.se, 0.96875), 0, 0.270) { mark: none }
+segment stem0_15 = seg(foot(coeff0_15, seg(f0.sw, f0.se)), coeff0_15) [coeff]
+assert inside(coeff0_15, f0)
+assert length(stem0_15) == 0.270
+point delay0 = foot(coeff0_5, seg(A0, A512)) { mark: none }
+segment delayline0 = seg(coeff0_5, delay0) [peakln]
+num delay_value0 = hdist(A0, delay0)
+assert delay_value0 == hdist(A0, f0.w) + hdist(f0.w, coeff0_5)
+point coeff1_0 = offset(lerp(f1.sw, f1.se, 0.03125), 0, 0.195) { mark: none }
+segment stem1_0 = seg(foot(coeff1_0, seg(f1.sw, f1.se)), coeff1_0) [coeff]
+assert inside(coeff1_0, f1)
+assert length(stem1_0) == 0.195
+point coeff1_1 = offset(lerp(f1.sw, f1.se, 0.09375), 0, 0.370) { mark: none }
+segment stem1_1 = seg(foot(coeff1_1, seg(f1.sw, f1.se)), coeff1_1) [coeff]
+assert inside(coeff1_1, f1)
+assert length(stem1_1) == 0.370
+point coeff1_2 = offset(lerp(f1.sw, f1.se, 0.15625), 0, 0.270) { mark: none }
+segment stem1_2 = seg(foot(coeff1_2, seg(f1.sw, f1.se)), coeff1_2) [coeff]
+assert inside(coeff1_2, f1)
+assert length(stem1_2) == 0.270
+point coeff1_3 = offset(lerp(f1.sw, f1.se, 0.21875), 0, 0.170) { mark: none }
+segment stem1_3 = seg(foot(coeff1_3, seg(f1.sw, f1.se)), coeff1_3) [coeff]
+assert inside(coeff1_3, f1)
+assert length(stem1_3) == 0.170
+point coeff1_4 = offset(lerp(f1.sw, f1.se, 0.28125), 0, 0.345) { mark: none }
+segment stem1_4 = seg(foot(coeff1_4, seg(f1.sw, f1.se)), coeff1_4) [coeff]
+assert inside(coeff1_4, f1)
+assert length(stem1_4) == 0.345
+point coeff1_5 = offset(lerp(f1.sw, f1.se, 0.34375), 0, 0.245) { mark: none }
+segment stem1_5 = seg(foot(coeff1_5, seg(f1.sw, f1.se)), coeff1_5) [coeff]
+assert inside(coeff1_5, f1)
+assert length(stem1_5) == 0.245
+point coeff1_6 = offset(lerp(f1.sw, f1.se, 0.40625), 0, 0.145) { mark: none }
+segment stem1_6 = seg(foot(coeff1_6, seg(f1.sw, f1.se)), coeff1_6) [coeff]
+assert inside(coeff1_6, f1)
+assert length(stem1_6) == 0.145
+point coeff1_7 = offset(lerp(f1.sw, f1.se, 0.46875), 0, 0.320) { mark: none }
+segment stem1_7 = seg(foot(coeff1_7, seg(f1.sw, f1.se)), coeff1_7) [coeff]
+assert inside(coeff1_7, f1)
+assert length(stem1_7) == 0.320
+point coeff1_8 = offset(lerp(f1.sw, f1.se, 0.53125), 0, 0.220) { mark: none }
+segment stem1_8 = seg(foot(coeff1_8, seg(f1.sw, f1.se)), coeff1_8) [coeff]
+assert inside(coeff1_8, f1)
+assert length(stem1_8) == 0.220
+point coeff1_9 = offset(lerp(f1.sw, f1.se, 0.59375), 0, 0.120) { mark: none }
+segment stem1_9 = seg(foot(coeff1_9, seg(f1.sw, f1.se)), coeff1_9) [coeff]
+assert inside(coeff1_9, f1)
+assert length(stem1_9) == 0.120
+point coeff1_10 = offset(lerp(f1.sw, f1.se, 0.65625), 0, 0.295) { mark: none }
+segment stem1_10 = seg(foot(coeff1_10, seg(f1.sw, f1.se)), coeff1_10) [coeff]
+assert inside(coeff1_10, f1)
+assert length(stem1_10) == 0.295
+point coeff1_11 = offset(lerp(f1.sw, f1.se, 0.71875), 0, 0.195) { mark: none }
+segment stem1_11 = seg(foot(coeff1_11, seg(f1.sw, f1.se)), coeff1_11) [coeff]
+assert inside(coeff1_11, f1)
+assert length(stem1_11) == 0.195
+point coeff1_12 = offset(lerp(f1.sw, f1.se, 0.78125), 0, 0.370) { mark: none }
+segment stem1_12 = seg(foot(coeff1_12, seg(f1.sw, f1.se)), coeff1_12) [coeff]
+assert inside(coeff1_12, f1)
+assert length(stem1_12) == 0.370
+point coeff1_13 = offset(lerp(f1.sw, f1.se, 0.84375), 0, 0.270) { mark: none }
+segment stem1_13 = seg(foot(coeff1_13, seg(f1.sw, f1.se)), coeff1_13) [coeff]
+assert inside(coeff1_13, f1)
+assert length(stem1_13) == 0.270
+point coeff1_14 = offset(lerp(f1.sw, f1.se, 0.90625), 0, 0.170) { mark: none }
+segment stem1_14 = seg(foot(coeff1_14, seg(f1.sw, f1.se)), coeff1_14) [coeff]
+assert inside(coeff1_14, f1)
+assert length(stem1_14) == 0.170
+point coeff1_15 = offset(lerp(f1.sw, f1.se, 0.96875), 0, 0.345) { mark: none }
+segment stem1_15 = seg(foot(coeff1_15, seg(f1.sw, f1.se)), coeff1_15) [coeff]
+assert inside(coeff1_15, f1)
+assert length(stem1_15) == 0.345
+point delay1 = foot(coeff1_8, seg(A0, A512)) { mark: none }
+segment delayline1 = seg(coeff1_8, delay1) [peakln]
+num delay_value1 = hdist(A0, delay1)
+assert delay_value1 == hdist(A0, f1.w) + hdist(f1.w, coeff1_8)
+point coeff3_0 = offset(lerp(f3.sw, f3.se, 0.03125), 0, 0.345) { mark: none }
+segment stem3_0 = seg(foot(coeff3_0, seg(f3.sw, f3.se)), coeff3_0) [coeff]
+assert inside(coeff3_0, f3)
+assert length(stem3_0) == 0.345
+point coeff3_1 = offset(lerp(f3.sw, f3.se, 0.09375), 0, 0.245) { mark: none }
+segment stem3_1 = seg(foot(coeff3_1, seg(f3.sw, f3.se)), coeff3_1) [coeff]
+assert inside(coeff3_1, f3)
+assert length(stem3_1) == 0.245
+point coeff3_2 = offset(lerp(f3.sw, f3.se, 0.15625), 0, 0.145) { mark: none }
+segment stem3_2 = seg(foot(coeff3_2, seg(f3.sw, f3.se)), coeff3_2) [coeff]
+assert inside(coeff3_2, f3)
+assert length(stem3_2) == 0.145
+point coeff3_3 = offset(lerp(f3.sw, f3.se, 0.21875), 0, 0.320) { mark: none }
+segment stem3_3 = seg(foot(coeff3_3, seg(f3.sw, f3.se)), coeff3_3) [coeff]
+assert inside(coeff3_3, f3)
+assert length(stem3_3) == 0.320
+point coeff3_4 = offset(lerp(f3.sw, f3.se, 0.28125), 0, 0.220) { mark: none }
+segment stem3_4 = seg(foot(coeff3_4, seg(f3.sw, f3.se)), coeff3_4) [coeff]
+assert inside(coeff3_4, f3)
+assert length(stem3_4) == 0.220
+point coeff3_5 = offset(lerp(f3.sw, f3.se, 0.34375), 0, 0.120) { mark: none }
+segment stem3_5 = seg(foot(coeff3_5, seg(f3.sw, f3.se)), coeff3_5) [coeff]
+assert inside(coeff3_5, f3)
+assert length(stem3_5) == 0.120
+point coeff3_6 = offset(lerp(f3.sw, f3.se, 0.40625), 0, 0.295) { mark: none }
+segment stem3_6 = seg(foot(coeff3_6, seg(f3.sw, f3.se)), coeff3_6) [coeff]
+assert inside(coeff3_6, f3)
+assert length(stem3_6) == 0.295
+point coeff3_7 = offset(lerp(f3.sw, f3.se, 0.46875), 0, 0.195) { mark: none }
+segment stem3_7 = seg(foot(coeff3_7, seg(f3.sw, f3.se)), coeff3_7) [coeff]
+assert inside(coeff3_7, f3)
+assert length(stem3_7) == 0.195
+point coeff3_8 = offset(lerp(f3.sw, f3.se, 0.53125), 0, 0.370) { mark: none }
+segment stem3_8 = seg(foot(coeff3_8, seg(f3.sw, f3.se)), coeff3_8) [coeff]
+assert inside(coeff3_8, f3)
+assert length(stem3_8) == 0.370
+point coeff3_9 = offset(lerp(f3.sw, f3.se, 0.59375), 0, 0.270) { mark: none }
+segment stem3_9 = seg(foot(coeff3_9, seg(f3.sw, f3.se)), coeff3_9) [coeff]
+assert inside(coeff3_9, f3)
+assert length(stem3_9) == 0.270
+point coeff3_10 = offset(lerp(f3.sw, f3.se, 0.65625), 0, 0.170) { mark: none }
+segment stem3_10 = seg(foot(coeff3_10, seg(f3.sw, f3.se)), coeff3_10) [coeff]
+assert inside(coeff3_10, f3)
+assert length(stem3_10) == 0.170
+point coeff3_11 = offset(lerp(f3.sw, f3.se, 0.71875), 0, 0.345) { mark: none }
+segment stem3_11 = seg(foot(coeff3_11, seg(f3.sw, f3.se)), coeff3_11) [coeff]
+assert inside(coeff3_11, f3)
+assert length(stem3_11) == 0.345
+point coeff3_12 = offset(lerp(f3.sw, f3.se, 0.78125), 0, 0.245) { mark: none }
+segment stem3_12 = seg(foot(coeff3_12, seg(f3.sw, f3.se)), coeff3_12) [coeff]
+assert inside(coeff3_12, f3)
+assert length(stem3_12) == 0.245
+point coeff3_13 = offset(lerp(f3.sw, f3.se, 0.84375), 0, 0.145) { mark: none }
+segment stem3_13 = seg(foot(coeff3_13, seg(f3.sw, f3.se)), coeff3_13) [coeff]
+assert inside(coeff3_13, f3)
+assert length(stem3_13) == 0.145
+point coeff3_14 = offset(lerp(f3.sw, f3.se, 0.90625), 0, 0.320) { mark: none }
+segment stem3_14 = seg(foot(coeff3_14, seg(f3.sw, f3.se)), coeff3_14) [coeff]
+assert inside(coeff3_14, f3)
+assert length(stem3_14) == 0.320
+point coeff3_15 = offset(lerp(f3.sw, f3.se, 0.96875), 0, 0.220) { mark: none }
+segment stem3_15 = seg(foot(coeff3_15, seg(f3.sw, f3.se)), coeff3_15) [coeff]
+assert inside(coeff3_15, f3)
+assert length(stem3_15) == 0.220
+point delay3 = foot(coeff3_14, seg(A0, A512)) { mark: none }
+segment delayline3 = seg(coeff3_14, delay3) [peakln]
+num delay_value3 = hdist(A0, delay3)
+assert delay_value3 == hdist(A0, f3.w) + hdist(f3.w, coeff3_14)
+point coeff4_0 = offset(lerp(f4.sw, f4.se, 0.03125), 0, 0.145) { mark: none }
+segment stem4_0 = seg(foot(coeff4_0, seg(f4.sw, f4.se)), coeff4_0) [coeff]
+assert inside(coeff4_0, f4)
+assert length(stem4_0) == 0.145
+point coeff4_1 = offset(lerp(f4.sw, f4.se, 0.09375), 0, 0.320) { mark: none }
+segment stem4_1 = seg(foot(coeff4_1, seg(f4.sw, f4.se)), coeff4_1) [coeff]
+assert inside(coeff4_1, f4)
+assert length(stem4_1) == 0.320
+point coeff4_2 = offset(lerp(f4.sw, f4.se, 0.15625), 0, 0.220) { mark: none }
+segment stem4_2 = seg(foot(coeff4_2, seg(f4.sw, f4.se)), coeff4_2) [coeff]
+assert inside(coeff4_2, f4)
+assert length(stem4_2) == 0.220
+point coeff4_3 = offset(lerp(f4.sw, f4.se, 0.21875), 0, 0.120) { mark: none }
+segment stem4_3 = seg(foot(coeff4_3, seg(f4.sw, f4.se)), coeff4_3) [coeff]
+assert inside(coeff4_3, f4)
+assert length(stem4_3) == 0.120
+point coeff4_4 = offset(lerp(f4.sw, f4.se, 0.28125), 0, 0.295) { mark: none }
+segment stem4_4 = seg(foot(coeff4_4, seg(f4.sw, f4.se)), coeff4_4) [coeff]
+assert inside(coeff4_4, f4)
+assert length(stem4_4) == 0.295
+point coeff4_5 = offset(lerp(f4.sw, f4.se, 0.34375), 0, 0.195) { mark: none }
+segment stem4_5 = seg(foot(coeff4_5, seg(f4.sw, f4.se)), coeff4_5) [coeff]
+assert inside(coeff4_5, f4)
+assert length(stem4_5) == 0.195
+point coeff4_6 = offset(lerp(f4.sw, f4.se, 0.40625), 0, 0.370) { mark: none }
+segment stem4_6 = seg(foot(coeff4_6, seg(f4.sw, f4.se)), coeff4_6) [coeff]
+assert inside(coeff4_6, f4)
+assert length(stem4_6) == 0.370
+point coeff4_7 = offset(lerp(f4.sw, f4.se, 0.46875), 0, 0.270) { mark: none }
+segment stem4_7 = seg(foot(coeff4_7, seg(f4.sw, f4.se)), coeff4_7) [coeff]
+assert inside(coeff4_7, f4)
+assert length(stem4_7) == 0.270
+point coeff4_8 = offset(lerp(f4.sw, f4.se, 0.53125), 0, 0.170) { mark: none }
+segment stem4_8 = seg(foot(coeff4_8, seg(f4.sw, f4.se)), coeff4_8) [coeff]
+assert inside(coeff4_8, f4)
+assert length(stem4_8) == 0.170
+point coeff4_9 = offset(lerp(f4.sw, f4.se, 0.59375), 0, 0.345) { mark: none }
+segment stem4_9 = seg(foot(coeff4_9, seg(f4.sw, f4.se)), coeff4_9) [coeff]
+assert inside(coeff4_9, f4)
+assert length(stem4_9) == 0.345
+point coeff4_10 = offset(lerp(f4.sw, f4.se, 0.65625), 0, 0.245) { mark: none }
+segment stem4_10 = seg(foot(coeff4_10, seg(f4.sw, f4.se)), coeff4_10) [coeff]
+assert inside(coeff4_10, f4)
+assert length(stem4_10) == 0.245
+point coeff4_11 = offset(lerp(f4.sw, f4.se, 0.71875), 0, 0.145) { mark: none }
+segment stem4_11 = seg(foot(coeff4_11, seg(f4.sw, f4.se)), coeff4_11) [coeff]
+assert inside(coeff4_11, f4)
+assert length(stem4_11) == 0.145
+point coeff4_12 = offset(lerp(f4.sw, f4.se, 0.78125), 0, 0.320) { mark: none }
+segment stem4_12 = seg(foot(coeff4_12, seg(f4.sw, f4.se)), coeff4_12) [coeff]
+assert inside(coeff4_12, f4)
+assert length(stem4_12) == 0.320
+point coeff4_13 = offset(lerp(f4.sw, f4.se, 0.84375), 0, 0.220) { mark: none }
+segment stem4_13 = seg(foot(coeff4_13, seg(f4.sw, f4.se)), coeff4_13) [coeff]
+assert inside(coeff4_13, f4)
+assert length(stem4_13) == 0.220
+point coeff4_14 = offset(lerp(f4.sw, f4.se, 0.90625), 0, 0.120) { mark: none }
+segment stem4_14 = seg(foot(coeff4_14, seg(f4.sw, f4.se)), coeff4_14) [coeff]
+assert inside(coeff4_14, f4)
+assert length(stem4_14) == 0.120
+point coeff4_15 = offset(lerp(f4.sw, f4.se, 0.96875), 0, 0.295) { mark: none }
+segment stem4_15 = seg(foot(coeff4_15, seg(f4.sw, f4.se)), coeff4_15) [coeff]
+assert inside(coeff4_15, f4)
+assert length(stem4_15) == 0.295
+point delay4 = foot(coeff4_1, seg(A0, A512)) { mark: none }
+segment delayline4 = seg(coeff4_1, delay4) [peakln]
+num delay_value4 = hdist(A0, delay4)
+assert delay_value4 == hdist(A0, f4.w) + hdist(f4.w, coeff4_1)
+num delay_min = min(min(delay_value0, delay_value1), min(delay_value3, delay_value4))
+num delay_max = max(max(delay_value0, delay_value1), max(delay_value3, delay_value4))
+rect delay_range = rect(offset(A0, (delay_min + delay_max) / 2, -5), delay_max - delay_min, 0.7) [overlap]
+label delay_summary = label(delay_range.center, "Range of candidate delays across filter banks") { dir: center }
+assert delay_value0 >= delay_min and delay_value0 <= delay_max
+assert delay_value1 >= delay_min and delay_value1 <= delay_max
+assert delay_value3 >= delay_min and delay_value3 <= delay_max
+assert delay_value4 >= delay_min and delay_value4 <= delay_max

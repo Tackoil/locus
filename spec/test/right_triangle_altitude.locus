@@ -1,0 +1,221 @@
+locus 2
+
+meta {
+  title "Right triangle: altitude and geometric mean theorems"
+  note "A perturbed relational vertex solves to a 3-4-5 triangle; derived assertions test its consequences."
+}
+
+style textbook
+
+point A = free ~(0, 0)
+point B = offset(A, 4, 0)
+point C = free ~(0.2, 2.8) where { vertical(A, C), vdist(A, C) == 3 }
+polygon triangle = polygon(A, B, C)
+point H = foot(A, line(B, C))
+segment altitude = seg(A, H) [highlight]
+point M = midpoint(B, C)
+circle circum = circle_diameter(B, C) [construction]
+segment median = seg(A, M) [auxiliary]
+right_angle vertex_mark = right_angle(A, B, C)
+right_angle foot_mark = right_angle(H, A, B)
+
+label la = label(A, "A") { dir: SW }
+label lb = label(B, "B") { dir: SE }
+label lc = label(C, "C") { dir: NW }
+label lh = label(H, "H") { dir: NE }
+label lm = label(M, "M") { dir: NE }
+text_block theorem = text_block("AH^2 = BH x HC; AB^2 = BC x BH") { place: below }
+
+assert length(seg(B, C)) == 5
+assert area(triangle) == 6
+assert between(B, H, C)
+assert perpendicular(altitude, seg(B, C))
+assert dist(A, H) * dist(A, H) == dist(B, H) * dist(H, C)
+assert dist(A, B) * dist(A, B) == dist(B, C) * dist(B, H)
+assert on(A, circum)
+assert dist(A, M) == dist(B, C) / 2
+
+// ---- stress construction network ----
+// Four levels of altitude dissection: 14 connected child triangles.
+point rtlh = foot(H, line(B, A)) { mark: none }
+segment rtlalt = seg(H, rtlh) [auxiliary]
+polygon rtltri = polygon(H, B, A) [construction]
+circle rtlcirc = circle_diameter(B, A) [construction]
+circle rtlinc = incircle(H, B, A) [auxiliary]
+point rtli = center(rtlinc) { mark: none }
+point rtltouch = foot(rtli, line(B, A)) { mark: none }
+right_angle rtlmark = right_angle(rtlh, H, B) { size: 0.035 }
+assert on(H, rtlcirc)
+assert between(B, rtlh, A)
+assert dist(H, rtlh) * dist(H, rtlh) == dist(B, rtlh) * dist(rtlh, A)
+assert on(rtltouch, rtlinc)
+assert area(rtltri) == dist(B, A) * dist(H, rtlh) / 2
+point rtllh = foot(rtlh, line(B, H)) { mark: none }
+segment rtllalt = seg(rtlh, rtllh) [auxiliary]
+polygon rtlltri = polygon(rtlh, B, H) [construction]
+circle rtllcirc = circle_diameter(B, H) [construction]
+circle rtllinc = incircle(rtlh, B, H) [auxiliary]
+point rtlli = center(rtllinc) { mark: none }
+point rtlltouch = foot(rtlli, line(B, H)) { mark: none }
+right_angle rtllmark = right_angle(rtllh, rtlh, B) { size: 0.035 }
+assert on(rtlh, rtllcirc)
+assert between(B, rtllh, H)
+assert dist(rtlh, rtllh) * dist(rtlh, rtllh) == dist(B, rtllh) * dist(rtllh, H)
+assert on(rtlltouch, rtllinc)
+assert area(rtlltri) == dist(B, H) * dist(rtlh, rtllh) / 2
+point rtlllh = foot(rtllh, line(B, rtlh)) { mark: none }
+segment rtlllalt = seg(rtllh, rtlllh) [auxiliary]
+polygon rtllltri = polygon(rtllh, B, rtlh) [construction]
+circle rtlllcirc = circle_diameter(B, rtlh) [construction]
+circle rtlllinc = incircle(rtllh, B, rtlh) [auxiliary]
+point rtllli = center(rtlllinc) { mark: none }
+point rtllltouch = foot(rtllli, line(B, rtlh)) { mark: none }
+right_angle rtlllmark = right_angle(rtlllh, rtllh, B) { size: 0.035 }
+assert on(rtllh, rtlllcirc)
+assert between(B, rtlllh, rtlh)
+assert dist(rtllh, rtlllh) * dist(rtllh, rtlllh) == dist(B, rtlllh) * dist(rtlllh, rtlh)
+assert on(rtllltouch, rtlllinc)
+assert area(rtllltri) == dist(B, rtlh) * dist(rtllh, rtlllh) / 2
+point rtllrh = foot(rtllh, line(rtlh, H)) { mark: none }
+segment rtllralt = seg(rtllh, rtllrh) [auxiliary]
+polygon rtllrtri = polygon(rtllh, rtlh, H) [construction]
+circle rtllrcirc = circle_diameter(rtlh, H) [construction]
+circle rtllrinc = incircle(rtllh, rtlh, H) [auxiliary]
+point rtllri = center(rtllrinc) { mark: none }
+point rtllrtouch = foot(rtllri, line(rtlh, H)) { mark: none }
+right_angle rtllrmark = right_angle(rtllrh, rtllh, rtlh) { size: 0.035 }
+assert on(rtllh, rtllrcirc)
+assert between(rtlh, rtllrh, H)
+assert dist(rtllh, rtllrh) * dist(rtllh, rtllrh) == dist(rtlh, rtllrh) * dist(rtllrh, H)
+assert on(rtllrtouch, rtllrinc)
+assert area(rtllrtri) == dist(rtlh, H) * dist(rtllh, rtllrh) / 2
+point rtlrh = foot(rtlh, line(H, A)) { mark: none }
+segment rtlralt = seg(rtlh, rtlrh) [auxiliary]
+polygon rtlrtri = polygon(rtlh, H, A) [construction]
+circle rtlrcirc = circle_diameter(H, A) [construction]
+circle rtlrinc = incircle(rtlh, H, A) [auxiliary]
+point rtlri = center(rtlrinc) { mark: none }
+point rtlrtouch = foot(rtlri, line(H, A)) { mark: none }
+right_angle rtlrmark = right_angle(rtlrh, rtlh, H) { size: 0.035 }
+assert on(rtlh, rtlrcirc)
+assert between(H, rtlrh, A)
+assert dist(rtlh, rtlrh) * dist(rtlh, rtlrh) == dist(H, rtlrh) * dist(rtlrh, A)
+assert on(rtlrtouch, rtlrinc)
+assert area(rtlrtri) == dist(H, A) * dist(rtlh, rtlrh) / 2
+point rtlrlh = foot(rtlrh, line(H, rtlh)) { mark: none }
+segment rtlrlalt = seg(rtlrh, rtlrlh) [auxiliary]
+polygon rtlrltri = polygon(rtlrh, H, rtlh) [construction]
+circle rtlrlcirc = circle_diameter(H, rtlh) [construction]
+circle rtlrlinc = incircle(rtlrh, H, rtlh) [auxiliary]
+point rtlrli = center(rtlrlinc) { mark: none }
+point rtlrltouch = foot(rtlrli, line(H, rtlh)) { mark: none }
+right_angle rtlrlmark = right_angle(rtlrlh, rtlrh, H) { size: 0.035 }
+assert on(rtlrh, rtlrlcirc)
+assert between(H, rtlrlh, rtlh)
+assert dist(rtlrh, rtlrlh) * dist(rtlrh, rtlrlh) == dist(H, rtlrlh) * dist(rtlrlh, rtlh)
+assert on(rtlrltouch, rtlrlinc)
+assert area(rtlrltri) == dist(H, rtlh) * dist(rtlrh, rtlrlh) / 2
+point rtlrrh = foot(rtlrh, line(rtlh, A)) { mark: none }
+segment rtlrralt = seg(rtlrh, rtlrrh) [auxiliary]
+polygon rtlrrtri = polygon(rtlrh, rtlh, A) [construction]
+circle rtlrrcirc = circle_diameter(rtlh, A) [construction]
+circle rtlrrinc = incircle(rtlrh, rtlh, A) [auxiliary]
+point rtlrri = center(rtlrrinc) { mark: none }
+point rtlrrtouch = foot(rtlrri, line(rtlh, A)) { mark: none }
+right_angle rtlrrmark = right_angle(rtlrrh, rtlrh, rtlh) { size: 0.035 }
+assert on(rtlrh, rtlrrcirc)
+assert between(rtlh, rtlrrh, A)
+assert dist(rtlrh, rtlrrh) * dist(rtlrh, rtlrrh) == dist(rtlh, rtlrrh) * dist(rtlrrh, A)
+assert on(rtlrrtouch, rtlrrinc)
+assert area(rtlrrtri) == dist(rtlh, A) * dist(rtlrh, rtlrrh) / 2
+point rtrh = foot(H, line(A, C)) { mark: none }
+segment rtralt = seg(H, rtrh) [auxiliary]
+polygon rtrtri = polygon(H, A, C) [construction]
+circle rtrcirc = circle_diameter(A, C) [construction]
+circle rtrinc = incircle(H, A, C) [auxiliary]
+point rtri = center(rtrinc) { mark: none }
+point rtrtouch = foot(rtri, line(A, C)) { mark: none }
+right_angle rtrmark = right_angle(rtrh, H, A) { size: 0.035 }
+assert on(H, rtrcirc)
+assert between(A, rtrh, C)
+assert dist(H, rtrh) * dist(H, rtrh) == dist(A, rtrh) * dist(rtrh, C)
+assert on(rtrtouch, rtrinc)
+assert area(rtrtri) == dist(A, C) * dist(H, rtrh) / 2
+point rtrlh = foot(rtrh, line(A, H)) { mark: none }
+segment rtrlalt = seg(rtrh, rtrlh) [auxiliary]
+polygon rtrltri = polygon(rtrh, A, H) [construction]
+circle rtrlcirc = circle_diameter(A, H) [construction]
+circle rtrlinc = incircle(rtrh, A, H) [auxiliary]
+point rtrli = center(rtrlinc) { mark: none }
+point rtrltouch = foot(rtrli, line(A, H)) { mark: none }
+right_angle rtrlmark = right_angle(rtrlh, rtrh, A) { size: 0.035 }
+assert on(rtrh, rtrlcirc)
+assert between(A, rtrlh, H)
+assert dist(rtrh, rtrlh) * dist(rtrh, rtrlh) == dist(A, rtrlh) * dist(rtrlh, H)
+assert on(rtrltouch, rtrlinc)
+assert area(rtrltri) == dist(A, H) * dist(rtrh, rtrlh) / 2
+point rtrllh = foot(rtrlh, line(A, rtrh)) { mark: none }
+segment rtrllalt = seg(rtrlh, rtrllh) [auxiliary]
+polygon rtrlltri = polygon(rtrlh, A, rtrh) [construction]
+circle rtrllcirc = circle_diameter(A, rtrh) [construction]
+circle rtrllinc = incircle(rtrlh, A, rtrh) [auxiliary]
+point rtrlli = center(rtrllinc) { mark: none }
+point rtrlltouch = foot(rtrlli, line(A, rtrh)) { mark: none }
+right_angle rtrllmark = right_angle(rtrllh, rtrlh, A) { size: 0.035 }
+assert on(rtrlh, rtrllcirc)
+assert between(A, rtrllh, rtrh)
+assert dist(rtrlh, rtrllh) * dist(rtrlh, rtrllh) == dist(A, rtrllh) * dist(rtrllh, rtrh)
+assert on(rtrlltouch, rtrllinc)
+assert area(rtrlltri) == dist(A, rtrh) * dist(rtrlh, rtrllh) / 2
+point rtrlrh = foot(rtrlh, line(rtrh, H)) { mark: none }
+segment rtrlralt = seg(rtrlh, rtrlrh) [auxiliary]
+polygon rtrlrtri = polygon(rtrlh, rtrh, H) [construction]
+circle rtrlrcirc = circle_diameter(rtrh, H) [construction]
+circle rtrlrinc = incircle(rtrlh, rtrh, H) [auxiliary]
+point rtrlri = center(rtrlrinc) { mark: none }
+point rtrlrtouch = foot(rtrlri, line(rtrh, H)) { mark: none }
+right_angle rtrlrmark = right_angle(rtrlrh, rtrlh, rtrh) { size: 0.035 }
+assert on(rtrlh, rtrlrcirc)
+assert between(rtrh, rtrlrh, H)
+assert dist(rtrlh, rtrlrh) * dist(rtrlh, rtrlrh) == dist(rtrh, rtrlrh) * dist(rtrlrh, H)
+assert on(rtrlrtouch, rtrlrinc)
+assert area(rtrlrtri) == dist(rtrh, H) * dist(rtrlh, rtrlrh) / 2
+point rtrrh = foot(rtrh, line(H, C)) { mark: none }
+segment rtrralt = seg(rtrh, rtrrh) [auxiliary]
+polygon rtrrtri = polygon(rtrh, H, C) [construction]
+circle rtrrcirc = circle_diameter(H, C) [construction]
+circle rtrrinc = incircle(rtrh, H, C) [auxiliary]
+point rtrri = center(rtrrinc) { mark: none }
+point rtrrtouch = foot(rtrri, line(H, C)) { mark: none }
+right_angle rtrrmark = right_angle(rtrrh, rtrh, H) { size: 0.035 }
+assert on(rtrh, rtrrcirc)
+assert between(H, rtrrh, C)
+assert dist(rtrh, rtrrh) * dist(rtrh, rtrrh) == dist(H, rtrrh) * dist(rtrrh, C)
+assert on(rtrrtouch, rtrrinc)
+assert area(rtrrtri) == dist(H, C) * dist(rtrh, rtrrh) / 2
+point rtrrlh = foot(rtrrh, line(H, rtrh)) { mark: none }
+segment rtrrlalt = seg(rtrrh, rtrrlh) [auxiliary]
+polygon rtrrltri = polygon(rtrrh, H, rtrh) [construction]
+circle rtrrlcirc = circle_diameter(H, rtrh) [construction]
+circle rtrrlinc = incircle(rtrrh, H, rtrh) [auxiliary]
+point rtrrli = center(rtrrlinc) { mark: none }
+point rtrrltouch = foot(rtrrli, line(H, rtrh)) { mark: none }
+right_angle rtrrlmark = right_angle(rtrrlh, rtrrh, H) { size: 0.035 }
+assert on(rtrrh, rtrrlcirc)
+assert between(H, rtrrlh, rtrh)
+assert dist(rtrrh, rtrrlh) * dist(rtrrh, rtrrlh) == dist(H, rtrrlh) * dist(rtrrlh, rtrh)
+assert on(rtrrltouch, rtrrlinc)
+assert area(rtrrltri) == dist(H, rtrh) * dist(rtrrh, rtrrlh) / 2
+point rtrrrh = foot(rtrrh, line(rtrh, C)) { mark: none }
+segment rtrrralt = seg(rtrrh, rtrrrh) [auxiliary]
+polygon rtrrrtri = polygon(rtrrh, rtrh, C) [construction]
+circle rtrrrcirc = circle_diameter(rtrh, C) [construction]
+circle rtrrrinc = incircle(rtrrh, rtrh, C) [auxiliary]
+point rtrrri = center(rtrrrinc) { mark: none }
+point rtrrrtouch = foot(rtrrri, line(rtrh, C)) { mark: none }
+right_angle rtrrrmark = right_angle(rtrrrh, rtrrh, rtrh) { size: 0.035 }
+assert on(rtrrh, rtrrrcirc)
+assert between(rtrh, rtrrrh, C)
+assert dist(rtrrh, rtrrrh) * dist(rtrrh, rtrrrh) == dist(rtrh, rtrrrh) * dist(rtrrrh, C)
+assert on(rtrrrtouch, rtrrrinc)
+assert area(rtrrrtri) == dist(rtrh, C) * dist(rtrrh, rtrrrh) / 2

@@ -41,5 +41,103 @@ text_block phi = text_block($\dfrac{AC}{AB} = \varphi = \dfrac{1+\sqrt5}{2}$)  {
 // ---- intent ----------------------------------------------
 assert dist(A, B) == dist(B, C)
 assert ratio(dist(A, C), dist(A, B)) == (1 + sqrt(5)) / 2
-assert ratio(dist(A, P), dist(P, C)) == (1 + sqrt(5)) / 2
+assert ratio(dist(P, C), dist(A, P)) == (1 + sqrt(5)) / 2
 assert inside(P, pent)
+
+// ---- stress construction network ----
+// Complete pentagrams and their nested diagonal intersections share a center.
+segment pg0d0 = seg(A, C) [auxiliary]
+segment pg0d1 = seg(B, D) [auxiliary]
+segment pg0d2 = seg(C, E) [auxiliary]
+segment pg0d3 = seg(D, A) [auxiliary]
+segment pg0d4 = seg(E, B) [auxiliary]
+point pg0seed = intersect(pg0d0, pg0d1) { mark: none }
+point pg0v0 = rotate(pg0seed, O, 0deg) { mark: none }
+point pg0v1 = rotate(pg0seed, O, 72deg) { mark: none }
+point pg0v2 = rotate(pg0seed, O, 144deg) { mark: none }
+point pg0v3 = rotate(pg0seed, O, 216deg) { mark: none }
+point pg0v4 = rotate(pg0seed, O, 288deg) { mark: none }
+polygon pg0 = polygon(pg0v0, pg0v1, pg0v2, pg0v3, pg0v4) [construction]
+assert dist(pg0v0, pg0v1) == dist(pg0v0, pg0v1)
+assert dist(pg0v1, pg0v2) == dist(pg0v0, pg0v1)
+assert dist(pg0v2, pg0v3) == dist(pg0v0, pg0v1)
+assert dist(pg0v3, pg0v4) == dist(pg0v0, pg0v1)
+assert dist(pg0v4, pg0v0) == dist(pg0v0, pg0v1)
+assert ratio(dist(A, B), dist(pg0v0, pg0v1)) == (3 + sqrt(5)) / 2
+assert inside(pg0seed, pent)
+segment pg1d0 = seg(pg0v0, pg0v2) [auxiliary]
+segment pg1d1 = seg(pg0v1, pg0v3) [auxiliary]
+segment pg1d2 = seg(pg0v2, pg0v4) [auxiliary]
+segment pg1d3 = seg(pg0v3, pg0v0) [auxiliary]
+segment pg1d4 = seg(pg0v4, pg0v1) [auxiliary]
+point pg1seed = intersect(pg1d0, pg1d1) { mark: none }
+point pg1v0 = rotate(pg1seed, O, 0deg) { mark: none }
+point pg1v1 = rotate(pg1seed, O, 72deg) { mark: none }
+point pg1v2 = rotate(pg1seed, O, 144deg) { mark: none }
+point pg1v3 = rotate(pg1seed, O, 216deg) { mark: none }
+point pg1v4 = rotate(pg1seed, O, 288deg) { mark: none }
+polygon pg1 = polygon(pg1v0, pg1v1, pg1v2, pg1v3, pg1v4) [construction]
+assert dist(pg1v0, pg1v1) == dist(pg1v0, pg1v1)
+assert dist(pg1v1, pg1v2) == dist(pg1v0, pg1v1)
+assert dist(pg1v2, pg1v3) == dist(pg1v0, pg1v1)
+assert dist(pg1v3, pg1v4) == dist(pg1v0, pg1v1)
+assert dist(pg1v4, pg1v0) == dist(pg1v0, pg1v1)
+assert ratio(dist(pg0v0, pg0v1), dist(pg1v0, pg1v1)) == (3 + sqrt(5)) / 2
+assert inside(pg1seed, pent)
+segment pg2d0 = seg(pg1v0, pg1v2) [auxiliary]
+segment pg2d1 = seg(pg1v1, pg1v3) [auxiliary]
+segment pg2d2 = seg(pg1v2, pg1v4) [auxiliary]
+segment pg2d3 = seg(pg1v3, pg1v0) [auxiliary]
+segment pg2d4 = seg(pg1v4, pg1v1) [auxiliary]
+point pg2seed = intersect(pg2d0, pg2d1) { mark: none }
+point pg2v0 = rotate(pg2seed, O, 0deg) { mark: none }
+point pg2v1 = rotate(pg2seed, O, 72deg) { mark: none }
+point pg2v2 = rotate(pg2seed, O, 144deg) { mark: none }
+point pg2v3 = rotate(pg2seed, O, 216deg) { mark: none }
+point pg2v4 = rotate(pg2seed, O, 288deg) { mark: none }
+polygon pg2 = polygon(pg2v0, pg2v1, pg2v2, pg2v3, pg2v4) [construction]
+assert dist(pg2v0, pg2v1) == dist(pg2v0, pg2v1)
+assert dist(pg2v1, pg2v2) == dist(pg2v0, pg2v1)
+assert dist(pg2v2, pg2v3) == dist(pg2v0, pg2v1)
+assert dist(pg2v3, pg2v4) == dist(pg2v0, pg2v1)
+assert dist(pg2v4, pg2v0) == dist(pg2v0, pg2v1)
+assert ratio(dist(pg1v0, pg1v1), dist(pg2v0, pg2v1)) == (3 + sqrt(5)) / 2
+assert inside(pg2seed, pent)
+segment pg3d0 = seg(pg2v0, pg2v2) [auxiliary]
+segment pg3d1 = seg(pg2v1, pg2v3) [auxiliary]
+segment pg3d2 = seg(pg2v2, pg2v4) [auxiliary]
+segment pg3d3 = seg(pg2v3, pg2v0) [auxiliary]
+segment pg3d4 = seg(pg2v4, pg2v1) [auxiliary]
+point pg3seed = intersect(pg3d0, pg3d1) { mark: none }
+point pg3v0 = rotate(pg3seed, O, 0deg) { mark: none }
+point pg3v1 = rotate(pg3seed, O, 72deg) { mark: none }
+point pg3v2 = rotate(pg3seed, O, 144deg) { mark: none }
+point pg3v3 = rotate(pg3seed, O, 216deg) { mark: none }
+point pg3v4 = rotate(pg3seed, O, 288deg) { mark: none }
+polygon pg3 = polygon(pg3v0, pg3v1, pg3v2, pg3v3, pg3v4) [construction]
+assert dist(pg3v0, pg3v1) == dist(pg3v0, pg3v1)
+assert dist(pg3v1, pg3v2) == dist(pg3v0, pg3v1)
+assert dist(pg3v2, pg3v3) == dist(pg3v0, pg3v1)
+assert dist(pg3v3, pg3v4) == dist(pg3v0, pg3v1)
+assert dist(pg3v4, pg3v0) == dist(pg3v0, pg3v1)
+assert ratio(dist(pg2v0, pg2v1), dist(pg3v0, pg3v1)) == (3 + sqrt(5)) / 2
+assert inside(pg3seed, pent)
+segment pg4d0 = seg(pg3v0, pg3v2) [auxiliary]
+segment pg4d1 = seg(pg3v1, pg3v3) [auxiliary]
+segment pg4d2 = seg(pg3v2, pg3v4) [auxiliary]
+segment pg4d3 = seg(pg3v3, pg3v0) [auxiliary]
+segment pg4d4 = seg(pg3v4, pg3v1) [auxiliary]
+point pg4seed = intersect(pg4d0, pg4d1) { mark: none }
+point pg4v0 = rotate(pg4seed, O, 0deg) { mark: none }
+point pg4v1 = rotate(pg4seed, O, 72deg) { mark: none }
+point pg4v2 = rotate(pg4seed, O, 144deg) { mark: none }
+point pg4v3 = rotate(pg4seed, O, 216deg) { mark: none }
+point pg4v4 = rotate(pg4seed, O, 288deg) { mark: none }
+polygon pg4 = polygon(pg4v0, pg4v1, pg4v2, pg4v3, pg4v4) [construction]
+assert dist(pg4v0, pg4v1) == dist(pg4v0, pg4v1)
+assert dist(pg4v1, pg4v2) == dist(pg4v0, pg4v1)
+assert dist(pg4v2, pg4v3) == dist(pg4v0, pg4v1)
+assert dist(pg4v3, pg4v4) == dist(pg4v0, pg4v1)
+assert dist(pg4v4, pg4v0) == dist(pg4v0, pg4v1)
+assert ratio(dist(pg3v0, pg3v1), dist(pg4v0, pg4v1)) == (3 + sqrt(5)) / 2
+assert inside(pg4seed, pent)

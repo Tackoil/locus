@@ -54,3 +54,99 @@ assert collinear(N1, N2, N3, N4, N5)               // spine
 assert vdist(N2, N1) == vdist(N3, N2)              // equal pitch
 assert n1.width == n3.width                        // equal widths
 assert horizontal(N4, NF)                          // fix branch on the decision row
+
+// ---- stress construction network ----
+// The original authoring loop expands into solver, rejection, and export branches.
+point stage0 = offset(N5, 0.0, -3) { mark: none }
+rect state0 = rect(stage0, 4.5, 1.4)
+label title0 = label(state0.center, "Validate schema") { dir: center }
+assert state0.width == 4.5
+point stage1 = offset(N5, 5.6, -3) { mark: none }
+diamond state1 = diamond(stage1, 4.5, 1.4)
+label title1 = label(state1.center, "Inputs valid?") { dir: center }
+assert state1.width == 4.5
+point stage2 = offset(N5, 11.2, -3) { mark: none }
+rect state2 = rect(stage2, 4.5, 1.4)
+label title2 = label(state2.center, "Select branch") { dir: center }
+assert state2.width == 4.5
+point stage3 = offset(N5, 16.799999999999997, -3) { mark: none }
+rect state3 = rect(stage3, 4.5, 1.4)
+label title3 = label(state3.center, "Build Jacobian") { dir: center }
+assert state3.width == 4.5
+point stage4 = offset(N5, 0.0, -6) { mark: none }
+rect state4 = rect(stage4, 4.5, 1.4)
+label title4 = label(state4.center, "Measure residual") { dir: center }
+assert state4.width == 4.5
+point stage5 = offset(N5, 5.6, -6) { mark: none }
+diamond state5 = diamond(stage5, 4.5, 1.4)
+label title5 = label(state5.center, "Converged?") { dir: center }
+assert state5.width == 4.5
+point stage6 = offset(N5, 11.2, -6) { mark: none }
+rect state6 = rect(stage6, 4.5, 1.4)
+label title6 = label(state6.center, "Try LM step") { dir: center }
+assert state6.width == 4.5
+point stage7 = offset(N5, 16.799999999999997, -6) { mark: none }
+diamond state7 = diamond(stage7, 4.5, 1.4)
+label title7 = label(state7.center, "Domain valid?") { dir: center }
+assert state7.width == 4.5
+point stage8 = offset(N5, 0.0, -9) { mark: none }
+diamond state8 = diamond(stage8, 4.5, 1.4)
+label title8 = label(state8.center, "Accept trial?") { dir: center }
+assert state8.width == 4.5
+point stage9 = offset(N5, 5.6, -9) { mark: none }
+rect state9 = rect(stage9, 4.5, 1.4)
+label title9 = label(state9.center, "Lower damping") { dir: center }
+assert state9.width == 4.5
+point stage10 = offset(N5, 11.2, -9) { mark: none }
+rect state10 = rect(stage10, 4.5, 1.4)
+label title10 = label(state10.center, "Raise damping") { dir: center }
+assert state10.width == 4.5
+point stage11 = offset(N5, 16.799999999999997, -9) { mark: none }
+diamond state11 = diamond(stage11, 4.5, 1.4)
+label title11 = label(state11.center, "Budget left?") { dir: center }
+assert state11.width == 4.5
+point stage12 = offset(N5, 0.0, -12) { mark: none }
+rect state12 = rect(stage12, 4.5, 1.4)
+label title12 = label(state12.center, "Check assertions") { dir: center }
+assert state12.width == 4.5
+point stage13 = offset(N5, 5.6, -12) { mark: none }
+diamond state13 = diamond(stage13, 4.5, 1.4)
+label title13 = label(state13.center, "Assertions pass?") { dir: center }
+assert state13.width == 4.5
+point stage14 = offset(N5, 11.2, -12) { mark: none }
+rect state14 = rect(stage14, 4.5, 1.4)
+label title14 = label(state14.center, "Render outputs") { dir: center }
+assert state14.width == 4.5
+point stage15 = offset(N5, 16.799999999999997, -12) { mark: none }
+rect state15 = rect(stage15, 4.5, 1.4)
+label title15 = label(state15.center, "Report failure") { dir: center }
+assert state15.width == 4.5
+arrow solver_edge0 = arrow(state0.s, state1.n) { bend: -18deg }
+arrow solver_edge1 = arrow(state1.s, state2.n) { bend: 0deg }
+arrow solver_edge2 = arrow(state1.s, state15.n) { bend: 18deg }
+arrow solver_edge3 = arrow(state2.s, state3.n) { bend: -18deg }
+arrow solver_edge4 = arrow(state3.s, state4.n) { bend: 0deg }
+arrow solver_edge5 = arrow(state4.s, state5.n) { bend: 18deg }
+arrow solver_edge6 = arrow(state5.s, state12.n) { bend: -18deg }
+arrow solver_edge7 = arrow(state5.s, state6.n) { bend: 0deg }
+arrow solver_edge8 = arrow(state6.s, state7.n) { bend: 18deg }
+arrow solver_edge9 = arrow(state7.s, state8.n) { bend: -18deg }
+arrow solver_edge10 = arrow(state7.s, state10.n) { bend: 0deg }
+arrow solver_edge11 = arrow(state8.s, state9.n) { bend: 18deg }
+arrow solver_edge12 = arrow(state8.s, state10.n) { bend: -18deg }
+arrow solver_edge13 = arrow(state9.s, state4.n) { bend: 0deg }
+arrow solver_edge14 = arrow(state10.s, state11.n) { bend: 18deg }
+arrow solver_edge15 = arrow(state11.s, state6.n) { bend: -18deg }
+arrow solver_edge16 = arrow(state11.s, state15.n) { bend: 0deg }
+arrow solver_edge17 = arrow(state12.s, state13.n) { bend: 18deg }
+arrow solver_edge18 = arrow(state13.s, state14.n) { bend: -18deg }
+arrow solver_edge19 = arrow(state13.s, state15.n) { bend: 0deg }
+arrow enter_solver = arrow(n3.e, state0.w) [construction] { bend: -25deg }
+assert collinear(stage0, stage1, stage2, stage3)
+assert collinear(stage4, stage5, stage6, stage7)
+assert collinear(stage8, stage9, stage10, stage11)
+assert collinear(stage12, stage13, stage14, stage15)
+assert collinear(stage0, stage4, stage8, stage12)
+assert collinear(stage1, stage5, stage9, stage13)
+assert collinear(stage2, stage6, stage10, stage14)
+assert collinear(stage3, stage7, stage11, stage15)

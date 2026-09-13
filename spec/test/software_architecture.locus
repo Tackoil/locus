@@ -1,0 +1,154 @@
+locus 2
+
+meta {
+  title "Service network: synchronous requests, events, retries, and storage"
+  note "Twenty components across four boundaries; solved anchors drive thirty-two shared dependency edges."
+}
+
+style textbook
+
+class boundary { accent: gray, stroke: dashed }
+class service { accent: blue, fill: tint }
+class storage { accent: teal, fill: tint }
+class async { accent: purple, stroke: dashed }
+point Origin = free ~(0, 0) { mark: none }
+rel pin(Origin, 0, 0)
+rect zone0 = rect(offset(Origin, 0, -6), 4.8, 15.2) [boundary]
+label zone_title0 = label(zone0.n, "Clients") { dir: N }
+point p_web = offset(Origin, 0, 0) { mark: none }
+rect web = rect(p_web, 3.5, 1.2) [service]
+label label_web = label(web.center, "Web client") { dir: center }
+assert inside(web.nw, zone0) and inside(web.ne, zone0) and inside(web.sw, zone0) and inside(web.se, zone0)
+point p_mobile = offset(Origin, 0, -3) { mark: none }
+rect mobile = rect(p_mobile, 3.5, 1.2) [service]
+label label_mobile = label(mobile.center, "Mobile app") { dir: center }
+assert inside(mobile.nw, zone0) and inside(mobile.ne, zone0) and inside(mobile.sw, zone0) and inside(mobile.se, zone0)
+point p_partner = offset(Origin, 0, -6) { mark: none }
+rect partner = rect(p_partner, 3.5, 1.2) [service]
+label label_partner = label(partner.center, "Partner API") { dir: center }
+assert inside(partner.nw, zone0) and inside(partner.ne, zone0) and inside(partner.sw, zone0) and inside(partner.se, zone0)
+point p_cdn = offset(Origin, 0, -9) { mark: none }
+rect cdn = rect(p_cdn, 3.5, 1.2) [service]
+label label_cdn = label(cdn.center, "CDN") { dir: center }
+assert inside(cdn.nw, zone0) and inside(cdn.ne, zone0) and inside(cdn.sw, zone0) and inside(cdn.se, zone0)
+point p_monitor = offset(Origin, 0, -12) { mark: none }
+rect monitor = rect(p_monitor, 3.5, 1.2) [service]
+label label_monitor = label(monitor.center, "Monitoring") { dir: center }
+assert inside(monitor.nw, zone0) and inside(monitor.ne, zone0) and inside(monitor.sw, zone0) and inside(monitor.se, zone0)
+rect zone1 = rect(offset(Origin, 6, -6), 4.8, 15.2) [boundary]
+label zone_title1 = label(zone1.n, "Edge and control") { dir: N }
+point p_gateway = free ~(6.15, -0.1) where { hdist(Origin, p_gateway) == 6, vdist(Origin, p_gateway) == 0 } { mark: none }
+rect gateway = rect(p_gateway, 3.5, 1.2) [service]
+label label_gateway = label(gateway.center, "API gateway") { dir: center }
+assert inside(gateway.nw, zone1) and inside(gateway.ne, zone1) and inside(gateway.sw, zone1) and inside(gateway.se, zone1)
+point p_auth = free ~(6.15, -3.1) where { hdist(Origin, p_auth) == 6, vdist(Origin, p_auth) == -3 } { mark: none }
+rect auth = rect(p_auth, 3.5, 1.2) [service]
+label label_auth = label(auth.center, "Auth service") { dir: center }
+assert inside(auth.nw, zone1) and inside(auth.ne, zone1) and inside(auth.sw, zone1) and inside(auth.se, zone1)
+point p_limit = free ~(6.15, -6.1) where { hdist(Origin, p_limit) == 6, vdist(Origin, p_limit) == -6 } { mark: none }
+rect limit = rect(p_limit, 3.5, 1.2) [service]
+label label_limit = label(limit.center, "Rate limiter") { dir: center }
+assert inside(limit.nw, zone1) and inside(limit.ne, zone1) and inside(limit.sw, zone1) and inside(limit.se, zone1)
+point p_events = offset(Origin, 6, -9) { mark: none }
+rect events = rect(p_events, 3.5, 1.2) [service]
+label label_events = label(events.center, "Event ingress") { dir: center }
+assert inside(events.nw, zone1) and inside(events.ne, zone1) and inside(events.sw, zone1) and inside(events.se, zone1)
+point p_schedule = offset(Origin, 6, -12) { mark: none }
+rect schedule = rect(p_schedule, 3.5, 1.2) [service]
+label label_schedule = label(schedule.center, "Scheduler") { dir: center }
+assert inside(schedule.nw, zone1) and inside(schedule.ne, zone1) and inside(schedule.sw, zone1) and inside(schedule.se, zone1)
+rect zone2 = rect(offset(Origin, 12, -6), 4.8, 15.2) [boundary]
+label zone_title2 = label(zone2.n, "Application") { dir: N }
+point p_catalog = free ~(12.15, -0.1) where { hdist(Origin, p_catalog) == 12, vdist(Origin, p_catalog) == 0 } { mark: none }
+rect catalog = rect(p_catalog, 3.5, 1.2) [service]
+label label_catalog = label(catalog.center, "Catalog") { dir: center }
+assert inside(catalog.nw, zone2) and inside(catalog.ne, zone2) and inside(catalog.sw, zone2) and inside(catalog.se, zone2)
+point p_orders = free ~(12.15, -3.1) where { hdist(Origin, p_orders) == 12, vdist(Origin, p_orders) == -3 } { mark: none }
+rect orders = rect(p_orders, 3.5, 1.2) [service]
+label label_orders = label(orders.center, "Orders") { dir: center }
+assert inside(orders.nw, zone2) and inside(orders.ne, zone2) and inside(orders.sw, zone2) and inside(orders.se, zone2)
+point p_payments = free ~(12.15, -6.1) where { hdist(Origin, p_payments) == 12, vdist(Origin, p_payments) == -6 } { mark: none }
+rect payments = rect(p_payments, 3.5, 1.2) [service]
+label label_payments = label(payments.center, "Payments") { dir: center }
+assert inside(payments.nw, zone2) and inside(payments.ne, zone2) and inside(payments.sw, zone2) and inside(payments.se, zone2)
+point p_inventory = offset(Origin, 12, -9) { mark: none }
+rect inventory = rect(p_inventory, 3.5, 1.2) [service]
+label label_inventory = label(inventory.center, "Inventory") { dir: center }
+assert inside(inventory.nw, zone2) and inside(inventory.ne, zone2) and inside(inventory.sw, zone2) and inside(inventory.se, zone2)
+point p_worker = offset(Origin, 12, -12) { mark: none }
+rect worker = rect(p_worker, 3.5, 1.2) [service]
+label label_worker = label(worker.center, "Worker pool") { dir: center }
+assert inside(worker.nw, zone2) and inside(worker.ne, zone2) and inside(worker.sw, zone2) and inside(worker.se, zone2)
+rect zone3 = rect(offset(Origin, 18, -6), 4.8, 15.2) [boundary]
+label zone_title3 = label(zone3.n, "Persistence") { dir: N }
+point p_products = offset(Origin, 18, 0) { mark: none }
+rect products = rect(p_products, 3.5, 1.2) [storage]
+label label_products = label(products.center, "Product DB") { dir: center }
+assert inside(products.nw, zone3) and inside(products.ne, zone3) and inside(products.sw, zone3) and inside(products.se, zone3)
+point p_orderdb = offset(Origin, 18, -3) { mark: none }
+rect orderdb = rect(p_orderdb, 3.5, 1.2) [storage]
+label label_orderdb = label(orderdb.center, "Order DB") { dir: center }
+assert inside(orderdb.nw, zone3) and inside(orderdb.ne, zone3) and inside(orderdb.sw, zone3) and inside(orderdb.se, zone3)
+point p_cache = offset(Origin, 18, -6) { mark: none }
+rect cache = rect(p_cache, 3.5, 1.2) [storage]
+label label_cache = label(cache.center, "Cache") { dir: center }
+assert inside(cache.nw, zone3) and inside(cache.ne, zone3) and inside(cache.sw, zone3) and inside(cache.se, zone3)
+point p_queue = offset(Origin, 18, -9) { mark: none }
+rect queue = rect(p_queue, 3.5, 1.2) [storage]
+label label_queue = label(queue.center, "Job queue") { dir: center }
+assert inside(queue.nw, zone3) and inside(queue.ne, zone3) and inside(queue.sw, zone3) and inside(queue.se, zone3)
+point p_audit = offset(Origin, 18, -12) { mark: none }
+rect audit = rect(p_audit, 3.5, 1.2) [storage]
+label label_audit = label(audit.center, "Audit log") { dir: center }
+assert inside(audit.nw, zone3) and inside(audit.ne, zone3) and inside(audit.sw, zone3) and inside(audit.se, zone3)
+arrow edge0 = arrow(web.e, gateway.w) [main] { bend: -12deg }
+arrow edge1 = arrow(mobile.e, gateway.w) [main] { bend: 0deg }
+arrow edge2 = arrow(partner.e, gateway.w) [main] { bend: 12deg }
+arrow edge3 = arrow(cdn.e, gateway.w) [main] { bend: -12deg }
+arrow edge4 = arrow(gateway.e, auth.w) [main] { bend: 0deg }
+arrow edge5 = arrow(gateway.e, limit.w) [main] { bend: 12deg }
+arrow edge6 = arrow(gateway.e, catalog.w) [main] { bend: -12deg }
+arrow edge7 = arrow(gateway.e, orders.w) [main] { bend: 0deg }
+arrow edge8 = arrow(auth.e, cache.w) [main] { bend: 12deg }
+arrow edge9 = arrow(limit.e, cache.w) [main] { bend: -12deg }
+arrow edge10 = arrow(catalog.e, products.w) [main] { bend: 0deg }
+arrow edge11 = arrow(catalog.e, cache.w) [main] { bend: 12deg }
+arrow edge12 = arrow(orders.e, orderdb.w) [main] { bend: -12deg }
+arrow edge13 = arrow(orders.e, payments.w) [main] { bend: 0deg }
+arrow edge14 = arrow(orders.e, inventory.w) [main] { bend: 12deg }
+arrow edge15 = arrow(payments.e, audit.w) [main] { bend: -12deg }
+arrow edge16 = arrow(inventory.e, products.w) [main] { bend: 0deg }
+arrow edge17 = arrow(inventory.e, cache.w) [main] { bend: 12deg }
+arrow edge18 = arrow(events.e, queue.w) [async] { bend: -12deg }
+arrow edge19 = arrow(schedule.e, queue.w) [async] { bend: 0deg }
+arrow edge20 = arrow(queue.e, worker.w) [async] { bend: 12deg }
+arrow edge21 = arrow(worker.e, orderdb.w) [async] { bend: -12deg }
+arrow edge22 = arrow(worker.e, audit.w) [async] { bend: 0deg }
+arrow edge23 = arrow(worker.e, events.w) [async] { bend: 12deg }
+arrow edge24 = arrow(payments.e, queue.w) [async] { bend: -12deg }
+arrow edge25 = arrow(orders.e, queue.w) [async] { bend: 0deg }
+arrow edge26 = arrow(monitor.e, gateway.w) [async] { bend: 12deg }
+arrow edge27 = arrow(monitor.e, worker.w) [async] { bend: -12deg }
+arrow edge28 = arrow(partner.e, events.w) [async] { bend: 0deg }
+arrow edge29 = arrow(mobile.e, auth.w) [async] { bend: 12deg }
+arrow edge30 = arrow(web.e, cdn.w) [async] { bend: -12deg }
+arrow edge31 = arrow(schedule.e, worker.w) [async] { bend: 0deg }
+assert vdist(mobile.n, web.s) == 1.8
+assert vdist(partner.n, mobile.s) == 1.8
+assert vdist(cdn.n, partner.s) == 1.8
+assert vdist(monitor.n, cdn.s) == 1.8
+assert vdist(auth.n, gateway.s) == 1.8
+assert vdist(limit.n, auth.s) == 1.8
+assert vdist(events.n, limit.s) == 1.8
+assert vdist(schedule.n, events.s) == 1.8
+assert vdist(orders.n, catalog.s) == 1.8
+assert vdist(payments.n, orders.s) == 1.8
+assert vdist(inventory.n, payments.s) == 1.8
+assert vdist(worker.n, inventory.s) == 1.8
+assert vdist(orderdb.n, products.s) == 1.8
+assert vdist(cache.n, orderdb.s) == 1.8
+assert vdist(queue.n, cache.s) == 1.8
+assert vdist(audit.n, queue.s) == 1.8
+assert horizontal(web.center, gateway.center) and horizontal(gateway.center, catalog.center)
+assert hdist(gateway.e, catalog.w) == 2.5
+assert hdist(orders.e, orderdb.w) == hdist(catalog.e, products.w)

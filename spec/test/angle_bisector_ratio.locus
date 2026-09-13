@@ -16,9 +16,10 @@ polygon tri = polygon(A, B, C)
 
 line bis = angle_bisector(B, A, C)   [construction]
 
-// D: relational intersection — no branch index, the hint picks the point
-// (this replaces v0.2's intersect(bis, seg(B, C), 0) — finding F1)
-point D = free ~(1.3, 0) where { on(D, bis), on(D, seg(B, C)) }
+// Solve on supporting lines; the independent between assertion enforces the
+// segment domain. Three simultaneous closed-segment constraints can stall;
+// known_limits/closed_segment_bisectors.locus preserves that regression.
+point D = free ~(1.3, 0) where { on(D, bis), on(D, line(B, C)) }
 
 segment ad = seg(A, D)               [auxiliary]
 
@@ -41,3 +42,94 @@ text_block eq = text_block($\dfrac{m}{n} = \dfrac{AB}{AC}$)  { place: below }
 assert between(B, D, C)
 assert angle(B, A, D) == angle(D, A, C)
 assert ratio(dist(B, D), dist(D, C)) == ratio(dist(A, B), dist(A, C))
+
+// ---- stress construction network ----
+// All three cevians share an incenter and obey the multiplicative Ceva identity.
+rel pin(A, 1, 4.5)
+rel pin(B, -2, 0)
+rel pin(C, 5, 0)
+line bis_e = angle_bisector(A, B, C) [construction]
+point cev_e = free ~(3, 2) where { on(cev_e, bis_e), on(cev_e, line(A, C)) }
+segment cevian_e = seg(B, cev_e) [highlight]
+assert between(A, cev_e, C)
+assert angle(A, B, cev_e) == angle(cev_e, B, C)
+line bis_f = angle_bisector(A, C, B) [construction]
+point cev_f = free ~(-0.5, 2) where { on(cev_f, bis_f), on(cev_f, line(A, B)) }
+segment cevian_f = seg(C, cev_f) [highlight]
+assert between(A, cev_f, B)
+assert angle(A, C, cev_f) == angle(cev_f, C, B)
+point shared_i = incenter(A, B, C)
+assert on(shared_i, bis) and on(shared_i, bis_e) and on(shared_i, bis_f)
+assert ratio(dist(B, D), dist(D, C)) * ratio(dist(C, cev_e), dist(cev_e, A)) * ratio(dist(A, cev_f), dist(cev_f, B)) == 1
+polygon b0_tri = polygon(A, B, D) [construction]
+point b0_o = circumcenter(A, B, D) { mark: none }
+point b0_g = centroid(A, B, D) { mark: none }
+point b0_h = orthocenter(A, B, D) { mark: none }
+circle b0_circ = circumcircle(A, B, D) [construction]
+circle b0_inc = incircle(A, B, D) [auxiliary]
+point b0_ma = midpoint(B, D) { mark: none }
+point b0_mb = midpoint(A, D) { mark: none }
+point b0_mc = midpoint(A, B) { mark: none }
+circle b0_nine = circumcircle(b0_ma, b0_mb, b0_mc) [highlight]
+point b0_fa = foot(A, line(B, D)) { mark: none }
+point b0_fb = foot(B, line(A, D)) { mark: none }
+point b0_fc = foot(D, line(A, B)) { mark: none }
+assert collinear(b0_o, b0_g, b0_h)
+assert radius(b0_nine) == radius(b0_circ) / 2
+assert on(b0_fa, b0_nine) and on(b0_fb, b0_nine) and on(b0_fc, b0_nine)
+assert tangent(b0_inc, b0_nine)
+assert inside(center(b0_inc), b0_tri)
+polygon b1_tri = polygon(A, D, C) [construction]
+point b1_o = circumcenter(A, D, C) { mark: none }
+point b1_g = centroid(A, D, C) { mark: none }
+point b1_h = orthocenter(A, D, C) { mark: none }
+circle b1_circ = circumcircle(A, D, C) [construction]
+circle b1_inc = incircle(A, D, C) [auxiliary]
+point b1_ma = midpoint(D, C) { mark: none }
+point b1_mb = midpoint(A, C) { mark: none }
+point b1_mc = midpoint(A, D) { mark: none }
+circle b1_nine = circumcircle(b1_ma, b1_mb, b1_mc) [highlight]
+point b1_fa = foot(A, line(D, C)) { mark: none }
+point b1_fb = foot(D, line(A, C)) { mark: none }
+point b1_fc = foot(C, line(A, D)) { mark: none }
+assert collinear(b1_o, b1_g, b1_h)
+assert radius(b1_nine) == radius(b1_circ) / 2
+assert on(b1_fa, b1_nine) and on(b1_fb, b1_nine) and on(b1_fc, b1_nine)
+assert tangent(b1_inc, b1_nine)
+assert inside(center(b1_inc), b1_tri)
+polygon b2_tri = polygon(B, cev_e, C) [construction]
+point b2_o = circumcenter(B, cev_e, C) { mark: none }
+point b2_g = centroid(B, cev_e, C) { mark: none }
+point b2_h = orthocenter(B, cev_e, C) { mark: none }
+circle b2_circ = circumcircle(B, cev_e, C) [construction]
+circle b2_inc = incircle(B, cev_e, C) [auxiliary]
+point b2_ma = midpoint(cev_e, C) { mark: none }
+point b2_mb = midpoint(B, C) { mark: none }
+point b2_mc = midpoint(B, cev_e) { mark: none }
+circle b2_nine = circumcircle(b2_ma, b2_mb, b2_mc) [highlight]
+point b2_fa = foot(B, line(cev_e, C)) { mark: none }
+point b2_fb = foot(cev_e, line(B, C)) { mark: none }
+point b2_fc = foot(C, line(B, cev_e)) { mark: none }
+assert collinear(b2_o, b2_g, b2_h)
+assert radius(b2_nine) == radius(b2_circ) / 2
+assert on(b2_fa, b2_nine) and on(b2_fb, b2_nine) and on(b2_fc, b2_nine)
+assert tangent(b2_inc, b2_nine)
+assert inside(center(b2_inc), b2_tri)
+polygon b3_tri = polygon(C, cev_f, B) [construction]
+point b3_o = circumcenter(C, cev_f, B) { mark: none }
+point b3_g = centroid(C, cev_f, B) { mark: none }
+point b3_h = orthocenter(C, cev_f, B) { mark: none }
+circle b3_circ = circumcircle(C, cev_f, B) [construction]
+circle b3_inc = incircle(C, cev_f, B) [auxiliary]
+point b3_ma = midpoint(cev_f, B) { mark: none }
+point b3_mb = midpoint(C, B) { mark: none }
+point b3_mc = midpoint(C, cev_f) { mark: none }
+circle b3_nine = circumcircle(b3_ma, b3_mb, b3_mc) [highlight]
+point b3_fa = foot(C, line(cev_f, B)) { mark: none }
+point b3_fb = foot(cev_f, line(C, B)) { mark: none }
+point b3_fc = foot(B, line(C, cev_f)) { mark: none }
+assert collinear(b3_o, b3_g, b3_h)
+assert radius(b3_nine) == radius(b3_circ) / 2
+assert on(b3_fa, b3_nine) and on(b3_fb, b3_nine) and on(b3_fc, b3_nine)
+assert tangent(b3_inc, b3_nine)
+assert inside(center(b3_inc), b3_tri)

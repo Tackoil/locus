@@ -60,3 +60,96 @@ assert coincident(N, midpoint(O, H))           // was finding F4 — now a predi
 assert radius(nine) == radius(circ) / 2
 assert concyclic(M_a, M_b, M_c, H_a, H_b, H_c, E_a, E_b, E_c)
 assert on(H', circ)
+
+// ---- stress construction network ----
+// Five connected medial levels exercise shrinking scales and the Feuerbach contact.
+polygon e0_tri = polygon(A, B, C) [construction]
+point e0_o = circumcenter(A, B, C) { mark: none }
+point e0_g = centroid(A, B, C) { mark: none }
+point e0_h = orthocenter(A, B, C) { mark: none }
+circle e0_circ = circumcircle(A, B, C) [construction]
+circle e0_inc = incircle(A, B, C) [auxiliary]
+point e0_ma = midpoint(B, C) { mark: none }
+point e0_mb = midpoint(A, C) { mark: none }
+point e0_mc = midpoint(A, B) { mark: none }
+circle e0_nine = circumcircle(e0_ma, e0_mb, e0_mc) [highlight]
+point e0_fa = foot(A, line(B, C)) { mark: none }
+point e0_fb = foot(B, line(A, C)) { mark: none }
+point e0_fc = foot(C, line(A, B)) { mark: none }
+assert collinear(e0_o, e0_g, e0_h)
+assert radius(e0_nine) == radius(e0_circ) / 2
+assert on(e0_fa, e0_nine) and on(e0_fb, e0_nine) and on(e0_fc, e0_nine)
+assert tangent(e0_inc, e0_nine)
+assert inside(center(e0_inc), e0_tri)
+polygon e1_tri = polygon(e0_ma, e0_mb, e0_mc) [construction]
+point e1_o = circumcenter(e0_ma, e0_mb, e0_mc) { mark: none }
+point e1_g = centroid(e0_ma, e0_mb, e0_mc) { mark: none }
+point e1_h = orthocenter(e0_ma, e0_mb, e0_mc) { mark: none }
+circle e1_circ = circumcircle(e0_ma, e0_mb, e0_mc) [construction]
+circle e1_inc = incircle(e0_ma, e0_mb, e0_mc) [auxiliary]
+point e1_ma = midpoint(e0_mb, e0_mc) { mark: none }
+point e1_mb = midpoint(e0_ma, e0_mc) { mark: none }
+point e1_mc = midpoint(e0_ma, e0_mb) { mark: none }
+circle e1_nine = circumcircle(e1_ma, e1_mb, e1_mc) [highlight]
+point e1_fa = foot(e0_ma, line(e0_mb, e0_mc)) { mark: none }
+point e1_fb = foot(e0_mb, line(e0_ma, e0_mc)) { mark: none }
+point e1_fc = foot(e0_mc, line(e0_ma, e0_mb)) { mark: none }
+assert collinear(e1_o, e1_g, e1_h)
+assert radius(e1_nine) == radius(e1_circ) / 2
+assert on(e1_fa, e1_nine) and on(e1_fb, e1_nine) and on(e1_fc, e1_nine)
+assert tangent(e1_inc, e1_nine)
+assert inside(center(e1_inc), e1_tri)
+polygon e2_tri = polygon(e1_ma, e1_mb, e1_mc) [construction]
+point e2_o = circumcenter(e1_ma, e1_mb, e1_mc) { mark: none }
+point e2_g = centroid(e1_ma, e1_mb, e1_mc) { mark: none }
+point e2_h = orthocenter(e1_ma, e1_mb, e1_mc) { mark: none }
+circle e2_circ = circumcircle(e1_ma, e1_mb, e1_mc) [construction]
+circle e2_inc = incircle(e1_ma, e1_mb, e1_mc) [auxiliary]
+point e2_ma = midpoint(e1_mb, e1_mc) { mark: none }
+point e2_mb = midpoint(e1_ma, e1_mc) { mark: none }
+point e2_mc = midpoint(e1_ma, e1_mb) { mark: none }
+circle e2_nine = circumcircle(e2_ma, e2_mb, e2_mc) [highlight]
+point e2_fa = foot(e1_ma, line(e1_mb, e1_mc)) { mark: none }
+point e2_fb = foot(e1_mb, line(e1_ma, e1_mc)) { mark: none }
+point e2_fc = foot(e1_mc, line(e1_ma, e1_mb)) { mark: none }
+assert collinear(e2_o, e2_g, e2_h)
+assert radius(e2_nine) == radius(e2_circ) / 2
+assert on(e2_fa, e2_nine) and on(e2_fb, e2_nine) and on(e2_fc, e2_nine)
+assert tangent(e2_inc, e2_nine)
+assert inside(center(e2_inc), e2_tri)
+polygon e3_tri = polygon(e2_ma, e2_mb, e2_mc) [construction]
+point e3_o = circumcenter(e2_ma, e2_mb, e2_mc) { mark: none }
+point e3_g = centroid(e2_ma, e2_mb, e2_mc) { mark: none }
+point e3_h = orthocenter(e2_ma, e2_mb, e2_mc) { mark: none }
+circle e3_circ = circumcircle(e2_ma, e2_mb, e2_mc) [construction]
+circle e3_inc = incircle(e2_ma, e2_mb, e2_mc) [auxiliary]
+point e3_ma = midpoint(e2_mb, e2_mc) { mark: none }
+point e3_mb = midpoint(e2_ma, e2_mc) { mark: none }
+point e3_mc = midpoint(e2_ma, e2_mb) { mark: none }
+circle e3_nine = circumcircle(e3_ma, e3_mb, e3_mc) [highlight]
+point e3_fa = foot(e2_ma, line(e2_mb, e2_mc)) { mark: none }
+point e3_fb = foot(e2_mb, line(e2_ma, e2_mc)) { mark: none }
+point e3_fc = foot(e2_mc, line(e2_ma, e2_mb)) { mark: none }
+assert collinear(e3_o, e3_g, e3_h)
+assert radius(e3_nine) == radius(e3_circ) / 2
+assert on(e3_fa, e3_nine) and on(e3_fb, e3_nine) and on(e3_fc, e3_nine)
+assert tangent(e3_inc, e3_nine)
+assert inside(center(e3_inc), e3_tri)
+polygon e4_tri = polygon(e3_ma, e3_mb, e3_mc) [construction]
+point e4_o = circumcenter(e3_ma, e3_mb, e3_mc) { mark: none }
+point e4_g = centroid(e3_ma, e3_mb, e3_mc) { mark: none }
+point e4_h = orthocenter(e3_ma, e3_mb, e3_mc) { mark: none }
+circle e4_circ = circumcircle(e3_ma, e3_mb, e3_mc) [construction]
+circle e4_inc = incircle(e3_ma, e3_mb, e3_mc) [auxiliary]
+point e4_ma = midpoint(e3_mb, e3_mc) { mark: none }
+point e4_mb = midpoint(e3_ma, e3_mc) { mark: none }
+point e4_mc = midpoint(e3_ma, e3_mb) { mark: none }
+circle e4_nine = circumcircle(e4_ma, e4_mb, e4_mc) [highlight]
+point e4_fa = foot(e3_ma, line(e3_mb, e3_mc)) { mark: none }
+point e4_fb = foot(e3_mb, line(e3_ma, e3_mc)) { mark: none }
+point e4_fc = foot(e3_mc, line(e3_ma, e3_mb)) { mark: none }
+assert collinear(e4_o, e4_g, e4_h)
+assert radius(e4_nine) == radius(e4_circ) / 2
+assert on(e4_fa, e4_nine) and on(e4_fb, e4_nine) and on(e4_fc, e4_nine)
+assert tangent(e4_inc, e4_nine)
+assert inside(center(e4_inc), e4_tri)

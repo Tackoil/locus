@@ -20,8 +20,9 @@ circle c2 = circle(O_2, r_2)
 // the defining fact — external tangency, branch picked by the hints
 rel tangent(c1, c2)
 
-// tangency point: free point pinned to both circles (was findings F3/F4)
-point T = free ~(2, 0) where { on(T, c1), on(T, c2) }
+// construct the contact point along the centers: two circle-incidence residuals
+// are insensitive to small transverse displacement near tangency
+point T = lerp(O_1, O_2, r_1 / (r_1 + r_2))
 
 // common internal tangent at T
 line t_int = perpendicular(T, line(O_1, O_2))   [auxiliary]
@@ -29,11 +30,10 @@ line t_int = perpendicular(T, line(O_1, O_2))   [auxiliary]
 // external homothety center — exact, so constructed (lands at (-10, 0))
 point E = lerp(O_1, O_2, r_1 / (r_1 - r_2))
 
-// common external tangent: through E, touching c1 on the upper side (by hint)
-// (replaces v0.2's tangent_line(E, c1, 0) branch index)
-point P_1 = free ~(-0.4, 2) where { on(P_1, c1) }
-line t_ext = line(E, P_1)   [highlight]
-rel tangent(c1, t_ext)
+// construct the upper tangent (branch 0) and its perpendicular contact point;
+// distance-only relations near tangency do not ensure contact-angle accuracy
+line t_ext = tangent_line(E, c1, 0)   [highlight]
+point P_1 = foot(O_1, t_ext)
 
 // its touch point on the second circle — exact, so constructed
 point P_2 = foot(O_2, t_ext)
@@ -62,3 +62,98 @@ assert tangent(c2, t_ext)                        // t_ext touches BOTH — the t
 assert perpendicular(seg(O_1, P_1), t_ext)
 assert collinear(E, P_1, P_2)
 assert ratio(dist(E, O_1), dist(E, O_2)) == r_1 / r_2
+
+// ---- stress construction network ----
+// A noncollinear circle is solved against both original circles, then feeds a contact chain.
+point chain0 = free ~(1.8, 2.7)
+circle chainc0 = circle(chain0, 1.25) [highlight]
+rel tangent(chainc0, c1)
+rel tangent(chainc0, c2)
+point chain_touch1 = lerp(O_1, chain0, r_1 / (r_1 + 1.25))
+point chain_touch2 = lerp(O_2, chain0, r_2 / (r_2 + 1.25))
+assert on(chain_touch1, c1) and on(chain_touch1, chainc0)
+assert on(chain_touch2, c2) and on(chain_touch2, chainc0)
+num chainr1 = 0.470
+point chain1 = offset(chain0, 1.720, 0) { mark: none }
+circle chainc1 = circle(chain1, chainr1) [auxiliary]
+point ct1 = lerp(chain0, chain1, 1.250 / (1.250 + chainr1)) { mark: none }
+line ctl1 = perpendicular(ct1, line(chain0, chain1)) [construction]
+point ce1 = lerp(chain0, chain1, 1.250 / (1.250 - chainr1)) { mark: none }
+line cet1 = tangent_line(ce1, chainc1, 0) [construction]
+point cf1 = foot(chain1, cet1) { mark: none }
+assert tangent(chainc0, chainc1)
+assert on(ct1, chainc0) and on(ct1, chainc1)
+assert tangent(chainc0, cet1)
+assert perpendicular(seg(chain1, cf1), cet1)
+num chainr2 = 0.540
+point chain2 = offset(chain1, 1.010, 0) { mark: none }
+circle chainc2 = circle(chain2, chainr2) [auxiliary]
+point ct2 = lerp(chain1, chain2, 0.470 / (0.470 + chainr2)) { mark: none }
+line ctl2 = perpendicular(ct2, line(chain1, chain2)) [construction]
+point ce2 = lerp(chain1, chain2, 0.470 / (0.470 - chainr2)) { mark: none }
+line cet2 = tangent_line(ce2, chainc2, 0) [construction]
+point cf2 = foot(chain2, cet2) { mark: none }
+assert tangent(chainc1, chainc2)
+assert on(ct2, chainc1) and on(ct2, chainc2)
+assert tangent(chainc1, cet2)
+assert perpendicular(seg(chain2, cf2), cet2)
+num chainr3 = 0.610
+point chain3 = offset(chain2, 1.150, 0) { mark: none }
+circle chainc3 = circle(chain3, chainr3) [auxiliary]
+point ct3 = lerp(chain2, chain3, 0.540 / (0.540 + chainr3)) { mark: none }
+line ctl3 = perpendicular(ct3, line(chain2, chain3)) [construction]
+point ce3 = lerp(chain2, chain3, 0.540 / (0.540 - chainr3)) { mark: none }
+line cet3 = tangent_line(ce3, chainc3, 0) [construction]
+point cf3 = foot(chain3, cet3) { mark: none }
+assert tangent(chainc2, chainc3)
+assert on(ct3, chainc2) and on(ct3, chainc3)
+assert tangent(chainc2, cet3)
+assert perpendicular(seg(chain3, cf3), cet3)
+num chainr4 = 0.680
+point chain4 = offset(chain3, 1.290, 0) { mark: none }
+circle chainc4 = circle(chain4, chainr4) [auxiliary]
+point ct4 = lerp(chain3, chain4, 0.610 / (0.610 + chainr4)) { mark: none }
+line ctl4 = perpendicular(ct4, line(chain3, chain4)) [construction]
+point ce4 = lerp(chain3, chain4, 0.610 / (0.610 - chainr4)) { mark: none }
+line cet4 = tangent_line(ce4, chainc4, 0) [construction]
+point cf4 = foot(chain4, cet4) { mark: none }
+assert tangent(chainc3, chainc4)
+assert on(ct4, chainc3) and on(ct4, chainc4)
+assert tangent(chainc3, cet4)
+assert perpendicular(seg(chain4, cf4), cet4)
+num chainr5 = 0.750
+point chain5 = offset(chain4, 1.430, 0) { mark: none }
+circle chainc5 = circle(chain5, chainr5) [auxiliary]
+point ct5 = lerp(chain4, chain5, 0.680 / (0.680 + chainr5)) { mark: none }
+line ctl5 = perpendicular(ct5, line(chain4, chain5)) [construction]
+point ce5 = lerp(chain4, chain5, 0.680 / (0.680 - chainr5)) { mark: none }
+line cet5 = tangent_line(ce5, chainc5, 0) [construction]
+point cf5 = foot(chain5, cet5) { mark: none }
+assert tangent(chainc4, chainc5)
+assert on(ct5, chainc4) and on(ct5, chainc5)
+assert tangent(chainc4, cet5)
+assert perpendicular(seg(chain5, cf5), cet5)
+num chainr6 = 0.820
+point chain6 = offset(chain5, 1.570, 0) { mark: none }
+circle chainc6 = circle(chain6, chainr6) [auxiliary]
+point ct6 = lerp(chain5, chain6, 0.750 / (0.750 + chainr6)) { mark: none }
+line ctl6 = perpendicular(ct6, line(chain5, chain6)) [construction]
+point ce6 = lerp(chain5, chain6, 0.750 / (0.750 - chainr6)) { mark: none }
+line cet6 = tangent_line(ce6, chainc6, 0) [construction]
+point cf6 = foot(chain6, cet6) { mark: none }
+assert tangent(chainc5, chainc6)
+assert on(ct6, chainc5) and on(ct6, chainc6)
+assert tangent(chainc5, cet6)
+assert perpendicular(seg(chain6, cf6), cet6)
+num chainr7 = 0.890
+point chain7 = offset(chain6, 1.710, 0) { mark: none }
+circle chainc7 = circle(chain7, chainr7) [auxiliary]
+point ct7 = lerp(chain6, chain7, 0.820 / (0.820 + chainr7)) { mark: none }
+line ctl7 = perpendicular(ct7, line(chain6, chain7)) [construction]
+point ce7 = lerp(chain6, chain7, 0.820 / (0.820 - chainr7)) { mark: none }
+line cet7 = tangent_line(ce7, chainc7, 0) [construction]
+point cf7 = foot(chain7, cet7) { mark: none }
+assert tangent(chainc6, chainc7)
+assert on(ct7, chainc6) and on(ct7, chainc7)
+assert tangent(chainc6, cet7)
+assert perpendicular(seg(chain7, cf7), cet7)

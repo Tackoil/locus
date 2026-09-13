@@ -1,0 +1,22 @@
+locus 2
+
+meta {
+  title "Known limit: three simultaneous closed-segment bisectors stall"
+  note "Expected E403 in the current solver. Supporting lines converge; the same between assertions enforce the segment domains."
+}
+
+point A = free ~(1, 4.5)
+point B = free ~(-2, 0)
+point C = free ~(5, 0)
+rel pin(A, 1, 4.5)
+rel pin(B, -2, 0)
+rel pin(C, 5, 0)
+line bis_a = angle_bisector(B, A, C)
+line bis_b = angle_bisector(A, B, C)
+line bis_c = angle_bisector(A, C, B)
+point D = free ~(1.3, 0) where { on(D, bis_a), on(D, seg(B, C)) }
+point E = free ~(3, 2) where { on(E, bis_b), on(E, seg(A, C)) }
+point F = free ~(-0.5, 2) where { on(F, bis_c), on(F, seg(A, B)) }
+assert between(B, D, C)
+assert between(A, E, C)
+assert between(A, F, B)

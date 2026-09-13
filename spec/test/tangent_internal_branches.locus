@@ -1,0 +1,179 @@
+locus 2
+
+meta {
+  title "Internal circle contact and both tangents from an exterior point"
+  note "Construct contact points directly; distance-only tangency residuals cannot guarantee angular accuracy."
+}
+
+style textbook
+
+point O = free ~(0, 0)
+num outer_radius = 3
+num inner_radius = 1
+circle outer = circle(O, outer_radius)
+point I = free ~(1.8, 0.1) where { horizontal(O, I) }
+circle inner = circle(I, inner_radius) [highlight]
+// The seed selects internal tangency, with the second operand containing the first.
+rel tangent(inner, outer)
+point T = lerp(O, I, outer_radius / (outer_radius - inner_radius))
+line contact = perpendicular(T, line(O, I)) [auxiliary]
+
+point E = offset(O, 6, 0)
+line upper = tangent_line(E, outer, 0) [auxiliary]
+line lower = tangent_line(E, outer, 1) [auxiliary]
+point U = foot(O, upper)
+point L = foot(O, lower)
+segment radius_upper = seg(O, U) [construction]
+segment radius_lower = seg(O, L) [construction]
+right_angle upper_mark = right_angle(U, O, E)
+right_angle lower_mark = right_angle(L, O, E)
+
+label lo = label(O, "O") { dir: W }
+label li = label(I, "I") { dir: S }
+label lt = label(T, "T") { dir: SE }
+label le = label(E, "E") { dir: E }
+label lu = label(U, "U (branch 0)") { dir: NE }
+label ll = label(L, "L (branch 1)") { dir: SE }
+
+assert dist(O, I) == outer_radius - inner_radius
+assert between(O, I, T)
+assert on(T, inner) and on(T, outer)
+assert tangent(inner, contact) and tangent(outer, contact)
+assert on(U, outer) and on(L, outer)
+assert perpendicular(radius_upper, upper) and perpendicular(radius_lower, lower)
+assert tangent(outer, upper) and tangent(outer, lower)
+assert dist(E, U) == dist(E, L)
+assert dist(E, U) * dist(E, U) == dist(E, O) * dist(E, O) - outer_radius * outer_radius
+assert coincident(reflect(U, line(O, E)), L)
+assert vdist(O, U) > 0 and vdist(O, L) < 0
+
+// ---- stress construction network ----
+// Eight internal contacts couple nonlinear circle distances to radial carriers.
+num ir0 = 0.3000
+point rim0 = on_circle(outer, 22.5deg) { mark: none }
+line spoke0 = line(O, rim0) [construction]
+point ic0 = free ~(2.534475, 1.003245) where { on(ic0, spoke0) } { mark: none }
+circle inner0 = circle(ic0, ir0) [auxiliary]
+rel tangent(outer, inner0)
+point it0 = lerp(O, ic0, outer_radius / (outer_radius - ir0)) { mark: none }
+line iu0 = tangent_line(E, inner0, 0) [construction]
+line il0 = tangent_line(E, inner0, 1) [construction]
+point ifu0 = foot(ic0, iu0) { mark: none }
+point ifl0 = foot(ic0, il0) { mark: none }
+assert coincident(it0, rim0)
+assert on(it0, inner0) and on(it0, outer)
+assert perpendicular(seg(ic0, ifu0), iu0) and perpendicular(seg(ic0, ifl0), il0)
+assert dist(E, ifu0) == dist(E, ifl0)
+assert coincident(reflect(ifu0, line(ic0, E)), ifl0)
+num ir1 = 0.3350
+point rim1 = on_circle(outer, 67.5deg) { mark: none }
+line spoke1 = line(O, rim1) [construction]
+point ic1 = free ~(1.059851, 2.432139) where { on(ic1, spoke1) } { mark: none }
+circle inner1 = circle(ic1, ir1) [auxiliary]
+rel tangent(outer, inner1)
+point it1 = lerp(O, ic1, outer_radius / (outer_radius - ir1)) { mark: none }
+line iu1 = tangent_line(E, inner1, 0) [construction]
+line il1 = tangent_line(E, inner1, 1) [construction]
+point ifu1 = foot(ic1, iu1) { mark: none }
+point ifl1 = foot(ic1, il1) { mark: none }
+assert coincident(it1, rim1)
+assert on(it1, inner1) and on(it1, outer)
+assert perpendicular(seg(ic1, ifu1), iu1) and perpendicular(seg(ic1, ifl1), il1)
+assert dist(E, ifu1) == dist(E, ifl1)
+assert coincident(reflect(ifu1, line(ic1, E)), ifl1)
+num ir2 = 0.3700
+point rim2 = on_circle(outer, 112.5deg) { mark: none }
+line spoke2 = line(O, rim2) [construction]
+point ic2 = free ~(-0.966457, 2.399803) where { on(ic2, spoke2) } { mark: none }
+circle inner2 = circle(ic2, ir2) [auxiliary]
+rel tangent(outer, inner2)
+point it2 = lerp(O, ic2, outer_radius / (outer_radius - ir2)) { mark: none }
+line iu2 = tangent_line(E, inner2, 0) [construction]
+line il2 = tangent_line(E, inner2, 1) [construction]
+point ifu2 = foot(ic2, iu2) { mark: none }
+point ifl2 = foot(ic2, il2) { mark: none }
+assert coincident(it2, rim2)
+assert on(it2, inner2) and on(it2, outer)
+assert perpendicular(seg(ic2, ifu2), iu2) and perpendicular(seg(ic2, ifl2), il2)
+assert dist(E, ifu2) == dist(E, ifl2)
+assert coincident(reflect(ifu2, line(ic2, E)), ifl2)
+num ir3 = 0.4050
+point rim3 = on_circle(outer, 157.5deg) { mark: none }
+line spoke3 = line(O, rim3) [construction]
+point ic3 = free ~(-2.357467, 0.963064) where { on(ic3, spoke3) } { mark: none }
+circle inner3 = circle(ic3, ir3) [auxiliary]
+rel tangent(outer, inner3)
+point it3 = lerp(O, ic3, outer_radius / (outer_radius - ir3)) { mark: none }
+line iu3 = tangent_line(E, inner3, 0) [construction]
+line il3 = tangent_line(E, inner3, 1) [construction]
+point ifu3 = foot(ic3, iu3) { mark: none }
+point ifl3 = foot(ic3, il3) { mark: none }
+assert coincident(it3, rim3)
+assert on(it3, inner3) and on(it3, outer)
+assert perpendicular(seg(ic3, ifu3), iu3) and perpendicular(seg(ic3, ifl3), il3)
+assert dist(E, ifu3) == dist(E, ifl3)
+assert coincident(reflect(ifu3, line(ic3, E)), ifl3)
+num ir4 = 0.4400
+point rim4 = on_circle(outer, 202.5deg) { mark: none }
+line spoke4 = line(O, rim4) [construction]
+point ic4 = free ~(-2.325132, -1.009670) where { on(ic4, spoke4) } { mark: none }
+circle inner4 = circle(ic4, ir4) [auxiliary]
+rel tangent(outer, inner4)
+point it4 = lerp(O, ic4, outer_radius / (outer_radius - ir4)) { mark: none }
+line iu4 = tangent_line(E, inner4, 0) [construction]
+line il4 = tangent_line(E, inner4, 1) [construction]
+point ifu4 = foot(ic4, iu4) { mark: none }
+point ifl4 = foot(ic4, il4) { mark: none }
+assert coincident(it4, rim4)
+assert on(it4, inner4) and on(it4, outer)
+assert perpendicular(seg(ic4, ifu4), iu4) and perpendicular(seg(ic4, ifl4), il4)
+assert dist(E, ifu4) == dist(E, ifl4)
+assert coincident(reflect(ifu4, line(ic4, E)), ifl4)
+num ir5 = 0.4750
+point rim5 = on_circle(outer, 247.5deg) { mark: none }
+line spoke5 = line(O, rim5) [construction]
+point ic5 = free ~(-0.926276, -2.362796) where { on(ic5, spoke5) } { mark: none }
+circle inner5 = circle(ic5, ir5) [auxiliary]
+rel tangent(outer, inner5)
+point it5 = lerp(O, ic5, outer_radius / (outer_radius - ir5)) { mark: none }
+line iu5 = tangent_line(E, inner5, 0) [construction]
+line il5 = tangent_line(E, inner5, 1) [construction]
+point ifu5 = foot(ic5, iu5) { mark: none }
+point ifl5 = foot(ic5, il5) { mark: none }
+assert coincident(it5, rim5)
+assert on(it5, inner5) and on(it5, outer)
+assert perpendicular(seg(ic5, ifu5), iu5) and perpendicular(seg(ic5, ifl5), il5)
+assert dist(E, ifu5) == dist(E, ifl5)
+assert coincident(reflect(ifu5, line(ic5, E)), ifl5)
+num ir6 = 0.5100
+point rim6 = on_circle(outer, 292.5deg) { mark: none }
+line spoke6 = line(O, rim6) [construction]
+point ic6 = free ~(0.992882, -2.330460) where { on(ic6, spoke6) } { mark: none }
+circle inner6 = circle(ic6, ir6) [auxiliary]
+rel tangent(outer, inner6)
+point it6 = lerp(O, ic6, outer_radius / (outer_radius - ir6)) { mark: none }
+line iu6 = tangent_line(E, inner6, 0) [construction]
+line il6 = tangent_line(E, inner6, 1) [construction]
+point ifu6 = foot(ic6, iu6) { mark: none }
+point ifl6 = foot(ic6, il6) { mark: none }
+assert coincident(it6, rim6)
+assert on(it6, inner6) and on(it6, outer)
+assert perpendicular(seg(ic6, ifu6), iu6) and perpendicular(seg(ic6, ifl6), il6)
+assert dist(E, ifu6) == dist(E, ifl6)
+assert coincident(reflect(ifu6, line(ic6, E)), ifl6)
+num ir7 = 0.5450
+point rim7 = on_circle(outer, 337.5deg) { mark: none }
+line spoke7 = line(O, rim7) [construction]
+point ic7 = free ~(2.308124, -0.969488) where { on(ic7, spoke7) } { mark: none }
+circle inner7 = circle(ic7, ir7) [auxiliary]
+rel tangent(outer, inner7)
+point it7 = lerp(O, ic7, outer_radius / (outer_radius - ir7)) { mark: none }
+line iu7 = tangent_line(E, inner7, 0) [construction]
+line il7 = tangent_line(E, inner7, 1) [construction]
+point ifu7 = foot(ic7, iu7) { mark: none }
+point ifl7 = foot(ic7, il7) { mark: none }
+assert coincident(it7, rim7)
+assert on(it7, inner7) and on(it7, outer)
+assert perpendicular(seg(ic7, ifu7), iu7) and perpendicular(seg(ic7, ifl7), il7)
+assert dist(E, ifu7) == dist(E, ifl7)
+assert coincident(reflect(ifu7, line(ic7, E)), ifl7)

@@ -30,9 +30,9 @@ rect boxC = rect(Cc, bw, bh)
 label hC = label(boxC.center, "Kernel")  { dir: center }
 
 // ---- lifelines (exact dash, weight, color, and cap via a declared class)
-segment lifeA = seg(boxA.s, offset(boxA.s, 0, -6))  [lifeline]
-segment lifeB = seg(boxB.s, offset(boxB.s, 0, -6))  [lifeline]
-segment lifeC = seg(boxC.s, offset(boxC.s, 0, -6))  [lifeline]
+segment lifeA = seg(boxA.s, offset(boxA.s, 0, -25))  [lifeline]
+segment lifeB = seg(boxB.s, offset(boxB.s, 0, -25))  [lifeline]
+segment lifeC = seg(boxC.s, offset(boxC.s, 0, -25))  [lifeline]
 
 // ---- message rows (chained offsets → equal pitch by construction)
 point r1 = offset(boxA.s, 0, -rp)  { mark: none }
@@ -76,3 +76,150 @@ assert parallel(lifeA, lifeB) and parallel(lifeB, lifeC)
 assert horizontal(r1, p1b)                         // messages horizontal
 assert congruent(seg(r1, r2), seg(r2, r3))         // uniform rhythm
 assert on(p2b, lifeB) and on(p2c, lifeC)
+
+// ---- stress construction network ----
+point Dc = offset(Cc, hp, 0) { mark: none }
+rect boxD = rect(Dc, bw, bh)
+label hD = label(boxD.center, "Audit / storage") { dir: center }
+segment lifeD = seg(boxD.s, offset(boxD.s, 0, -25)) [lifeline]
+point sr7 = offset(boxA.s, 0, -7 * rp) { mark: none }
+point ss7 = foot(sr7, lifeA) { mark: none }
+point se7 = foot(sr7, lifeB) { mark: none }
+arrow sm7 = arrow(ss7, se7) [main]
+label sl7 = label(seg(ss7, se7).midpoint, "retry with corrected constraints") { dir: N, gap: 0.08 }
+assert horizontal(ss7, se7)
+assert on(ss7, lifeA) and on(se7, lifeB)
+point sr8 = offset(boxA.s, 0, -8 * rp) { mark: none }
+point ss8 = foot(sr8, lifeB) { mark: none }
+point se8 = foot(sr8, lifeC) { mark: none }
+arrow sm8 = arrow(ss8, se8) [main]
+label sl8 = label(seg(ss8, se8).midpoint, "solve shared geometry") { dir: N, gap: 0.08 }
+assert horizontal(ss8, se8)
+assert on(ss8, lifeB) and on(se8, lifeC)
+point sr9 = offset(boxA.s, 0, -9 * rp) { mark: none }
+point ss9 = foot(sr9, lifeC) { mark: none }
+point se9 = foot(sr9, lifeD) { mark: none }
+arrow sm9 = arrow(ss9, se9) [main]
+label sl9 = label(seg(ss9, se9).midpoint, "read cached measurements") { dir: N, gap: 0.08 }
+assert horizontal(ss9, se9)
+assert on(ss9, lifeC) and on(se9, lifeD)
+point sr10 = offset(boxA.s, 0, -10 * rp) { mark: none }
+point ss10 = foot(sr10, lifeD) { mark: none }
+point se10 = foot(sr10, lifeC) { mark: none }
+arrow sm10 = arrow(ss10, se10) [ret]
+label sl10 = label(seg(ss10, se10).midpoint, "cache miss") { dir: N, gap: 0.08 }
+assert horizontal(ss10, se10)
+assert on(ss10, lifeD) and on(se10, lifeC)
+point sr11 = offset(boxA.s, 0, -11 * rp) { mark: none }
+point ss11 = foot(sr11, lifeC) { mark: none }
+point se11 = foot(sr11, lifeB) { mark: none }
+arrow sm11 = arrow(ss11, se11) [ret]
+label sl11 = label(seg(ss11, se11).midpoint, "candidate violates domain") { dir: N, gap: 0.08 }
+assert horizontal(ss11, se11)
+assert on(ss11, lifeC) and on(se11, lifeB)
+point sr12 = offset(boxA.s, 0, -12 * rp) { mark: none }
+point ss12 = foot(sr12, lifeB) { mark: none }
+point se12 = foot(sr12, lifeC) { mark: none }
+arrow sm12 = arrow(ss12, se12) [main]
+label sl12 = label(seg(ss12, se12).midpoint, "reject trial; increase damping") { dir: N, gap: 0.08 }
+assert horizontal(ss12, se12)
+assert on(ss12, lifeB) and on(se12, lifeC)
+point sr13 = offset(boxA.s, 0, -13 * rp) { mark: none }
+point ss13 = foot(sr13, lifeC) { mark: none }
+point se13 = foot(sr13, lifeB) { mark: none }
+arrow sm13 = arrow(ss13, se13) [ret]
+label sl13 = label(seg(ss13, se13).midpoint, "accepted state and rank") { dir: N, gap: 0.08 }
+assert horizontal(ss13, se13)
+assert on(ss13, lifeC) and on(se13, lifeB)
+point sr14 = offset(boxA.s, 0, -14 * rp) { mark: none }
+point ss14 = foot(sr14, lifeB) { mark: none }
+point se14 = foot(sr14, lifeD) { mark: none }
+arrow sm14 = arrow(ss14, se14) [main]
+label sl14 = label(seg(ss14, se14).midpoint, "persist solved report") { dir: N, gap: 0.08 }
+assert horizontal(ss14, se14)
+assert on(ss14, lifeB) and on(se14, lifeD)
+point sr15 = offset(boxA.s, 0, -15 * rp) { mark: none }
+point ss15 = foot(sr15, lifeD) { mark: none }
+point se15 = foot(sr15, lifeB) { mark: none }
+arrow sm15 = arrow(ss15, se15) [ret]
+label sl15 = label(seg(ss15, se15).midpoint, "commit acknowledged") { dir: N, gap: 0.08 }
+assert horizontal(ss15, se15)
+assert on(ss15, lifeD) and on(se15, lifeB)
+point sr16 = offset(boxA.s, 0, -16 * rp) { mark: none }
+point ss16 = foot(sr16, lifeB) { mark: none }
+point se16 = foot(sr16, lifeC) { mark: none }
+arrow sm16 = arrow(ss16, se16) [main]
+label sl16 = label(seg(ss16, se16).midpoint, "evaluate derived assertions") { dir: N, gap: 0.08 }
+assert horizontal(ss16, se16)
+assert on(ss16, lifeB) and on(se16, lifeC)
+point sr17 = offset(boxA.s, 0, -17 * rp) { mark: none }
+point ss17 = foot(sr17, lifeC) { mark: none }
+point se17 = foot(sr17, lifeB) { mark: none }
+arrow sm17 = arrow(ss17, se17) [ret]
+label sl17 = label(seg(ss17, se17).midpoint, "all assertions pass") { dir: N, gap: 0.08 }
+assert horizontal(ss17, se17)
+assert on(ss17, lifeC) and on(se17, lifeB)
+point sr18 = offset(boxA.s, 0, -18 * rp) { mark: none }
+point ss18 = foot(sr18, lifeB) { mark: none }
+point se18 = foot(sr18, lifeA) { mark: none }
+arrow sm18 = arrow(ss18, se18) [ret]
+label sl18 = label(seg(ss18, se18).midpoint, "check exit 0") { dir: N, gap: 0.08 }
+assert horizontal(ss18, se18)
+assert on(ss18, lifeB) and on(se18, lifeA)
+point sr19 = offset(boxA.s, 0, -19 * rp) { mark: none }
+point ss19 = foot(sr19, lifeA) { mark: none }
+point se19 = foot(sr19, lifeB) { mark: none }
+arrow sm19 = arrow(ss19, se19) [main]
+label sl19 = label(seg(ss19, se19).midpoint, "render SVG and TikZ") { dir: N, gap: 0.08 }
+assert horizontal(ss19, se19)
+assert on(ss19, lifeA) and on(se19, lifeB)
+point sr20 = offset(boxA.s, 0, -20 * rp) { mark: none }
+point ss20 = foot(sr20, lifeB) { mark: none }
+point se20 = foot(sr20, lifeC) { mark: none }
+arrow sm20 = arrow(ss20, se20) [main]
+label sl20 = label(seg(ss20, se20).midpoint, "measure and place labels") { dir: N, gap: 0.08 }
+assert horizontal(ss20, se20)
+assert on(ss20, lifeB) and on(se20, lifeC)
+point sr21 = offset(boxA.s, 0, -21 * rp) { mark: none }
+point ss21 = foot(sr21, lifeC) { mark: none }
+point se21 = foot(sr21, lifeB) { mark: none }
+arrow sm21 = arrow(ss21, se21) [ret]
+label sl21 = label(seg(ss21, se21).midpoint, "layout and collisions") { dir: N, gap: 0.08 }
+assert horizontal(ss21, se21)
+assert on(ss21, lifeC) and on(se21, lifeB)
+point sr22 = offset(boxA.s, 0, -22 * rp) { mark: none }
+point ss22 = foot(sr22, lifeB) { mark: none }
+point se22 = foot(sr22, lifeD) { mark: none }
+arrow sm22 = arrow(ss22, se22) [main]
+label sl22 = label(seg(ss22, se22).midpoint, "write SVG artifact") { dir: N, gap: 0.08 }
+assert horizontal(ss22, se22)
+assert on(ss22, lifeB) and on(se22, lifeD)
+point sr23 = offset(boxA.s, 0, -23 * rp) { mark: none }
+point ss23 = foot(sr23, lifeD) { mark: none }
+point se23 = foot(sr23, lifeB) { mark: none }
+arrow sm23 = arrow(ss23, se23) [ret]
+label sl23 = label(seg(ss23, se23).midpoint, "artifact hash") { dir: N, gap: 0.08 }
+assert horizontal(ss23, se23)
+assert on(ss23, lifeD) and on(se23, lifeB)
+point sr24 = offset(boxA.s, 0, -24 * rp) { mark: none }
+point ss24 = foot(sr24, lifeB) { mark: none }
+point se24 = foot(sr24, lifeD) { mark: none }
+arrow sm24 = arrow(ss24, se24) [main]
+label sl24 = label(seg(ss24, se24).midpoint, "write TikZ artifact") { dir: N, gap: 0.08 }
+assert horizontal(ss24, se24)
+assert on(ss24, lifeB) and on(se24, lifeD)
+point sr25 = offset(boxA.s, 0, -25 * rp) { mark: none }
+point ss25 = foot(sr25, lifeD) { mark: none }
+point se25 = foot(sr25, lifeB) { mark: none }
+arrow sm25 = arrow(ss25, se25) [ret]
+label sl25 = label(seg(ss25, se25).midpoint, "artifact hash") { dir: N, gap: 0.08 }
+assert horizontal(ss25, se25)
+assert on(ss25, lifeD) and on(se25, lifeB)
+point sr26 = offset(boxA.s, 0, -26 * rp) { mark: none }
+point ss26 = foot(sr26, lifeB) { mark: none }
+point se26 = foot(sr26, lifeA) { mark: none }
+arrow sm26 = arrow(ss26, se26) [ret]
+label sl26 = label(seg(ss26, se26).midpoint, "render complete") { dir: N, gap: 0.08 }
+assert horizontal(ss26, se26)
+assert on(ss26, lifeB) and on(se26, lifeA)
+assert vdist(sr26, sr7) == 19 * rp
