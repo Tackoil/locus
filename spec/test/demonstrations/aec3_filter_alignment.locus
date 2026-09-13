@@ -1,4 +1,4 @@
-locus 2
+locus 3
 
 meta {
   title "AEC3 adaptive FIR filters aligned along time"
@@ -20,10 +20,14 @@ num fw    = 4          // filter span: 128 ms
 num ov    = 1          // overlap: 32 ms
 num bh    = 1.2        // filter box height
 num pitch = 1.8        // row pitch (center to center)
+num axis_gap = 1       // gap below the lowest filter's south edge
+
+// The first filter owns the figure's placement; the time axis is relative to it.
+rect f0 = rect(fw, bh)   [filterbox]
 
 // ---- render history axis: x[t] ------------------------------
-point A0   = free ~(0, 0)                                                        { mark: cross }
-point A512 = free ~(16, 0) where { horizontal(A0, A512), hdist(A0, A512) == 16 } { mark: cross }
+point A0 = offset(f0.sw, 0, -(4 * pitch + axis_gap))   { mark: cross }
+point A512 = offset(A0, 16, 0)   { mark: cross }
 
 arrow axis = arrow(A0, offset(A512, 0.6, 0))  { head: -> }
 label lax  = label(A0, "render history x[t]")  { dir: W, gap: 0.4 }
@@ -51,28 +55,22 @@ label lt512 = label(A512, "512 ms")  { dir: S, gap: 0.3 }
 
 // ---- five staggered filters ----------------------------------
 // Each west edge sits exactly above its start tick; rows step down evenly.
-point F0c = free ~(2, 8.8) where { hdist(A0,   F0c) == fw/2, vdist(A0, F0c) == 8.8  }  { mark: none }
-rect  f0  = rect(F0c, fw, bh)   [filterbox]
 label n0  = label(offset(f0.n, 0, -0.28), "Filter 0")  { dir: center }
 label r0  = label(offset(f0.w, 0.9, -0.25), "0–128 ms")  { dir: center }
 
-point F1c = free ~(5, 7) where { hdist(t96,  F1c) == fw/2, vdist(F1c, F0c) == pitch }  { mark: none }
-rect  f1  = rect(F1c, fw, bh)   [filterbox]
+rect f1 = rect(fw, bh) where { vertical(f1.w, t96), vdist(f1.center, f0.center) == pitch }   [filterbox]
 label n1  = label(offset(f1.n, 0, -0.28), "Filter 1")  { dir: center }
 label r1  = label(offset(f1.w, 0.9, -0.25), "96–224 ms")  { dir: center }
 
-point F2c = free ~(8, 5.2) where { hdist(t192, F2c) == fw/2, vdist(F2c, F1c) == pitch }  { mark: none }
-rect  f2  = rect(F2c, fw, bh)   [filterbox]
+rect f2 = rect(fw, bh) where { vertical(f2.w, t192), vdist(f2.center, f1.center) == pitch }   [filterbox]
 label n2  = label(offset(f2.n, 0, -0.28), "Filter 2")  { dir: center }
 label r2  = label(offset(f2.w, 0.9, -0.25), "192–320 ms")  { dir: center }
 
-point F3c = free ~(11, 3.4) where { hdist(t288, F3c) == fw/2, vdist(F3c, F2c) == pitch }  { mark: none }
-rect  f3  = rect(F3c, fw, bh)   [filterbox]
+rect f3 = rect(fw, bh) where { vertical(f3.w, t288), vdist(f3.center, f2.center) == pitch }   [filterbox]
 label n3  = label(offset(f3.n, 0, -0.28), "Filter 3")  { dir: center }
 label r3  = label(offset(f3.w, 0.9, -0.25), "288–416 ms")  { dir: center }
 
-point F4c = free ~(14, 1.6) where { hdist(t384, F4c) == fw/2, vdist(F4c, F3c) == pitch }  { mark: none }
-rect  f4  = rect(F4c, fw, bh)   [filterbox]
+rect f4 = rect(fw, bh) where { vertical(f4.w, t384), vdist(f4.center, f3.center) == pitch }   [filterbox]
 label n4  = label(offset(f4.n, 0, -0.28), "Filter 4")  { dir: center }
 label r4  = label(offset(f4.w, 0.9, -0.25), "384–512 ms")  { dir: center }
 
@@ -88,15 +86,15 @@ rect s4w = rect(offset(f4.w,  ov/2, 0), ov, bh)   [overlap]
 
 // ---- capture y[t] feed ---------------------------------------
 point cap_top = offset(f0.w, -1.2, 0.6)  { mark: none }
-point cap_bot = free ~(-1.2, 1.6) where { vertical(cap_top, cap_bot), horizontal(cap_bot, F4c) }  { mark: none }
+point cap_bot = offset(cap_top, 0, vdist(cap_top, f4.center))  { mark: none }
 segment cap = seg(cap_top, cap_bot)
 label lcap = label(cap_top, "capture y[t]")  { dir: NW, gap: 0.2 }
 
-arrow c0 = arrow(foot(F0c, cap), f0.w)  { head: -> }
-arrow c1 = arrow(foot(F1c, cap), f1.w)  { head: -> }
-arrow c2 = arrow(foot(F2c, cap), f2.w)  { head: -> }
-arrow c3 = arrow(foot(F3c, cap), f3.w)  { head: -> }
-arrow c4 = arrow(foot(F4c, cap), f4.w)  { head: -> }
+arrow c0 = arrow(foot(f0.center, cap), f0.w)  { head: -> }
+arrow c1 = arrow(foot(f1.center, cap), f1.w)  { head: -> }
+arrow c2 = arrow(foot(f2.center, cap), f2.w)  { head: -> }
+arrow c3 = arrow(foot(f3.center, cap), f3.w)  { head: -> }
+arrow c4 = arrow(foot(f4.center, cap), f4.w)  { head: -> }
 
 // ---- filter 2 coefficient stems ------------------------------
 point sb0 = offset(f2.sw, 0.35, 0.25)   { mark: none }
@@ -131,17 +129,15 @@ point kdrop = foot(kb, seg(A0, A512))  { mark: none }
 segment kline = seg(kb, kdrop)      [peakln]
 
 // ---- total delay box below the axis --------------------------
-point TDc = free ~(8, -1.9) where { vertical(TDc, kdrop), vdist(TDc, A0) == 1.9 }  { mark: none }
-rect td = rect(TDc, 9.5, 1)
+rect td = rect(9.5, 1) where { vertical(td.center, kdrop), vdist(td.center, A0) == 1.9 }
 label ltd = label(td.center, "total delay = filter offset $O_2$ + local peak $k^*$")  { dir: center }
 
 // ---- legends ---------------------------------------------------
-point LGc = free ~(16, 8.8) where { horizontal(LGc, F0c), vertical(LGc, A512) }  { mark: none }
-rect lg = rect(LGc, 0.6, 0.45)   [overlap]
+rect lg = rect(0.6, 0.45) where { horizontal(lg.center, f0.center), vertical(lg.center, A512) }   [overlap]
 label llg = label(lg.e, "32 ms overlap")  { dir: E, gap: 0.2 }
 
-label lg1 = label(offset(TDc, -3, -1.3), "coefficient position → delay")   [coeff]  { dir: center }
-label lg2 = label(offset(TDc,  4, -1.3), "coefficient height → echo gain") [coeff]  { dir: center }
+label lg1 = label(offset(td.center, -3, -1.3), "coefficient position → delay")   [coeff]  { dir: center }
+label lg2 = label(offset(td.center,  4, -1.3), "coefficient height → echo gain") [coeff]  { dir: center }
 
 text_block sub = text_block("Each filter reads a different, overlapping region of the same render history")  { place: above }
 text_block eq  = text_block($\hat{y}[t] = \textstyle\sum_n h_n[k]\, x[t - (O_n + k)]$)  { place: below }
@@ -150,8 +146,10 @@ text_block eq  = text_block($\hat{y}[t] = \textstyle\sum_n h_n[k]\, x[t - (O_n +
 assert vertical(f0.w, A0) and vertical(f2.w, t192)        // boxes sit exactly on their time positions
 assert hdist(f2.w, f2.e) == fw                            // every filter spans 128 ms
 assert hdist(f1.w, f0.e) == ov and hdist(f2.w, f1.e) == ov  // neighbours overlap by exactly 32 ms
-assert collinear(F0c, F1c, F2c, F3c, F4c)                 // even diagonal stagger
-assert vdist(F1c, F0c) == vdist(F2c, F1c)                 // equal row pitch
+assert collinear(f0.center, f1.center, f2.center, f3.center, f4.center) // even diagonal stagger
+assert vdist(f1.center, f0.center) == vdist(f2.center, f1.center)       // equal row pitch
+assert vdist(A0, f4.s) == axis_gap                       // clearance above the time axis
+assert vertical(cap_top, cap_bot) and horizontal(cap_bot, f4.center)
 assert on(kdrop, seg(A0, A512))
 assert between(t224, kdrop, t288)                         // the peak lands between 224 and 288 ms
 assert hdist(A0, kdrop) == hdist(A0, t192) + hdist(t192, kdrop)   // total delay = O2 + k*

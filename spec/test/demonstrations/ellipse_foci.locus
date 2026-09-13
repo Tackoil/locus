@@ -1,0 +1,38 @@
+locus 3
+
+meta {
+  title "Rotated ellipse: semiaxes and the focal-distance identity"
+  note "Dimensions are semiaxes; the center is owned by the ellipse"
+}
+
+style textbook
+
+// ---- shapes and derived anchors ----------------------------
+ellipse e = ellipse(3, 2, 30deg)
+ellipse inner = ellipse(e.center, 1.5, 1, 30deg)   [construction]
+point O = e.center
+point F1 = e.focus1
+point F2 = e.focus2
+point P = e.at(60deg)
+
+segment major = seg(e.major_start, e.major_end)   [auxiliary]
+segment minor = seg(e.minor_start, e.minor_end)   [auxiliary]
+segment focal1 = seg(F1, P)   [highlight]
+segment focal2 = seg(F2, P)   [highlight]
+
+// ---- annotation -------------------------------------------
+label lO = label(O, $O$)   { dir: S }
+label lF1 = label(F1, $F_1$)   { dir: S }
+label lF2 = label(F2, $F_2$)   { dir: S }
+label lP = label(P, $P$)   { dir: N }
+text_block identity = text_block($PF_1 + PF_2 = 2a$)   { place: below }
+
+// ---- intent -----------------------------------------------
+assert on(P, e)
+assert dist(P, F1) + dist(P, F2) == 2 * e.semimajor
+assert length(major) == 6
+assert length(minor) == 4
+assert dir_angle(O, e.major_end) == 30deg
+assert inside(O, e) and inside(F1, e) and inside(F2, e)
+assert not inside(e.major_end, e)
+assert area(e) == 4 * area(inner)

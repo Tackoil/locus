@@ -1,15 +1,16 @@
-locus 2
+locus 3
 
 meta {
   title "Golden ratio in the regular pentagon"
-  note  "Vertices by rotation (exact); diagonal intersection is relational"
+  note  "Vertices by rotation around a placed circle; diagonal intersection is derived"
 }
 
 style textbook
 
 // ---- objects ----------------------------------------------
-point O = free ~(0, 0)
-point A = free ~(0, 3)
+circle circ = circle(3)   [construction]
+point O = circ.center
+point A = circ.at(90deg)
 
 point B = rotate(A, O, 72deg)
 point C = rotate(A, O, 144deg)
@@ -21,8 +22,8 @@ polygon pent = polygon(A, B, C, D, E)
 segment d1 = seg(A, C)   [highlight]
 segment d2 = seg(B, E)   [highlight]
 
-// diagonal intersection: relational, no branch index (was intersect(..., 0))
-point P = free ~(-0.7, 0.9) where { on(P, d1), on(P, d2) }
+// The diagonals have a unique intersection, so no branch selector is needed.
+point P = intersect(d1, d2)
 
 // equal-side ticks
 tick t1 = tick(seg(A, B), 1)
@@ -39,7 +40,8 @@ label lP = label(P, $P$)  { dir: N }
 text_block phi = text_block($\dfrac{AC}{AB} = \varphi = \dfrac{1+\sqrt5}{2}$)  { place: below }
 
 // ---- intent ----------------------------------------------
+assert on(P, d1) and on(P, d2)
 assert dist(A, B) == dist(B, C)
 assert ratio(dist(A, C), dist(A, B)) == (1 + sqrt(5)) / 2
-assert ratio(dist(A, P), dist(P, C)) == (1 + sqrt(5)) / 2
+assert ratio(dist(P, C), dist(A, P)) == (1 + sqrt(5)) / 2 // longer / shorter diagonal part
 assert inside(P, pent)

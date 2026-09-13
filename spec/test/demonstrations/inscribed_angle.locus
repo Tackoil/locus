@@ -1,4 +1,4 @@
-locus 2
+locus 3
 
 meta {
   title "Inscribed angle theorem"
@@ -7,8 +7,8 @@ meta {
 style textbook
 
 // ---- objects ----------------------------------------------
-point  O = free ~(0, 0)
-circle c = circle(O, 3)
+circle c = circle(3)
+point O = c.center
 
 point P = on_circle(c, 110deg)
 point A = on_circle(c, 200deg)

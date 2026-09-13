@@ -1,5 +1,7 @@
 # Locus Implementation Plan — Multi-Agent Task Breakdown
 
+This is the historical v0.3 / format-2 implementation plan. The current [v0.4 specification](specification.md) targets format 3; its migration work is listed in Part 12 and is not covered by the task prompts below.
+
 This plan decomposes the full implementation of Locus (per `documents/specification.md` v0.3 and
 `documents/structure.md`) into 13 self-contained tasks, each with a ready-to-send prompt for a
 separate agent session. Tasks within the same wave have disjoint write scopes and can run in

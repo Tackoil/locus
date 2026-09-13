@@ -2,9 +2,10 @@
 
 The positive `.locus` corpus is split by purpose:
 
-- [`demonstrations/`](demonstrations/) contains eight compact, readable examples. These are
-  used for stable CLI `describe` and `inspect` snapshots and are suitable as starting points
-  for people learning the language.
+- [`demonstrations/`](demonstrations/) contains eleven compact, readable examples of the
+  revised [v0.4 draft](../../documents/specification.md): points and shapes own placement;
+  anchors and constructions remain derived. These are the migration targets for the CLI `describe` and `inspect`
+  snapshots; the current implementation cannot run their new declarations yet.
 - [`stress/`](stress/) contains 17 expanded workloads. These exercise large construction
   graphs, dense annotations, shared constraints, assertions, deterministic layout, and every
   rendering backend.
@@ -12,7 +13,9 @@ The positive `.locus` corpus is split by purpose:
 Invalid-input fixtures remain in [`fixtures/errors/`](../../fixtures/errors/) so they are not
 mistaken for runnable examples.
 
-Run either corpus from the repository root:
+Run the checks from the repository root. The demonstration check currently fails on the
+unsupported `locus 3` header and new declarations; it becomes the acceptance
+check for implementation migration. The stress corpus still uses v0.3 (`locus 2`).
 
 ```sh
 cargo run -p locus-cli -- check spec/test/demonstrations/*.locus
@@ -25,13 +28,58 @@ cargo test -p locus-cli -p locus-render --test spec_examples --all-features
 | File | Demonstrates |
 | --- | --- |
 | [aec3_filter_alignment.locus](demonstrations/aec3_filter_alignment.locus) | Filter-bank alignment and delay annotations |
-| [angle_bisector_ratio.locus](demonstrations/angle_bisector_ratio.locus) | Relational intersection and the angle-bisector theorem |
+| [angle_bisector_ratio.locus](demonstrations/angle_bisector_ratio.locus) | Triangle on a placed circumcircle, derived intersection, and the angle-bisector theorem |
+| [bspline_controls.locus](demonstrations/bspline_controls.locus) | Five derived controls, two cubic spans, clamped endpoints, and an interior-knot sample |
+| [ellipse_foci.locus](demonstrations/ellipse_foci.locus) | Rotated semiaxes, foci, containment, and area scaling |
 | [euler_nine_point.locus](demonstrations/euler_nine_point.locus) | Euler line and nine-point circle constructions |
 | [flowchart_agent_loop.locus](demonstrations/flowchart_agent_loop.locus) | Flowchart nodes, connectors, and branches |
 | [inscribed_angle.locus](demonstrations/inscribed_angle.locus) | Inscribed-angle geometry and arc marks |
 | [pentagon_golden.locus](demonstrations/pentagon_golden.locus) | Regular pentagon and golden-ratio relationships |
+| [point_relations.locus](demonstrations/point_relations.locus) | Parameterless points, relative placement, a 3-4-5 triangle, and a derived circumcircle |
 | [sequence_check.locus](demonstrations/sequence_check.locus) | Sequence-diagram participants and messages |
 | [tangent_circles.locus](demonstrations/tangent_circles.locus) | Solved tangent circles and common tangents |
+
+### Draft migration findings
+
+All eleven demonstrations omit hinted free-point declarations, coordinate hints, and
+absolute placement. Parameterless points, circles, ellipses, rectangles, and diamonds
+own placement; relations act directly on points and anchors.
+Unique intersections and tangent contact points are derived constructions. Relative
+offsets remain useful for message rows, coefficient stems, and the filter time axis.
+
+The angle-bisector and Euler examples choose vertices by angles on a placed circumcircle.
+These constructions remain valid, but a circle is no longer necessary to introduce
+independent vertices: `point_relations.locus` uses three `point()` declarations and
+relative relationships. Each point constructor takes zero arguments. Points derived
+from anchors or constructions remain useful when their geometry is already determined.
+
+Geometry validation used temporary copies adapted to the existing CLI: each placed shape
+was expanded to a circle/box with a test-only free center, and point-anchor declarations
+were rewritten as equivalent existing constructors. The defining relations and all
+assertions were preserved. All **45 assertions across the original eight files passed**; the four
+relation-driven diagrams converged from perturbed test placements with maximum normalized
+residual below `1e-12`. The pentagon check exposed and corrected an existing reversed ratio:
+for `P = intersect(seg(A, C), seg(B, E))`, `PC / AP`, not `AP / PC`, equals the golden ratio.
+
+This validates the constructions and relative geometry, **not native support for the new
+syntax, automatic initialization, placement DOF reporting, or rendering**. Direct checks
+reject the `locus 3` header. Earlier checks using format-2 headers also exposed
+`E125` for point-anchor declarations and `E404` for center-free shape constructors. The parser corpus and demonstration snapshot tests remain enabled and will
+fail until the implementation is migrated; their snapshots have not been regenerated from
+errors or from the temporary adapted copies. The stress workloads are unchanged.
+
+The ellipse and B-spline demonstrations add 13 draft assertions. They cannot be adapted
+to the existing geometry engine, which has neither curve kind; they are excluded from
+the 45-assertion result above. Their analytic identities and spline parameter conventions
+are checked independently, not through the CLI. The initial B-spline form is cubic,
+open, non-rational, and clamped, with automatic uniform interior knots. Control points
+come from existing anchors. Custom knots/degrees, fitting, general curve intersections,
+and tangency remain outside this draft's curve support.
+
+The parameterless-point demonstration adds five assertions. Its relative geometry is
+checked using a temporary copy with test-only point seeds for the current CLI. This
+does not validate automatic initialization or native `point()` support; the new
+constructor still requires parser and solver migration.
 
 ## Stress workloads
 

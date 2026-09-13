@@ -1,0 +1,31 @@
+locus 3
+
+meta {
+  title "Parameterless points: a triangle defined by relationships"
+  note "Points have no coordinate arguments; relative distances define a 3-4-5 triangle"
+}
+
+style textbook
+
+// ---- independently placed points --------------------------
+point A = point()
+point B = point() where { horizontal(A, B), hdist(A, B) == 4 }
+point C = point() where { vertical(A, C), vdist(A, C) == 3 }
+
+// ---- derived geometry -------------------------------------
+polygon tri = polygon(A, B, C)
+point M = midpoint(B, C)
+circle circum = circle(M, dist(M, A))   [construction]
+right_angle corner = right_angle(A, B, C)
+
+label lA = label(A, $A$)   { dir: SW }
+label lB = label(B, $B$)   { dir: SE }
+label lC = label(C, $C$)   { dir: NW }
+label lM = label(M, $M$)   { dir: NE }
+
+// ---- intent -----------------------------------------------
+assert dist(B, C) == 5
+assert area(tri) == 6
+assert perpendicular(seg(A, B), seg(A, C))
+assert on(A, circum) and on(B, circum) and on(C, circum)
+assert dist(M, A) == dist(M, B) and dist(M, B) == dist(M, C)

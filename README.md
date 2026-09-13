@@ -12,7 +12,7 @@ Locus is an agent-friendly relational language and CLI toolchain for determinist
 
 The core goal of Locus is to let AI agents create, inspect, verify, and revise precise geometry without relying on visual feedback. Agents declare geometric relationships instead of guessing coordinates, use structured diagnostics and stable JSON output to understand failures, and verify intent through persistent assertions. Deterministic output and diffable `.locus` source files make every change reproducible and auditable.
 
-This repository is at the Phase 0 bootstrap boundary. It contains the pinned Rust workspace, crate dependency seams, normative v0.3 relational specification (`documents/specification.md`), initial machine-readable schemas, and CI quality gates. Language parsing, geometry evaluation, layout, and rendering behavior are intentionally not implemented yet.
+The Rust workspace implements the v0.3 (`locus 2`) pipeline. The current [v0.4 specification](documents/specification.md) and [demonstrations](spec/test/README.md) target `locus 3`, with parameterless points, shape-owned placement, ellipses, and B-splines. Implementation migration is pending; the existing stress fixtures remain on format 2.
 
 ## Development checks
 

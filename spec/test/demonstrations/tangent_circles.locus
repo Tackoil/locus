@@ -1,39 +1,36 @@
-locus 2
+locus 3
 
 meta {
   title "Externally tangent circles with a common external tangent"
-  note  "v0.3 showcase: tangency is stated once as a relation; the tangent point, center distance, and common tangent follow"
+  note  "v0.4 showcase: tangency is stated once as a relation; the tangent point, center distance, and common tangent follow"
 }
 
 style textbook
 
 // ---- objects ----------------------------------------------
-point O_1 = free ~(0, 0)
-point O_2 = free ~(5, 0) where { horizontal(O_1, O_2) }
-
 num r_1 = 2
 num r_2 = 3
 
-circle c1 = circle(O_1, r_1)
-circle c2 = circle(O_2, r_2)
+circle c1 = circle(r_1)
+circle c2 = circle(r_2) where { horizontal(c1.center, c2.center) }
+point O_1 = c1.center
+point O_2 = c2.center
 
-// the defining fact — external tangency, branch picked by the hints
+// The defining fact: tangent between circles explicitly means external tangency.
 rel tangent(c1, c2)
 
-// tangency point: free point pinned to both circles (was findings F3/F4)
-point T = free ~(2, 0) where { on(T, c1), on(T, c2) }
+// The contact point divides the center segment in the ratio of the radii.
+point T = lerp(O_1, O_2, r_1 / (r_1 + r_2))
 
 // common internal tangent at T
 line t_int = perpendicular(T, line(O_1, O_2))   [auxiliary]
 
-// external homothety center — exact, so constructed (lands at (-10, 0))
+// The external homothety center is derived from the centers and radius ratio.
 point E = lerp(O_1, O_2, r_1 / (r_1 - r_2))
 
-// common external tangent: through E, touching c1 on the upper side (by hint)
-// (replaces v0.2's tangent_line(E, c1, 0) branch index)
-point P_1 = free ~(-0.4, 2) where { on(P_1, c1) }
-line t_ext = line(E, P_1)   [highlight]
-rel tangent(c1, t_ext)
+// Choose one of the two common external tangents with an explicit branch.
+line t_ext = tangent_line(E, c1, 0)   [highlight]
+point P_1 = foot(O_1, t_ext)
 
 // its touch point on the second circle — exact, so constructed
 point P_2 = foot(O_2, t_ext)
@@ -52,12 +49,14 @@ label lE  = label(E, $E$)      { dir: S }
 label lP1 = label(P_1, $P_1$)
 label lP2 = label(P_2, $P_2$)
 
-arrow hint = arrow(E, T)  [construction]  { head: ->, bend: 25deg }
+arrow homothety = arrow(E, T)  [construction]  { head: ->, bend: 25deg }
 
 // ---- intent ----------------------------------------------
 // (no assert tangent(c1, c2): restating a rel is a no-op test, §7.4)
 assert dist(O_1, O_2) == r_1 + r_2               // follows from the tangency rel
+assert on(T, c1) and on(T, c2)
 assert between(O_1, T, O_2)
+assert tangent(c1, t_int) and tangent(c2, t_int)
 assert tangent(c2, t_ext)                        // t_ext touches BOTH — the theorem
 assert perpendicular(seg(O_1, P_1), t_ext)
 assert collinear(E, P_1, P_2)

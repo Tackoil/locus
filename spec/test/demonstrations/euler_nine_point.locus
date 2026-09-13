@@ -1,4 +1,4 @@
-locus 2
+locus 3
 
 meta {
   title "Euler line and the nine-point circle"
@@ -8,18 +8,18 @@ meta {
 style textbook
 
 // ---- objects ----------------------------------------------
-// Generic-position triangle: hint-settled by design.
-point A = free ~(0, 3.5)
-point B = free ~(-2, 0)
-point C = free ~(4.5, 0)
+// A scalene triangle on its circumcircle; all points are derived.
+circle circ = circle(3.5)   [auxiliary]
+point A = circ.at(90deg)
+point B = circ.at(210deg)
+point C = circ.at(340deg)
 
 polygon tri = polygon(A, B, C)
 
-point O = circumcenter(A, B, C)
+point O = circ.center
 point G = centroid(A, B, C)
 point H = orthocenter(A, B, C)
 
-circle circ  = circumcircle(A, B, C)     [auxiliary]
 line   euler = line(O, H)                [highlight]
 
 // side midpoints
@@ -53,6 +53,7 @@ label lB = label(B, $B$)
 label lC = label(C, $C$)
 
 // ---- intent ----------------------------------------------
+assert coincident(O, circumcenter(A, B, C))
 assert collinear(O, G, H)
 assert collinear(O, N, H)
 assert ratio(dist(H, G), dist(G, O)) == 2
