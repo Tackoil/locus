@@ -13,11 +13,9 @@ and rendering SVG. Every render is preceded by a successful `check`.
 Both operating systems in CI compare against these same expected files.
 
 The sources currently use format 3 (the repository's v0.4 specification).
-Plain fragments use `PlaintextEngine`; TeX uses the explicit hidden
-`--tex-engine=mock` flag. The mock reserves measured space but emits no glyph
-outlines, so TeX labels are deliberately invisible in these SVGs. Renderer
-outline conversion also drops the mock's metadata-only groups. Golden review
-therefore covers geometry and layout, not TeX typography.
+Plain fragments use `PlaintextEngine`; TeX uses `RexEngine` through the explicit
+`--tex-engine=rex` flag. Both emit bundled font outlines, so the SVG expectations
+cover visible mathematical typography as well as geometry and measured layout.
 
 ## Updating
 
@@ -32,7 +30,7 @@ Inspect every changed SVG and JSON diff before committing. Never set the update
 environment variable in CI. Tests do not create missing expectations unless
 explicitly run in update mode.
 
-## Initial visual review
+## Visual review
 
 All 11 figures pass their in-file assertions. Tangent circles and the angle
 bisector construction look consistent with their asserted geometry. Ellipse
@@ -48,11 +46,11 @@ behavior rather than approving it as ideal:
   triangle and the points it illustrates. This is a style/visibility concern;
   its incidence assertions pass.
 - `aec3_filter_alignment`: the Filter 2 range caption overlaps the coefficient
-  stems. The layout reports collisions for r1, r2, r3, r4, lk, and llg.
+  stems. The layout reports collisions for r1, r2, r3, r4, lk, llg, and lg1/eq.
 
 Additional layout collision warnings are emitted for `angle_bisector_ratio`
-(lD, eq), `bspline_controls` (lM), `euler_nine_point` (lN), `inscribed_angle`
-(li, lc), and `pentagon_golden` (lP). Mock TeX measurements affect these results.
+(lD, eq), `bspline_controls` (lM), `ellipse_foci` (lO), `euler_nine_point` (lN), `inscribed_angle`
+(li, lc), and `pentagon_golden` (lP). Collision results use real ReX measurements.
 Render exposes the warnings on stderr or in its JSON report; they do not prevent
 writing an artifact. The describe/inspect goldens retain those commands' existing
 semantics and do not initiate layout.

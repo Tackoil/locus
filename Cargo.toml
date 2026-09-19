@@ -1,6 +1,10 @@
 [workspace]
 members = ["crates/*"]
 resolver = "2"
+exclude = ["vendor/static_map_macros"]
+
+[patch.crates-io]
+static_map_macros = { path = "vendor/static_map_macros" }
 
 [workspace.package]
 version = "0.0.0"

@@ -27,6 +27,7 @@ svgtypes = "0.15"
 resvg = { version = "=0.45.1", optional = true, default-features = false }
 
 [dev-dependencies]
+locus-tex = { path = "../locus-tex", features = ["rex"] }
 insta.workspace = true
 serde_json.workspace = true
 

@@ -11,9 +11,10 @@ publish = false
 
 [features]
 default = []
-rex = []
+rex = ["dep:rex-backend"]
 
 [dependencies]
+rex-backend = { package = "rex", git = "https://github.com/ReTeX/ReX", rev = "7bd4efc0b77c6910b79668d32824b464ee0958a3", optional = true }
 rustybuzz = "=0.20.1"
 ryu.workspace = true
 thiserror.workspace = true

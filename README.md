@@ -47,9 +47,12 @@ artifact, including binary PNG bytes. Warnings go to stderr. Use `--json` with
 require a prior check or reject a scene merely because an assertion fails.
 
 Plain text uses the bundled font and actual glyph measurements. The default
-TeX selection is ReX, but the existing upstream integration is currently an
-unavailable seam ([details](crates/locus-tex/REX-VIABILITY.md)): **figures with
-TeX return source-anchored E414 and exit 2**. There is no silent fallback.
+TeX engine is ReX, using bundled STIX Two Math outlines for fractions, roots,
+scripts, operators, delimiters, and matrices. SVG, TikZ, and PNG output needs no
+installed math font or external TeX process. Invalid or unsupported TeX returns
+source-anchored E414 and exit 2; there is no silent fallback. ReX supports a
+subset of TeX, not a full LaTeX installation; see the
+[integration notes](crates/locus-tex/REX-VIABILITY.md).
 For deterministic pipeline testing only, the hidden `--tex-engine=mock` flag
 selects `MockEngine` for TeX fragments while retaining real plain-text rendering:
 
@@ -58,5 +61,5 @@ locus render figure.locus --tex-engine=mock -o figure.svg
 ```
 
 The mock reserves deterministic TeX boxes but supplies no visible glyphs. It is
-suitable for regression goldens, not finished mathematical typography. See
+suitable for isolated pipeline tests, not finished mathematical typography. See
 [the golden suite](fixtures/golden/README.md) for coverage and review notes.

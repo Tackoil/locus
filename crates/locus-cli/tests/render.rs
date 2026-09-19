@@ -17,11 +17,11 @@ fn render(path: &Path) -> Result<Command> {
     Ok(command)
 }
 
-fn destination_case(options: &[&str], signature: &[u8]) -> Result {
+fn destination_case(source_text: &str, options: &[&str], signature: &[u8]) -> Result {
     let directory = tempfile::tempdir()?;
     let source = directory.path().join("figure.locus");
     let target = directory.path().join("output");
-    fs::write(&source, PLAIN)?;
+    fs::write(&source, source_text)?;
     let output = render(&source)?
         .args(options)
         .arg("--stdout")
@@ -52,8 +52,8 @@ fn destination_case(options: &[&str], signature: &[u8]) -> Result {
 
 #[test]
 fn svg_and_tikz_use_real_plaintext_and_clean_stdout() -> Result {
-    destination_case(&[], b"<svg")?;
-    destination_case(&["--tikz"], b"\\begin{tikzpicture}")?;
+    destination_case(PLAIN, &[], b"<svg")?;
+    destination_case(PLAIN, &["--tikz"], b"\\begin{tikzpicture}")?;
     let directory = tempfile::tempdir()?;
     let source = directory.path().join("figure.locus");
     fs::write(&source, PLAIN)?;
@@ -71,7 +71,28 @@ fn svg_and_tikz_use_real_plaintext_and_clean_stdout() -> Result {
 #[cfg(feature = "png")]
 #[test]
 fn png_feature_delivers_binary_bytes() -> Result {
-    destination_case(&["--png"], b"\x89PNG\r\n\x1a\n")
+    destination_case(PLAIN, &["--png"], b"\x89PNG\r\n\x1a\n")?;
+    destination_case(TEX, &["--png"], b"\x89PNG\r\n\x1a\n")
+}
+
+#[test]
+fn default_rex_engine_renders_math_to_svg_and_tikz() -> Result {
+    let source = TEX.replace("x^2", r"\frac{-b \pm \sqrt{b^2-4ac}}{2a}");
+    destination_case(&source, &[], b"<svg")?;
+    destination_case(&source, &["--tikz"], b"\\begin{tikzpicture}")?;
+    let directory = tempfile::tempdir()?;
+    let input = directory.path().join("math.locus");
+    fs::write(&input, &source)?;
+    let result = render(&input)?
+        .args(["--tex-engine=rex", "--stdout"])
+        .output()?;
+    assert!(result.status.success());
+    let svg = String::from_utf8(result.stdout)?;
+    assert!(svg.contains("<path"));
+    assert!(svg.contains("fill=\"#111827\""));
+    assert!(!svg.contains("<text"));
+    assert!(!svg.contains("data-engine=\"mock\""));
+    Ok(())
 }
 
 #[test]
@@ -127,8 +148,7 @@ fn failure_case(source: &str, code: &str, exit: i32, line: u64) -> Result {
 fn failures_preserve_codes_spans_and_existing_artifacts() -> Result {
     failure_case("num a = 1\n", "E110", 3, 1)?;
     failure_case("locus 3\nnum a = 1 / 0\n", "E204", 2, 2)?;
-    // The existing ReX seam is unavailable: never silently substitute mock output.
-    failure_case(TEX, "E414", 2, 3)?;
+    failure_case(&TEX.replace("x^2", r"\notacommand{x}"), "E414", 2, 3)?;
     let directory = tempfile::tempdir()?;
     let input = directory.path().join("good.locus");
     fs::write(&input, PLAIN)?;

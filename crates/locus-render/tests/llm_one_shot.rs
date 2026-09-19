@@ -12,7 +12,7 @@ use locus_render::{
     RenderOptions, render_svg,
     style::{Color, StyleSheet},
 };
-use locus_tex::{FontSize, MockEngine, PlaintextEngine};
+use locus_tex::{FontSize, PlaintextEngine, RexEngine};
 use serde_json::{Value, json};
 
 const PROMPT: &str = include_str!("../../../spec/test/llm/prompt.txt");
@@ -135,7 +135,7 @@ fn render_answer(source: &str, directory: &Path) -> Result<(), Box<dyn Error>> {
     let measured = measure_scene(
         &solved.scene,
         &PlaintextEngine::new(),
-        &MockEngine,
+        &RexEngine,
         FontSize::DEFAULT,
     )?;
     let placed = layout(

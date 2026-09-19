@@ -120,8 +120,8 @@ supporting lines succeeds with the same `between` assertions.
   and Kanban WIP is computed from the explicitly listed active cards.
 - Dense geometry and crossing connectors may produce crowding or collision diagnostics.
   Repeated runs must return the same layout and diagnostics.
-- Plain labels use actual bundled font outlines. TeX segments use `MockEngine` boxes because
-  the real TeX backend is unavailable in these tests.
+- Plain labels use bundled Noto Sans outlines. TeX segments use `RexEngine` and
+  bundled STIX Two Math outlines, matching the CLI's default math renderer.
 
 Export all 16 stress previews into the ignored `target/spec-examples` directory. SVG,
 TikZ, and PNG use an opaque white viewport background; other renderer callers retain

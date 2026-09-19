@@ -1,0 +1,15 @@
+[package]
+name = "static_map_macros"
+version = "0.2.0-beta"
+edition = "2015"
+license = "MIT OR Apache-2.0"
+description = "Compatibility patch for ReX's static_map procedural macro"
+publish = false
+
+[lib]
+proc-macro = true
+
+[dependencies]
+syn = "0.11"
+quote = "0.3"
+fxhash = "0.2.1"

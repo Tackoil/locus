@@ -319,8 +319,8 @@ fn checked_font_unit_add(left: i32, right: i32) -> Result<i32, TexError> {
 }
 
 #[derive(Default)]
-struct SvgPath {
-    data: String,
+pub(crate) struct SvgPath {
+    pub(crate) data: String,
 }
 
 impl SvgPath {

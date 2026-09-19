@@ -197,6 +197,12 @@ pub enum TexError {
     /// A TeX segment contained a raw line break.
     #[error("TeX segments cannot contain raw line breaks")]
     RawTexNewline,
+    /// TeX could not be parsed or rendered by the selected backend.
+    #[error("invalid TeX: {message}")]
+    InvalidTex {
+        /// Backend diagnostic, including unsupported commands or glyphs.
+        message: String,
+    },
     /// A selected feature exposes an engine seam without a working backend.
     #[error("{engine} engine is unavailable: {reason}")]
     EngineUnavailable {

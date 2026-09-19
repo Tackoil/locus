@@ -12,7 +12,7 @@ use locus_render::{
     RenderOptions, render_svg, render_tikz,
     style::{Color, StyleSheet},
 };
-use locus_tex::{FontSize, MockEngine, PlaintextEngine};
+use locus_tex::{FontSize, PlaintextEngine, RexEngine};
 
 #[path = "../../../spec/test/support/mod.rs"]
 mod support;
@@ -70,11 +70,11 @@ fn render_case(case: &support::Case) -> Result<Run, Box<dyn Error>> {
         solved.summary.attempts,
         solved.summary.max_normalized_residual,
     );
-    // Original examples contain TeX; its mock boxes exercise plumbing, not real TeX rendering.
+    // Export the same real math outlines used by the CLI's default renderer.
     let measured = measure_scene(
         &solved.scene,
         &PlaintextEngine::new(),
-        &MockEngine,
+        &RexEngine,
         FontSize::DEFAULT,
     )?;
     let placed = layout(
