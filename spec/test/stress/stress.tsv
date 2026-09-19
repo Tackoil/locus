@@ -1,6 +1,6 @@
 # name                         min_objects min_assertions min_equations min_attempts
 aec3_filter_alignment           230         140            18            0
-angle_bisector_ratio             70          25            12            1
+angle_bisector_ratio             70          25            10            1
 euler_nine_point                 90          30             0            0
 flowchart_agent_loop             95          25            10            0
 gantt_chart                    200         110            20            1
@@ -10,8 +10,8 @@ pentagon_golden                 75          35             2            1
 right_triangle_altitude        125          75             2            1
 sankey_energy                  200          90             0            0
 sequence_check                 145          40             4            0
-software_architecture          100          35            14            1
+software_architecture          100          35            12            1
 tangent_circles                 80          35             4            1
 tangent_internal_branches      100          50            18            1
-xy_parabola                    310         140             4            1
-xy_reciprocal                  280         270             4            1
+xy_parabola                    310         140             2            1
+xy_reciprocal                  280         270             2            1

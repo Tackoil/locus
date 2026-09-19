@@ -4,7 +4,7 @@ use crate::{RenderError, RenderOptions, style::StyleSheet};
 use locus_core::ResolvedScene;
 use locus_layout::LayoutScene;
 
-/// Renders our own SVG to transparent-background PNG bytes at its CSS size.
+/// Renders our own SVG to PNG bytes at its CSS size, including the optional background.
 /// The default build does not include resvg or any raster dependencies.
 ///
 /// # Errors
@@ -25,6 +25,15 @@ pub fn render(
     }
     let mut pixmap = resvg::tiny_skia::Pixmap::new(size.width(), size.height())
         .ok_or_else(|| raster("cannot allocate raster image"))?;
+    // Raster dimensions round fractional CSS sizes; fill even the partial edge pixels.
+    if let Some(background) = options.background {
+        pixmap.fill(resvg::tiny_skia::Color::from_rgba8(
+            background.0,
+            background.1,
+            background.2,
+            255,
+        ));
+    }
     resvg::render(
         &tree,
         resvg::tiny_skia::Transform::identity(),

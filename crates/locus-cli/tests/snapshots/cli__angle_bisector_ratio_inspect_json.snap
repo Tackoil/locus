@@ -10,32 +10,32 @@ expression: stdout
       {
         "first": "A",
         "second": "B",
-        "distance": 5.406037461853541
+        "distance": 6.3441545092565494
       },
       {
         "first": "A",
         "second": "C",
-        "distance": 6.022441194288597
+        "distance": 5.734064310022943
       },
       {
         "first": "A",
         "second": "D",
-        "distance": 4.5101187357183115
+        "distance": 5.216678170941361
       },
       {
         "first": "B",
         "second": "C",
-        "distance": 7.000575297070313
+        "distance": 6.0621778264910695
       },
       {
         "first": "B",
         "second": "D",
-        "distance": 3.311496958534273
+        "distance": 3.1841940744159016
       },
       {
         "first": "C",
         "second": "D",
-        "distance": 3.68907833853604
+        "distance": 2.877983752075168
       }
     ],
     "triangle_angles": [
@@ -43,73 +43,67 @@ expression: stdout
         "first": "B",
         "vertex": "A",
         "second": "C",
-        "radians": 1.3148121713198504
+        "radians": 1.0471975511965974
       },
       {
         "first": "A",
         "vertex": "B",
         "second": "C",
-        "radians": 0.9831457592601964
+        "radians": 0.9599310885968814
       },
       {
         "first": "A",
         "vertex": "C",
         "second": "B",
-        "radians": 0.8436347230097463
+        "radians": 1.1344640137963145
       },
       {
         "first": "B",
         "vertex": "A",
         "second": "D",
-        "radians": 0.6574060856599243
+        "radians": 0.5235987755982987
       },
       {
         "first": "A",
         "vertex": "B",
         "second": "D",
-        "radians": 0.9831457592601954
+        "radians": 0.9599310885968813
       },
       {
         "first": "A",
         "vertex": "D",
         "second": "B",
-        "radians": 1.5010408086696736
+        "radians": 1.6580627893946132
       },
       {
         "first": "C",
         "vertex": "A",
         "second": "D",
-        "radians": 0.6574060856599261
+        "radians": 0.5235987755982987
       },
       {
         "first": "A",
         "vertex": "C",
         "second": "D",
-        "radians": 0.8436347230097455
+        "radians": 1.1344640137963142
       },
       {
         "first": "A",
         "vertex": "D",
         "second": "C",
-        "radians": 1.6405518449201217
+        "radians": 1.4835298641951802
       },
       {
         "first": "C",
         "vertex": "B",
         "second": "D",
-        "radians": 1.0489582905532288e-15
+        "radians": 4.36725500350282e-17
       },
       {
         "first": "B",
         "vertex": "C",
         "second": "D",
-        "radians": 9.415290413433062e-16
-      },
-      {
-        "first": "B",
-        "vertex": "D",
-        "second": "C",
-        "radians": 3.1415926535897913
+        "radians": 4.831920087662007e-17
       }
     ],
     "line_ratios": [
@@ -117,12 +111,17 @@ expression: stdout
         "start": "B",
         "point": "D",
         "end": "C",
-        "ratio": 0.8976488582371485,
+        "ratio": 1.1063975160109716,
         "integer_ratio": null
       }
     ]
   },
   "incidences": [
+    {
+      "kind": "point_on_object",
+      "point": "A",
+      "object": "circum"
+    },
     {
       "kind": "point_on_object",
       "point": "A",
@@ -141,7 +140,17 @@ expression: stdout
     {
       "kind": "point_on_object",
       "point": "B",
+      "object": "circum"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "B",
       "object": "tri"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "C",
+      "object": "circum"
     },
     {
       "kind": "point_on_object",
@@ -169,10 +178,10 @@ expression: stdout
       "kind": "unreferenced",
       "id": "tri",
       "span": {
-        "line": 15,
+        "line": 16,
         "col": 9,
-        "byte_start": 299,
-        "byte_end": 302
+        "byte_start": 363,
+        "byte_end": 366
       }
     },
     {
@@ -181,8 +190,8 @@ expression: stdout
       "span": {
         "line": 23,
         "col": 9,
-        "byte_start": 595,
-        "byte_end": 597
+        "byte_start": 552,
+        "byte_end": 554
       }
     },
     {
@@ -191,8 +200,8 @@ expression: stdout
       "span": {
         "line": 26,
         "col": 5,
-        "byte_start": 716,
-        "byte_end": 718
+        "byte_start": 673,
+        "byte_end": 675
       }
     },
     {
@@ -201,8 +210,8 @@ expression: stdout
       "span": {
         "line": 27,
         "col": 5,
-        "byte_start": 759,
-        "byte_end": 761
+        "byte_start": 716,
+        "byte_end": 718
       }
     },
     {
@@ -211,8 +220,8 @@ expression: stdout
       "span": {
         "line": 30,
         "col": 7,
-        "byte_start": 867,
-        "byte_end": 869
+        "byte_start": 824,
+        "byte_end": 826
       }
     },
     {
@@ -221,8 +230,8 @@ expression: stdout
       "span": {
         "line": 31,
         "col": 7,
-        "byte_start": 892,
-        "byte_end": 894
+        "byte_start": 849,
+        "byte_end": 851
       }
     },
     {
@@ -231,8 +240,8 @@ expression: stdout
       "span": {
         "line": 32,
         "col": 7,
-        "byte_start": 917,
-        "byte_end": 919
+        "byte_start": 874,
+        "byte_end": 876
       }
     },
     {
@@ -241,8 +250,8 @@ expression: stdout
       "span": {
         "line": 33,
         "col": 7,
-        "byte_start": 942,
-        "byte_end": 944
+        "byte_start": 899,
+        "byte_end": 901
       }
     },
     {
@@ -251,8 +260,8 @@ expression: stdout
       "span": {
         "line": 35,
         "col": 7,
-        "byte_start": 980,
-        "byte_end": 983
+        "byte_start": 937,
+        "byte_end": 940
       }
     },
     {
@@ -261,8 +270,8 @@ expression: stdout
       "span": {
         "line": 36,
         "col": 7,
-        "byte_start": 1046,
-        "byte_end": 1049
+        "byte_start": 1003,
+        "byte_end": 1006
       }
     },
     {
@@ -271,8 +280,8 @@ expression: stdout
       "span": {
         "line": 38,
         "col": 12,
-        "byte_start": 1118,
-        "byte_end": 1120
+        "byte_start": 1075,
+        "byte_end": 1077
       }
     }
   ]

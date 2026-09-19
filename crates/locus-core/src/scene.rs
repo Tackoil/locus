@@ -4,7 +4,7 @@ use indexmap::IndexMap;
 use locus_syntax::{File, HeadKind, Ident, Span, TextValue};
 
 use crate::eval::{EvalError, evaluate};
-use crate::geom::{Arc, BBox, Circle, Line, Point, Polygon, Ray, Segment};
+use crate::geom::{Arc, BBox, Bspline, Circle, Ellipse, Line, Point, Polygon, Ray, Segment};
 use crate::solve::SolveSummary;
 
 /// A numeric semantic dimension.
@@ -207,6 +207,10 @@ pub enum ResolvedObject {
     Circle(Circle),
     /// Arc geometry.
     Arc(ResolvedArc),
+    /// Ellipse geometry.
+    Ellipse(Ellipse),
+    /// Open cubic B-spline geometry.
+    Bspline(Bspline),
     /// General polygon geometry.
     Polygon(Polygon),
     /// Axis-aligned rectangle geometry.
@@ -229,6 +233,8 @@ impl ResolvedObject {
             Self::Num(_) | Self::Angle(_) | Self::Annotation(_) => None,
             Self::Circle(_)
             | Self::Arc(_)
+            | Self::Ellipse(_)
+            | Self::Bspline(_)
             | Self::Polygon(_)
             | Self::Rect(_)
             | Self::Diamond(_) => self.curved_bbox(),
@@ -239,6 +245,8 @@ impl ResolvedObject {
         match self {
             Self::Circle(circle) => Some(BBox::for_circle(*circle)),
             Self::Arc(arc) => Some(BBox::for_arc(arc.geometry)),
+            Self::Ellipse(ellipse) => Some(BBox::for_ellipse(*ellipse)),
+            Self::Bspline(spline) => Some(BBox::for_bspline(spline)),
             Self::Polygon(polygon) | Self::Rect(polygon) | Self::Diamond(polygon) => {
                 Some(BBox::for_polygon(polygon))
             }

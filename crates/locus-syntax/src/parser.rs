@@ -154,7 +154,7 @@ impl FileParser {
                 );
             }
             if let Some(statement) = statement {
-                self.validate_and_record(&statement);
+                self.validate_and_record(version, &statement);
                 statements.push(statement);
             }
             self.diagnostics.extend(parser.diagnostics);
@@ -176,15 +176,15 @@ impl FileParser {
             self.diagnostics.push(Diagnostic::new(
                 "E110",
                 Span::empty(1, 1, 0),
-                "missing mandatory `locus 2` header",
+                "missing mandatory `locus 3` header",
             ));
             return 0;
         }
         if !line_starts_with(&self.lines[self.line_index], "locus") {
             let span = line_span(&self.lines[self.line_index]);
             self.diagnostics.push(
-                Diagnostic::new("E110", span, "the first statement must be `locus 2`")
-                    .with_suggestion("locus 2"),
+                Diagnostic::new("E110", span, "the first statement must be a `locus` header")
+                    .with_suggestion("locus 3"),
             );
             return 0;
         }
@@ -270,7 +270,8 @@ impl FileParser {
         }
     }
 
-    fn validate_and_record(&mut self, statement: &Statement) {
+    fn validate_and_record(&mut self, version: u32, statement: &Statement) {
+        validate_version_semantics(version, statement, &mut self.diagnostics);
         self.validate_statement(statement);
         match statement {
             Statement::Op(op) => self.record_name(&op.id),
@@ -450,7 +451,7 @@ impl<'a> LineParser<'a> {
             self.error(
                 "E110",
                 self.current_span(),
-                "header requires integer version `2`",
+                "header requires integer version `2` or `3`",
             );
             return 0;
         };
@@ -458,21 +459,25 @@ impl<'a> LineParser<'a> {
             raw, unit: None, ..
         } = &token.kind
         else {
-            self.error("E110", token.span, "header version must be the integer `2`");
+            self.error(
+                "E110",
+                token.span,
+                "header version must be the integer `2` or `3`",
+            );
             return 0;
         };
-        if raw != "2" {
+        if !matches!(raw.as_str(), "2" | "3") {
             self.diagnostics.push(
                 Diagnostic::new(
                     "E111",
                     token.span,
                     format!("unsupported Locus format version `{raw}`"),
                 )
-                .with_suggestion("2"),
+                .with_suggestion("3"),
             );
             return raw.parse().unwrap_or(0);
         }
-        2
+        raw.parse().unwrap_or(0)
     }
 
     fn parse_op_or_unknown(&mut self) -> Option<Statement> {
@@ -518,7 +523,7 @@ impl<'a> LineParser<'a> {
         if self.at_keyword("free") {
             return self.parse_free_constructor(kind);
         }
-        if kind == Kind::Num {
+        if kind == Kind::Num || !self.is_named_call() {
             let expr = self.parse_expr(0)?;
             let span = expr.span();
             return Some(Constructor::Expr {
@@ -527,6 +532,16 @@ impl<'a> LineParser<'a> {
             });
         }
         self.parse_named_constructor()
+    }
+
+    fn is_named_call(&self) -> bool {
+        matches!(
+            self.peek().map(|token| &token.kind),
+            Some(TokenKind::Ident(_))
+        ) && self
+            .tokens
+            .get(self.position + 1)
+            .is_some_and(|token| matches!(token.kind, TokenKind::LParen))
     }
 
     fn parse_free_constructor(&mut self, kind: Kind) -> Option<Constructor> {
@@ -1299,8 +1314,9 @@ fn validate_constructor_kind(op: &OpStmt, diagnostics: &mut Vec<Diagnostic>) {
 }
 
 fn constructors_for_kind(kind: Kind) -> &'static [&'static str] {
-    const BY_KIND: [&[&str]; 15] = [
+    const BY_KIND: [&[&str]; 17] = [
         &[
+            "point",
             "midpoint",
             "lerp",
             "offset",
@@ -1337,6 +1353,8 @@ fn constructors_for_kind(kind: Kind) -> &'static [&'static str] {
             "incircle",
         ],
         &["arc", "angle_arc"],
+        &["ellipse"],
+        &["bspline"],
         &["polygon"],
         &["rect"],
         &["diamond"],
@@ -1347,6 +1365,113 @@ fn constructors_for_kind(kind: Kind) -> &'static [&'static str] {
         &["text_block"],
     ];
     BY_KIND[kind as usize]
+}
+
+fn validate_version_semantics(
+    version: u32,
+    statement: &Statement,
+    diagnostics: &mut Vec<Diagnostic>,
+) {
+    if version == 2 {
+        validate_format_two_semantics(statement, diagnostics);
+        return;
+    }
+    if version != 3 {
+        return;
+    }
+    validate_format_three_semantics(statement, diagnostics);
+}
+
+fn validate_format_three_semantics(statement: &Statement, diagnostics: &mut Vec<Diagnostic>) {
+    match statement {
+        Statement::Op(op) if matches!(op.ctor, Constructor::FreePoint { .. }) => diagnostics.push(
+            Diagnostic::new(
+                "E123",
+                op.ctor.span(),
+                "format 3 points use parameterless `point()`, not coordinate hints",
+            )
+            .with_suggestion(format!("point {} = point()", op.id.name)),
+        ),
+        Statement::Rel(rel) => reject_pin(&rel.expr, diagnostics),
+        Statement::Assert(assertion) => reject_pin(&assertion.expr, diagnostics),
+        Statement::Op(op) => {
+            for clause in &op.where_clauses {
+                reject_pin(clause, diagnostics);
+            }
+        }
+        _ => {}
+    }
+}
+
+fn validate_format_two_semantics(statement: &Statement, diagnostics: &mut Vec<Diagnostic>) {
+    match statement {
+        Statement::Op(op) => {
+            if is_format_three_op(op) {
+                diagnostics.push(Diagnostic::new(
+                    "E144",
+                    op.ctor.span(),
+                    "this constructor requires a `locus 3` header",
+                ));
+            }
+            for clause in &op.where_clauses {
+                reject_format_three_predicate(clause, diagnostics);
+            }
+        }
+        Statement::Rel(relation) => reject_format_three_predicate(&relation.expr, diagnostics),
+        Statement::Assert(assertion) => reject_format_three_predicate(&assertion.expr, diagnostics),
+        _ => {}
+    }
+}
+
+fn is_format_three_op(op: &OpStmt) -> bool {
+    if matches!(op.kind, Kind::Ellipse | Kind::Bspline) {
+        return true;
+    }
+    let Constructor::Call { name, args, .. } = &op.ctor else {
+        return false;
+    };
+    matches!(
+        (op.kind, name.name.as_str(), args.len()),
+        (Kind::Point, "point", 0)
+            | (Kind::Circle, "circle", 1)
+            | (Kind::Rect | Kind::Diamond, "rect" | "diamond", 2)
+    )
+}
+
+fn reject_format_three_predicate(expression: &Expr, diagnostics: &mut Vec<Diagnostic>) {
+    match expression {
+        Expr::Call { name, span, .. } if name.name == "internally_tangent" => {
+            diagnostics.push(Diagnostic::new(
+                "E144",
+                *span,
+                "`internally_tangent` requires a `locus 3` header",
+            ));
+        }
+        Expr::Group { expr, .. } | Expr::Unary { expr, .. } => {
+            reject_format_three_predicate(expr, diagnostics);
+        }
+        Expr::Binary { lhs, rhs, .. } => {
+            reject_format_three_predicate(lhs, diagnostics);
+            reject_format_three_predicate(rhs, diagnostics);
+        }
+        _ => {}
+    }
+}
+
+fn reject_pin(expression: &Expr, diagnostics: &mut Vec<Diagnostic>) {
+    match expression {
+        Expr::Call { name, span, .. } if name.name == "pin" => diagnostics.push(Diagnostic::new(
+            "E144",
+            *span,
+            "`pin` is not available in format 3; express relative geometry with relations",
+        )),
+        Expr::Group { expr, .. } | Expr::Unary { expr, .. } => reject_pin(expr, diagnostics),
+        Expr::Binary { lhs, rhs, .. } => {
+            reject_pin(lhs, diagnostics);
+            reject_pin(rhs, diagnostics);
+        }
+        _ => {}
+    }
 }
 
 fn validate_props_for_op(op: &OpStmt, diagnostics: &mut Vec<Diagnostic>) {
@@ -1404,13 +1529,18 @@ fn validate_constructor_angles(ctor: &Constructor, diagnostics: &mut Vec<Diagnos
     let Constructor::Call { name, args, .. } = ctor else {
         return;
     };
-    let angle_index = match name.name.as_str() {
-        "rotate" => Some(2),
-        "on_circle" => Some(1),
-        _ => None,
-    };
+    let angle_index = constructor_angle_index(&name.name, args.len());
     if let Some(expr) = angle_index.and_then(|index| args.get(index)) {
         require_angle(expr, diagnostics);
+    }
+}
+
+fn constructor_angle_index(name: &str, arity: usize) -> Option<usize> {
+    match (name, arity) {
+        ("rotate", _) => Some(2),
+        ("on_circle", _) => Some(1),
+        ("ellipse", 4) => Some(3),
+        _ => None,
     }
 }
 
@@ -1487,9 +1617,10 @@ fn validate_property_angles(
     diagnostics: &mut Vec<Diagnostic>,
 ) {
     validate_angles(base, diagnostics);
-    if let Some(arg) = (name == "at").then(|| args.first()).flatten() {
-        require_angle(arg, diagnostics);
-    }
+    // The argument dimension of `.at` is receiver-dependent: angular for
+    // circles and ellipses, scalar for B-splines. Typed evaluation diagnoses
+    // a missing angle unit once the receiver kind is known.
+    let _ = name;
     for arg in args {
         validate_angles(arg, diagnostics);
     }
@@ -1782,6 +1913,33 @@ assert dist(A, B) == 2
                 }
             }
         }
+    }
+
+    #[test]
+    fn format_versions_keep_their_placement_and_tangency_models_distinct() {
+        let legacy = parse(
+            "locus 2\npoint P = point()\ncircle c = circle(2)\nrel internally_tangent(c, c)\n",
+        );
+        assert!(
+            legacy
+                .diagnostics
+                .iter()
+                .any(|diagnostic| diagnostic.code == "E144")
+        );
+
+        let current = parse("locus 3\npoint P = free ~(0, 0)\nassert pin(P, 0, 0)\n");
+        assert!(
+            current
+                .diagnostics
+                .iter()
+                .any(|diagnostic| diagnostic.code == "E123")
+        );
+        assert!(
+            current
+                .diagnostics
+                .iter()
+                .any(|diagnostic| diagnostic.code == "E144")
+        );
     }
 
     #[test]

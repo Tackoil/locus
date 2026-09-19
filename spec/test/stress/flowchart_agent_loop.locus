@@ -1,8 +1,8 @@
-locus 2
+locus 3
 
 meta {
   title "Agent workflow: never render until check passes"
-  note  "v0.2 needed 95 lines of corner plumbing (findings F7/F8); v0.3 rects + relations"
+  note  "v0.4 shape-owned nodes and anchor relations define the spine and fix branch"
 }
 
 style textbook
@@ -14,29 +14,29 @@ num pitch = 2.3        // vertical center-to-center pitch
 num side  = 5.6        // offset to the fix branch
 
 // ---- spine nodes --------------------------------------------
-point N1 = free ~(0, 0)  { mark: none }
-rect  n1 = rect(N1, bw, bh)
+rect n1 = rect(bw, bh)
+point N1 = n1.center { mark: none }
 label t1 = label(n1.center, "locus init")  { dir: center }
 
-point N2 = free ~(0, -2.3) where { vertical(N1, N2), vdist(N2, N1) == pitch }  { mark: none }
-rect  n2 = rect(N2, bw, bh)
+rect n2 = rect(bw, bh) where { vertical(N1, n2.center), vdist(n2.center, N1) == pitch }
+point N2 = n2.center { mark: none }
 label t2 = label(n2.center, "locus add < ops.locus")  { dir: center }
 
-point N3 = free ~(0, -4.6) where { vertical(N2, N3), vdist(N3, N2) == pitch }  { mark: none }
-rect  n3 = rect(N3, bw, bh)
+rect n3 = rect(bw, bh) where { vertical(N2, n3.center), vdist(n3.center, N2) == pitch }
+point N3 = n3.center { mark: none }
 label t3 = label(n3.center, "locus check")  { dir: center }
 
-point   N4 = free ~(0, -6.9) where { vertical(N3, N4), vdist(N4, N3) == pitch }  { mark: none }
-diamond n4 = diamond(N4, 3.2, 1.5)
+diamond n4 = diamond(3.2, 1.5) where { vertical(N3, n4.center), vdist(n4.center, N3) == pitch }
+point N4 = n4.center { mark: none }
 label   t4 = label(n4.center, "exit 0?")  { dir: center }
 
-point N5 = free ~(0, -9.2) where { vertical(N4, N5), vdist(N5, N4) == pitch }  { mark: none }
-rect  n5 = rect(N5, bw, bh)   [highlight]
+rect n5 = rect(bw, bh) where { vertical(N4, n5.center), vdist(n5.center, N4) == pitch }   [highlight]
+point N5 = n5.center { mark: none }
 label t5 = label(n5.center, "locus render -o fig.svg")  { dir: center }
 
 // ---- side node: fix ------------------------------------------
-point NF = free ~(5.6, -6.9) where { horizontal(N4, NF), hdist(N4, NF) == side }  { mark: none }
-rect  nf = rect(NF, bw, bh)
+rect nf = rect(bw, bh) where { horizontal(N4, nf.center), hdist(N4, nf.center) == side }
+point NF = nf.center { mark: none }
 label tf = label(nf.center, "fix ops (update / edit)")  { dir: center }
 
 // ---- edges ----------------------------------------------------

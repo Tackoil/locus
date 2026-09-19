@@ -10,107 +10,107 @@ expression: stdout
       {
         "first": "O",
         "second": "A",
-        "distance": 3.013271520002812
+        "distance": 3.0
       },
       {
         "first": "O",
         "second": "B",
-        "distance": 3.013271520002812
+        "distance": 2.9999999999999996
       },
       {
         "first": "O",
         "second": "C",
-        "distance": 3.013271520002812
+        "distance": 3.0
       },
       {
         "first": "O",
         "second": "D",
-        "distance": 3.013271520002812
+        "distance": 3.0
       },
       {
         "first": "O",
         "second": "E",
-        "distance": 3.0132715200028115
+        "distance": 3.0
       },
       {
         "first": "O",
         "second": "P",
-        "distance": 1.1509673033090115
+        "distance": 1.145898033750315
       },
       {
         "first": "A",
         "second": "B",
-        "distance": 3.5423131212211536
+        "distance": 3.5267115137548384
       },
       {
         "first": "A",
         "second": "C",
-        "distance": 5.731583028930553
+        "distance": 5.706339097770921
       },
       {
         "first": "A",
         "second": "D",
-        "distance": 5.731583028930554
+        "distance": 5.706339097770921
       },
       {
         "first": "A",
         "second": "E",
-        "distance": 3.542313121221154
+        "distance": 3.5267115137548393
       },
       {
         "first": "A",
         "second": "P",
-        "distance": 2.18926990770942
+        "distance": 2.1796275840160835
       },
       {
         "first": "B",
         "second": "C",
-        "distance": 3.542313121221153
+        "distance": 3.526711513754839
       },
       {
         "first": "B",
         "second": "D",
-        "distance": 5.731583028930553
+        "distance": 5.706339097770921
       },
       {
         "first": "B",
         "second": "E",
-        "distance": 5.731583028930554
+        "distance": 5.706339097770922
       },
       {
         "first": "B",
         "second": "P",
-        "distance": 2.1892699077093836
+        "distance": 2.179627584016082
       },
       {
         "first": "C",
         "second": "D",
-        "distance": 3.542313121221154
+        "distance": 3.526711513754839
       },
       {
         "first": "C",
         "second": "E",
-        "distance": 5.731583028930554
+        "distance": 5.706339097770922
       },
       {
         "first": "C",
         "second": "P",
-        "distance": 3.542313121221133
+        "distance": 3.5267115137548375
       },
       {
         "first": "D",
         "second": "E",
-        "distance": 3.542313121221153
+        "distance": 3.5267115137548384
       },
       {
         "first": "D",
         "second": "P",
-        "distance": 4.164238823311823
+        "distance": 4.145898033750315
       },
       {
         "first": "E",
         "second": "P",
-        "distance": 3.5423131212211696
+        "distance": 3.5267115137548393
       }
     ],
     "triangle_angles": [
@@ -124,13 +124,13 @@ expression: stdout
         "first": "O",
         "vertex": "A",
         "second": "B",
-        "radians": 0.9424777960769379
+        "radians": 0.9424777960769378
       },
       {
         "first": "O",
         "vertex": "B",
         "second": "A",
-        "radians": 0.942477796076938
+        "radians": 0.9424777960769383
       },
       {
         "first": "A",
@@ -142,13 +142,13 @@ expression: stdout
         "first": "O",
         "vertex": "A",
         "second": "C",
-        "radians": 0.3141592653589794
+        "radians": 0.3141592653589795
       },
       {
         "first": "O",
         "vertex": "C",
         "second": "A",
-        "radians": 0.3141592653589794
+        "radians": 0.31415926535897937
       },
       {
         "first": "A",
@@ -160,13 +160,13 @@ expression: stdout
         "first": "O",
         "vertex": "A",
         "second": "D",
-        "radians": 0.31415926535897926
+        "radians": 0.3141592653589793
       },
       {
         "first": "O",
         "vertex": "D",
         "second": "A",
-        "radians": 0.3141592653589793
+        "radians": 0.31415926535897926
       },
       {
         "first": "A",
@@ -178,31 +178,31 @@ expression: stdout
         "first": "O",
         "vertex": "A",
         "second": "E",
-        "radians": 0.9424777960769378
+        "radians": 0.9424777960769379
       },
       {
         "first": "O",
         "vertex": "E",
         "second": "A",
-        "radians": 0.9424777960769379
+        "radians": 0.9424777960769378
       },
       {
         "first": "A",
         "vertex": "O",
         "second": "P",
-        "radians": 0.6283185307179779
+        "radians": 0.6283185307179594
       },
       {
         "first": "O",
         "vertex": "A",
         "second": "P",
-        "radians": 0.31415926535898386
+        "radians": 0.31415926535897937
       },
       {
         "first": "O",
         "vertex": "P",
         "second": "A",
-        "radians": 2.199114857512831
+        "radians": 2.1991148575128543
       },
       {
         "first": "B",
@@ -213,88 +213,88 @@ expression: stdout
       {
         "first": "O",
         "vertex": "B",
+        "second": "C",
+        "radians": 0.9424777960769379
+      },
+      {
+        "first": "O",
+        "vertex": "C",
+        "second": "B",
+        "radians": 0.9424777960769379
+      },
+      {
+        "first": "B",
+        "vertex": "O",
+        "second": "D",
+        "radians": 2.5132741228718345
+      },
+      {
+        "first": "O",
+        "vertex": "B",
+        "second": "D",
+        "radians": 0.31415926535897926
+      },
+      {
+        "first": "O",
+        "vertex": "D",
+        "second": "B",
+        "radians": 0.31415926535897937
+      },
+      {
+        "first": "B",
+        "vertex": "O",
+        "second": "E",
+        "radians": 2.5132741228718345
+      },
+      {
+        "first": "O",
+        "vertex": "B",
+        "second": "E",
+        "radians": 0.31415926535897926
+      },
+      {
+        "first": "O",
+        "vertex": "E",
+        "second": "B",
+        "radians": 0.31415926535897926
+      },
+      {
+        "first": "B",
+        "vertex": "O",
+        "second": "P",
+        "radians": 0.6283185307179577
+      },
+      {
+        "first": "O",
+        "vertex": "B",
+        "second": "P",
+        "radians": 0.314159265358979
+      },
+      {
+        "first": "O",
+        "vertex": "P",
+        "second": "B",
+        "radians": 2.1991148575128565
+      },
+      {
+        "first": "C",
+        "vertex": "O",
+        "second": "D",
+        "radians": 1.2566370614359172
+      },
+      {
+        "first": "O",
+        "vertex": "C",
+        "second": "D",
+        "radians": 0.9424777960769378
+      },
+      {
+        "first": "O",
+        "vertex": "D",
         "second": "C",
         "radians": 0.942477796076938
       },
       {
-        "first": "O",
-        "vertex": "C",
-        "second": "B",
-        "radians": 0.9424777960769379
-      },
-      {
-        "first": "B",
-        "vertex": "O",
-        "second": "D",
-        "radians": 2.5132741228718345
-      },
-      {
-        "first": "O",
-        "vertex": "B",
-        "second": "D",
-        "radians": 0.31415926535897937
-      },
-      {
-        "first": "O",
-        "vertex": "D",
-        "second": "B",
-        "radians": 0.3141592653589793
-      },
-      {
-        "first": "B",
-        "vertex": "O",
-        "second": "E",
-        "radians": 2.513274122871835
-      },
-      {
-        "first": "O",
-        "vertex": "B",
-        "second": "E",
-        "radians": 0.3141592653589793
-      },
-      {
-        "first": "O",
-        "vertex": "E",
-        "second": "B",
-        "radians": 0.3141592653589793
-      },
-      {
-        "first": "B",
-        "vertex": "O",
-        "second": "P",
-        "radians": 0.6283185307179392
-      },
-      {
-        "first": "O",
-        "vertex": "B",
-        "second": "P",
-        "radians": 0.3141592653589719
-      },
-      {
-        "first": "O",
-        "vertex": "P",
-        "second": "B",
-        "radians": 2.199114857512882
-      },
-      {
-        "first": "C",
-        "vertex": "O",
-        "second": "D",
-        "radians": 1.2566370614359172
-      },
-      {
-        "first": "O",
-        "vertex": "C",
-        "second": "D",
-        "radians": 0.9424777960769379
-      },
-      {
-        "first": "O",
-        "vertex": "D",
-        "second": "C",
-        "radians": 0.9424777960769379
-      },
-      {
         "first": "C",
         "vertex": "O",
         "second": "E",
@@ -310,25 +310,25 @@ expression: stdout
         "first": "O",
         "vertex": "E",
         "second": "C",
-        "radians": 0.31415926535897937
+        "radians": 0.3141592653589793
       },
       {
         "first": "C",
         "vertex": "O",
         "second": "P",
-        "radians": 1.8849555921538566
+        "radians": 1.8849555921538752
       },
       {
         "first": "O",
         "vertex": "C",
         "second": "P",
-        "radians": 0.31415926535898214
+        "radians": 0.31415926535897937
       },
       {
         "first": "O",
         "vertex": "P",
         "second": "C",
-        "radians": 0.9424777960769548
+        "radians": 0.9424777960769387
       },
       {
         "first": "D",
@@ -340,7 +340,7 @@ expression: stdout
         "first": "O",
         "vertex": "D",
         "second": "E",
-        "radians": 0.9424777960769379
+        "radians": 0.9424777960769382
       },
       {
         "first": "O",
@@ -352,43 +352,43 @@ expression: stdout
         "first": "D",
         "vertex": "O",
         "second": "P",
-        "radians": 3.1415926535897736
+        "radians": 3.1415926535897922
       },
       {
         "first": "O",
         "vertex": "D",
         "second": "P",
-        "radians": 5.30869267718399e-15
+        "radians": 2.8564086315993094e-16
       },
       {
         "first": "O",
         "vertex": "P",
         "second": "D",
-        "radians": 1.4176304621989315e-14
+        "radians": 5.608631162464177e-16
       },
       {
         "first": "E",
         "vertex": "O",
         "second": "P",
-        "radians": 1.8849555921538956
+        "radians": 1.884955592153877
       },
       {
         "first": "O",
         "vertex": "E",
         "second": "P",
-        "radians": 0.3141592653589747
+        "radians": 0.31415926535897903
       },
       {
         "first": "O",
         "vertex": "P",
         "second": "E",
-        "radians": 0.9424777960769231
+        "radians": 0.9424777960769373
       },
       {
         "first": "B",
         "vertex": "A",
         "second": "C",
-        "radians": 0.6283185307179586
+        "radians": 0.6283185307179585
       },
       {
         "first": "A",
@@ -400,7 +400,7 @@ expression: stdout
         "first": "A",
         "vertex": "C",
         "second": "B",
-        "radians": 0.6283185307179585
+        "radians": 0.6283185307179586
       },
       {
         "first": "B",
@@ -412,7 +412,7 @@ expression: stdout
         "first": "A",
         "vertex": "B",
         "second": "D",
-        "radians": 1.2566370614359175
+        "radians": 1.2566370614359172
       },
       {
         "first": "A",
@@ -424,13 +424,13 @@ expression: stdout
         "first": "B",
         "vertex": "A",
         "second": "E",
-        "radians": 1.884955592153876
+        "radians": 1.8849555921538759
       },
       {
         "first": "A",
         "vertex": "B",
         "second": "E",
-        "radians": 0.6283185307179588
+        "radians": 0.628318530717959
       },
       {
         "first": "A",
@@ -442,19 +442,19 @@ expression: stdout
         "first": "B",
         "vertex": "A",
         "second": "P",
-        "radians": 0.6283185307179542
+        "radians": 0.6283185307179584
       },
       {
         "first": "A",
         "vertex": "B",
         "second": "P",
-        "radians": 0.6283185307179662
+        "radians": 0.6283185307179593
       },
       {
         "first": "A",
         "vertex": "P",
         "second": "B",
-        "radians": 1.884955592153873
+        "radians": 1.8849555921538756
       },
       {
         "first": "C",
@@ -493,22 +493,10 @@ expression: stdout
         "radians": 1.2566370614359172
       },
       {
-        "first": "C",
-        "vertex": "A",
-        "second": "P",
-        "radians": 4.4239105643199455e-15
-      },
-      {
         "first": "A",
         "vertex": "C",
         "second": "P",
-        "radians": 2.7122540752039796e-15
-      },
-      {
-        "first": "A",
-        "vertex": "P",
-        "second": "C",
-        "radians": 3.141592653589786
+        "radians": 8.826788100434753e-17
       },
       {
         "first": "D",
@@ -526,49 +514,49 @@ expression: stdout
         "first": "A",
         "vertex": "E",
         "second": "D",
-        "radians": 1.8849555921538759
+        "radians": 1.884955592153876
       },
       {
         "first": "D",
         "vertex": "A",
         "second": "P",
-        "radians": 0.6283185307179631
+        "radians": 0.6283185307179587
       },
       {
         "first": "A",
         "vertex": "D",
         "second": "P",
-        "radians": 0.3141592653589846
+        "radians": 0.3141592653589795
       },
       {
         "first": "A",
         "vertex": "P",
         "second": "D",
-        "radians": 2.1991148575128454
+        "radians": 2.199114857512855
       },
       {
         "first": "E",
         "vertex": "A",
         "second": "P",
-        "radians": 1.2566370614359217
+        "radians": 1.2566370614359172
       },
       {
         "first": "A",
         "vertex": "E",
         "second": "P",
-        "radians": 0.6283185307179632
+        "radians": 0.6283185307179588
       },
       {
         "first": "A",
         "vertex": "P",
         "second": "E",
-        "radians": 1.2566370614359084
+        "radians": 1.2566370614359172
       },
       {
         "first": "C",
         "vertex": "B",
         "second": "D",
-        "radians": 0.6283185307179586
+        "radians": 0.6283185307179588
       },
       {
         "first": "B",
@@ -580,7 +568,7 @@ expression: stdout
         "first": "B",
         "vertex": "D",
         "second": "C",
-        "radians": 0.6283185307179586
+        "radians": 0.6283185307179587
       },
       {
         "first": "C",
@@ -598,25 +586,25 @@ expression: stdout
         "first": "B",
         "vertex": "E",
         "second": "C",
-        "radians": 0.6283185307179586
+        "radians": 0.6283185307179585
       },
       {
         "first": "C",
         "vertex": "B",
         "second": "P",
-        "radians": 1.25663706143591
+        "radians": 1.256637061435917
       },
       {
         "first": "B",
         "vertex": "C",
         "second": "P",
-        "radians": 0.6283185307179558
+        "radians": 0.6283185307179586
       },
       {
         "first": "B",
         "vertex": "P",
         "second": "C",
-        "radians": 1.2566370614359275
+        "radians": 1.2566370614359177
       },
       {
         "first": "D",
@@ -640,43 +628,43 @@ expression: stdout
         "first": "D",
         "vertex": "B",
         "second": "P",
-        "radians": 0.6283185307179513
+        "radians": 0.6283185307179583
       },
       {
         "first": "B",
         "vertex": "D",
         "second": "P",
-        "radians": 0.314159265358974
+        "radians": 0.3141592653589791
       },
       {
         "first": "B",
         "vertex": "P",
         "second": "D",
-        "radians": 2.199114857512868
+        "radians": 2.199114857512856
       },
       {
         "first": "E",
         "vertex": "B",
         "second": "P",
-        "radians": 7.372861697054715e-15
+        "radians": 3.1480403778281223e-16
       },
       {
         "first": "B",
         "vertex": "E",
         "second": "P",
-        "radians": 4.556764564603614e-15
+        "radians": 1.9455959514548392e-16
       },
       {
         "first": "B",
         "vertex": "P",
         "second": "E",
-        "radians": 3.141592653589781
+        "radians": 3.1415926535897927
       },
       {
         "first": "D",
         "vertex": "C",
         "second": "E",
-        "radians": 0.6283185307179586
+        "radians": 0.6283185307179584
       },
       {
         "first": "C",
@@ -688,61 +676,61 @@ expression: stdout
         "first": "C",
         "vertex": "E",
         "second": "D",
-        "radians": 0.6283185307179586
+        "radians": 0.6283185307179587
       },
       {
         "first": "D",
         "vertex": "C",
         "second": "P",
-        "radians": 1.25663706143592
+        "radians": 1.2566370614359172
       },
       {
         "first": "C",
         "vertex": "D",
         "second": "P",
-        "radians": 0.9424777960769326
+        "radians": 0.9424777960769377
       },
       {
         "first": "C",
         "vertex": "P",
         "second": "D",
-        "radians": 0.9424777960769405
+        "radians": 0.9424777960769383
       },
       {
         "first": "E",
         "vertex": "C",
         "second": "P",
-        "radians": 0.6283185307179615
+        "radians": 0.6283185307179587
       },
       {
         "first": "C",
         "vertex": "E",
         "second": "P",
-        "radians": 0.628318530717954
+        "radians": 0.6283185307179584
       },
       {
         "first": "C",
         "vertex": "P",
         "second": "E",
-        "radians": 1.8849555921538779
+        "radians": 1.884955592153876
       },
       {
         "first": "E",
         "vertex": "D",
         "second": "P",
-        "radians": 0.9424777960769435
+        "radians": 0.9424777960769384
       },
       {
         "first": "D",
         "vertex": "E",
         "second": "P",
-        "radians": 1.2566370614359126
+        "radians": 1.256637061435917
       },
       {
         "first": "D",
         "vertex": "P",
         "second": "E",
-        "radians": 0.942477796076937
+        "radians": 0.9424777960769378
       }
     ],
     "line_ratios": [
@@ -750,26 +738,31 @@ expression: stdout
         "start": "A",
         "point": "P",
         "end": "C",
-        "ratio": 0.6180339887499042,
+        "ratio": 0.6180339887498953,
         "integer_ratio": null
       },
       {
         "start": "B",
         "point": "P",
         "end": "E",
-        "ratio": 0.6180339887498876,
+        "ratio": 0.6180339887498946,
         "integer_ratio": null
       },
       {
         "start": "D",
         "point": "O",
         "end": "P",
-        "ratio": 2.618033988749904,
+        "ratio": 2.618033988749896,
         "integer_ratio": null
       }
     ]
   },
   "incidences": [
+    {
+      "kind": "point_on_object",
+      "point": "A",
+      "object": "circ"
+    },
     {
       "kind": "point_on_object",
       "point": "A",
@@ -779,6 +772,11 @@ expression: stdout
       "kind": "point_on_object",
       "point": "A",
       "object": "d1"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "B",
+      "object": "circ"
     },
     {
       "kind": "point_on_object",
@@ -793,6 +791,11 @@ expression: stdout
     {
       "kind": "point_on_object",
       "point": "C",
+      "object": "circ"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "C",
       "object": "pent"
     },
     {
@@ -803,7 +806,17 @@ expression: stdout
     {
       "kind": "point_on_object",
       "point": "D",
+      "object": "circ"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "D",
       "object": "pent"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "E",
+      "object": "circ"
     },
     {
       "kind": "point_on_object",
@@ -831,90 +844,90 @@ expression: stdout
       "kind": "unreferenced",
       "id": "t1",
       "span": {
-        "line": 28,
+        "line": 29,
         "col": 6,
-        "byte_start": 669,
-        "byte_end": 671
+        "byte_start": 692,
+        "byte_end": 694
       }
     },
     {
       "kind": "unreferenced",
       "id": "t2",
       "span": {
-        "line": 29,
+        "line": 30,
         "col": 6,
-        "byte_start": 698,
-        "byte_end": 700
+        "byte_start": 721,
+        "byte_end": 723
       }
     },
     {
       "kind": "unreferenced",
       "id": "lA",
       "span": {
-        "line": 32,
+        "line": 33,
         "col": 7,
-        "byte_start": 791,
-        "byte_end": 793
+        "byte_start": 814,
+        "byte_end": 816
       }
     },
     {
       "kind": "unreferenced",
       "id": "lB",
       "span": {
-        "line": 33,
+        "line": 34,
         "col": 7,
-        "byte_start": 816,
-        "byte_end": 818
+        "byte_start": 839,
+        "byte_end": 841
       }
     },
     {
       "kind": "unreferenced",
       "id": "lC",
       "span": {
-        "line": 34,
+        "line": 35,
         "col": 7,
-        "byte_start": 841,
-        "byte_end": 843
+        "byte_start": 864,
+        "byte_end": 866
       }
     },
     {
       "kind": "unreferenced",
       "id": "lD",
       "span": {
-        "line": 35,
+        "line": 36,
         "col": 7,
-        "byte_start": 866,
-        "byte_end": 868
+        "byte_start": 889,
+        "byte_end": 891
       }
     },
     {
       "kind": "unreferenced",
       "id": "lE",
       "span": {
-        "line": 36,
+        "line": 37,
         "col": 7,
-        "byte_start": 891,
-        "byte_end": 893
+        "byte_start": 914,
+        "byte_end": 916
       }
     },
     {
       "kind": "unreferenced",
       "id": "lP",
       "span": {
-        "line": 37,
+        "line": 38,
         "col": 7,
-        "byte_start": 916,
-        "byte_end": 918
+        "byte_start": 939,
+        "byte_end": 941
       }
     },
     {
       "kind": "unreferenced",
       "id": "phi",
       "span": {
-        "line": 39,
+        "line": 40,
         "col": 12,
-        "byte_start": 959,
-        "byte_end": 962
+        "byte_start": 982,
+        "byte_end": 985
       }
     }
   ]

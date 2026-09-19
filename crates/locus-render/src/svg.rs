@@ -91,6 +91,13 @@ pub(crate) fn document(drawing: &Drawing) -> String {
     let mut result = format!(
         "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"{width}\" height=\"{height}\" viewBox=\"0 0 {width} {height}\">\n"
     );
+    if let Some(background) = drawing.background {
+        let _ = writeln!(
+            result,
+            "  <rect width=\"{width}\" height=\"{height}\" fill=\"{}\"/>",
+            background.hex()
+        );
+    }
     for op in &drawing.ops {
         let _ = writeln!(
             result,
@@ -123,6 +130,25 @@ fn element(output: &mut String, shape: &Shape, style: &Style) {
                 format_float(center.y),
                 format_float(*radius),
                 attributes(style, true, *disk)
+            );
+        }
+        Shape::Ellipse {
+            center,
+            radius_x,
+            radius_y,
+            rotation,
+        } => {
+            let degrees = format_float(rotation * 180.0 / core::f64::consts::PI);
+            let _ = writeln!(
+                output,
+                "    <ellipse cx=\"{}\" cy=\"{}\" rx=\"{}\" ry=\"{}\" transform=\"rotate({degrees} {} {})\" {}/>",
+                format_float(center.x),
+                format_float(center.y),
+                format_float(*radius_x),
+                format_float(*radius_y),
+                format_float(center.x),
+                format_float(center.y),
+                attributes(style, true, false)
             );
         }
         Shape::Path {

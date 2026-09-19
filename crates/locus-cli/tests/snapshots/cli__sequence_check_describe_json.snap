@@ -71,370 +71,152 @@ expression: stdout
       }
     },
     {
-      "id": "Ac",
-      "kind": "point",
+      "id": "boxA",
+      "kind": "rect",
       "span": {
         "line": 20,
         "col": 1,
         "byte_start": 652,
-        "byte_end": 691
+        "byte_end": 676
       },
-      "definition": "free ~(0, 0)",
-      "resolved": {
-        "kind": "point",
-        "x": 0.0,
-        "y": 0.0,
-        "mark": "none"
-      }
-    },
-    {
-      "id": "boxA",
-      "kind": "rect",
-      "span": {
-        "line": 21,
-        "col": 1,
-        "byte_start": 692,
-        "byte_end": 720
-      },
-      "definition": "rect(Ac, bw, bh)",
+      "definition": "rect(bw, bh)",
       "resolved": {
         "kind": "rect",
-        "vertices": [
-          {
-            "x": -1.3,
-            "y": -0.45
-          },
-          {
-            "x": 1.3,
-            "y": -0.45
-          },
-          {
-            "x": 1.3,
-            "y": 0.45
-          },
-          {
-            "x": -1.3,
-            "y": 0.45
-          }
-        ]
+        "area": 2.3399999999999994,
+        "perimeter": 7.0
       }
     },
     {
       "id": "hA",
       "kind": "label",
       "span": {
-        "line": 22,
+        "line": 21,
         "col": 1,
-        "byte_start": 721,
-        "byte_end": 776
+        "byte_start": 677,
+        "byte_end": 732
       },
       "definition": "label(boxA.center, \"Agent\")",
       "resolved": {
-        "kind": "annotation",
-        "value": {
-          "kind": "label",
-          "anchor": {
-            "kind": "point",
-            "point": {
-              "x": 0.0,
-              "y": 0.0
-            }
-          },
-          "text": {
-            "segments": [
-              {
-                "kind": "plain",
-                "source": "Agent",
-                "span": {
-                  "line": 22,
-                  "col": 32,
-                  "byte_start": 752,
-                  "byte_end": 757
-                }
-              }
-            ],
-            "span": {
-              "line": 22,
-              "col": 31,
-              "byte_start": 751,
-              "byte_end": 758
-            }
-          },
-          "direction": "center",
-          "gap": null
-        }
-      }
-    },
-    {
-      "id": "Bc",
-      "kind": "point",
-      "span": {
-        "line": 24,
-        "col": 1,
-        "byte_start": 778,
-        "byte_end": 867
-      },
-      "definition": "free ~(4, 0)",
-      "resolved": {
-        "kind": "point",
-        "x": 4.0,
-        "y": 0.0,
-        "mark": "none"
+        "kind": "annotation"
       }
     },
     {
       "id": "boxB",
       "kind": "rect",
       "span": {
-        "line": 25,
+        "line": 23,
         "col": 1,
-        "byte_start": 868,
-        "byte_end": 896
+        "byte_start": 734,
+        "byte_end": 844
       },
-      "definition": "rect(Bc, bw, bh)",
+      "definition": "rect(bw, bh)",
       "resolved": {
         "kind": "rect",
-        "vertices": [
-          {
-            "x": 2.7,
-            "y": -0.45
-          },
-          {
-            "x": 5.3,
-            "y": -0.45
-          },
-          {
-            "x": 5.3,
-            "y": 0.45
-          },
-          {
-            "x": 2.7,
-            "y": 0.45
-          }
-        ]
+        "area": 2.34,
+        "perimeter": 7.0
       }
     },
     {
       "id": "hB",
       "kind": "label",
       "span": {
-        "line": 26,
+        "line": 24,
         "col": 1,
-        "byte_start": 897,
-        "byte_end": 956
+        "byte_start": 845,
+        "byte_end": 904
       },
       "definition": "label(boxB.center, \"locus CLI\")",
       "resolved": {
-        "kind": "annotation",
-        "value": {
-          "kind": "label",
-          "anchor": {
-            "kind": "point",
-            "point": {
-              "x": 4.0,
-              "y": 0.0
-            }
-          },
-          "text": {
-            "segments": [
-              {
-                "kind": "plain",
-                "source": "locus CLI",
-                "span": {
-                  "line": 26,
-                  "col": 32,
-                  "byte_start": 928,
-                  "byte_end": 937
-                }
-              }
-            ],
-            "span": {
-              "line": 26,
-              "col": 31,
-              "byte_start": 927,
-              "byte_end": 938
-            }
-          },
-          "direction": "center",
-          "gap": null
-        }
-      }
-    },
-    {
-      "id": "Cc",
-      "kind": "point",
-      "span": {
-        "line": 28,
-        "col": 1,
-        "byte_start": 958,
-        "byte_end": 1047
-      },
-      "definition": "free ~(8, 0)",
-      "resolved": {
-        "kind": "point",
-        "x": 8.0,
-        "y": 0.0,
-        "mark": "none"
+        "kind": "annotation"
       }
     },
     {
       "id": "boxC",
       "kind": "rect",
       "span": {
-        "line": 29,
+        "line": 26,
         "col": 1,
-        "byte_start": 1048,
-        "byte_end": 1076
+        "byte_start": 906,
+        "byte_end": 1016
       },
-      "definition": "rect(Cc, bw, bh)",
+      "definition": "rect(bw, bh)",
       "resolved": {
         "kind": "rect",
-        "vertices": [
-          {
-            "x": 6.7,
-            "y": -0.45
-          },
-          {
-            "x": 9.3,
-            "y": -0.45
-          },
-          {
-            "x": 9.3,
-            "y": 0.45
-          },
-          {
-            "x": 6.7,
-            "y": 0.45
-          }
-        ]
+        "area": 2.3399999999999994,
+        "perimeter": 7.0
       }
     },
     {
       "id": "hC",
       "kind": "label",
       "span": {
-        "line": 30,
+        "line": 27,
         "col": 1,
-        "byte_start": 1077,
-        "byte_end": 1133
+        "byte_start": 1017,
+        "byte_end": 1073
       },
       "definition": "label(boxC.center, \"Kernel\")",
       "resolved": {
-        "kind": "annotation",
-        "value": {
-          "kind": "label",
-          "anchor": {
-            "kind": "point",
-            "point": {
-              "x": 8.0,
-              "y": 0.0
-            }
-          },
-          "text": {
-            "segments": [
-              {
-                "kind": "plain",
-                "source": "Kernel",
-                "span": {
-                  "line": 30,
-                  "col": 32,
-                  "byte_start": 1108,
-                  "byte_end": 1114
-                }
-              }
-            ],
-            "span": {
-              "line": 30,
-              "col": 31,
-              "byte_start": 1107,
-              "byte_end": 1115
-            }
-          },
-          "direction": "center",
-          "gap": null
-        }
+        "kind": "annotation"
       }
     },
     {
       "id": "lifeA",
       "kind": "segment",
       "span": {
-        "line": 33,
+        "line": 30,
         "col": 1,
-        "byte_start": 1211,
-        "byte_end": 1273
+        "byte_start": 1151,
+        "byte_end": 1213
       },
       "definition": "seg(boxA.s, offset(boxA.s, 0, -6))",
       "resolved": {
         "kind": "segment",
-        "start": {
-          "x": 0.0,
-          "y": -0.45
-        },
-        "end": {
-          "x": 0.0,
-          "y": -6.45
-        }
+        "length": 6.0
       }
     },
     {
       "id": "lifeB",
       "kind": "segment",
       "span": {
-        "line": 34,
+        "line": 31,
         "col": 1,
-        "byte_start": 1274,
-        "byte_end": 1336
+        "byte_start": 1214,
+        "byte_end": 1276
       },
       "definition": "seg(boxB.s, offset(boxB.s, 0, -6))",
       "resolved": {
         "kind": "segment",
-        "start": {
-          "x": 4.0,
-          "y": -0.45
-        },
-        "end": {
-          "x": 4.0,
-          "y": -6.45
-        }
+        "length": 6.0
       }
     },
     {
       "id": "lifeC",
       "kind": "segment",
       "span": {
-        "line": 35,
+        "line": 32,
         "col": 1,
-        "byte_start": 1337,
-        "byte_end": 1399
+        "byte_start": 1277,
+        "byte_end": 1339
       },
       "definition": "seg(boxC.s, offset(boxC.s, 0, -6))",
       "resolved": {
         "kind": "segment",
-        "start": {
-          "x": 8.0,
-          "y": -0.45
-        },
-        "end": {
-          "x": 8.0,
-          "y": -6.45
-        }
+        "length": 6.0
       }
     },
     {
       "id": "r1",
       "kind": "point",
       "span": {
-        "line": 38,
+        "line": 35,
         "col": 1,
-        "byte_start": 1472,
-        "byte_end": 1521
+        "byte_start": 1412,
+        "byte_end": 1461
       },
       "definition": "offset(boxA.s, 0, -rp)",
       "resolved": {
         "kind": "point",
-        "x": 0.0,
-        "y": -1.3,
         "mark": "none"
       }
     },
@@ -442,16 +224,14 @@ expression: stdout
       "id": "r2",
       "kind": "point",
       "span": {
-        "line": 39,
+        "line": 36,
         "col": 1,
-        "byte_start": 1522,
-        "byte_end": 1571
+        "byte_start": 1462,
+        "byte_end": 1511
       },
       "definition": "offset(r1, 0, -rp)",
       "resolved": {
         "kind": "point",
-        "x": 0.0,
-        "y": -2.15,
         "mark": "none"
       }
     },
@@ -459,16 +239,14 @@ expression: stdout
       "id": "r3",
       "kind": "point",
       "span": {
-        "line": 40,
+        "line": 37,
         "col": 1,
-        "byte_start": 1572,
-        "byte_end": 1621
+        "byte_start": 1512,
+        "byte_end": 1561
       },
       "definition": "offset(r2, 0, -rp)",
       "resolved": {
         "kind": "point",
-        "x": 0.0,
-        "y": -3.0,
         "mark": "none"
       }
     },
@@ -476,16 +254,14 @@ expression: stdout
       "id": "r4",
       "kind": "point",
       "span": {
-        "line": 41,
+        "line": 38,
         "col": 1,
-        "byte_start": 1622,
-        "byte_end": 1671
+        "byte_start": 1562,
+        "byte_end": 1611
       },
       "definition": "offset(r3, 0, -rp)",
       "resolved": {
         "kind": "point",
-        "x": 0.0,
-        "y": -3.85,
         "mark": "none"
       }
     },
@@ -493,16 +269,14 @@ expression: stdout
       "id": "r5",
       "kind": "point",
       "span": {
-        "line": 42,
+        "line": 39,
         "col": 1,
-        "byte_start": 1672,
-        "byte_end": 1721
+        "byte_start": 1612,
+        "byte_end": 1661
       },
       "definition": "offset(r4, 0, -rp)",
       "resolved": {
         "kind": "point",
-        "x": 0.0,
-        "y": -4.7,
         "mark": "none"
       }
     },
@@ -510,16 +284,14 @@ expression: stdout
       "id": "r6",
       "kind": "point",
       "span": {
-        "line": 43,
+        "line": 40,
         "col": 1,
-        "byte_start": 1722,
-        "byte_end": 1771
+        "byte_start": 1662,
+        "byte_end": 1711
       },
       "definition": "offset(r5, 0, -rp)",
       "resolved": {
         "kind": "point",
-        "x": 0.0,
-        "y": -5.55,
         "mark": "none"
       }
     },
@@ -527,16 +299,14 @@ expression: stdout
       "id": "p1b",
       "kind": "point",
       "span": {
-        "line": 46,
+        "line": 43,
         "col": 1,
-        "byte_start": 1841,
-        "byte_end": 1884
+        "byte_start": 1781,
+        "byte_end": 1824
       },
       "definition": "foot(r1, lifeB)",
       "resolved": {
         "kind": "point",
-        "x": 4.0,
-        "y": -1.3,
         "mark": "none"
       }
     },
@@ -544,95 +314,42 @@ expression: stdout
       "id": "m1",
       "kind": "arrow",
       "span": {
-        "line": 47,
+        "line": 44,
         "col": 1,
-        "byte_start": 1885,
-        "byte_end": 1924
+        "byte_start": 1825,
+        "byte_end": 1864
       },
       "definition": "arrow(r1, p1b)",
       "resolved": {
-        "kind": "annotation",
-        "value": {
-          "kind": "arrow",
-          "from": {
-            "kind": "point",
-            "point": {
-              "x": 0.0,
-              "y": -1.3
-            }
-          },
-          "to": {
-            "kind": "point",
-            "point": {
-              "x": 4.0,
-              "y": -1.3
-            }
-          },
-          "head": "forward",
-          "bend": 0.0
-        }
+        "kind": "annotation"
       }
     },
     {
       "id": "l1",
       "kind": "label",
       "span": {
-        "line": 48,
+        "line": 45,
         "col": 1,
-        "byte_start": 1925,
-        "byte_end": 2006
+        "byte_start": 1865,
+        "byte_end": 1946
       },
       "definition": "label(seg(r1, p1b).midpoint, \"check fig.locus\")",
       "resolved": {
-        "kind": "annotation",
-        "value": {
-          "kind": "label",
-          "anchor": {
-            "kind": "point",
-            "point": {
-              "x": 2.0,
-              "y": -1.3
-            }
-          },
-          "text": {
-            "segments": [
-              {
-                "kind": "plain",
-                "source": "check fig.locus",
-                "span": {
-                  "line": 48,
-                  "col": 42,
-                  "byte_start": 1966,
-                  "byte_end": 1981
-                }
-              }
-            ],
-            "span": {
-              "line": 48,
-              "col": 41,
-              "byte_start": 1965,
-              "byte_end": 1982
-            }
-          },
-          "direction": "compass(n)",
-          "gap": 0.12
-        }
+        "kind": "annotation"
       }
     },
     {
       "id": "p2b",
       "kind": "point",
       "span": {
-        "line": 50,
+        "line": 47,
         "col": 1,
-        "byte_start": 2008,
-        "byte_end": 2051
+        "byte_start": 1948,
+        "byte_end": 1991
       },
       "definition": "foot(r2, lifeB)",
       "resolved": {
         "kind": "point",
-        "x": 4.0,
-        "y": -2.15,
         "mark": "none"
       }
     },
@@ -640,16 +357,14 @@ expression: stdout
       "id": "p2c",
       "kind": "point",
       "span": {
-        "line": 51,
+        "line": 48,
         "col": 1,
-        "byte_start": 2052,
-        "byte_end": 2095
+        "byte_start": 1992,
+        "byte_end": 2035
       },
       "definition": "foot(r2, lifeC)",
       "resolved": {
         "kind": "point",
-        "x": 8.0,
-        "y": -2.15,
         "mark": "none"
       }
     },
@@ -657,95 +372,42 @@ expression: stdout
       "id": "m2",
       "kind": "arrow",
       "span": {
-        "line": 52,
+        "line": 49,
         "col": 1,
-        "byte_start": 2096,
-        "byte_end": 2136
+        "byte_start": 2036,
+        "byte_end": 2076
       },
       "definition": "arrow(p2b, p2c)",
       "resolved": {
-        "kind": "annotation",
-        "value": {
-          "kind": "arrow",
-          "from": {
-            "kind": "point",
-            "point": {
-              "x": 4.0,
-              "y": -2.15
-            }
-          },
-          "to": {
-            "kind": "point",
-            "point": {
-              "x": 8.0,
-              "y": -2.15
-            }
-          },
-          "head": "forward",
-          "bend": 0.0
-        }
+        "kind": "annotation"
       }
     },
     {
       "id": "l2",
       "kind": "label",
       "span": {
-        "line": 53,
+        "line": 50,
         "col": 1,
-        "byte_start": 2137,
-        "byte_end": 2228
+        "byte_start": 2077,
+        "byte_end": 2168
       },
       "definition": "label(seg(p2b, p2c).midpoint, \"parse + solve + evaluate\")",
       "resolved": {
-        "kind": "annotation",
-        "value": {
-          "kind": "label",
-          "anchor": {
-            "kind": "point",
-            "point": {
-              "x": 6.0,
-              "y": -2.15
-            }
-          },
-          "text": {
-            "segments": [
-              {
-                "kind": "plain",
-                "source": "parse + solve + evaluate",
-                "span": {
-                  "line": 53,
-                  "col": 43,
-                  "byte_start": 2179,
-                  "byte_end": 2203
-                }
-              }
-            ],
-            "span": {
-              "line": 53,
-              "col": 42,
-              "byte_start": 2178,
-              "byte_end": 2204
-            }
-          },
-          "direction": "compass(n)",
-          "gap": 0.12
-        }
+        "kind": "annotation"
       }
     },
     {
       "id": "p3b",
       "kind": "point",
       "span": {
-        "line": 55,
+        "line": 52,
         "col": 1,
-        "byte_start": 2230,
-        "byte_end": 2273
+        "byte_start": 2170,
+        "byte_end": 2213
       },
       "definition": "foot(r3, lifeB)",
       "resolved": {
         "kind": "point",
-        "x": 4.0,
-        "y": -3.0,
         "mark": "none"
       }
     },
@@ -753,16 +415,14 @@ expression: stdout
       "id": "p3c",
       "kind": "point",
       "span": {
-        "line": 56,
+        "line": 53,
         "col": 1,
-        "byte_start": 2274,
-        "byte_end": 2317
+        "byte_start": 2214,
+        "byte_end": 2257
       },
       "definition": "foot(r3, lifeC)",
       "resolved": {
         "kind": "point",
-        "x": 8.0,
-        "y": -3.0,
         "mark": "none"
       }
     },
@@ -770,95 +430,42 @@ expression: stdout
       "id": "m3",
       "kind": "arrow",
       "span": {
-        "line": 57,
+        "line": 54,
         "col": 1,
-        "byte_start": 2318,
-        "byte_end": 2365
+        "byte_start": 2258,
+        "byte_end": 2305
       },
       "definition": "arrow(p3c, p3b)",
       "resolved": {
-        "kind": "annotation",
-        "value": {
-          "kind": "arrow",
-          "from": {
-            "kind": "point",
-            "point": {
-              "x": 8.0,
-              "y": -3.0
-            }
-          },
-          "to": {
-            "kind": "point",
-            "point": {
-              "x": 4.0,
-              "y": -3.0
-            }
-          },
-          "head": "forward",
-          "bend": 0.0
-        }
+        "kind": "annotation"
       }
     },
     {
       "id": "l3",
       "kind": "label",
       "span": {
-        "line": 58,
+        "line": 55,
         "col": 1,
-        "byte_start": 2378,
-        "byte_end": 2472
+        "byte_start": 2318,
+        "byte_end": 2412
       },
       "definition": "label(seg(p3b, p3c).midpoint, \"resolved scene + DOF report\")",
       "resolved": {
-        "kind": "annotation",
-        "value": {
-          "kind": "label",
-          "anchor": {
-            "kind": "point",
-            "point": {
-              "x": 6.0,
-              "y": -3.0
-            }
-          },
-          "text": {
-            "segments": [
-              {
-                "kind": "plain",
-                "source": "resolved scene + DOF report",
-                "span": {
-                  "line": 58,
-                  "col": 43,
-                  "byte_start": 2420,
-                  "byte_end": 2447
-                }
-              }
-            ],
-            "span": {
-              "line": 58,
-              "col": 42,
-              "byte_start": 2419,
-              "byte_end": 2448
-            }
-          },
-          "direction": "compass(n)",
-          "gap": 0.12
-        }
+        "kind": "annotation"
       }
     },
     {
       "id": "p4b",
       "kind": "point",
       "span": {
-        "line": 60,
+        "line": 57,
         "col": 1,
-        "byte_start": 2474,
-        "byte_end": 2517
+        "byte_start": 2414,
+        "byte_end": 2457
       },
       "definition": "foot(r4, lifeB)",
       "resolved": {
         "kind": "point",
-        "x": 4.0,
-        "y": -3.85,
         "mark": "none"
       }
     },
@@ -866,16 +473,14 @@ expression: stdout
       "id": "p4c",
       "kind": "point",
       "span": {
-        "line": 61,
+        "line": 58,
         "col": 1,
-        "byte_start": 2518,
-        "byte_end": 2561
+        "byte_start": 2458,
+        "byte_end": 2501
       },
       "definition": "foot(r4, lifeC)",
       "resolved": {
         "kind": "point",
-        "x": 8.0,
-        "y": -3.85,
         "mark": "none"
       }
     },
@@ -883,95 +488,42 @@ expression: stdout
       "id": "m4",
       "kind": "arrow",
       "span": {
-        "line": 62,
+        "line": 59,
         "col": 1,
-        "byte_start": 2562,
-        "byte_end": 2602
+        "byte_start": 2502,
+        "byte_end": 2542
       },
       "definition": "arrow(p4b, p4c)",
       "resolved": {
-        "kind": "annotation",
-        "value": {
-          "kind": "arrow",
-          "from": {
-            "kind": "point",
-            "point": {
-              "x": 4.0,
-              "y": -3.85
-            }
-          },
-          "to": {
-            "kind": "point",
-            "point": {
-              "x": 8.0,
-              "y": -3.85
-            }
-          },
-          "head": "forward",
-          "bend": 0.0
-        }
+        "kind": "annotation"
       }
     },
     {
       "id": "l4",
       "kind": "label",
       "span": {
-        "line": 63,
+        "line": 60,
         "col": 1,
-        "byte_start": 2603,
-        "byte_end": 2681
+        "byte_start": 2543,
+        "byte_end": 2621
       },
       "definition": "label(seg(p4b, p4c).midpoint, \"run asserts\")",
       "resolved": {
-        "kind": "annotation",
-        "value": {
-          "kind": "label",
-          "anchor": {
-            "kind": "point",
-            "point": {
-              "x": 6.0,
-              "y": -3.85
-            }
-          },
-          "text": {
-            "segments": [
-              {
-                "kind": "plain",
-                "source": "run asserts",
-                "span": {
-                  "line": 63,
-                  "col": 43,
-                  "byte_start": 2645,
-                  "byte_end": 2656
-                }
-              }
-            ],
-            "span": {
-              "line": 63,
-              "col": 42,
-              "byte_start": 2644,
-              "byte_end": 2657
-            }
-          },
-          "direction": "compass(n)",
-          "gap": 0.12
-        }
+        "kind": "annotation"
       }
     },
     {
       "id": "p5b",
       "kind": "point",
       "span": {
-        "line": 65,
+        "line": 62,
         "col": 1,
-        "byte_start": 2683,
-        "byte_end": 2726
+        "byte_start": 2623,
+        "byte_end": 2666
       },
       "definition": "foot(r5, lifeB)",
       "resolved": {
         "kind": "point",
-        "x": 4.0,
-        "y": -4.7,
         "mark": "none"
       }
     },
@@ -979,16 +531,14 @@ expression: stdout
       "id": "p5c",
       "kind": "point",
       "span": {
-        "line": 66,
+        "line": 63,
         "col": 1,
-        "byte_start": 2727,
-        "byte_end": 2770
+        "byte_start": 2667,
+        "byte_end": 2710
       },
       "definition": "foot(r5, lifeC)",
       "resolved": {
         "kind": "point",
-        "x": 8.0,
-        "y": -4.7,
         "mark": "none"
       }
     },
@@ -996,115 +546,42 @@ expression: stdout
       "id": "m5",
       "kind": "arrow",
       "span": {
-        "line": 67,
+        "line": 64,
         "col": 1,
-        "byte_start": 2771,
-        "byte_end": 2818
+        "byte_start": 2711,
+        "byte_end": 2758
       },
       "definition": "arrow(p5c, p5b)",
       "resolved": {
-        "kind": "annotation",
-        "value": {
-          "kind": "arrow",
-          "from": {
-            "kind": "point",
-            "point": {
-              "x": 8.0,
-              "y": -4.7
-            }
-          },
-          "to": {
-            "kind": "point",
-            "point": {
-              "x": 4.0,
-              "y": -4.7
-            }
-          },
-          "head": "forward",
-          "bend": 0.0
-        }
+        "kind": "annotation"
       }
     },
     {
       "id": "l5",
       "kind": "label",
       "span": {
-        "line": 68,
+        "line": 65,
         "col": 1,
-        "byte_start": 2819,
-        "byte_end": 2909
+        "byte_start": 2759,
+        "byte_end": 2849
       },
       "definition": "label(seg(p5b, p5c).midpoint, \"$a_3$ failed: got 1.618\")",
       "resolved": {
-        "kind": "annotation",
-        "value": {
-          "kind": "label",
-          "anchor": {
-            "kind": "point",
-            "point": {
-              "x": 6.0,
-              "y": -4.7
-            }
-          },
-          "text": {
-            "segments": [
-              {
-                "kind": "plain",
-                "source": "",
-                "span": {
-                  "line": 68,
-                  "col": 43,
-                  "byte_start": 2861,
-                  "byte_end": 2861
-                }
-              },
-              {
-                "kind": "tex",
-                "source": "a_3",
-                "span": {
-                  "line": 68,
-                  "col": 43,
-                  "byte_start": 2861,
-                  "byte_end": 2866
-                }
-              },
-              {
-                "kind": "plain",
-                "source": " failed: got 1.618",
-                "span": {
-                  "line": 68,
-                  "col": 48,
-                  "byte_start": 2866,
-                  "byte_end": 2884
-                }
-              }
-            ],
-            "span": {
-              "line": 68,
-              "col": 42,
-              "byte_start": 2860,
-              "byte_end": 2885
-            }
-          },
-          "direction": "compass(n)",
-          "gap": 0.12
-        }
+        "kind": "annotation"
       }
     },
     {
       "id": "p6b",
       "kind": "point",
       "span": {
-        "line": 70,
+        "line": 67,
         "col": 1,
-        "byte_start": 2911,
-        "byte_end": 2954
+        "byte_start": 2851,
+        "byte_end": 2894
       },
       "definition": "foot(r6, lifeB)",
       "resolved": {
         "kind": "point",
-        "x": 4.0,
-        "y": -5.55,
         "mark": "none"
       }
     },
@@ -1112,79 +589,28 @@ expression: stdout
       "id": "m6",
       "kind": "arrow",
       "span": {
-        "line": 71,
+        "line": 68,
         "col": 1,
-        "byte_start": 2955,
-        "byte_end": 3001
+        "byte_start": 2895,
+        "byte_end": 2941
       },
       "definition": "arrow(p6b, r6)",
       "resolved": {
-        "kind": "annotation",
-        "value": {
-          "kind": "arrow",
-          "from": {
-            "kind": "point",
-            "point": {
-              "x": 4.0,
-              "y": -5.55
-            }
-          },
-          "to": {
-            "kind": "point",
-            "point": {
-              "x": 0.0,
-              "y": -5.55
-            }
-          },
-          "head": "forward",
-          "bend": 0.0
-        }
+        "kind": "annotation"
       }
     },
     {
       "id": "l6",
       "kind": "label",
       "span": {
-        "line": 72,
+        "line": 69,
         "col": 1,
-        "byte_start": 3002,
-        "byte_end": 3088
+        "byte_start": 2942,
+        "byte_end": 3028
       },
       "definition": "label(seg(r6, p6b).midpoint, \"exit 1 + JSON report\")",
       "resolved": {
-        "kind": "annotation",
-        "value": {
-          "kind": "label",
-          "anchor": {
-            "kind": "point",
-            "point": {
-              "x": 2.0,
-              "y": -5.55
-            }
-          },
-          "text": {
-            "segments": [
-              {
-                "kind": "plain",
-                "source": "exit 1 + JSON report",
-                "span": {
-                  "line": 72,
-                  "col": 42,
-                  "byte_start": 3043,
-                  "byte_end": 3063
-                }
-              }
-            ],
-            "span": {
-              "line": 72,
-              "col": 41,
-              "byte_start": 3042,
-              "byte_end": 3064
-            }
-          },
-          "direction": "compass(n)",
-          "gap": 0.12
-        }
+        "kind": "annotation"
       }
     }
   ],
@@ -1192,163 +618,102 @@ expression: stdout
     "unknowns": 6,
     "equations": 4,
     "rank": 4,
-    "attempts": 0,
-    "accepted_steps": 0,
-    "max_normalized_residual": 0.0,
-    "final_damping": 0.001,
+    "attempts": 3,
+    "accepted_steps": 3,
+    "max_normalized_residual": 3.4815540554140916e-13,
+    "final_damping": 1.0000000000000002e-6,
     "dof": {
       "global_remaining": 2,
       "objects": [
         {
-          "id": "Ac",
+          "id": "boxA",
           "span": {
             "line": 20,
             "col": 1,
             "byte_start": 652,
-            "byte_end": 691
+            "byte_end": 676
           },
           "hint_settled_dofs": 2,
-          "suggestion": "add a relation if unintended, e.g. on(Ac, …) or vdist(…) == …"
+          "suggestion": "add a relation if unintended, e.g. on(boxA, …) or vdist(…) == …"
         },
         {
-          "id": "Bc",
+          "id": "boxB",
           "span": {
-            "line": 24,
+            "line": 23,
             "col": 1,
-            "byte_start": 778,
-            "byte_end": 867
+            "byte_start": 734,
+            "byte_end": 844
           },
           "hint_settled_dofs": 2,
-          "suggestion": "add a relation if unintended, e.g. on(Bc, …) or vdist(…) == …"
+          "suggestion": "add a relation if unintended, e.g. on(boxB, …) or vdist(…) == …"
         },
         {
-          "id": "Cc",
+          "id": "boxC",
           "span": {
-            "line": 28,
+            "line": 26,
             "col": 1,
-            "byte_start": 958,
-            "byte_end": 1047
+            "byte_start": 906,
+            "byte_end": 1016
           },
           "hint_settled_dofs": 2,
-          "suggestion": "add a relation if unintended, e.g. on(Cc, …) or vdist(…) == …"
+          "suggestion": "add a relation if unintended, e.g. on(boxC, …) or vdist(…) == …"
         }
       ]
     },
     "branch_resolutions": [],
-    "hint_displacements": [
-      {
-        "id": "Ac",
-        "span": {
-          "line": 20,
-          "col": 1,
-          "byte_start": 652,
-          "byte_end": 691
-        },
-        "source_components": [
-          0.0,
-          0.0
-        ],
-        "normalized_components": [
-          0.0,
-          0.0
-        ],
-        "max_normalized_component": 0.0,
-        "hint_far": false,
-        "hint_far_threshold": 0.25
-      },
-      {
-        "id": "Bc",
-        "span": {
-          "line": 24,
-          "col": 1,
-          "byte_start": 778,
-          "byte_end": 867
-        },
-        "source_components": [
-          0.0,
-          0.0
-        ],
-        "normalized_components": [
-          0.0,
-          0.0
-        ],
-        "max_normalized_component": 0.0,
-        "hint_far": false,
-        "hint_far_threshold": 0.25
-      },
-      {
-        "id": "Cc",
-        "span": {
-          "line": 28,
-          "col": 1,
-          "byte_start": 958,
-          "byte_end": 1047
-        },
-        "source_components": [
-          0.0,
-          0.0
-        ],
-        "normalized_components": [
-          0.0,
-          0.0
-        ],
-        "max_normalized_component": 0.0,
-        "hint_far": false,
-        "hint_far_threshold": 0.25
-      }
-    ],
+    "hint_displacements": [],
     "redundant_relations": [],
     "relation_residuals": [
       {
         "span": {
-          "line": 24,
-          "col": 33,
-          "byte_start": 810,
-          "byte_end": 828
+          "line": 23,
+          "col": 34,
+          "byte_start": 767,
+          "byte_end": 803
         },
-        "max_normalized_residual": 0.0,
+        "max_normalized_residual": 1.2124601574842064e-13,
         "implicated_unknowns": [
-          "Ac",
-          "Bc"
+          "boxA",
+          "boxB"
         ]
       },
       {
         "span": {
-          "line": 24,
-          "col": 53,
-          "byte_start": 830,
-          "byte_end": 849
+          "line": 23,
+          "col": 72,
+          "byte_start": 805,
+          "byte_end": 842
         },
-        "max_normalized_residual": 0.0,
+        "max_normalized_residual": 3.233724735860602e-13,
         "implicated_unknowns": [
-          "Ac",
-          "Bc"
+          "boxA",
+          "boxB"
         ]
       },
       {
         "span": {
-          "line": 28,
-          "col": 33,
-          "byte_start": 990,
-          "byte_end": 1008
+          "line": 26,
+          "col": 34,
+          "byte_start": 939,
+          "byte_end": 975
         },
-        "max_normalized_residual": 0.0,
+        "max_normalized_residual": 1.3055827707802844e-13,
         "implicated_unknowns": [
-          "Bc",
-          "Cc"
+          "boxB",
+          "boxC"
         ]
       },
       {
         "span": {
-          "line": 28,
-          "col": 53,
-          "byte_start": 1010,
-          "byte_end": 1029
+          "line": 26,
+          "col": 72,
+          "byte_start": 977,
+          "byte_end": 1014
         },
-        "max_normalized_residual": 0.0,
+        "max_normalized_residual": 3.4815540554140916e-13,
         "implicated_unknowns": [
-          "Bc",
-          "Cc"
+          "boxB",
+          "boxC"
         ]
       }
     ]

@@ -125,6 +125,8 @@ const fn symbol_kind(kind: Kind) -> SymbolKind {
         | Kind::Segment
         | Kind::Circle
         | Kind::Arc
+        | Kind::Ellipse
+        | Kind::Bspline
         | Kind::Polygon
         | Kind::Rect
         | Kind::Diamond

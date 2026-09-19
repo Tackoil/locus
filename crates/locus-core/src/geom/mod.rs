@@ -7,8 +7,11 @@ use thiserror::Error;
 use crate::tol::Tolerance;
 
 pub mod construct;
+mod curve;
 pub mod intersect;
 pub mod measure;
+
+pub use curve::{Bspline, Ellipse};
 
 /// A stable, parser-independent construction failure suitable for E2xx diagnostics.
 #[derive(Clone, Debug, Error, PartialEq)]
@@ -485,6 +488,41 @@ impl BBox {
             min: circle.center - delta,
             max: circle.center + delta,
         }
+    }
+
+    /// Exact axis-aligned bounds of a rotated ellipse.
+    #[must_use]
+    pub fn for_ellipse(ellipse: Ellipse) -> Self {
+        let cosine = libm::cos(ellipse.rotation);
+        let sine = libm::sin(ellipse.rotation);
+        let horizontal_major = ellipse.semimajor * cosine;
+        let horizontal_minor = ellipse.semiminor * sine;
+        let vertical_major = ellipse.semimajor * sine;
+        let vertical_minor = ellipse.semiminor * cosine;
+        let horizontal =
+            libm::sqrt(horizontal_major * horizontal_major + horizontal_minor * horizontal_minor);
+        let vertical =
+            libm::sqrt(vertical_major * vertical_major + vertical_minor * vertical_minor);
+        let extent = Vec2::new(horizontal, vertical);
+        Self {
+            min: ellipse.center - extent,
+            max: ellipse.center + extent,
+        }
+    }
+
+    /// Conservative bounds of a B-spline's control points.
+    #[must_use]
+    pub fn for_bspline(spline: &Bspline) -> Self {
+        let mut points = spline.controls().iter().copied();
+        let first = points.next().unwrap_or_default();
+        let mut bounds = Self {
+            min: first,
+            max: first,
+        };
+        for point in points {
+            bounds.include_point(point);
+        }
+        bounds
     }
 
     /// Bounding box of a line's finite defining points.

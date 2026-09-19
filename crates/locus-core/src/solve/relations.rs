@@ -5,7 +5,7 @@ use locus_syntax::{BinOp, Expr, File, Span, Statement};
 use crate::eval::EvalError;
 
 use super::ad::{
-    DArc, DCircle, DLinear, DObject, DPoint, DifferentiatedFile, Jet, LinearDomain,
+    DArc, DCircle, DEllipse, DLinear, DObject, DPoint, DifferentiatedFile, Jet, LinearDomain,
     NumericDimension,
 };
 
@@ -67,24 +67,32 @@ fn flatten<'a>(expression: &'a Expr, result: &mut Vec<SourceRelation<'a>>) {
 }
 
 pub(crate) fn select_circle_branches(
+    version: u32,
     differentiated: &DifferentiatedFile,
     relations: &[SourceRelation<'_>],
 ) -> Result<Vec<Option<CircleBranch>>, EvalError> {
     relations
         .iter()
-        .map(|relation| select_circle_branch(differentiated, relation.expression))
+        .map(|relation| select_circle_branch(version, differentiated, relation.expression))
         .collect()
 }
 
 fn select_circle_branch(
+    version: u32,
     differentiated: &DifferentiatedFile,
     expression: &Expr,
 ) -> Result<Option<CircleBranch>, EvalError> {
     let Expr::Call { name, args, span } = expression else {
         return Ok(None);
     };
-    if name.name != "tangent" || args.len() != 2 {
+    if args.len() != 2 || !matches!(name.name.as_str(), "tangent" | "internally_tangent") {
         return Ok(None);
+    }
+    if name.name == "internally_tangent" {
+        return Ok(Some(CircleBranch::InternalFirstOuter));
+    }
+    if version >= 3 {
+        return Ok(Some(CircleBranch::External));
     }
     let lhs = differentiated.object(&args[0])?;
     let rhs = differentiated.object(&args[1])?;
@@ -204,7 +212,10 @@ fn evaluate_predicate(
     diameter: f64,
     equations: &mut Vec<Equation>,
 ) -> Result<(), EvalError> {
-    if matches!(name, "on" | "tangent" | "parallel" | "perpendicular") {
+    if matches!(
+        name,
+        "on" | "tangent" | "internally_tangent" | "parallel" | "perpendicular"
+    ) {
         return evaluate_object_predicate(
             differentiated,
             name,
@@ -243,8 +254,9 @@ fn evaluate_object_predicate(
 ) -> Result<(), EvalError> {
     match name {
         "on" => on_relation(differentiated, args, relation, span, diameter, equations),
-        "tangent" => tangent_relation(
+        "tangent" | "internally_tangent" => tangent_relation(
             differentiated,
+            name,
             args,
             relation,
             branch,
@@ -358,18 +370,24 @@ fn on_relation(
         DObject::Linear(linear) => point_linear_residual(&point, &linear, span)?,
         DObject::Circle(circle) => point_circle_residual(&point, &circle, span)?,
         DObject::Arc(arc) => point_arc_residual(&point, &arc, span)?,
+        DObject::Ellipse(ellipse) => point_ellipse_residual(&point, &ellipse, span)?,
         _ => {
             return Err(relation_error(
                 args[1].span(),
-                "on target must be linear, circle, or arc",
+                "on target must be linear, circle, arc, or ellipse",
             ));
         }
     };
     push(equations, residual.scale(1.0 / diameter), relation, span)
 }
 
+#[allow(
+    clippy::too_many_arguments,
+    reason = "source-ordered residual metadata and sink remain explicit"
+)]
 fn tangent_relation(
     differentiated: &DifferentiatedFile,
+    name: &str,
     args: &[Expr],
     relation: usize,
     branch: Option<CircleBranch>,
@@ -377,7 +395,7 @@ fn tangent_relation(
     diameter: f64,
     equations: &mut Vec<Equation>,
 ) -> Result<(), EvalError> {
-    require_arity("tangent", args, 2, span)?;
+    require_arity(name, args, 2, span)?;
     let lhs = differentiated.object(&args[0])?;
     let rhs = differentiated.object(&args[1])?;
     let residual = match (lhs, rhs) {
@@ -386,6 +404,12 @@ fn tangent_relation(
         }
         (DObject::Circle(circle), DObject::Linear(linear))
         | (DObject::Linear(linear), DObject::Circle(circle)) => {
+            if name == "internally_tangent" {
+                return Err(relation_error(
+                    span,
+                    "internally_tangent requires two circles",
+                ));
+            }
             point_linear_residual(&circle.center, &linear, span)?
                 .abs()
                 .sub(&circle.radius)
@@ -398,6 +422,28 @@ fn tangent_relation(
         }
     };
     push(equations, residual.scale(1.0 / diameter), relation, span)
+}
+
+fn point_ellipse_residual(
+    point: &DPoint,
+    ellipse: &DEllipse,
+    span: Span,
+) -> Result<Jet, EvalError> {
+    let offset = point.sub(&ellipse.center);
+    let cosine = ellipse.rotation.cos();
+    let sine = ellipse.rotation.sin();
+    let local_x = offset.x.mul(&cosine).add(&offset.y.mul(&sine));
+    let local_y = offset.y.mul(&cosine).sub(&offset.x.mul(&sine));
+    let normalized_x = local_x.div(&ellipse.semimajor);
+    let normalized_y = local_y.div(&ellipse.semiminor);
+    let radius = normalized_x
+        .mul(&normalized_x)
+        .add(&normalized_y.mul(&normalized_y))
+        .sqrt()
+        .map_err(|()| relation_error(span, "ellipse relation is degenerate"))?;
+    Ok(radius
+        .sub(&Jet::constant(1.0, radius.gradient.len()))
+        .mul(&ellipse.semiminor))
 }
 
 fn circle_tangent_residual(

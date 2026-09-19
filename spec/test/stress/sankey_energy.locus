@@ -1,4 +1,4 @@
-locus 2
+locus 3
 
 meta {
   title "Conserved flow network: three sources, four processes, four outputs"
@@ -8,7 +8,7 @@ meta {
 style textbook
 
 class node { accent: gray, fill: tint }
-point O = free ~(0, 0) { mark: none }
+point O = point() { mark: none }
 num scale = 0.12
 class flow0 { accent: #14B8A6, fill: #14B8A6, opacity: 0.55 }
 class flow1 { accent: #3B82F6, fill: #3B82F6, opacity: 0.55 }

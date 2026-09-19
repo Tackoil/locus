@@ -1,4 +1,4 @@
-locus 2
+locus 3
 
 meta {
   title "X-Y stress plot: parabola, linear intersections, and composite area"
@@ -8,7 +8,7 @@ meta {
 style textbook
 class curve { accent: blue, weight: 2, cap: round, join: round }
 
-point O = free ~(0, 0) { mark: none }
+point O = point() { mark: none }
 num unit = 1
 arrow x_axis = arrow(offset(O, -3.5 * unit, 0), offset(O, 3.5 * unit, 0))
 arrow y_axis = arrow(offset(O, 0, -0.5 * unit), offset(O, 0, 5 * unit))
@@ -433,12 +433,13 @@ point dense128 = offset(O, 3.00000000 * unit, (3.00000000) * (3.00000000) * unit
 segment dense_seg128 = seg(dense127, dense128) [curve]
 assert vdist(O, dense128) / unit == 4.500000000000
 line linear_function = line(offset(O, -3 * unit, -2 * unit), offset(O, 3 * unit, 4 * unit)) [auxiliary]
-point cross_left = free ~(-0.8, 0.3)
-point cross_right = free ~(2.8, 3.9)
-rel on(cross_left, linear_function)
+// Positive distances from the symmetry axis select the two root branches.
+num left_span = free ~1.8
+num right_span = free ~1.6
+point cross_left = offset(O, (1 - sqrt(left_span * left_span)) * unit, (2 - sqrt(left_span * left_span)) * unit)
+point cross_right = offset(O, (1 + sqrt(right_span * right_span)) * unit, (2 + sqrt(right_span * right_span)) * unit)
 rel vdist(O, cross_left) / unit == (hdist(O, cross_left) / unit) * (hdist(O, cross_left) / unit) / 2
 assert vdist(O, cross_left) / unit == hdist(O, cross_left) / unit + 1
-rel on(cross_right, linear_function)
 rel vdist(O, cross_right) / unit == (hdist(O, cross_right) / unit) * (hdist(O, cross_right) / unit) / 2
 assert vdist(O, cross_right) / unit == hdist(O, cross_right) / unit + 1
 assert hdist(O, cross_left) / unit == 1 - sqrt(3)

@@ -1,4 +1,4 @@
-locus 2
+locus 3
 
 meta {
   title "Angle bisector theorem: BD/DC = AB/AC"
@@ -7,10 +7,10 @@ meta {
 style textbook
 
 // ---- objects ----------------------------------------------
-// Generic-position triangle: hint-settled by design (info, not error).
-point A = free ~(1, 4.5)
-point B = free ~(-2, 0)
-point C = free ~(5, 0)
+// A scalene triangle defined by signed side offsets; Locus owns translation.
+point A = point()
+point B = point() where { hdist(A, B) == -3, vdist(A, B) == -4.5 }
+point C = point() where { hdist(A, C) == 4, vdist(A, C) == -4.5 }
 
 polygon tri = polygon(A, B, C)
 
@@ -19,7 +19,7 @@ line bis = angle_bisector(B, A, C)   [construction]
 // Solve on supporting lines; the independent between assertion enforces the
 // segment domain. Three simultaneous closed-segment constraints can stall;
 // known_limits/closed_segment_bisectors.locus preserves that regression.
-point D = free ~(1.3, 0) where { on(D, bis), on(D, line(B, C)) }
+point D = point() where { on(D, bis), on(D, line(B, C)) }
 
 segment ad = seg(A, D)               [auxiliary]
 
@@ -45,16 +45,13 @@ assert ratio(dist(B, D), dist(D, C)) == ratio(dist(A, B), dist(A, C))
 
 // ---- stress construction network ----
 // All three cevians share an incenter and obey the multiplicative Ceva identity.
-rel pin(A, 1, 4.5)
-rel pin(B, -2, 0)
-rel pin(C, 5, 0)
 line bis_e = angle_bisector(A, B, C) [construction]
-point cev_e = free ~(3, 2) where { on(cev_e, bis_e), on(cev_e, line(A, C)) }
+point cev_e = point() where { on(cev_e, bis_e), on(cev_e, line(A, C)) }
 segment cevian_e = seg(B, cev_e) [highlight]
 assert between(A, cev_e, C)
 assert angle(A, B, cev_e) == angle(cev_e, B, C)
 line bis_f = angle_bisector(A, C, B) [construction]
-point cev_f = free ~(-0.5, 2) where { on(cev_f, bis_f), on(cev_f, line(A, B)) }
+point cev_f = point() where { on(cev_f, bis_f), on(cev_f, line(A, B)) }
 segment cevian_f = seg(C, cev_f) [highlight]
 assert between(A, cev_f, B)
 assert angle(A, C, cev_f) == angle(cev_f, C, B)
@@ -77,7 +74,7 @@ point b0_fc = foot(D, line(A, B)) { mark: none }
 assert collinear(b0_o, b0_g, b0_h)
 assert radius(b0_nine) == radius(b0_circ) / 2
 assert on(b0_fa, b0_nine) and on(b0_fb, b0_nine) and on(b0_fc, b0_nine)
-assert tangent(b0_inc, b0_nine)
+assert internally_tangent(b0_nine, b0_inc)
 assert inside(center(b0_inc), b0_tri)
 polygon b1_tri = polygon(A, D, C) [construction]
 point b1_o = circumcenter(A, D, C) { mark: none }
@@ -95,7 +92,7 @@ point b1_fc = foot(C, line(A, D)) { mark: none }
 assert collinear(b1_o, b1_g, b1_h)
 assert radius(b1_nine) == radius(b1_circ) / 2
 assert on(b1_fa, b1_nine) and on(b1_fb, b1_nine) and on(b1_fc, b1_nine)
-assert tangent(b1_inc, b1_nine)
+assert internally_tangent(b1_nine, b1_inc)
 assert inside(center(b1_inc), b1_tri)
 polygon b2_tri = polygon(B, cev_e, C) [construction]
 point b2_o = circumcenter(B, cev_e, C) { mark: none }
@@ -113,7 +110,7 @@ point b2_fc = foot(C, line(B, cev_e)) { mark: none }
 assert collinear(b2_o, b2_g, b2_h)
 assert radius(b2_nine) == radius(b2_circ) / 2
 assert on(b2_fa, b2_nine) and on(b2_fb, b2_nine) and on(b2_fc, b2_nine)
-assert tangent(b2_inc, b2_nine)
+assert internally_tangent(b2_nine, b2_inc)
 assert inside(center(b2_inc), b2_tri)
 polygon b3_tri = polygon(C, cev_f, B) [construction]
 point b3_o = circumcenter(C, cev_f, B) { mark: none }
@@ -131,5 +128,5 @@ point b3_fc = foot(B, line(C, cev_f)) { mark: none }
 assert collinear(b3_o, b3_g, b3_h)
 assert radius(b3_nine) == radius(b3_circ) / 2
 assert on(b3_fa, b3_nine) and on(b3_fb, b3_nine) and on(b3_fc, b3_nine)
-assert tangent(b3_inc, b3_nine)
+assert internally_tangent(b3_nine, b3_inc)
 assert inside(center(b3_inc), b3_tri)

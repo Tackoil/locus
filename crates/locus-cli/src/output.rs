@@ -84,45 +84,79 @@ pub(crate) enum ResolvedValue {
         radians: f64,
     },
     Point {
-        x: f64,
-        y: f64,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        x: Option<f64>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        y: Option<f64>,
         mark: String,
     },
     Line {
-        start: PointReport,
-        through: PointReport,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        start: Option<PointReport>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        through: Option<PointReport>,
     },
     Ray {
-        start: PointReport,
-        through: PointReport,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        start: Option<PointReport>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        through: Option<PointReport>,
     },
     Segment {
-        start: PointReport,
-        end: PointReport,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        start: Option<PointReport>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        end: Option<PointReport>,
+        length: f64,
     },
     Circle {
-        center: PointReport,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        center: Option<PointReport>,
         radius: f64,
     },
     Arc {
-        center: PointReport,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        center: Option<PointReport>,
         radius: f64,
-        start: PointReport,
-        end: PointReport,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        start: Option<PointReport>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        end: Option<PointReport>,
         counterclockwise: bool,
         angle_mark_count: Option<u8>,
     },
+    Ellipse {
+        semimajor: f64,
+        semiminor: f64,
+        rotation: f64,
+        area: f64,
+    },
+    Bspline {
+        degree: u8,
+        knots: Vec<f64>,
+        span_count: usize,
+    },
     Polygon {
-        vertices: Vec<PointReport>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        vertices: Option<Vec<PointReport>>,
+        area: f64,
+        perimeter: f64,
     },
     Rect {
-        vertices: Vec<PointReport>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        vertices: Option<Vec<PointReport>>,
+        area: f64,
+        perimeter: f64,
     },
     Diamond {
-        vertices: Vec<PointReport>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        vertices: Option<Vec<PointReport>>,
+        area: f64,
+        perimeter: f64,
     },
     Annotation {
-        value: AnnotationReport,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        value: Option<AnnotationReport>,
     },
 }
 
@@ -429,20 +463,32 @@ fn resolved_summary(value: &ResolvedValue) -> String {
         ResolvedValue::Line { .. } | ResolvedValue::Ray { .. } | ResolvedValue::Segment { .. } => {
             linear_summary(value)
         }
-        ResolvedValue::Circle { .. } | ResolvedValue::Arc { .. } => curved_summary(value),
+        ResolvedValue::Circle { .. }
+        | ResolvedValue::Arc { .. }
+        | ResolvedValue::Ellipse { .. }
+        | ResolvedValue::Bspline { .. } => curved_summary(value),
         ResolvedValue::Polygon { .. }
         | ResolvedValue::Rect { .. }
         | ResolvedValue::Diamond { .. } => polygon_object_summary(value),
-        ResolvedValue::Annotation { value } => annotation_summary(value),
+        ResolvedValue::Annotation { value } => value
+            .as_ref()
+            .map_or_else(|| "derived annotation".to_owned(), annotation_summary),
     }
 }
 
 fn scalar_summary(value: &ResolvedValue) -> String {
     match value {
-        ResolvedValue::Point { x, y, mark } => format!("({x:.6}, {y:.6}), mark {mark}"),
+        ResolvedValue::Point { x, y, mark } => point_value_summary(*x, *y, mark),
         ResolvedValue::Number { value, dimension } => format!("{value:.6} {dimension}"),
         ResolvedValue::Angle { radians } => format!("{radians:.6} rad"),
         _ => unreachable!("scalar summary received non-scalar value"),
+    }
+}
+
+fn point_value_summary(x: Option<f64>, y: Option<f64>, mark: &str) -> String {
+    match (x, y) {
+        (Some(x), Some(y)) => format!("({x:.6}, {y:.6}), mark {mark}"),
+        _ => format!("point anchor, mark {mark}"),
     }
 }
 
@@ -451,21 +497,22 @@ fn linear_summary(value: &ResolvedValue) -> String {
         ResolvedValue::Line { start, through } | ResolvedValue::Ray { start, through } => {
             ("start", start, "through", through)
         }
-        ResolvedValue::Segment { start, end } => ("start", start, "end", end),
+        ResolvedValue::Segment { start, end, .. } => ("start", start, "end", end),
         _ => unreachable!("linear summary received non-linear value"),
     };
-    format!(
-        "{first_label} {}, {second_label} {}",
-        point_summary(first),
-        point_summary(second)
-    )
+    match (first, second) {
+        (Some(first), Some(second)) => format!(
+            "{first_label} {}, {second_label} {}",
+            point_summary(first),
+            point_summary(second)
+        ),
+        _ => "relative linear geometry".to_owned(),
+    }
 }
 
 fn curved_summary(value: &ResolvedValue) -> String {
     match value {
-        ResolvedValue::Circle { center, radius } => {
-            format!("center {}, radius {radius:.6}", point_summary(center))
-        }
+        ResolvedValue::Circle { center, radius } => circle_summary(center.as_ref(), *radius),
         ResolvedValue::Arc {
             center,
             radius,
@@ -473,25 +520,89 @@ fn curved_summary(value: &ResolvedValue) -> String {
             end,
             counterclockwise,
             angle_mark_count,
+        } => arc_summary(
+            center.as_ref(),
+            *radius,
+            start.as_ref(),
+            end.as_ref(),
+            *counterclockwise,
+            *angle_mark_count,
+        ),
+        ResolvedValue::Ellipse {
+            semimajor,
+            semiminor,
+            rotation,
+            area,
         } => format!(
-            "center {}, radius {radius:.6}, start {}, end {}, counterclockwise {counterclockwise}, angle marks {}",
-            point_summary(center),
-            point_summary(start),
-            point_summary(end),
-            angle_mark_count.map_or_else(|| "none".to_owned(), |count| count.to_string())
+            "semiaxes {semimajor:.6}, {semiminor:.6}, rotation {rotation:.6} rad, area {area:.6}"
+        ),
+        ResolvedValue::Bspline {
+            degree,
+            knots,
+            span_count,
+        } => format!(
+            "degree {degree}, {} spans, knots [{}]",
+            span_count,
+            knots
+                .iter()
+                .map(|value| format!("{value:.6}"))
+                .collect::<Vec<_>>()
+                .join(", ")
         ),
         _ => unreachable!("curved summary received non-curved value"),
     }
 }
 
+fn circle_summary(center: Option<&PointReport>, radius: f64) -> String {
+    center.map_or_else(
+        || format!("radius {radius:.6}"),
+        |center| format!("center {}, radius {radius:.6}", point_summary(center)),
+    )
+}
+
+fn arc_summary(
+    center: Option<&PointReport>,
+    radius: f64,
+    start: Option<&PointReport>,
+    end: Option<&PointReport>,
+    counterclockwise: bool,
+    angle_mark_count: Option<u8>,
+) -> String {
+    let (Some(center), Some(start), Some(end)) = (center, start, end) else {
+        return format!("radius {radius:.6}, counterclockwise {counterclockwise}");
+    };
+    format!(
+        "center {}, radius {radius:.6}, start {}, end {}, counterclockwise {counterclockwise}, angle marks {}",
+        point_summary(center),
+        point_summary(start),
+        point_summary(end),
+        angle_mark_count.map_or_else(|| "none".to_owned(), |count| count.to_string())
+    )
+}
+
 fn polygon_object_summary(value: &ResolvedValue) -> String {
-    let (ResolvedValue::Polygon { vertices }
-    | ResolvedValue::Rect { vertices }
-    | ResolvedValue::Diamond { vertices }) = value
+    let (ResolvedValue::Polygon {
+        vertices,
+        area,
+        perimeter,
+    }
+    | ResolvedValue::Rect {
+        vertices,
+        area,
+        perimeter,
+    }
+    | ResolvedValue::Diamond {
+        vertices,
+        area,
+        perimeter,
+    }) = value
     else {
         unreachable!("polygon summary received non-polygon value")
     };
-    polygon_summary("vertices", vertices)
+    vertices.as_ref().map_or_else(
+        || format!("area {area:.6}, perimeter {perimeter:.6}"),
+        |vertices| polygon_summary("vertices", vertices),
+    )
 }
 
 fn point_summary(point: &PointReport) -> String {

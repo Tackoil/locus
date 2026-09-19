@@ -12,7 +12,7 @@ use crate::format::format_expr;
 use serde::Serialize;
 use std::collections::{BTreeMap, BTreeSet};
 
-/// The format-version-2 JSON interchange document.
+/// The format-version-2/3 JSON interchange document.
 #[derive(Clone, Debug, PartialEq, Serialize)]
 pub struct Interchange {
     pub version: u32,
@@ -705,7 +705,7 @@ impl Dimensions {
     }
 
     fn constrain_call_args(&mut self, name: &str, args: &[Option<usize>]) {
-        for (index, dimension) in call_arg_dimensions(name) {
+        for (index, dimension) in call_arg_dimensions(name, args) {
             if let Some(variable) = args.get(*index).copied().flatten() {
                 self.constrain(variable, *dimension);
             }
@@ -1101,7 +1101,7 @@ fn prop_dimension(name: &str) -> Option<Dimension> {
         .find_map(|(candidate, dimension)| (*candidate == name).then_some(*dimension))
 }
 
-fn call_arg_dimensions(name: &str) -> &'static [(usize, Dimension)] {
+fn call_arg_dimensions(name: &str, args: &[Option<usize>]) -> &'static [(usize, Dimension)] {
     use Dimension::{Angle, Length, Scalar};
     const CALL_ARGS: &[(&str, &[(usize, Dimension)])] = &[
         ("lerp", &[(2, Scalar)]),
@@ -1118,10 +1118,34 @@ fn call_arg_dimensions(name: &str) -> &'static [(usize, Dimension)] {
         ("tick", &[(1, Scalar)]),
         ("pin", &[(1, Length), (2, Length)]),
     ];
+    if name == "circle" && args.len() == 1 {
+        return &[(0, Length)];
+    }
+    if name == "rect" || name == "diamond" {
+        return if args.len() == 2 {
+            &[(0, Length), (1, Length)]
+        } else {
+            &[(1, Length), (2, Length)]
+        };
+    }
+    if name == "ellipse" {
+        return ellipse_arg_dimensions(args);
+    }
     CALL_ARGS
         .iter()
         .find_map(|(candidate, dimensions)| (*candidate == name).then_some(*dimensions))
         .unwrap_or(&[])
+}
+
+fn ellipse_arg_dimensions(args: &[Option<usize>]) -> &'static [(usize, Dimension)] {
+    use Dimension::{Angle, Length};
+    match (args.len(), args.first().is_some_and(Option::is_some)) {
+        (2, _) => &[(0, Length), (1, Length)],
+        (3, true) => &[(0, Length), (1, Length), (2, Angle)],
+        (3, false) => &[(1, Length), (2, Length)],
+        (4, _) => &[(1, Length), (2, Length), (3, Angle)],
+        _ => &[],
+    }
 }
 
 #[cfg(test)]

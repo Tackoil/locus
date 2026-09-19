@@ -1,4 +1,4 @@
-locus 2
+locus 3
 
 meta {
   title "Golden ratio in the regular pentagon"
@@ -8,8 +8,8 @@ meta {
 style textbook
 
 // ---- objects ----------------------------------------------
-point O = free ~(0, 0)
-point A = free ~(0, 3)
+point O = point()
+point A = offset(O, 0, 3)
 
 point B = rotate(A, O, 72deg)
 point C = rotate(A, O, 144deg)
@@ -21,8 +21,8 @@ polygon pent = polygon(A, B, C, D, E)
 segment d1 = seg(A, C)   [highlight]
 segment d2 = seg(B, E)   [highlight]
 
-// diagonal intersection: relational, no branch index (was intersect(..., 0))
-point P = free ~(-0.7, 0.9) where { on(P, d1), on(P, d2) }
+// Solve on supporting lines; containment in the diagonals is checked independently.
+point P = point() where { on(P, line(A, C)), on(P, line(B, E)) }
 
 // equal-side ticks
 tick t1 = tick(seg(A, B), 1)
@@ -43,6 +43,7 @@ assert dist(A, B) == dist(B, C)
 assert ratio(dist(A, C), dist(A, B)) == (1 + sqrt(5)) / 2
 assert ratio(dist(P, C), dist(A, P)) == (1 + sqrt(5)) / 2
 assert inside(P, pent)
+assert between(A, P, C) and between(B, P, E)
 
 // ---- stress construction network ----
 // Complete pentagrams and their nested diagonal intersections share a center.

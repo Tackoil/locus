@@ -28,6 +28,13 @@ pub fn render(
     let mut result = format!(
         "\\begin{{tikzpicture}}[x=0.75pt,y=-0.75pt]\n  \\path[use as bounding box] (0,0) rectangle ({width},{height});\n  \\clip (0,0) rectangle ({width},{height});\n"
     );
+    if let Some(background) = drawing.background {
+        let _ = writeln!(
+            result,
+            "  \\path[fill={},draw=none] (0,0) rectangle ({width},{height});",
+            color(background)
+        );
+    }
     for op in &drawing.ops {
         let _ = writeln!(
             result,
@@ -61,6 +68,23 @@ fn element(output: &mut String, shape: &Shape, style: &Style) {
                 attributes(style, true, *disk),
                 point(*center),
                 number(*radius)
+            );
+        }
+        Shape::Ellipse {
+            center,
+            radius_x,
+            radius_y,
+            rotation,
+        } => {
+            let _ = writeln!(
+                output,
+                "    \\path[{},rotate around={{{}:{} }}] {} ellipse[x radius={},y radius={}];",
+                attributes(style, true, false),
+                number(rotation * 180.0 / core::f64::consts::PI),
+                point(*center),
+                point(*center),
+                number(*radius_x),
+                number(*radius_y)
             );
         }
         Shape::Path {

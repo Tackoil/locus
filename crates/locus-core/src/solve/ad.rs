@@ -120,7 +120,7 @@ impl Jet {
         })
     }
 
-    fn sin(&self) -> Self {
+    pub(crate) fn sin(&self) -> Self {
         Self {
             value: libm::sin(self.value),
             seed_value: libm::sin(self.seed_value),
@@ -132,7 +132,7 @@ impl Jet {
         }
     }
 
-    fn cos(&self) -> Self {
+    pub(crate) fn cos(&self) -> Self {
         Self {
             value: libm::cos(self.value),
             seed_value: libm::cos(self.seed_value),
@@ -349,12 +349,27 @@ pub(crate) struct DArc {
 }
 
 #[derive(Clone, Debug)]
+pub(crate) struct DEllipse {
+    pub(crate) center: DPoint,
+    pub(crate) semimajor: Jet,
+    pub(crate) semiminor: Jet,
+    pub(crate) rotation: Jet,
+}
+
+#[derive(Clone, Debug)]
+pub(crate) struct DBspline {
+    pub(crate) controls: Vec<DPoint>,
+}
+
+#[derive(Clone, Debug)]
 pub(crate) enum DObject {
     Number(Jet, NumericDimension),
     Point(DPoint),
     Linear(DLinear),
     Circle(DCircle),
     Arc(DArc),
+    Ellipse(DEllipse),
+    Bspline(DBspline),
     Polygon(Vec<DPoint>, bool),
     Annotation,
 }
@@ -521,10 +536,20 @@ struct AdEvaluator<'a> {
 
 impl AdEvaluator<'_> {
     fn eval_op(&mut self, op: &OpStmt) -> Result<(), EvalError> {
-        let object = match &op.ctor {
-            Constructor::FreePoint { .. } => self.free_point(op.span)?,
-            Constructor::FreeNum { .. } => self.free_number(op)?,
-            Constructor::Expr { expr, .. } => {
+        let object = if crate::eval::is_placed_op(op, self.inferred_dimensions) {
+            self.placed_object(op)?
+        } else {
+            self.eval_regular_op(op)?
+        };
+        self.objects.insert(op.id.name.clone(), object);
+        Ok(())
+    }
+
+    fn eval_regular_op(&mut self, op: &OpStmt) -> Result<DObject, EvalError> {
+        match &op.ctor {
+            Constructor::FreePoint { .. } => self.free_point(op.span),
+            Constructor::FreeNum { .. } => self.free_number(op),
+            Constructor::Expr { expr, .. } if op.kind == Kind::Num => {
                 let expected = self
                     .dimensions
                     .get(&op.id.name)
@@ -537,20 +562,50 @@ impl AdEvaluator<'_> {
                     self.inferred_dimensions,
                 );
                 let (value, dimension) = evaluator.eval_number_as(expr, expected)?;
-                DObject::Number(value, dimension)
+                Ok(DObject::Number(value, dimension))
             }
+            Constructor::Expr { expr, .. } => self.relation_evaluator().eval_object(expr),
             Constructor::Call { name, args, .. } => {
-                let mut evaluator = RelationEvaluator::new(
-                    &self.objects,
-                    self.normalized.len(),
-                    self.tolerance,
-                    self.inferred_dimensions,
-                );
-                evaluator.eval_constructor(&name.name, args, op.kind, op.span)?
+                let mut evaluator = self.relation_evaluator();
+                evaluator.eval_constructor(&name.name, args, op.kind, op.span)
             }
+        }
+    }
+
+    fn relation_evaluator(&self) -> RelationEvaluator<'_> {
+        RelationEvaluator::new(
+            &self.objects,
+            self.normalized.len(),
+            self.tolerance,
+            self.inferred_dimensions,
+        )
+    }
+
+    fn placed_object(&mut self, op: &OpStmt) -> Result<DObject, EvalError> {
+        let center = DPoint {
+            x: self.variable(op.span)?,
+            y: self.variable(op.span)?,
         };
-        self.objects.insert(op.id.name.clone(), object);
-        Ok(())
+        let Constructor::Call { name, args, .. } = &op.ctor else {
+            return Err(solver_error(op.span, "invalid placed declaration"));
+        };
+        let mut evaluator = self.relation_evaluator();
+        match (op.kind, name.name.as_str()) {
+            (Kind::Point, "point") => Ok(DObject::Point(center)),
+            (Kind::Circle, "circle") => Ok(DObject::Circle(DCircle {
+                center,
+                radius: evaluator
+                    .eval_number_as(&args[0], NumericDimension::Length)?
+                    .0,
+            })),
+            (Kind::Ellipse, "ellipse") => evaluator
+                .ellipse_with_center(center, args, op.span)
+                .map(DObject::Ellipse),
+            (Kind::Rect | Kind::Diamond, "rect" | "diamond") => {
+                evaluator.placed_polygon(&center, args, op.kind, op.span)
+            }
+            _ => Err(solver_error(op.span, "invalid placed declaration")),
+        }
     }
 
     fn free_point(&mut self, span: Span) -> Result<DObject, EvalError> {
@@ -781,7 +836,7 @@ impl<'a> RelationEvaluator<'a> {
             "angle" | "dir_angle" => self.eval_angle_function(name, args, span),
             "radius" => self.eval_radius(args, span),
             "length" => self.eval_length(args, span),
-            "area" | "perimeter" => self.eval_polygon_measure(name, args, span),
+            "area" | "perimeter" => self.eval_shape_measure(name, args, span),
             _ => Err(solver_error(
                 span,
                 format!("unsupported geometry function `{name}`"),
@@ -869,13 +924,22 @@ impl<'a> RelationEvaluator<'a> {
         Ok(DValue::Number(length, NumericDimension::Length))
     }
 
-    fn eval_polygon_measure(
+    fn eval_shape_measure(
         &mut self,
         name: &str,
         args: &[Expr],
         span: Span,
     ) -> Result<DValue, EvalError> {
         require_arity(name, args, 1, span)?;
+        if name == "area" {
+            if let Ok(ellipse) = self.eval_ellipse(&args[0]) {
+                let area = ellipse
+                    .semimajor
+                    .mul(&ellipse.semiminor)
+                    .scale(core::f64::consts::PI);
+                return Ok(DValue::Number(area, NumericDimension::Area));
+            }
+        }
         let vertices = self.eval_polygon(&args[0])?;
         let (value, dimension) = if name == "area" {
             (polygon_area(&vertices).abs(), NumericDimension::Area)
@@ -1276,6 +1340,64 @@ impl<'a> RelationEvaluator<'a> {
         }
     }
 
+    fn eval_ellipse(&mut self, expression: &Expr) -> Result<DEllipse, EvalError> {
+        match self.eval_object(expression)? {
+            DObject::Ellipse(ellipse) => Ok(ellipse),
+            _ => Err(solver_error(expression.span(), "expected an ellipse")),
+        }
+    }
+
+    fn ellipse_with_center(
+        &mut self,
+        center: DPoint,
+        args: &[Expr],
+        span: Span,
+    ) -> Result<DEllipse, EvalError> {
+        if !matches!(args.len(), 2 | 3) {
+            return Err(solver_error(
+                span,
+                "ellipse expects two semiaxes and optional rotation",
+            ));
+        }
+        let semimajor = self.eval_number_as(&args[0], NumericDimension::Length)?.0;
+        let semiminor = self.eval_number_as(&args[1], NumericDimension::Length)?.0;
+        if semiminor.value <= 0.0 || semimajor.value < semiminor.value {
+            return Err(solver_error(
+                span,
+                "ellipse semiaxes must satisfy a >= b > 0",
+            ));
+        }
+        let rotation = if let Some(value) = args.get(2) {
+            self.eval_number_as(value, NumericDimension::Angle)?.0
+        } else {
+            Jet::constant(0.0, self.count)
+        };
+        Ok(DEllipse {
+            center,
+            semimajor,
+            semiminor,
+            rotation,
+        })
+    }
+
+    fn placed_polygon(
+        &mut self,
+        center: &DPoint,
+        args: &[Expr],
+        kind: Kind,
+        span: Span,
+    ) -> Result<DObject, EvalError> {
+        require_arity(kind.as_str(), args, 2, span)?;
+        let width = self.eval_number_as(&args[0], NumericDimension::Length)?.0;
+        let height = self.eval_number_as(&args[1], NumericDimension::Length)?.0;
+        let vertices = if kind == Kind::Rect {
+            rect_vertices(center, &width, &height)
+        } else {
+            diamond_vertices(center, &width, &height)
+        };
+        Ok(DObject::Polygon(vertices, true))
+    }
+
     fn eval_constructor(
         &mut self,
         name: &str,
@@ -1302,8 +1424,63 @@ impl<'a> RelationEvaluator<'a> {
             Kind::Label | Kind::Arrow | Kind::Tick | Kind::RightAngle | Kind::TextBlock => {
                 Ok(DObject::Annotation)
             }
-            Kind::Num => Err(solver_error(span, "numeric constructor kind mismatch")),
+            _ => self.eval_remaining_constructor(name, args, kind, span),
         }
+    }
+
+    fn eval_remaining_constructor(
+        &mut self,
+        name: &str,
+        args: &[Expr],
+        kind: Kind,
+        span: Span,
+    ) -> Result<DObject, EvalError> {
+        if matches!(kind, Kind::Ellipse | Kind::Bspline) {
+            self.eval_curve_constructor(name, args, kind, span)
+        } else {
+            Err(solver_error(span, "numeric constructor kind mismatch"))
+        }
+    }
+
+    fn eval_curve_constructor(
+        &mut self,
+        name: &str,
+        args: &[Expr],
+        kind: Kind,
+        span: Span,
+    ) -> Result<DObject, EvalError> {
+        match (kind, name) {
+            (Kind::Ellipse, "ellipse") => {
+                self.eval_derived_ellipse(args, span).map(DObject::Ellipse)
+            }
+            (Kind::Bspline, "bspline") => self.eval_bspline(args, span).map(DObject::Bspline),
+            _ => Err(solver_error(span, "invalid curve constructor")),
+        }
+    }
+
+    fn eval_derived_ellipse(&mut self, args: &[Expr], span: Span) -> Result<DEllipse, EvalError> {
+        if !matches!(args.len(), 3 | 4) {
+            return Err(solver_error(
+                span,
+                "derived ellipse expects center, a, b [, rotation]",
+            ));
+        }
+        let center = self.eval_point(&args[0])?;
+        self.ellipse_with_center(center, &args[1..], span)
+    }
+
+    fn eval_bspline(&mut self, args: &[Expr], span: Span) -> Result<DBspline, EvalError> {
+        if args.len() < 4 {
+            return Err(solver_error(
+                span,
+                "B-spline requires at least four controls",
+            ));
+        }
+        let controls = args
+            .iter()
+            .map(|argument| self.eval_point(argument))
+            .collect::<Result<Vec<_>, _>>()?;
+        Ok(DBspline { controls })
     }
 
     fn eval_point_constructor(
@@ -1898,17 +2075,75 @@ impl<'a> RelationEvaluator<'a> {
             DObject::Linear(linear) => linear_property(linear, name, span)
                 .map(|point| DValue::Object(DObject::Point(point))),
             DObject::Circle(circle) => self.circle_property(circle, name, args, span),
+            object => self.eval_curve_or_shape_property(object, name, args, span),
+        }
+    }
+
+    fn eval_curve_or_shape_property(
+        &mut self,
+        object: DObject,
+        name: &str,
+        args: &[Expr],
+        span: Span,
+    ) -> Result<DValue, EvalError> {
+        match object {
             DObject::Arc(arc) => {
                 arc_property(arc, name, span).map(|point| DValue::Object(DObject::Point(point)))
             }
             DObject::Polygon(vertices, boxed) => {
                 polygon_property(&vertices, boxed, name, span, self.count)
             }
+            DObject::Ellipse(ellipse) => self.ellipse_property(ellipse, name, args, span),
+            DObject::Bspline(spline) => self.bspline_property(&spline, name, args, span),
             _ => Err(solver_error(
                 span,
                 format!("property `{name}` is unavailable"),
             )),
         }
+    }
+
+    fn ellipse_property(
+        &mut self,
+        ellipse: DEllipse,
+        name: &str,
+        args: &[Expr],
+        span: Span,
+    ) -> Result<DValue, EvalError> {
+        if name == "at" {
+            let angle = self.eval_number_as(&args[0], NumericDimension::Angle)?.0;
+            return Ok(DValue::Object(DObject::Point(ellipse_at(&ellipse, &angle))));
+        }
+        if let Some(point) = ellipse_anchor(&ellipse, name) {
+            return Ok(DValue::Object(DObject::Point(point?)));
+        }
+        ellipse_numeric_property(ellipse, name, span)
+    }
+
+    fn bspline_property(
+        &mut self,
+        spline: &DBspline,
+        name: &str,
+        args: &[Expr],
+        span: Span,
+    ) -> Result<DValue, EvalError> {
+        let point = match name {
+            "start" => spline.controls.first().cloned(),
+            "end" => spline.controls.last().cloned(),
+            "at" => {
+                let parameter = self.eval_number_as(&args[0], NumericDimension::Scalar)?.0;
+                Some(bspline_at(&spline.controls, &parameter, span)?)
+            }
+            _ => None,
+        };
+        point.map_or_else(
+            || {
+                Err(solver_error(
+                    span,
+                    format!("B-spline has no property `{name}`"),
+                ))
+            },
+            |point| Ok(DValue::Object(DObject::Point(point))),
+        )
     }
 
     fn circle_property(
@@ -1932,6 +2167,136 @@ impl<'a> RelationEvaluator<'a> {
                 format!("circle has no property `{name}`"),
             )),
         }
+    }
+}
+
+fn ellipse_at(ellipse: &DEllipse, angle: &Jet) -> DPoint {
+    let cosine = ellipse.rotation.cos();
+    let sine = ellipse.rotation.sin();
+    let major = DVector {
+        x: cosine.clone(),
+        y: sine.clone(),
+    };
+    let minor = DVector {
+        x: sine.neg(),
+        y: cosine,
+    };
+    ellipse
+        .center
+        .add_vector(&major.scale(&ellipse.semimajor.mul(&angle.cos())))
+        .add_vector(&minor.scale(&ellipse.semiminor.mul(&angle.sin())))
+}
+
+fn ellipse_anchor(ellipse: &DEllipse, name: &str) -> Option<Result<DPoint, EvalError>> {
+    let zero = Jet::constant(0.0, ellipse.semimajor.gradient.len());
+    let pi = Jet::constant(core::f64::consts::PI, ellipse.semimajor.gradient.len());
+    let half_pi = Jet::constant(
+        core::f64::consts::FRAC_PI_2,
+        ellipse.semimajor.gradient.len(),
+    );
+    let angle = match name {
+        "center" => return Some(Ok(ellipse.center.clone())),
+        "major_end" => Some(zero),
+        "major_start" => Some(pi),
+        "minor_end" => Some(half_pi),
+        "minor_start" => Some(half_pi.neg()),
+        _ => None,
+    };
+    if let Some(angle) = angle {
+        return Some(Ok(ellipse_at(ellipse, &angle)));
+    }
+    ellipse_focus(ellipse, name)
+}
+
+fn ellipse_focus(ellipse: &DEllipse, name: &str) -> Option<Result<DPoint, EvalError>> {
+    let sign = match name {
+        "focus1" => -1.0,
+        "focus2" => 1.0,
+        _ => return None,
+    };
+    let focal = ellipse
+        .semimajor
+        .sub(&ellipse.semiminor)
+        .mul(&ellipse.semimajor.add(&ellipse.semiminor))
+        .sqrt()
+        .map_err(|()| solver_error(Span::default(), "ellipse focal distance is undefined"));
+    Some(focal.map(|focal| {
+        let direction = DVector {
+            x: ellipse.rotation.cos(),
+            y: ellipse.rotation.sin(),
+        };
+        ellipse
+            .center
+            .add_vector(&direction.scale(&focal.scale(sign)))
+    }))
+}
+
+fn ellipse_numeric_property(
+    ellipse: DEllipse,
+    name: &str,
+    span: Span,
+) -> Result<DValue, EvalError> {
+    match name {
+        "semimajor" => Ok(DValue::Number(ellipse.semimajor, NumericDimension::Length)),
+        "semiminor" => Ok(DValue::Number(ellipse.semiminor, NumericDimension::Length)),
+        "rotation" => Ok(DValue::Number(ellipse.rotation, NumericDimension::Angle)),
+        _ => Err(solver_error(
+            span,
+            format!("ellipse has no property `{name}`"),
+        )),
+    }
+}
+
+fn bspline_at(controls: &[DPoint], parameter: &Jet, span: Span) -> Result<DPoint, EvalError> {
+    if !(0.0..=1.0).contains(&parameter.value) {
+        return Err(solver_error(span, "B-spline parameter must be in [0, 1]"));
+    }
+    if parameter.value == 0.0 {
+        return Ok(controls[0].clone());
+    }
+    if parameter.value >= 1.0 {
+        return Ok(controls[controls.len() - 1].clone());
+    }
+    let knots = bspline_knots(controls.len());
+    let knot_span = (3..controls.len())
+        .find(|index| knots[*index] <= parameter.value && parameter.value < knots[*index + 1])
+        .ok_or_else(|| solver_error(span, "B-spline span selection failed"))?;
+    Ok(de_boor_points(controls, &knots, knot_span, parameter))
+}
+
+#[allow(
+    clippy::cast_precision_loss,
+    reason = "an allocated control-point count is exactly representable at every feasible size"
+)]
+fn bspline_knots(control_count: usize) -> Vec<f64> {
+    let spans = control_count - 3;
+    let mut knots = vec![0.0; 4];
+    knots.extend((1..spans).map(|index| index as f64 / spans as f64));
+    knots.extend([1.0; 4]);
+    knots
+}
+
+fn de_boor_points(controls: &[DPoint], knots: &[f64], span: usize, parameter: &Jet) -> DPoint {
+    let mut values = (0..=3)
+        .map(|index| controls[span - 3 + index].clone())
+        .collect::<Vec<_>>();
+    for level in 1..=3 {
+        for index in (level..=3).rev() {
+            let knot_index = span - 3 + index;
+            let denominator = knots[knot_index + 4 - level] - knots[knot_index];
+            let alpha = parameter
+                .sub(&Jet::constant(knots[knot_index], parameter.gradient.len()))
+                .scale(1.0 / denominator);
+            values[index] = lerp_dpoint(&values[index - 1], &values[index], &alpha);
+        }
+    }
+    values[3].clone()
+}
+
+fn lerp_dpoint(first: &DPoint, second: &DPoint, amount: &Jet) -> DPoint {
+    DPoint {
+        x: first.x.add(&second.x.sub(&first.x).mul(amount)),
+        y: first.y.add(&second.y.sub(&first.y).mul(amount)),
     }
 }
 

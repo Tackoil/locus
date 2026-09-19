@@ -9,7 +9,7 @@ use crate::eval::expr::{
     DimensionMap, Expected, ExpressionEvaluator, InferredDimension,
     angle_product_operand_expectations, product_operand_expectations,
 };
-use crate::eval::{EvalError, Value, constructor_arg_dimension, infer_dimensions};
+use crate::eval::{EvalError, Value, infer_dimensions};
 use crate::geom::construct;
 use crate::geom::measure;
 use crate::geom::{Arc, Line, Point, Polygon, Ray, Segment, Vec2, arc_contains_angle};
@@ -98,6 +98,7 @@ pub fn evaluate_assertions(
         assertions.push(evaluate_one(
             assertions.len(),
             assertion,
+            file.version,
             &environment,
             &dimensions,
             base_tolerance,
@@ -130,6 +131,7 @@ fn environment_from_scene(scene: &ResolvedScene) -> Result<Environment, EvalErro
 fn evaluate_one(
     index: usize,
     assertion: &AssertStmt,
+    version: u32,
     environment: &Environment,
     dimensions: &DimensionMap,
     base_tolerance: Tolerance,
@@ -138,6 +140,7 @@ fn evaluate_one(
     let mut context = AssertionContext {
         expressions: ExpressionEvaluator::new(environment, tolerance, dimensions),
         tolerance,
+        version,
     };
     let passed = context.eval_boolean(&assertion.expr)?;
     let actuals = if passed {
@@ -170,6 +173,7 @@ fn assertion_tolerance(assertion: &AssertStmt, base: Tolerance) -> Result<Tolera
 struct AssertionContext<'a> {
     expressions: ExpressionEvaluator<'a>,
     tolerance: Tolerance,
+    version: u32,
 }
 
 impl AssertionContext<'_> {
@@ -309,8 +313,8 @@ impl AssertionContext<'_> {
         if name == "on" {
             return self.eval_on(args, span);
         }
-        if name == "tangent" {
-            return self.eval_tangent(args, span);
+        if name == "tangent" || name == "internally_tangent" {
+            return self.eval_tangent(name, args, span);
         }
         if name == "parallel" || name == "perpendicular" {
             return self.eval_direction(name, args, span);
@@ -353,20 +357,27 @@ impl AssertionContext<'_> {
                 | ResolvedObject::Segment(_)
                 | ResolvedObject::Circle(_)
                 | ResolvedObject::Arc(_)
+                | ResolvedObject::Ellipse(_)
         ) {
             return Err(assertion_error(
                 args[1].span(),
-                "on target must be linear, circle, or arc",
+                "on target must be linear, circle, arc, or ellipse",
             ));
         }
         point_on_object(point, &object, self.tolerance, span)
     }
 
-    fn eval_tangent(&mut self, args: &[Expr], span: Span) -> Result<bool, EvalError> {
-        require_arity("tangent", args, 2, span)?;
+    fn eval_tangent(&mut self, name: &str, args: &[Expr], span: Span) -> Result<bool, EvalError> {
+        require_arity(name, args, 2, span)?;
         let lhs = self.expressions.eval_resolved_object(&args[0])?;
         let rhs = self.expressions.eval_resolved_object(&args[1])?;
-        tangent_objects(&lhs, &rhs, self.tolerance, span)
+        if name == "internally_tangent" {
+            internally_tangent_objects(&lhs, &rhs, self.tolerance, span)
+        } else if self.version >= 3 {
+            external_tangent_objects(&lhs, &rhs, self.tolerance, span)
+        } else {
+            tangent_objects(&lhs, &rhs, self.tolerance, span)
+        }
     }
 
     fn eval_direction(&mut self, name: &str, args: &[Expr], span: Span) -> Result<bool, EvalError> {
@@ -494,6 +505,9 @@ impl AssertionContext<'_> {
             ResolvedObject::Circle(circle) => Ok(self
                 .tolerance
                 .length_strictly_positive(circle.radius - measure::dist(circle.center, point))),
+            ResolvedObject::Ellipse(ellipse) => Ok(self
+                .tolerance
+                .length_strictly_positive(-point_ellipse_residual(point, ellipse))),
             ResolvedObject::Polygon(polygon)
             | ResolvedObject::Rect(polygon)
             | ResolvedObject::Diamond(polygon) => Ok(point_strictly_inside_polygon(
@@ -503,7 +517,7 @@ impl AssertionContext<'_> {
             )),
             _ => Err(assertion_error(
                 args[1].span(),
-                "inside target must be a circle or polygon",
+                "inside target must be a circle, ellipse, or polygon",
             )),
         }
     }
@@ -631,7 +645,8 @@ fn visit_call_children(
         return context.walk_actuals(&args[1], operand_expected, actuals);
     }
     for (index, argument) in args.iter().enumerate() {
-        let expected = constructor_arg_dimension(name, index).map(expected_for_inferred);
+        let expected = crate::eval::constructor_arg_dimension_for_arity(name, index, args.len())
+            .map(expected_for_inferred);
         context.walk_actuals(argument, expected, actuals)?;
     }
     Ok(())
@@ -708,6 +723,7 @@ fn is_predicate(name: &str) -> bool {
     matches!(
         name,
         "on" | "tangent"
+            | "internally_tangent"
             | "parallel"
             | "perpendicular"
             | "collinear"
@@ -743,6 +759,19 @@ pub(crate) fn point_on_object(
             (measure::dist(point, circle.center) - circle.radius).abs()
         }
         ResolvedObject::Arc(arc) => point_arc_distance(point, arc.geometry, tolerance),
+        ResolvedObject::Ellipse(ellipse) => point_ellipse_residual(point, *ellipse).abs(),
+        object => return point_on_polygon(point, object, tolerance, span),
+    };
+    Ok(tolerance.length_zero(residual))
+}
+
+fn point_on_polygon(
+    point: Point,
+    object: &ResolvedObject,
+    tolerance: Tolerance,
+    span: Span,
+) -> Result<bool, EvalError> {
+    let residual = match object {
         ResolvedObject::Polygon(polygon)
         | ResolvedObject::Rect(polygon)
         | ResolvedObject::Diamond(polygon) => {
@@ -756,6 +785,53 @@ pub(crate) fn point_on_object(
         }
     };
     Ok(tolerance.length_zero(residual))
+}
+
+fn point_ellipse_residual(point: Point, ellipse: crate::geom::Ellipse) -> f64 {
+    let offset = point - ellipse.center;
+    let local_x = offset.dot(ellipse.major_unit());
+    let local_y = offset.dot(ellipse.minor_unit());
+    let normalized_x = local_x / ellipse.semimajor;
+    let normalized_y = local_y / ellipse.semiminor;
+    ellipse.semiminor
+        * (libm::sqrt(normalized_x * normalized_x + normalized_y * normalized_y) - 1.0)
+}
+
+fn external_tangent_objects(
+    lhs: &ResolvedObject,
+    rhs: &ResolvedObject,
+    tolerance: Tolerance,
+    span: Span,
+) -> Result<bool, EvalError> {
+    match (lhs, rhs) {
+        (ResolvedObject::Circle(lhs), ResolvedObject::Circle(rhs)) => {
+            Ok(tolerance
+                .length_zero(measure::dist(lhs.center, rhs.center) - lhs.radius - rhs.radius))
+        }
+        _ => tangent_objects(lhs, rhs, tolerance, span),
+    }
+}
+
+fn internally_tangent_objects(
+    outer: &ResolvedObject,
+    inner: &ResolvedObject,
+    tolerance: Tolerance,
+    span: Span,
+) -> Result<bool, EvalError> {
+    let (ResolvedObject::Circle(outer), ResolvedObject::Circle(inner)) = (outer, inner) else {
+        return Err(assertion_error(
+            span,
+            "internally_tangent requires two circles",
+        ));
+    };
+    if outer.radius <= inner.radius {
+        return Err(degenerate(
+            span,
+            "internal tangency requires the outer radius to exceed the inner radius",
+        ));
+    }
+    Ok(tolerance
+        .length_zero(measure::dist(outer.center, inner.center) - (outer.radius - inner.radius)))
 }
 
 pub(crate) fn tangent_objects(

@@ -25,7 +25,7 @@ use crate::Tolerance;
 use crate::geom::construct;
 use crate::geom::intersect::intersect;
 use crate::geom::measure;
-use crate::geom::{Arc, BBox, Circle, Line, Point, Ray, Segment};
+use crate::geom::{Arc, BBox, Bspline, Circle, Ellipse, Line, Point, Ray, Segment};
 use crate::scene::{
     AnnotationSpec, CompassDirection, Dimension, Evaluation, LabelDirection, NumericValue,
     PointMark, ResolvedArc, ResolvedObject, ResolvedPoint, ResolvedScene, TextBlockPlacement,
@@ -40,14 +40,14 @@ use self::expr::{
 /// Evaluates a parsed file in source order.
 pub fn evaluate(file: &File) -> Result<Evaluation, EvalError> {
     let prepared = PreparedEvaluation::new(file)?;
-    if has_solver_work(file) {
+    if has_solver_work(file, &prepared.dimensions) {
         let solved = crate::solve::solve_prepared(&prepared)?;
         return Ok(Evaluation::Solved {
             scene: solved.scene,
             summary: solved.summary,
         });
     }
-    let mut evaluator = FileEvaluator::new(prepared.dimensions.clone());
+    let mut evaluator = FileEvaluator::new(prepared.dimensions.clone(), file.version);
     // `rel` statements belong to the solver tier and `assert` statements to the post-solve
     // checker. Dimension inference still visits both, while this direct pass resolves only ops.
     for statement in &file.statements {
@@ -85,7 +85,7 @@ impl<'a> PreparedEvaluation<'a> {
         &self,
         unknowns: Option<&[f64]>,
     ) -> Result<TrialEvaluation, EvalError> {
-        let mut evaluator = FileEvaluator::new(self.dimensions.clone());
+        let mut evaluator = FileEvaluator::new(self.dimensions.clone(), self.file.version);
         let mut cursor = UnknownCursor::new(unknowns);
         for statement in &self.file.statements {
             let Statement::Op(op) = statement else {
@@ -98,10 +98,14 @@ impl<'a> PreparedEvaluation<'a> {
     }
 }
 
-fn has_solver_work(file: &File) -> bool {
+fn has_solver_work(file: &File, dimensions: &DimensionMap) -> bool {
     file.statements.iter().any(|statement| match statement {
         Statement::Rel(_) => true,
-        Statement::Op(op) => free_span(&op.ctor).is_some() || !op.where_clauses.is_empty(),
+        Statement::Op(op) => {
+            free_span(&op.ctor).is_some()
+                || is_placed_op(op, dimensions)
+                || !op.where_clauses.is_empty()
+        }
         Statement::Assert(_) | Statement::Meta(_) | Statement::Style(_) | Statement::Class(_) => {
             false
         }
@@ -209,28 +213,34 @@ struct FileEvaluator {
     bbox: Option<BBox>,
     dimensions: DimensionMap,
     length_fallbacks: Vec<f64>,
+    placement_index: usize,
+    version: u32,
 }
 
 impl FileEvaluator {
-    fn new(dimensions: DimensionMap) -> Self {
+    fn new(dimensions: DimensionMap, version: u32) -> Self {
         Self {
             env: Environment::new(),
             bbox: None,
             dimensions,
             length_fallbacks: Vec::new(),
+            placement_index: 0,
+            version,
         }
     }
 
     fn evaluate_op(&mut self, op: &OpStmt) -> Result<(), EvalError> {
         let tolerance = tolerance_for(self.bbox, &self.length_fallbacks);
         let additions = {
-            let mut expressions = ExpressionEvaluator::new(&self.env, tolerance, &self.dimensions);
+            let mut expressions = ExpressionEvaluator::new(&self.env, tolerance, &self.dimensions)
+                .with_version(self.version);
             evaluated_length_fallbacks(&mut expressions, op)?
         };
         self.length_fallbacks
             .extend(additions.into_iter().filter(|value| *value > 0.0));
         let tolerance = tolerance_for(self.bbox, &self.length_fallbacks);
-        let mut expressions = ExpressionEvaluator::new(&self.env, tolerance, &self.dimensions);
+        let mut expressions = ExpressionEvaluator::new(&self.env, tolerance, &self.dimensions)
+            .with_version(self.version);
         let object = evaluate_op_value(&mut expressions, op)
             .map_err(|error| attach_object(error, &op.id.name))?;
         validate_kind(op.kind, &object, op.ctor.span())?;
@@ -250,7 +260,8 @@ impl FileEvaluator {
         if matches!(
             op.ctor,
             Constructor::FreePoint { .. } | Constructor::FreeNum { .. }
-        ) {
+        ) || is_placed_op(op, &self.dimensions)
+        {
             return self.evaluate_free_op(op, unknowns);
         }
         self.evaluate_op(op)
@@ -262,13 +273,19 @@ impl FileEvaluator {
         unknowns: &mut UnknownCursor<'_>,
     ) -> Result<(), EvalError> {
         let tolerance = tolerance_for(self.bbox, &self.length_fallbacks);
-        let mut expressions = ExpressionEvaluator::new(&self.env, tolerance, &self.dimensions);
+        let mut expressions = ExpressionEvaluator::new(&self.env, tolerance, &self.dimensions)
+            .with_version(self.version);
+        let placement_seed = deterministic_placement(self.placement_index);
         let (object, fallbacks) = evaluate_free_value(
             &mut expressions,
             op,
             self.dimensions.get(&op.id.name).copied(),
             unknowns,
+            placement_seed,
         )?;
+        if is_placed_op(op, &self.dimensions) {
+            self.placement_index += 1;
+        }
         self.length_fallbacks.extend(fallbacks);
         validate_kind(op.kind, &object, op.ctor.span())?;
         if let Some(bounds) = object.bbox() {
@@ -300,11 +317,23 @@ fn evaluate_free_value(
     op: &OpStmt,
     inferred: Option<InferredDimension>,
     unknowns: &mut UnknownCursor<'_>,
+    placement_seed: Point,
 ) -> Result<(ResolvedObject, Vec<f64>), EvalError> {
     match &op.ctor {
         Constructor::FreePoint { x, y, .. } => evaluate_free_point(expressions, op, x, y, unknowns),
         Constructor::FreeNum { hint, .. } => {
             evaluate_free_num(expressions, hint, inferred, unknowns)
+        }
+        Constructor::Call { name, args, span } if is_placed_op(op, expressions.dimensions()) => {
+            evaluate_placed_value(
+                expressions,
+                op,
+                &name.name,
+                args,
+                unknowns,
+                placement_seed,
+                *span,
+            )
         }
         Constructor::Call { .. } | Constructor::Expr { .. } => Err(EvalError::new(
             "E401",
@@ -312,6 +341,109 @@ fn evaluate_free_value(
             "internal free-object dispatch error",
         )),
     }
+}
+
+pub(crate) fn is_placed_op(op: &OpStmt, dimensions: &DimensionMap) -> bool {
+    let Constructor::Call { name, args, .. } = &op.ctor else {
+        return false;
+    };
+    matches!(
+        (op.kind, name.name.as_str(), args.len()),
+        (Kind::Point, "point", 0)
+            | (Kind::Circle, "circle", 1)
+            | (Kind::Ellipse, "ellipse", 2)
+            | (Kind::Rect | Kind::Diamond, "rect" | "diamond", 2)
+    ) || matches!(
+        (op.kind, name.name.as_str(), args.len()),
+        (Kind::Ellipse, "ellipse", 3)
+    ) && dimensions.expression_dimension(&args[0]).is_some()
+}
+
+#[allow(
+    clippy::cast_precision_loss,
+    reason = "an in-memory declaration index is exactly representable at every feasible size"
+)]
+fn deterministic_placement(index: usize) -> Point {
+    const SEEDS: [Point; 8] = [
+        Point::new(0.0, 0.0),
+        Point::new(4.0, 0.0),
+        Point::new(0.0, 3.0),
+        Point::new(4.0, 3.0),
+        Point::new(-4.0, 0.0),
+        Point::new(0.0, -3.0),
+        Point::new(-4.0, 3.0),
+        Point::new(4.0, -3.0),
+    ];
+    let base = SEEDS[index % SEEDS.len()];
+    let ring = (index / SEEDS.len()) as f64;
+    Point::new(base.x + ring * 1.25, base.y - ring * 0.75)
+}
+
+fn evaluate_placed_value(
+    evaluator: &mut ExpressionEvaluator<'_>,
+    op: &OpStmt,
+    name: &str,
+    args: &[Expr],
+    unknowns: &mut UnknownCursor<'_>,
+    seed: Point,
+    span: Span,
+) -> Result<(ResolvedObject, Vec<f64>), EvalError> {
+    let center = Point::new(
+        unknowns.next(span)?.unwrap_or(seed.x),
+        unknowns.next(span)?.unwrap_or(seed.y),
+    );
+    let object = match (op.kind, name) {
+        (Kind::Point, "point") => apply_point_props(&resolved_point(center), &op.props)?,
+        (Kind::Circle, "circle") => ResolvedObject::Circle(
+            Circle::new(center, evaluator.eval_number(&args[0], Dimension::Length)?)
+                .map_err(|error| EvalError::construction(span, error))?,
+        ),
+        (Kind::Ellipse, "ellipse") => {
+            ResolvedObject::Ellipse(eval_ellipse_at(evaluator, center, args, span)?)
+        }
+        (Kind::Rect, "rect") | (Kind::Diamond, "diamond") => {
+            eval_placed_polygon(evaluator, op.kind, center, args, span)?
+        }
+        _ => return Err(type_error(span, "invalid placed constructor")),
+    };
+    Ok((object, vec![seed.x.abs(), seed.y.abs()]))
+}
+
+fn eval_placed_polygon(
+    evaluator: &mut ExpressionEvaluator<'_>,
+    kind: Kind,
+    center: Point,
+    args: &[Expr],
+    span: Span,
+) -> Result<ResolvedObject, EvalError> {
+    let width = evaluator.eval_number(&args[0], Dimension::Length)?;
+    let height = evaluator.eval_number(&args[1], Dimension::Length)?;
+    let polygon = if kind == Kind::Rect {
+        construct::rect(center, width, height, evaluator.tolerance)
+    } else {
+        construct::diamond(center, width, height, evaluator.tolerance)
+    }
+    .map_err(|error| EvalError::construction(span, error))?;
+    Ok(if kind == Kind::Rect {
+        ResolvedObject::Rect(polygon)
+    } else {
+        ResolvedObject::Diamond(polygon)
+    })
+}
+
+fn eval_ellipse_at(
+    evaluator: &mut ExpressionEvaluator<'_>,
+    center: Point,
+    args: &[Expr],
+    span: Span,
+) -> Result<Ellipse, EvalError> {
+    let semimajor = evaluator.eval_number(&args[0], Dimension::Length)?;
+    let semiminor = evaluator.eval_number(&args[1], Dimension::Length)?;
+    let rotation = args
+        .get(2)
+        .map_or(Ok(0.0), |value| evaluator.eval_angle_value(value))?;
+    Ellipse::new(center, semimajor, semiminor, rotation)
+        .map_err(|error| EvalError::construction(span, error))
 }
 
 fn evaluate_free_point(
@@ -391,10 +523,17 @@ fn collect_constructor_length_args(
     args: &[Expr],
     values: &mut Vec<f64>,
 ) -> Result<(), EvalError> {
+    let derived_ellipse =
+        name == "ellipse" && args.len() == 3 && evaluator.eval_point(&args[0]).is_ok();
     for (index, argument) in args.iter().enumerate() {
-        if constructor_arg_dimension(name, index)
-            == Some(InferredDimension::Number(Dimension::Length))
-        {
+        let dimension = if derived_ellipse && matches!(index, 1 | 2) {
+            Some(InferredDimension::Number(Dimension::Length))
+        } else if derived_ellipse {
+            None
+        } else {
+            constructor_arg_dimension_for_arity(name, index, args.len())
+        };
+        if dimension == Some(InferredDimension::Number(Dimension::Length)) {
             values.push(evaluator.eval_number(argument, Dimension::Length)?);
         }
     }
@@ -424,7 +563,10 @@ fn evaluate_op_value(
     op: &OpStmt,
 ) -> Result<ResolvedObject, EvalError> {
     match &op.ctor {
-        Constructor::Expr { expr, .. } => evaluate_named_num(evaluator, expr, &op.id.name),
+        Constructor::Expr { expr, .. } if op.kind == Kind::Num => {
+            evaluate_named_num(evaluator, expr, &op.id.name)
+        }
+        Constructor::Expr { expr, .. } => evaluator.eval_resolved_object(expr),
         Constructor::Call {
             name, args, span, ..
         } => eval_constructor_object(evaluator, &name.name, args, &op.props, *span),
@@ -493,6 +635,14 @@ fn eval_constructor_object(
     }
     if is_polygon_constructor(name) {
         return eval_polygon_constructor(evaluator, name, args, span);
+    }
+    if name == "ellipse" {
+        return eval_ellipse_constructor(evaluator, args, span).map(ResolvedObject::Ellipse);
+    }
+    if name == "bspline" {
+        return Bspline::new(evaluator.eval_points(args)?)
+            .map(ResolvedObject::Bspline)
+            .map_err(|error| EvalError::construction(span, error));
     }
     if is_annotation_constructor(name) {
         return eval_annotation_constructor(evaluator, name, args, props, span);
@@ -801,6 +951,12 @@ fn eval_foot(
     let target = evaluator.eval_linear(&args[1])?;
     let result = match target {
         ResolvedObject::Line(line) => construct::foot(point, line, evaluator.tolerance),
+        ResolvedObject::Ray(ray) if evaluator.version() >= 3 => {
+            construct::closest_foot(point, ray, evaluator.tolerance)
+        }
+        ResolvedObject::Segment(segment) if evaluator.version() >= 3 => {
+            construct::closest_foot(point, segment, evaluator.tolerance)
+        }
         ResolvedObject::Ray(ray) => construct::foot(point, ray, evaluator.tolerance),
         ResolvedObject::Segment(segment) => construct::foot(point, segment, evaluator.tolerance),
         _ => return Err(type_error(args[1].span(), "foot target must be line-like")),
@@ -1014,6 +1170,27 @@ fn eval_circle_constructor(
     };
     circle
         .map(ResolvedObject::Circle)
+        .map_err(|error| EvalError::construction(span, error))
+}
+
+fn eval_ellipse_constructor(
+    evaluator: &mut ExpressionEvaluator<'_>,
+    args: &[Expr],
+    span: Span,
+) -> Result<Ellipse, EvalError> {
+    if !matches!(args.len(), 3 | 4) {
+        return Err(type_error(
+            span,
+            "derived ellipse expects center, a, b [, rotation]",
+        ));
+    }
+    let center = evaluator.eval_point(&args[0])?;
+    let semimajor = evaluator.eval_number(&args[1], Dimension::Length)?;
+    let semiminor = evaluator.eval_number(&args[2], Dimension::Length)?;
+    let rotation = args
+        .get(3)
+        .map_or(Ok(0.0), |value| evaluator.eval_angle_value(value))?;
+    Ellipse::new(center, semimajor, semiminor, rotation)
         .map_err(|error| EvalError::construction(span, error))
 }
 
@@ -1666,6 +1843,9 @@ fn geometry_kind_matches(kind: Kind, object: &ResolvedObject) -> bool {
 }
 
 fn secondary_geometry_kind_matches(kind: Kind, object: &ResolvedObject) -> bool {
+    if matches!(kind, Kind::Ellipse | Kind::Bspline) {
+        return curve_kind_matches(kind, object);
+    }
     match kind {
         Kind::Circle => matches!(object, ResolvedObject::Circle(_)),
         Kind::Arc => matches!(object, ResolvedObject::Arc(_)),
@@ -1674,6 +1854,13 @@ fn secondary_geometry_kind_matches(kind: Kind, object: &ResolvedObject) -> bool 
         Kind::Diamond => matches!(object, ResolvedObject::Diamond(_)),
         _ => false,
     }
+}
+
+fn curve_kind_matches(kind: Kind, object: &ResolvedObject) -> bool {
+    matches!(
+        (kind, object),
+        (Kind::Ellipse, ResolvedObject::Ellipse(_)) | (Kind::Bspline, ResolvedObject::Bspline(_))
+    )
 }
 
 pub(crate) fn infer_dimensions(file: &File) -> Result<DimensionMap, EvalError> {
@@ -1837,19 +2024,65 @@ fn infer_constructor_args(
     numeric_ids: &BTreeSet<String>,
     dimensions: &mut DimensionMap,
 ) -> Result<(), EvalError> {
+    let derived_ellipse =
+        name == "ellipse" && args.len() == 3 && !expression_is_numeric(&args[0], numeric_ids);
     for (index, argument) in args.iter().enumerate() {
-        let expected = constructor_arg_dimension(name, index);
+        let expected = if derived_ellipse && matches!(index, 1 | 2) {
+            Some(InferredDimension::Number(Dimension::Length))
+        } else if derived_ellipse {
+            None
+        } else {
+            constructor_arg_dimension_for_arity(name, index, args.len())
+        };
         infer_expr(argument, expected, numeric_ids, dimensions)?;
     }
     Ok(())
 }
 
-pub(crate) fn constructor_arg_dimension(name: &str, index: usize) -> Option<InferredDimension> {
+fn expression_is_numeric(expression: &Expr, numeric_ids: &BTreeSet<String>) -> bool {
+    match expression {
+        Expr::Number(_) => true,
+        Expr::Ref(id) => numeric_ids.contains(&id.name),
+        Expr::Call { name, .. } => numeric_function_dimension(&name.name).is_some(),
+        Expr::Property { name, .. } => is_numeric_property(&name.name),
+        other => compound_expression_is_numeric(other, numeric_ids),
+    }
+}
+
+fn compound_expression_is_numeric(expression: &Expr, numeric_ids: &BTreeSet<String>) -> bool {
+    match expression {
+        Expr::Group { expr, .. } | Expr::Unary { expr, .. } => {
+            expression_is_numeric(expr, numeric_ids)
+        }
+        Expr::Binary { lhs, rhs, .. } => {
+            expression_is_numeric(lhs, numeric_ids) && expression_is_numeric(rhs, numeric_ids)
+        }
+        _ => false,
+    }
+}
+
+fn is_numeric_property(name: &str) -> bool {
+    matches!(
+        name,
+        "radius" | "length" | "semimajor" | "semiminor" | "rotation"
+    )
+}
+
+pub(crate) fn constructor_arg_dimension_for_arity(
+    name: &str,
+    index: usize,
+    arity: usize,
+) -> Option<InferredDimension> {
     if matches!(name, "offset") && matches!(index, 1 | 2)
         || matches!(name, "extend") && index == 2
-        || matches!(name, "circle") && index == 1
+        || matches!(name, "circle") && (index == 1 || arity == 1 && index == 0)
         || matches!(name, "angle_arc") && index == 3
-        || matches!(name, "rect" | "diamond") && matches!(index, 1 | 2)
+        || matches!(name, "rect" | "diamond")
+            && (matches!(index, 1 | 2) || arity == 2 && matches!(index, 0 | 1))
+        || name == "ellipse"
+            && (arity == 2 && matches!(index, 0 | 1)
+                || arity == 3 && matches!(index, 0 | 1)
+                || arity == 4 && matches!(index, 1 | 2))
     {
         return Some(InferredDimension::Number(Dimension::Length));
     }
@@ -1858,7 +2091,10 @@ pub(crate) fn constructor_arg_dimension(name: &str, index: usize) -> Option<Infe
     {
         return Some(InferredDimension::Number(Dimension::Scalar));
     }
-    if matches!(name, "rotate") && index == 2 || matches!(name, "on_circle") && index == 1 {
+    if matches!(name, "rotate") && index == 2
+        || matches!(name, "on_circle") && index == 1
+        || name == "ellipse" && (arity == 3 && index == 2 || arity == 4 && index == 3)
+    {
         return Some(InferredDimension::Angle);
     }
     None
@@ -3171,5 +3407,45 @@ mod tests {
             );
         }
         Ok(())
+    }
+
+    #[test]
+    fn format_three_resolves_derived_ellipse_overload_and_object_aliases() {
+        let parsed = parse(
+            "locus 3\npoint O = point()\nellipse e = ellipse(O, 3, 2)\nellipse alias = e\npoint P = e.at(0deg)\n",
+        );
+        assert!(parsed.diagnostics.is_empty(), "{:#?}", parsed.diagnostics);
+        let evaluation = evaluate(&parsed.file).expect("format-three curves");
+        assert!(
+            matches!(&evaluation, Evaluation::Solved { .. }),
+            "placed point must enter solver"
+        );
+        let scene = match evaluation {
+            Evaluation::Resolved(scene) | Evaluation::Solved { scene, .. } => scene,
+        };
+        let object = |name: &str| {
+            scene
+                .objects
+                .iter()
+                .find_map(|(id, object)| (id.name == name).then_some(object))
+                .expect("named object")
+        };
+        let ellipse = object("e");
+        assert_eq!(ellipse, object("alias"));
+        assert!(
+            matches!(ellipse, ResolvedObject::Ellipse(_)),
+            "ellipse kind"
+        );
+        let ResolvedObject::Ellipse(ellipse) = ellipse else {
+            return;
+        };
+        assert!(
+            matches!(object("P"), ResolvedObject::Point(_)),
+            "point kind"
+        );
+        let ResolvedObject::Point(point) = object("P") else {
+            return;
+        };
+        assert_eq!(point.geometry, ellipse.at(0.0).expect("major endpoint"));
     }
 }

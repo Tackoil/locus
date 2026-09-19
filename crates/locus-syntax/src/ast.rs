@@ -1,4 +1,4 @@
-//! Serializable source AST for Locus format version 2.
+//! Serializable source AST for Locus format versions 2 and 3.
 #![allow(
     missing_docs,
     reason = "AST fields mirror the normative grammar directly"
@@ -62,6 +62,8 @@ pub enum Kind {
     Segment,
     Circle,
     Arc,
+    Ellipse,
+    Bspline,
     Polygon,
     Rect,
     Diamond,
@@ -73,7 +75,7 @@ pub enum Kind {
 }
 
 impl Kind {
-    const ALL: [Self; 15] = [
+    const ALL: [Self; 17] = [
         Self::Point,
         Self::Num,
         Self::Line,
@@ -81,6 +83,8 @@ impl Kind {
         Self::Segment,
         Self::Circle,
         Self::Arc,
+        Self::Ellipse,
+        Self::Bspline,
         Self::Polygon,
         Self::Rect,
         Self::Diamond,

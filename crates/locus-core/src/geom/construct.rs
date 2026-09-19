@@ -35,6 +35,9 @@ pub fn offset(point: Point, dx: f64, dy: f64) -> Result<Point, ConstructError> {
 pub trait FootTarget: Copy {
     /// Carrier parameter of the orthogonal projection, or a domain error.
     fn projected_point(self, point: Point, tolerance: Tolerance) -> Result<Point, ConstructError>;
+
+    /// Closest point on the target's closed parameter domain.
+    fn closest_point(self, point: Point, tolerance: Tolerance) -> Result<Point, ConstructError>;
 }
 
 /// Perpendicular foot on a line, ray, or segment.
@@ -47,9 +50,23 @@ pub fn foot<T: FootTarget>(
     target.projected_point(point, tolerance)
 }
 
+/// Closest projection on a line, closed ray, or closed segment.
+pub fn closest_foot<T: FootTarget>(
+    point: Point,
+    target: T,
+    tolerance: Tolerance,
+) -> Result<Point, ConstructError> {
+    validate_finite_points("foot", &[point])?;
+    target.closest_point(point, tolerance)
+}
+
 impl FootTarget for Line {
     fn projected_point(self, point: Point, tolerance: Tolerance) -> Result<Point, ConstructError> {
         project_to_carrier(point, self.start, self.direction(), tolerance).map(|(result, _)| result)
+    }
+
+    fn closest_point(self, point: Point, tolerance: Tolerance) -> Result<Point, ConstructError> {
+        self.projected_point(point, tolerance)
     }
 }
 
@@ -66,6 +83,11 @@ impl FootTarget for Ray {
             })
         }
     }
+
+    fn closest_point(self, point: Point, tolerance: Tolerance) -> Result<Point, ConstructError> {
+        let (_, parameter) = project_to_carrier(point, self.start, self.direction(), tolerance)?;
+        Ok(self.start + self.direction() * parameter.max(0.0))
+    }
 }
 
 impl FootTarget for Segment {
@@ -80,6 +102,11 @@ impl FootTarget for Segment {
                 reason: "perpendicular foot lies outside the segment",
             })
         }
+    }
+
+    fn closest_point(self, point: Point, tolerance: Tolerance) -> Result<Point, ConstructError> {
+        let (_, parameter) = project_to_carrier(point, self.start, self.direction(), tolerance)?;
+        Ok(self.start + self.direction() * parameter.clamp(0.0, 1.0))
     }
 }
 

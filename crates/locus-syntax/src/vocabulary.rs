@@ -20,6 +20,8 @@ pub const KIND_NAMES: &[&str] = &[
     "segment",
     "circle",
     "arc",
+    "ellipse",
+    "bspline",
     "polygon",
     "rect",
     "diamond",
@@ -32,6 +34,7 @@ pub const KIND_NAMES: &[&str] = &[
 
 /// All derived constructor names from specification Part 5.
 pub const CONSTRUCTOR_NAMES: &[&str] = &[
+    "point",
     "midpoint",
     "lerp",
     "offset",
@@ -63,6 +66,8 @@ pub const CONSTRUCTOR_NAMES: &[&str] = &[
     "incircle",
     "arc",
     "angle_arc",
+    "ellipse",
+    "bspline",
     "polygon",
     "rect",
     "diamond",
@@ -77,6 +82,7 @@ pub const CONSTRUCTOR_NAMES: &[&str] = &[
 ///
 /// Entries use source-language names and intentionally preserve constructor order.
 pub const CONSTRUCTOR_SIGNATURES: &[(&str, &str)] = &[
+    ("point", "point() -> point"),
     ("midpoint", "midpoint(A, B) -> point"),
     ("lerp", "lerp(A, B, t) -> point"),
     ("offset", "offset(P, dx, dy) -> point"),
@@ -101,13 +107,18 @@ pub const CONSTRUCTOR_SIGNATURES: &[(&str, &str)] = &[
     ("perp_bisector", "perp_bisector(A, B) -> line"),
     ("angle_bisector", "angle_bisector(A, B, C) -> line"),
     ("tangent_line", "tangent_line(P, circle, k) -> line"),
-    ("circle", "circle(O, radius) -> circle"),
+    ("circle", "circle(radius) | circle(O, radius) -> circle"),
     ("circle_through", "circle_through(O, A) -> circle"),
     ("circle_diameter", "circle_diameter(A, B) -> circle"),
     ("circumcircle", "circumcircle(A, B, C) -> circle"),
     ("incircle", "incircle(A, B, C) -> circle"),
     ("arc", "arc(circle, P, Q, ccw) -> arc"),
     ("angle_arc", "angle_arc(A, B, C, radius) -> arc"),
+    (
+        "ellipse",
+        "ellipse(a, b [, angle]) | ellipse(O, a, b [, angle]) -> ellipse",
+    ),
+    ("bspline", "bspline(P0, P1, P2, P3, ...) -> bspline"),
     ("polygon", "polygon(A, B, C, ...) -> polygon"),
     ("rect", "rect(center, width, height) -> rect"),
     ("diamond", "diamond(center, width, height) -> diamond"),
@@ -127,6 +138,7 @@ pub fn constructor_kind(name: &str) -> Option<Kind> {
 }
 
 const CONSTRUCTOR_KINDS: &[(&str, Kind)] = &[
+    ("point", Kind::Point),
     ("midpoint", Kind::Point),
     ("lerp", Kind::Point),
     ("offset", Kind::Point),
@@ -158,6 +170,8 @@ const CONSTRUCTOR_KINDS: &[(&str, Kind)] = &[
     ("incircle", Kind::Circle),
     ("arc", Kind::Arc),
     ("angle_arc", Kind::Arc),
+    ("ellipse", Kind::Ellipse),
+    ("bspline", Kind::Bspline),
     ("polygon", Kind::Polygon),
     ("rect", Kind::Rect),
     ("diamond", Kind::Diamond),
@@ -172,6 +186,7 @@ const CONSTRUCTOR_KINDS: &[(&str, Kind)] = &[
 pub const PREDICATE_NAMES: &[&str] = &[
     "on",
     "tangent",
+    "internally_tangent",
     "parallel",
     "perpendicular",
     "collinear",
@@ -209,8 +224,10 @@ pub const PROP_NAMES: &[&str] = &[
     "dir", "gap", "head", "bend", "n", "size", "place", "anchor", "mark",
 ];
 
-const PROP_NAMES_BY_KIND: [&[&str]; 15] = [
+const PROP_NAMES_BY_KIND: [&[&str]; 17] = [
     &["mark"],
+    &[],
+    &[],
     &[],
     &[],
     &[],
@@ -244,8 +261,31 @@ pub const STYLE_PROP_NAMES: &[&str] = &[
 
 /// Geometry and layout property/anchor names.
 pub const PROPERTY_NAMES: &[&str] = &[
-    "midpoint", "start", "end", "center", "at", "centroid", "n", "s", "e", "w", "ne", "nw", "se",
-    "sw", "width", "height",
+    "midpoint",
+    "start",
+    "end",
+    "center",
+    "at",
+    "centroid",
+    "n",
+    "s",
+    "e",
+    "w",
+    "ne",
+    "nw",
+    "se",
+    "sw",
+    "width",
+    "height",
+    "focus1",
+    "focus2",
+    "major_start",
+    "major_end",
+    "minor_start",
+    "minor_end",
+    "semimajor",
+    "semiminor",
+    "rotation",
 ];
 
 /// Accepted angle-unit suffixes.

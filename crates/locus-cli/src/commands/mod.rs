@@ -753,7 +753,7 @@ fn describe_objects(file: &File, scene: &ResolvedScene, source: &str) -> Vec<Obj
                 .objects
                 .iter()
                 .find(|(id, _)| id.name == op.id.name)
-                .map(|(_, object)| object_report(op, object, source)),
+                .map(|(_, object)| object_report(op, object, source, file.version)),
             _ => None,
         })
         .collect()
@@ -772,35 +772,38 @@ fn object_anchors(file: &File) -> Vec<ObjectAnchorReport> {
         .collect()
 }
 
-fn object_report(op: &OpStmt, object: &ResolvedObject, source: &str) -> ObjectReport {
+fn object_report(op: &OpStmt, object: &ResolvedObject, source: &str, version: u32) -> ObjectReport {
     ObjectReport {
         id: op.id.name.clone(),
         kind: op.kind.as_str().to_owned(),
         span: op.span,
         definition: source[op.ctor.span().byte_start..op.ctor.span().byte_end].to_owned(),
-        resolved: resolved_value(object),
+        resolved: resolved_value(object, version),
     }
 }
 
-fn resolved_value(object: &ResolvedObject) -> ResolvedValue {
+fn resolved_value(object: &ResolvedObject, version: u32) -> ResolvedValue {
     match object {
         ResolvedObject::Num(_) | ResolvedObject::Angle(_) | ResolvedObject::Point(_) => {
-            scalar_value(object)
+            scalar_value(object, version)
         }
         ResolvedObject::Line(_) | ResolvedObject::Ray(_) | ResolvedObject::Segment(_) => {
-            linear_value(object)
+            linear_value(object, version)
         }
-        ResolvedObject::Circle(_) | ResolvedObject::Arc(_) => curved_value(object),
+        ResolvedObject::Circle(_)
+        | ResolvedObject::Arc(_)
+        | ResolvedObject::Ellipse(_)
+        | ResolvedObject::Bspline(_) => curved_value(object, version),
         ResolvedObject::Polygon(_) | ResolvedObject::Rect(_) | ResolvedObject::Diamond(_) => {
-            polygon_object_value(object)
+            polygon_object_value(object, version)
         }
         ResolvedObject::Annotation(annotation) => ResolvedValue::Annotation {
-            value: annotation_report(annotation),
+            value: (version < 3).then(|| annotation_report(annotation)),
         },
     }
 }
 
-fn scalar_value(object: &ResolvedObject) -> ResolvedValue {
+fn scalar_value(object: &ResolvedObject, version: u32) -> ResolvedValue {
     match object {
         ResolvedObject::Num(number) => ResolvedValue::Number {
             value: number.value,
@@ -808,55 +811,77 @@ fn scalar_value(object: &ResolvedObject) -> ResolvedValue {
         },
         ResolvedObject::Angle(radians) => ResolvedValue::Angle { radians: *radians },
         ResolvedObject::Point(point) => ResolvedValue::Point {
-            x: point.geometry.x,
-            y: point.geometry.y,
+            x: (version < 3).then_some(point.geometry.x),
+            y: (version < 3).then_some(point.geometry.y),
             mark: point_mark_name(point.mark).to_owned(),
         },
         _ => unreachable!("scalar value received non-scalar object"),
     }
 }
 
-fn linear_value(object: &ResolvedObject) -> ResolvedValue {
+fn linear_value(object: &ResolvedObject, version: u32) -> ResolvedValue {
     match object {
         ResolvedObject::Line(line) => ResolvedValue::Line {
-            start: line.start.into(),
-            through: line.through.into(),
+            start: (version < 3).then(|| line.start.into()),
+            through: (version < 3).then(|| line.through.into()),
         },
         ResolvedObject::Ray(ray) => ResolvedValue::Ray {
-            start: ray.start.into(),
-            through: ray.through.into(),
+            start: (version < 3).then(|| ray.start.into()),
+            through: (version < 3).then(|| ray.through.into()),
         },
         ResolvedObject::Segment(segment) => ResolvedValue::Segment {
-            start: segment.start.into(),
-            end: segment.end.into(),
+            start: (version < 3).then(|| segment.start.into()),
+            end: (version < 3).then(|| segment.end.into()),
+            length: locus_core::geom::measure::length(*segment),
         },
         _ => unreachable!("linear value received non-linear object"),
     }
 }
 
-fn curved_value(object: &ResolvedObject) -> ResolvedValue {
+#[allow(
+    clippy::cast_precision_loss,
+    reason = "an allocated control-point count is exactly representable at every feasible size"
+)]
+fn curved_value(object: &ResolvedObject, version: u32) -> ResolvedValue {
     match object {
         ResolvedObject::Circle(circle) => ResolvedValue::Circle {
-            center: circle.center.into(),
+            center: (version < 3).then(|| circle.center.into()),
             radius: circle.radius,
         },
         ResolvedObject::Arc(arc) => ResolvedValue::Arc {
-            center: arc.geometry.circle.center.into(),
+            center: (version < 3).then(|| arc.geometry.circle.center.into()),
             radius: arc.geometry.circle.radius,
-            start: arc.geometry.start.into(),
-            end: arc.geometry.end.into(),
+            start: (version < 3).then(|| arc.geometry.start.into()),
+            end: (version < 3).then(|| arc.geometry.end.into()),
             counterclockwise: arc.geometry.ccw,
             angle_mark_count: arc.angle_mark_count,
         },
+        ResolvedObject::Ellipse(ellipse) => ResolvedValue::Ellipse {
+            semimajor: ellipse.semimajor,
+            semiminor: ellipse.semiminor,
+            rotation: ellipse.rotation,
+            area: core::f64::consts::PI * ellipse.semimajor * ellipse.semiminor,
+        },
+        ResolvedObject::Bspline(spline) => {
+            let span_count = spline.controls().len() - 3;
+            let mut knots = vec![0.0; 4];
+            knots.extend((1..span_count).map(|index| index as f64 / span_count as f64));
+            knots.extend([1.0; 4]);
+            ResolvedValue::Bspline {
+                degree: 3,
+                knots,
+                span_count,
+            }
+        }
         _ => unreachable!("curved value received non-curved object"),
     }
 }
 
-fn polygon_object_value(object: &ResolvedObject) -> ResolvedValue {
+fn polygon_object_value(object: &ResolvedObject, version: u32) -> ResolvedValue {
     match object {
-        ResolvedObject::Polygon(polygon) => polygon_value(polygon.vertices(), PolygonKind::Polygon),
-        ResolvedObject::Rect(polygon) => polygon_value(polygon.vertices(), PolygonKind::Rect),
-        ResolvedObject::Diamond(polygon) => polygon_value(polygon.vertices(), PolygonKind::Diamond),
+        ResolvedObject::Polygon(polygon) => polygon_value(polygon, PolygonKind::Polygon, version),
+        ResolvedObject::Rect(polygon) => polygon_value(polygon, PolygonKind::Rect, version),
+        ResolvedObject::Diamond(polygon) => polygon_value(polygon, PolygonKind::Diamond, version),
         _ => unreachable!("polygon value received non-polygon object"),
     }
 }
@@ -868,12 +893,33 @@ enum PolygonKind {
     Diamond,
 }
 
-fn polygon_value(vertices: &[Point], kind: PolygonKind) -> ResolvedValue {
-    let vertices = vertices.iter().copied().map(PointReport::from).collect();
+fn polygon_value(polygon: &locus_core::Polygon, kind: PolygonKind, version: u32) -> ResolvedValue {
+    let vertices = (version < 3).then(|| {
+        polygon
+            .vertices()
+            .iter()
+            .copied()
+            .map(PointReport::from)
+            .collect()
+    });
+    let area = locus_core::geom::measure::area(polygon);
+    let perimeter = locus_core::geom::measure::perimeter(polygon);
     match kind {
-        PolygonKind::Polygon => ResolvedValue::Polygon { vertices },
-        PolygonKind::Rect => ResolvedValue::Rect { vertices },
-        PolygonKind::Diamond => ResolvedValue::Diamond { vertices },
+        PolygonKind::Polygon => ResolvedValue::Polygon {
+            vertices,
+            area,
+            perimeter,
+        },
+        PolygonKind::Rect => ResolvedValue::Rect {
+            vertices,
+            area,
+            perimeter,
+        },
+        PolygonKind::Diamond => ResolvedValue::Diamond {
+            vertices,
+            area,
+            perimeter,
+        },
     }
 }
 

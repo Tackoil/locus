@@ -1,4 +1,4 @@
-locus 2
+locus 3
 
 meta {
   title "AEC3 adaptive FIR filters aligned along time"
@@ -22,8 +22,8 @@ num bh    = 1.2        // filter box height
 num pitch = 1.8        // row pitch (center to center)
 
 // ---- render history axis: x[t] ------------------------------
-point A0   = free ~(0, 0)                                                        { mark: cross }
-point A512 = free ~(16, 0) where { horizontal(A0, A512), hdist(A0, A512) == 16 } { mark: cross }
+point A0   = point()                                                        { mark: cross }
+point A512 = point() where { horizontal(A0, A512), hdist(A0, A512) == 16 } { mark: cross }
 
 arrow axis = arrow(A0, offset(A512, 0.6, 0))  { head: -> }
 label lax  = label(A0, "render history x[t]")  { dir: W, gap: 0.4 }
@@ -51,28 +51,28 @@ label lt512 = label(A512, "512 ms")  { dir: S, gap: 0.3 }
 
 // ---- five staggered filters ----------------------------------
 // Each west edge sits exactly above its start tick; rows step down evenly.
-point F0c = free ~(2, 8.8) where { hdist(A0,   F0c) == fw/2, vdist(A0, F0c) == 8.8  }  { mark: none }
-rect  f0  = rect(F0c, fw, bh)   [filterbox]
+rect f0 = rect(fw, bh) where { hdist(A0,   f0.center) == fw/2, vdist(A0, f0.center) == 8.8  }   [filterbox]
+point F0c = f0.center { mark: none }
 label n0  = label(offset(f0.n, 0, -0.28), "Filter 0")  { dir: center }
 label r0  = label(offset(f0.w, 0.9, -0.25), "0–128 ms")  { dir: center }
 
-point F1c = free ~(5, 7) where { hdist(t96,  F1c) == fw/2, vdist(F1c, F0c) == pitch }  { mark: none }
-rect  f1  = rect(F1c, fw, bh)   [filterbox]
+rect f1 = rect(fw, bh) where { hdist(t96,  f1.center) == fw/2, vdist(f1.center, F0c) == pitch }   [filterbox]
+point F1c = f1.center { mark: none }
 label n1  = label(offset(f1.n, 0, -0.28), "Filter 1")  { dir: center }
 label r1  = label(offset(f1.w, 0.9, -0.25), "96–224 ms")  { dir: center }
 
-point F2c = free ~(8, 5.2) where { hdist(t192, F2c) == fw/2, vdist(F2c, F1c) == pitch }  { mark: none }
-rect  f2  = rect(F2c, fw, bh)   [filterbox]
+rect f2 = rect(fw, bh) where { hdist(t192, f2.center) == fw/2, vdist(f2.center, F1c) == pitch }   [filterbox]
+point F2c = f2.center { mark: none }
 label n2  = label(offset(f2.n, 0, -0.28), "Filter 2")  { dir: center }
 label r2  = label(offset(f2.w, 0.9, -0.25), "192–320 ms")  { dir: center }
 
-point F3c = free ~(11, 3.4) where { hdist(t288, F3c) == fw/2, vdist(F3c, F2c) == pitch }  { mark: none }
-rect  f3  = rect(F3c, fw, bh)   [filterbox]
+rect f3 = rect(fw, bh) where { hdist(t288, f3.center) == fw/2, vdist(f3.center, F2c) == pitch }   [filterbox]
+point F3c = f3.center { mark: none }
 label n3  = label(offset(f3.n, 0, -0.28), "Filter 3")  { dir: center }
 label r3  = label(offset(f3.w, 0.9, -0.25), "288–416 ms")  { dir: center }
 
-point F4c = free ~(14, 1.6) where { hdist(t384, F4c) == fw/2, vdist(F4c, F3c) == pitch }  { mark: none }
-rect  f4  = rect(F4c, fw, bh)   [filterbox]
+rect f4 = rect(fw, bh) where { hdist(t384, f4.center) == fw/2, vdist(f4.center, F3c) == pitch }   [filterbox]
+point F4c = f4.center { mark: none }
 label n4  = label(offset(f4.n, 0, -0.28), "Filter 4")  { dir: center }
 label r4  = label(offset(f4.w, 0.9, -0.25), "384–512 ms")  { dir: center }
 
@@ -88,7 +88,7 @@ rect s4w = rect(offset(f4.w,  ov/2, 0), ov, bh)   [overlap]
 
 // ---- capture y[t] feed ---------------------------------------
 point cap_top = offset(f0.w, -1.2, 0.6)  { mark: none }
-point cap_bot = free ~(-1.2, 1.6) where { vertical(cap_top, cap_bot), horizontal(cap_bot, F4c) }  { mark: none }
+point cap_bot = point() where { vertical(cap_top, cap_bot), horizontal(cap_bot, F4c) }  { mark: none }
 segment cap = seg(cap_top, cap_bot)
 label lcap = label(cap_top, "capture y[t]")  { dir: NW, gap: 0.2 }
 
@@ -131,13 +131,13 @@ point kdrop = foot(kb, seg(A0, A512))  { mark: none }
 segment kline = seg(kb, kdrop)      [peakln]
 
 // ---- total delay box below the axis --------------------------
-point TDc = free ~(8, -1.9) where { vertical(TDc, kdrop), vdist(TDc, A0) == 1.9 }  { mark: none }
-rect td = rect(TDc, 9.5, 1)
+rect td = rect(9.5, 1) where { vertical(td.center, kdrop), vdist(td.center, A0) == 1.9 }
+point TDc = td.center { mark: none }
 label ltd = label(td.center, "total delay = filter offset $O_2$ + local peak $k^*$")  { dir: center }
 
 // ---- legends ---------------------------------------------------
-point LGc = free ~(16, 8.8) where { horizontal(LGc, F0c), vertical(LGc, A512) }  { mark: none }
-rect lg = rect(LGc, 0.6, 0.45)   [overlap]
+rect lg = rect(0.6, 0.45) where { horizontal(lg.center, F0c), vertical(lg.center, A512) }   [overlap]
+point LGc = lg.center { mark: none }
 label llg = label(lg.e, "32 ms overlap")  { dir: E, gap: 0.2 }
 
 label lg1 = label(offset(TDc, -3, -1.3), "coefficient position → delay")   [coeff]  { dir: center }

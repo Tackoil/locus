@@ -2,7 +2,7 @@
 source: crates/locus-syntax/tests/format_json.rs
 expression: formatted.source
 ---
-locus 2
+locus 3
 
 meta {
   title "Angle bisector theorem: BD/DC = AB/AC"
@@ -11,18 +11,18 @@ meta {
 style textbook
 
 // ---- objects ----------------------------------------------
-// Generic-position triangle: hint-settled by design (info, not error).
-point A = free ~(1, 4.5)
-point B = free ~(-2, 0)
-point C = free ~(5, 0)
+// A scalene triangle inscribed in a circle; Locus owns the circle's placement.
+circle circum = circle(3.5) [construction]
+point A       = circum.at(80deg)
+point B       = circum.at(210deg)
+point C       = circum.at(330deg)
 
 polygon tri = polygon(A, B, C)
 
 line bis = angle_bisector(B, A, C) [construction]
 
-// D: relational intersection — no branch index, the hint picks the point
-// (this replaces v0.2's intersect(bis, seg(B, C), 0) — finding F1)
-point D = free ~(1.3, 0) where { on(D, bis), on(D, seg(B, C)) }
+// The bisector meets the opposite side at a unique derived point.
+point D = intersect(bis, seg(B, C))
 
 segment ad = seg(A, D) [auxiliary]
 
@@ -42,6 +42,7 @@ label ldc = label(seg(D, C).midpoint, $n$) { dir: S, gap: 0.35 }
 text_block eq = text_block($\dfrac{m}{n} = \dfrac{AB}{AC}$) { place: below }
 
 // ---- intent ----------------------------------------------
+assert on(D, bis) and on(D, seg(B, C))
 assert between(B, D, C)
 assert angle(B, A, D) == angle(D, A, C)
 assert ratio(dist(B, D), dist(D, C)) == ratio(dist(A, B), dist(A, C))

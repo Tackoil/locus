@@ -1,4 +1,4 @@
-locus 2
+locus 3
 
 meta {
   title "Sequence: agent runs locus check"
@@ -17,16 +17,16 @@ num hp = 4.0         // participant pitch
 num rp = 0.85        // message row pitch
 
 // ---- participant heads ---------------------------------------
-point Ac = free ~(0, 0)  { mark: none }
-rect boxA = rect(Ac, bw, bh)
+rect boxA = rect(bw, bh)
+point Ac = boxA.center { mark: none }
 label hA = label(boxA.center, "Agent")  { dir: center }
 
-point Bc = free ~(4, 0) where { horizontal(Ac, Bc), hdist(Ac, Bc) == hp }  { mark: none }
-rect boxB = rect(Bc, bw, bh)
+rect boxB = rect(bw, bh) where { horizontal(Ac, boxB.center), hdist(Ac, boxB.center) == hp }
+point Bc = boxB.center { mark: none }
 label hB = label(boxB.center, "locus CLI")  { dir: center }
 
-point Cc = free ~(8, 0) where { horizontal(Bc, Cc), hdist(Bc, Cc) == hp }  { mark: none }
-rect boxC = rect(Cc, bw, bh)
+rect boxC = rect(bw, bh) where { horizontal(Bc, boxC.center), hdist(Bc, boxC.center) == hp }
+point Cc = boxC.center { mark: none }
 label hC = label(boxC.center, "Kernel")  { dir: center }
 
 // ---- lifelines (exact dash, weight, color, and cap via a declared class)

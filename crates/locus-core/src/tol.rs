@@ -4,7 +4,7 @@ use locus_syntax::{Constructor, Expr, File, OpStmt, PropValue, Statement};
 
 use crate::eval::env::Environment;
 use crate::eval::expr::{ExpressionEvaluator, InferredDimension};
-use crate::eval::{constructor_arg_dimension, infer_dimensions, property_dimension};
+use crate::eval::{infer_dimensions, property_dimension};
 use crate::geom::{BBox, Vec2};
 use crate::scene::{Dimension, ResolvedScene};
 
@@ -472,7 +472,7 @@ fn collect_call_length_fallbacks(
     values: &mut Vec<f64>,
 ) {
     for (index, argument) in args.iter().enumerate() {
-        if constructor_arg_dimension(name, index)
+        if crate::eval::constructor_arg_dimension_for_arity(name, index, args.len())
             == Some(InferredDimension::Number(Dimension::Length))
         {
             push_evaluated_length(evaluator, argument, false, values);

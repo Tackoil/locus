@@ -1,4 +1,4 @@
-locus 2
+locus 3
 
 meta {
   title "Service network: synchronous requests, events, retries, and storage"
@@ -11,8 +11,7 @@ class boundary { accent: gray, stroke: dashed }
 class service { accent: blue, fill: tint }
 class storage { accent: teal, fill: tint }
 class async { accent: purple, stroke: dashed }
-point Origin = free ~(0, 0) { mark: none }
-rel pin(Origin, 0, 0)
+point Origin = point() { mark: none }
 rect zone0 = rect(offset(Origin, 0, -6), 4.8, 15.2) [boundary]
 label zone_title0 = label(zone0.n, "Clients") { dir: N }
 point p_web = offset(Origin, 0, 0) { mark: none }
@@ -37,16 +36,16 @@ label label_monitor = label(monitor.center, "Monitoring") { dir: center }
 assert inside(monitor.nw, zone0) and inside(monitor.ne, zone0) and inside(monitor.sw, zone0) and inside(monitor.se, zone0)
 rect zone1 = rect(offset(Origin, 6, -6), 4.8, 15.2) [boundary]
 label zone_title1 = label(zone1.n, "Edge and control") { dir: N }
-point p_gateway = free ~(6.15, -0.1) where { hdist(Origin, p_gateway) == 6, vdist(Origin, p_gateway) == 0 } { mark: none }
-rect gateway = rect(p_gateway, 3.5, 1.2) [service]
+rect gateway = rect(3.5, 1.2) where { hdist(Origin, gateway.center) == 6, vdist(Origin, gateway.center) == 0 } [service]
+point p_gateway = gateway.center { mark: none }
 label label_gateway = label(gateway.center, "API gateway") { dir: center }
 assert inside(gateway.nw, zone1) and inside(gateway.ne, zone1) and inside(gateway.sw, zone1) and inside(gateway.se, zone1)
-point p_auth = free ~(6.15, -3.1) where { hdist(Origin, p_auth) == 6, vdist(Origin, p_auth) == -3 } { mark: none }
-rect auth = rect(p_auth, 3.5, 1.2) [service]
+rect auth = rect(3.5, 1.2) where { hdist(Origin, auth.center) == 6, vdist(Origin, auth.center) == -3 } [service]
+point p_auth = auth.center { mark: none }
 label label_auth = label(auth.center, "Auth service") { dir: center }
 assert inside(auth.nw, zone1) and inside(auth.ne, zone1) and inside(auth.sw, zone1) and inside(auth.se, zone1)
-point p_limit = free ~(6.15, -6.1) where { hdist(Origin, p_limit) == 6, vdist(Origin, p_limit) == -6 } { mark: none }
-rect limit = rect(p_limit, 3.5, 1.2) [service]
+rect limit = rect(3.5, 1.2) where { hdist(Origin, limit.center) == 6, vdist(Origin, limit.center) == -6 } [service]
+point p_limit = limit.center { mark: none }
 label label_limit = label(limit.center, "Rate limiter") { dir: center }
 assert inside(limit.nw, zone1) and inside(limit.ne, zone1) and inside(limit.sw, zone1) and inside(limit.se, zone1)
 point p_events = offset(Origin, 6, -9) { mark: none }
@@ -59,16 +58,16 @@ label label_schedule = label(schedule.center, "Scheduler") { dir: center }
 assert inside(schedule.nw, zone1) and inside(schedule.ne, zone1) and inside(schedule.sw, zone1) and inside(schedule.se, zone1)
 rect zone2 = rect(offset(Origin, 12, -6), 4.8, 15.2) [boundary]
 label zone_title2 = label(zone2.n, "Application") { dir: N }
-point p_catalog = free ~(12.15, -0.1) where { hdist(Origin, p_catalog) == 12, vdist(Origin, p_catalog) == 0 } { mark: none }
-rect catalog = rect(p_catalog, 3.5, 1.2) [service]
+rect catalog = rect(3.5, 1.2) where { hdist(Origin, catalog.center) == 12, vdist(Origin, catalog.center) == 0 } [service]
+point p_catalog = catalog.center { mark: none }
 label label_catalog = label(catalog.center, "Catalog") { dir: center }
 assert inside(catalog.nw, zone2) and inside(catalog.ne, zone2) and inside(catalog.sw, zone2) and inside(catalog.se, zone2)
-point p_orders = free ~(12.15, -3.1) where { hdist(Origin, p_orders) == 12, vdist(Origin, p_orders) == -3 } { mark: none }
-rect orders = rect(p_orders, 3.5, 1.2) [service]
+rect orders = rect(3.5, 1.2) where { hdist(Origin, orders.center) == 12, vdist(Origin, orders.center) == -3 } [service]
+point p_orders = orders.center { mark: none }
 label label_orders = label(orders.center, "Orders") { dir: center }
 assert inside(orders.nw, zone2) and inside(orders.ne, zone2) and inside(orders.sw, zone2) and inside(orders.se, zone2)
-point p_payments = free ~(12.15, -6.1) where { hdist(Origin, p_payments) == 12, vdist(Origin, p_payments) == -6 } { mark: none }
-rect payments = rect(p_payments, 3.5, 1.2) [service]
+rect payments = rect(3.5, 1.2) where { hdist(Origin, payments.center) == 12, vdist(Origin, payments.center) == -6 } [service]
+point p_payments = payments.center { mark: none }
 label label_payments = label(payments.center, "Payments") { dir: center }
 assert inside(payments.nw, zone2) and inside(payments.ne, zone2) and inside(payments.sw, zone2) and inside(payments.se, zone2)
 point p_inventory = offset(Origin, 12, -9) { mark: none }

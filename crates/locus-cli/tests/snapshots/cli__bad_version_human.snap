@@ -2,13 +2,13 @@
 source: crates/locus-cli/tests/cli.rs
 expression: output_text(human.stderr)?
 ---
-E111
+E123
 
-  × unsupported Locus format version `3`
-   ╭─[fixtures/errors/bad_version.locus:1:7]
+  × format 3 points use parameterless `point()`, not coordinate hints
+   ╭─[fixtures/errors/bad_version.locus:2:11]
  1 │ locus 3
-   ·       ┬
-   ·       ╰── unsupported Locus format version `3`
  2 │ point A = free ~(0, 0)
+   ·           ──────┬─────
+   ·                 ╰── format 3 points use parameterless `point()`, not coordinate hints
    ╰────
-  help: 2
+  help: point A = point()

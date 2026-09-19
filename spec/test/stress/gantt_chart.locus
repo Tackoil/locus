@@ -1,4 +1,4 @@
-locus 2
+locus 3
 
 meta {
   title "Release schedule: twenty tasks, parallel teams, joins, and progress"
@@ -11,7 +11,7 @@ class planned { accent: gray, stroke: dashed }
 class actual { accent: blue, fill: tint }
 class progress { accent: teal, fill: tint }
 class dependency { accent: purple, stroke: dashed }
-point O = free ~(0, 0) { mark: none }
+point O = point() { mark: none }
 num day = 0.75
 num duration0_0 = free ~2.2
 rel duration0_0 == 2

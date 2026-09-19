@@ -1,4 +1,4 @@
-locus 2
+locus 3
 
 meta {
   title "Euler line and the nine-point circle"
@@ -8,10 +8,10 @@ meta {
 style textbook
 
 // ---- objects ----------------------------------------------
-// Generic-position triangle: hint-settled by design.
-point A = free ~(0, 3.5)
-point B = free ~(-2, 0)
-point C = free ~(4.5, 0)
+// A scalene triangle derived from relative vertex offsets.
+point A = point()
+point B = offset(A, -2, -3.5)
+point C = offset(A, 4.5, -3.5)
 
 polygon tri = polygon(A, B, C)
 
@@ -79,7 +79,7 @@ point e0_fc = foot(C, line(A, B)) { mark: none }
 assert collinear(e0_o, e0_g, e0_h)
 assert radius(e0_nine) == radius(e0_circ) / 2
 assert on(e0_fa, e0_nine) and on(e0_fb, e0_nine) and on(e0_fc, e0_nine)
-assert tangent(e0_inc, e0_nine)
+assert internally_tangent(e0_nine, e0_inc)
 assert inside(center(e0_inc), e0_tri)
 polygon e1_tri = polygon(e0_ma, e0_mb, e0_mc) [construction]
 point e1_o = circumcenter(e0_ma, e0_mb, e0_mc) { mark: none }
@@ -97,7 +97,7 @@ point e1_fc = foot(e0_mc, line(e0_ma, e0_mb)) { mark: none }
 assert collinear(e1_o, e1_g, e1_h)
 assert radius(e1_nine) == radius(e1_circ) / 2
 assert on(e1_fa, e1_nine) and on(e1_fb, e1_nine) and on(e1_fc, e1_nine)
-assert tangent(e1_inc, e1_nine)
+assert internally_tangent(e1_nine, e1_inc)
 assert inside(center(e1_inc), e1_tri)
 polygon e2_tri = polygon(e1_ma, e1_mb, e1_mc) [construction]
 point e2_o = circumcenter(e1_ma, e1_mb, e1_mc) { mark: none }
@@ -115,7 +115,7 @@ point e2_fc = foot(e1_mc, line(e1_ma, e1_mb)) { mark: none }
 assert collinear(e2_o, e2_g, e2_h)
 assert radius(e2_nine) == radius(e2_circ) / 2
 assert on(e2_fa, e2_nine) and on(e2_fb, e2_nine) and on(e2_fc, e2_nine)
-assert tangent(e2_inc, e2_nine)
+assert internally_tangent(e2_nine, e2_inc)
 assert inside(center(e2_inc), e2_tri)
 polygon e3_tri = polygon(e2_ma, e2_mb, e2_mc) [construction]
 point e3_o = circumcenter(e2_ma, e2_mb, e2_mc) { mark: none }
@@ -133,7 +133,7 @@ point e3_fc = foot(e2_mc, line(e2_ma, e2_mb)) { mark: none }
 assert collinear(e3_o, e3_g, e3_h)
 assert radius(e3_nine) == radius(e3_circ) / 2
 assert on(e3_fa, e3_nine) and on(e3_fb, e3_nine) and on(e3_fc, e3_nine)
-assert tangent(e3_inc, e3_nine)
+assert internally_tangent(e3_nine, e3_inc)
 assert inside(center(e3_inc), e3_tri)
 polygon e4_tri = polygon(e3_ma, e3_mb, e3_mc) [construction]
 point e4_o = circumcenter(e3_ma, e3_mb, e3_mc) { mark: none }
@@ -151,5 +151,5 @@ point e4_fc = foot(e3_mc, line(e3_ma, e3_mb)) { mark: none }
 assert collinear(e4_o, e4_g, e4_h)
 assert radius(e4_nine) == radius(e4_circ) / 2
 assert on(e4_fa, e4_nine) and on(e4_fb, e4_nine) and on(e4_fc, e4_nine)
-assert tangent(e4_inc, e4_nine)
+assert internally_tangent(e4_nine, e4_inc)
 assert inside(center(e4_inc), e4_tri)

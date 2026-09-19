@@ -1,4 +1,4 @@
-locus 2
+locus 3
 
 meta {
   title "Delivery board: three teams, five states, cross-team blockers"
@@ -12,7 +12,7 @@ class pending { accent: blue, fill: tint }
 class active { accent: orange, fill: tint }
 class complete { accent: green, fill: tint }
 class blocked { accent: red, fill: tint }
-point O = free ~(0, 0) { mark: none }
+point O = point() { mark: none }
 num card_width = 4.6
 num card_height = 1.25
 num card_pitch = 1.65

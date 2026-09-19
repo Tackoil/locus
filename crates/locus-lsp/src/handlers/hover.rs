@@ -95,7 +95,10 @@ fn resolved_value(object: &ResolvedObject) -> String {
         ResolvedObject::Line(_) | ResolvedObject::Ray(_) | ResolvedObject::Segment(_) => {
             linear_value(object)
         }
-        ResolvedObject::Circle(_) | ResolvedObject::Arc(_) => curved_value(object),
+        ResolvedObject::Circle(_)
+        | ResolvedObject::Arc(_)
+        | ResolvedObject::Ellipse(_)
+        | ResolvedObject::Bspline(_) => curved_value(object),
         ResolvedObject::Polygon(value)
         | ResolvedObject::Rect(value)
         | ResolvedObject::Diamond(value) => format!(
@@ -144,6 +147,15 @@ fn curved_value(object: &ResolvedObject) -> String {
             value.center.x, value.center.y, value.radius
         ),
         ResolvedObject::Arc(value) => format!("radius {}", value.geometry.circle.radius),
+        ResolvedObject::Ellipse(value) => format!(
+            "semiaxes {} and {}, rotation {} rad",
+            value.semimajor, value.semiminor, value.rotation
+        ),
+        ResolvedObject::Bspline(value) => format!(
+            "cubic B-spline, {} controls, {} spans",
+            value.controls().len(),
+            value.controls().len() - 3
+        ),
         _ => String::new(),
     }
 }

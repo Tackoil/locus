@@ -36,6 +36,7 @@ impl Case {
             self.name,
             parsed.diagnostics
         );
+        assert_eq!(parsed.file.version, 3, "{}: expected locus 3", self.name);
         let count = parsed
             .file
             .statements
@@ -71,7 +72,7 @@ impl Case {
         );
         assert!(
             attempts >= self.min_attempts,
-            "{}: perturbed hints must require iterations",
+            "{}: relational workload must require iterations",
             self.name
         );
         assert!(

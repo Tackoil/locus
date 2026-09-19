@@ -40,14 +40,6 @@ meta {
     insta::assert_debug_snapshot!(summary, @r###"
     [
         (
-            "E111",
-            1,
-            "unsupported Locus format version `3`",
-            Some(
-                "2",
-            ),
-        ),
-        (
             "E120",
             2,
             "unknown statement or object kind `piont`",
@@ -64,6 +56,14 @@ meta {
             4,
             "only `point` and `num` declarations may use `free`",
             None,
+        ),
+        (
+            "E123",
+            5,
+            "format 3 points use parameterless `point()`, not coordinate hints",
+            Some(
+                "point A = point()",
+            ),
         ),
         (
             "E140",

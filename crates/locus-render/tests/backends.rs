@@ -6,10 +6,13 @@ use locus_core::scene::LabelDirection;
 use locus_core::{
     AnchorSpec, AnnotationSpec, Arc, BBox, Circle, Line, Point, PointMark, Ray, ResolvedArc,
     ResolvedObject, ResolvedPoint, ResolvedScene, Segment,
+    geom::{Bspline, Ellipse},
 };
 use locus_layout::{LabelBox, LayoutScene, Leader, PlacedAnnotation};
 use locus_render::{
-    RenderError, RenderOptions, render_svg, render_tikz, style::StyleSheet, viewport::Viewport,
+    RenderError, RenderOptions, render_svg, render_tikz,
+    style::{Color, StyleSheet},
+    viewport::Viewport,
 };
 use locus_syntax::{HeadKind, Ident, Span, TextValue};
 use locus_tex::{BoxMetrics, FontSize, PlaintextEngine, TexBox, TexEngine};
@@ -229,6 +232,34 @@ fn circles_full_documents() {
         render_tikz(&scene, &layout, &sheet, RenderOptions::default()).expect("TikZ")
     );
 }
+
+#[test]
+fn ellipse_and_bspline_use_native_vector_primitives() {
+    let ellipse =
+        Ellipse::new(p(2.0, 1.0), 2.0, 1.0, core::f64::consts::FRAC_PI_4).expect("ellipse");
+    let spline = Bspline::new(vec![
+        p(0.0, 0.0),
+        p(1.0, 3.0),
+        p(3.0, 3.0),
+        p(4.0, 0.0),
+        p(5.0, 2.0),
+    ])
+    .expect("B-spline");
+    let scene = ResolvedScene {
+        objects: IndexMap::from([
+            (id("ellipse"), ResolvedObject::Ellipse(ellipse)),
+            (id("spline"), ResolvedObject::Bspline(spline)),
+        ]),
+        bbox: bounds(p(0.0, 0.0), p(5.0, 3.0)),
+    };
+    let sheet = StyleSheet::default();
+    let svg = render_svg(&scene, &empty_layout(), &sheet, RenderOptions::default()).expect("SVG");
+    let tikz =
+        render_tikz(&scene, &empty_layout(), &sheet, RenderOptions::default()).expect("TikZ");
+    assert!(svg.contains("<ellipse") && svg.contains("transform=\"rotate("));
+    assert!(svg.contains(" C "));
+    assert!(tikz.contains(" ellipse[") && tikz.contains(".. controls "));
+}
 #[test]
 fn byte_determinism_and_input_immutability() {
     for (scene, layout, sheet) in [triangle(), circles()] {
@@ -271,6 +302,7 @@ fn empty_and_flat_viewports_are_finite_and_invalid_options_fail() {
     let options = RenderOptions {
         margin: 0.0,
         pixels_per_unit: 1.0,
+        ..RenderOptions::default()
     };
     let view = Viewport::fit(&scene, &layout, &sheet, options).expect("empty viewport");
     assert_eq!(view.width(), 1.0);
@@ -293,7 +325,8 @@ fn empty_and_flat_viewports_are_finite_and_invalid_options_fail() {
                 &sheet,
                 RenderOptions {
                     margin,
-                    pixels_per_unit
+                    pixels_per_unit,
+                    ..RenderOptions::default()
                 }
             ),
             Err(RenderError::Options)
@@ -356,4 +389,35 @@ fn png_has_expected_dimensions_pixels_and_deterministic_bytes() {
     assert_eq!(f64::from(decoded.height()), libm::round(view.height()));
     assert!(decoded.pixels().iter().any(|pixel| pixel.alpha() > 0));
     assert!(decoded.pixels().iter().any(|pixel| pixel.alpha() == 0));
+}
+
+#[test]
+fn optional_background_covers_the_viewport_before_content() {
+    let (scene, layout, sheet) = triangle();
+    let options = RenderOptions {
+        background: Some(Color(255, 255, 255)),
+        ..RenderOptions::default()
+    };
+    let svg = render_svg(&scene, &layout, &sheet, options).expect("SVG");
+    let document = roxmltree::Document::parse(&svg).expect("SVG parses");
+    let root = document.root_element();
+    let background = root.first_element_child().expect("background");
+    assert_eq!(background.tag_name().name(), "rect");
+    assert_eq!(background.attribute("fill"), Some("#FFFFFF"));
+    assert_eq!(background.attribute("width"), root.attribute("width"));
+    assert_eq!(background.attribute("height"), root.attribute("height"));
+    let tikz = render_tikz(&scene, &layout, &sheet, options).expect("TikZ");
+    let fill = tikz.find("fill={rgb,255:red,255;green,255;blue,255},draw=none");
+    assert!(fill.expect("background fill") < tikz.find("% source").expect("content"));
+    #[cfg(feature = "png")]
+    {
+        let png = locus_render::png::render(&scene, &layout, &sheet, options).expect("PNG");
+        let decoded = resvg::tiny_skia::Pixmap::decode_png(&png).expect("PNG decodes");
+        assert!(decoded.pixels().iter().all(|pixel| pixel.alpha() == 255));
+        let corner = decoded.pixel(0, 0).expect("padded corner");
+        assert_eq!(
+            (corner.red(), corner.green(), corner.blue()),
+            (255, 255, 255)
+        );
+    }
 }

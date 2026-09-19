@@ -41,6 +41,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         RenderOptions {
             pixels_per_unit: 72.0,
             margin: 0.16,
+            ..RenderOptions::default()
         },
     )?;
     print!("{svg}");

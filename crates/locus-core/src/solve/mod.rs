@@ -128,6 +128,7 @@ struct UnknownObject {
     start: usize,
     count: usize,
     dimension: NumericDimension,
+    report_hint: bool,
 }
 
 #[derive(Clone, Debug)]
@@ -163,7 +164,7 @@ fn solve_prepared_with_attempt_limit(
 ) -> Result<Solved, EvalError> {
     let file = prepared.file();
     let seed_trial = prepared.evaluate_trial(None).map_err(degenerate_seed)?;
-    let system = UnknownSystem::from_seed(file, &seed_trial)?;
+    let system = UnknownSystem::from_seed(file, prepared.dimensions(), &seed_trial)?;
     let sources = relations::collect(file);
     validate_relation_primals(&seed_trial, prepared, &sources).map_err(degenerate_seed)?;
     let seed_ad = DifferentiatedFile::evaluate(
@@ -179,8 +180,8 @@ fn solve_prepared_with_attempt_limit(
     seed_ad
         .validate_branch_sensitive_primal(file, seed_trial.objects())
         .map_err(degenerate_seed)?;
-    let branches =
-        relations::select_circle_branches(&seed_ad, &sources).map_err(degenerate_seed)?;
+    let branches = relations::select_circle_branches(file.version, &seed_ad, &sources)
+        .map_err(degenerate_seed)?;
     let outcome = run_lm(prepared, &system, &sources, &branches, max_attempts, true)?;
     finish_solve(prepared, &system, &sources, &branches, &outcome)
 }
@@ -412,7 +413,11 @@ fn finish_solve(
 }
 
 impl UnknownSystem {
-    fn from_seed(file: &File, seed: &crate::eval::TrialEvaluation) -> Result<Self, EvalError> {
+    fn from_seed(
+        file: &File,
+        inferred_dimensions: &crate::eval::expr::DimensionMap,
+        seed: &crate::eval::TrialEvaluation,
+    ) -> Result<Self, EvalError> {
         let dimensions = dimensions_from_scene(seed.objects());
         let diameter = seed.tolerance().diameter();
         let mut objects = Vec::new();
@@ -424,7 +429,8 @@ impl UnknownSystem {
             if matches!(
                 op.ctor,
                 Constructor::FreePoint { .. } | Constructor::FreeNum { .. }
-            ) {
+            ) || crate::eval::is_placed_op(op, inferred_dimensions)
+            {
                 add_unknown(op, seed.objects(), &dimensions, &mut objects, &mut hints)?;
             }
         }
@@ -479,6 +485,19 @@ fn add_unknown(
             hints.push(*value);
             (1, NumericDimension::Angle)
         }
+        ResolvedObject::Circle(circle) => {
+            hints.extend([circle.center.x, circle.center.y]);
+            (2, NumericDimension::Length)
+        }
+        ResolvedObject::Ellipse(ellipse) => {
+            hints.extend([ellipse.center.x, ellipse.center.y]);
+            (2, NumericDimension::Length)
+        }
+        ResolvedObject::Rect(polygon) | ResolvedObject::Diamond(polygon) => {
+            let center = crate::geom::BBox::for_polygon(polygon).center();
+            hints.extend([center.x, center.y]);
+            (2, NumericDimension::Length)
+        }
         _ => {
             return Err(EvalError::new(
                 "E404",
@@ -493,6 +512,10 @@ fn add_unknown(
         start,
         count,
         dimension,
+        report_hint: matches!(
+            op.ctor,
+            Constructor::FreePoint { .. } | Constructor::FreeNum { .. }
+        ),
     });
     Ok(())
 }
@@ -566,6 +589,7 @@ fn hint_reports(
     system
         .objects
         .iter()
+        .filter(|object| object.report_hint)
         .map(|object| {
             let range = object.start..object.start + object.count;
             let source_components = range
@@ -921,6 +945,35 @@ mod tests {
         );
         assert!((point_distance(&external, "A", "B") - 5.0).abs() < 1.0e-12);
         assert!((point_distance(&internal, "A", "B") - 1.0).abs() < 1.0e-12);
+    }
+
+    #[test]
+    fn format_three_circle_tangency_is_explicit() {
+        let external = solve_source(
+            "locus 3\ncircle outer = circle(3)\ncircle inner = circle(2)\nrel tangent(outer, inner)\n",
+        );
+        let internal = solve_source(
+            "locus 3\ncircle outer = circle(3)\ncircle inner = circle(2)\nrel internally_tangent(outer, inner)\n",
+        );
+        assert!((circle_distance(&external, "outer", "inner") - 5.0).abs() < 1.0e-12);
+        assert!((circle_distance(&internal, "outer", "inner") - 1.0).abs() < 1.0e-12);
+    }
+
+    fn circle_distance(solved: &Solved, lhs: &str, rhs: &str) -> f64 {
+        let circle = |name: &str| {
+            let object = solved
+                .scene
+                .objects
+                .iter()
+                .find(|(id, _)| id.name == name)
+                .map(|(_, value)| value)
+                .expect("circle");
+            let ResolvedObject::Circle(circle) = object else {
+                panic!("circle")
+            };
+            *circle
+        };
+        crate::geom::measure::dist(circle(lhs).center, circle(rhs).center)
     }
 
     fn point_distance(solved: &Solved, lhs: &str, rhs: &str) -> f64 {

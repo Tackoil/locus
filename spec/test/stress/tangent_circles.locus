@@ -1,23 +1,22 @@
-locus 2
+locus 3
 
 meta {
   title "Externally tangent circles with a common external tangent"
-  note  "v0.3 showcase: tangency is stated once as a relation; the tangent point, center distance, and common tangent follow"
+  note  "v0.4 showcase: tangency is stated once as a relation; the tangent point, center distance, and common tangent follow"
 }
 
 style textbook
 
 // ---- objects ----------------------------------------------
-point O_1 = free ~(0, 0)
-point O_2 = free ~(5, 0) where { horizontal(O_1, O_2) }
-
 num r_1 = 2
 num r_2 = 3
 
-circle c1 = circle(O_1, r_1)
-circle c2 = circle(O_2, r_2)
+circle c1 = circle(r_1)
+point O_1 = c1.center
+circle c2 = circle(r_2) where { horizontal(O_1, c2.center), hdist(O_1, c2.center) == r_1 + r_2 }
+point O_2 = c2.center
 
-// the defining fact — external tangency, branch picked by the hints
+// External tangency is explicit; the signed separation orders the centers.
 rel tangent(c1, c2)
 
 // construct the contact point along the centers: two circle-incidence residuals
@@ -27,7 +26,7 @@ point T = lerp(O_1, O_2, r_1 / (r_1 + r_2))
 // common internal tangent at T
 line t_int = perpendicular(T, line(O_1, O_2))   [auxiliary]
 
-// external homothety center — exact, so constructed (lands at (-10, 0))
+// External homothety center, constructed from relative center distances.
 point E = lerp(O_1, O_2, r_1 / (r_1 - r_2))
 
 // construct the upper tangent (branch 0) and its perpendicular contact point;
@@ -65,8 +64,8 @@ assert ratio(dist(E, O_1), dist(E, O_2)) == r_1 / r_2
 
 // ---- stress construction network ----
 // A noncollinear circle is solved against both original circles, then feeds a contact chain.
-point chain0 = free ~(1.8, 2.7)
-circle chainc0 = circle(chain0, 1.25) [highlight]
+circle chainc0 = circle(1.25) [highlight]
+point chain0 = chainc0.center
 rel tangent(chainc0, c1)
 rel tangent(chainc0, c2)
 point chain_touch1 = lerp(O_1, chain0, r_1 / (r_1 + 1.25))

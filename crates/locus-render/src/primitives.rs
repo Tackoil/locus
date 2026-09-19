@@ -4,7 +4,7 @@ use geometry::{geometry, segment_shape};
 
 use crate::{
     RenderError, RenderOptions,
-    style::{Style, StyleSheet},
+    style::{Color, Style, StyleSheet},
     viewport::Viewport,
 };
 use locus_core::{Point, ResolvedObject, ResolvedScene, Vec2};
@@ -31,6 +31,12 @@ pub(crate) enum Shape {
         radius: f64,
         disk: bool,
     },
+    Ellipse {
+        center: Point,
+        radius_x: f64,
+        radius_y: f64,
+        rotation: f64,
+    },
     Arc {
         start: Point,
         end: Point,
@@ -48,6 +54,7 @@ pub(crate) struct Op {
 pub(crate) struct Drawing {
     pub viewport: Viewport,
     pub ops: Vec<Op>,
+    pub background: Option<Color>,
 }
 
 pub(crate) fn prepare(
@@ -76,7 +83,11 @@ pub(crate) fn prepare(
         let shapes = annotation_shapes(annotation, viewport, &style)?;
         push(&mut ops, &annotation.id, style, shapes)?;
     }
-    Ok(Drawing { viewport, ops })
+    Ok(Drawing {
+        viewport,
+        ops,
+        background: options.background,
+    })
 }
 
 fn push(
@@ -106,6 +117,19 @@ fn valid_shape(shape: &Shape) -> bool {
         Shape::Path { commands, .. } => commands.iter().all(valid_command),
         Shape::Circle { center, radius, .. } => {
             center.is_finite() && radius.is_finite() && *radius > 0.0
+        }
+        Shape::Ellipse {
+            center,
+            radius_x,
+            radius_y,
+            rotation,
+        } => {
+            center.is_finite()
+                && radius_x.is_finite()
+                && *radius_x > 0.0
+                && radius_y.is_finite()
+                && *radius_y > 0.0
+                && rotation.is_finite()
         }
         Shape::Arc {
             start,

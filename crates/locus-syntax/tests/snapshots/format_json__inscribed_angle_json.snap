@@ -3,7 +3,7 @@ source: crates/locus-syntax/tests/format_json.rs
 expression: json
 ---
 {
-  "version": 2,
+  "version": 3,
   "meta": [
     {
       "key": "title",
@@ -19,40 +19,14 @@ expression: json
   "classes": [],
   "ops": [
     {
-      "id": "O",
-      "kind": "point",
-      "def": null,
-      "hint": [
-        {
-          "kind": "number",
-          "source": "0",
-          "value": 0.0,
-          "dimension": "length"
-        },
-        {
-          "kind": "number",
-          "source": "0",
-          "value": 0.0,
-          "dimension": "length"
-        }
-      ],
-      "where": [],
-      "attr": null,
-      "props": []
-    },
-    {
       "id": "c",
       "kind": "circle",
       "def": {
-        "source": "circle(O, 3)",
+        "source": "circle(3)",
         "tree": {
           "kind": "call",
           "name": "circle",
           "args": [
-            {
-              "kind": "ref",
-              "id": "O"
-            },
             {
               "kind": "number",
               "source": "3",
@@ -60,6 +34,26 @@ expression: json
               "dimension": "length"
             }
           ]
+        }
+      },
+      "hint": null,
+      "where": [],
+      "attr": null,
+      "props": []
+    },
+    {
+      "id": "O",
+      "kind": "point",
+      "def": {
+        "source": "c.center",
+        "tree": {
+          "kind": "property",
+          "base": {
+            "kind": "ref",
+            "id": "c"
+          },
+          "name": "center",
+          "args": []
         }
       },
       "hint": null,

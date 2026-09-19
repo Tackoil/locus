@@ -1,4 +1,4 @@
-locus 2
+locus 3
 
 meta {
   title "X-Y stress plot: reciprocal branches, fixed points, and tangent lines"
@@ -8,7 +8,7 @@ meta {
 style textbook
 class curve { accent: teal, weight: 2, cap: round }
 
-point O = free ~(0, 0) { mark: none }
+point O = point() { mark: none }
 num unit = 1
 arrow x_axis = arrow(offset(O, -4.5 * unit, 0), offset(O, 4.5 * unit, 0))
 arrow y_axis = arrow(offset(O, 0, -4.5 * unit), offset(O, 0, 4.5 * unit))
@@ -559,8 +559,11 @@ segment rns64 = seg(rn63, rn64) [curve]
 assert vdist(O, rp64) < vdist(O, rp63)
 assert vdist(rp63, rp64) / hdist(rp63, rp64) == -unit * unit / (hdist(O, rp63) * hdist(O, rp64))
 line diagonal = line(offset(O, -4 * unit, -4 * unit), offset(O, 4 * unit, 4 * unit)) [construction]
-point fixed_positive = free ~(1.1, 0.9) where { on(fixed_positive, diagonal) }
-point fixed_negative = free ~(-1.1, -0.9) where { on(fixed_negative, diagonal) }
+// Positive radial magnitudes select the two branches on opposite rays.
+num positive_span = free ~1.1
+num negative_span = free ~0.9
+point fixed_positive = offset(O, sqrt(positive_span * positive_span) * unit, sqrt(positive_span * positive_span) * unit)
+point fixed_negative = offset(O, -sqrt(negative_span * negative_span) * unit, -sqrt(negative_span * negative_span) * unit)
 rel hdist(O, fixed_positive) * vdist(O, fixed_positive) == unit * unit
 rel hdist(O, fixed_negative) * vdist(O, fixed_negative) == unit * unit
 assert coincident(fixed_positive, P3)

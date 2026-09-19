@@ -9,7 +9,7 @@ use super::error::EvalError;
 use crate::Tolerance;
 use crate::geom::construct;
 use crate::geom::measure;
-use crate::geom::{Arc, BBox, Circle, Line, Point, Polygon, Segment};
+use crate::geom::{Arc, BBox, Bspline, Circle, Ellipse, Line, Point, Polygon, Segment};
 use crate::scene::{AnchorSpec, Dimension, NumericValue, ResolvedObject, ResolvedPoint};
 
 /// An object-valued expression, including composable temporary constructors.
@@ -105,6 +105,7 @@ pub(crate) struct ExpressionEvaluator<'a> {
     env: &'a Environment,
     pub(super) tolerance: Tolerance,
     dimensions: &'a DimensionMap,
+    version: u32,
 }
 
 impl<'a> ExpressionEvaluator<'a> {
@@ -117,7 +118,17 @@ impl<'a> ExpressionEvaluator<'a> {
             env,
             tolerance,
             dimensions,
+            version: 2,
         }
+    }
+
+    pub(crate) const fn with_version(mut self, version: u32) -> Self {
+        self.version = version;
+        self
+    }
+
+    pub(crate) const fn version(&self) -> u32 {
+        self.version
     }
 
     pub(crate) fn dimension_of(&self, name: &str) -> Option<InferredDimension> {
@@ -126,6 +137,10 @@ impl<'a> ExpressionEvaluator<'a> {
 
     pub(crate) fn expression_dimension(&self, expression: &Expr) -> Option<InferredDimension> {
         self.dimensions.expression_dimension(expression)
+    }
+
+    pub(crate) const fn dimensions(&self) -> &DimensionMap {
+        self.dimensions
     }
 
     pub(crate) fn eval(&mut self, expression: &Expr) -> Result<Value, EvalError> {
@@ -567,7 +582,7 @@ impl<'a> ExpressionEvaluator<'a> {
             "dir_angle" => self.eval_direction_angle(args, span),
             "radius" => self.eval_radius(args, span),
             "length" => self.eval_length(args, span),
-            "area" | "perimeter" => self.eval_polygon_measure(name, args, span),
+            "area" | "perimeter" => self.eval_shape_measure(name, args, span),
             _ => Err(type_error(
                 span,
                 format!("unknown geometry function `{name}`"),
@@ -654,18 +669,39 @@ impl<'a> ExpressionEvaluator<'a> {
         finite_scalar(measure::length(segment), Dimension::Length, span)
     }
 
-    fn eval_polygon_measure(
+    fn eval_shape_measure(
         &mut self,
         name: &str,
         args: &[Expr],
         span: Span,
     ) -> Result<Value, EvalError> {
         expect_arity(name, args, 1, span)?;
-        let polygon = self.eval_polygon(&args[0])?;
-        if name == "area" {
-            finite_scalar(measure::area(&polygon), Dimension::Area, span)
-        } else {
-            finite_scalar(measure::perimeter(&polygon), Dimension::Length, span)
+        let object = self.eval_resolved_object(&args[0])?;
+        match (name, object) {
+            ("area", ResolvedObject::Ellipse(ellipse)) => finite_scalar(
+                core::f64::consts::PI * ellipse.semimajor * ellipse.semiminor,
+                Dimension::Area,
+                span,
+            ),
+            (
+                "area",
+                ResolvedObject::Polygon(polygon)
+                | ResolvedObject::Rect(polygon)
+                | ResolvedObject::Diamond(polygon),
+            ) => finite_scalar(measure::area(&polygon), Dimension::Area, span),
+            (
+                "perimeter",
+                ResolvedObject::Polygon(polygon)
+                | ResolvedObject::Rect(polygon)
+                | ResolvedObject::Diamond(polygon),
+            ) => finite_scalar(measure::perimeter(&polygon), Dimension::Length, span),
+            ("perimeter", ResolvedObject::Ellipse(_)) => {
+                Err(type_error(span, "ellipse perimeter is not supported"))
+            }
+            _ => Err(type_error(
+                span,
+                format!("{name} requires a polygon or supported closed shape"),
+            )),
         }
     }
 
@@ -750,6 +786,12 @@ impl<'a> ExpressionEvaluator<'a> {
         args: &[Expr],
         span: Span,
     ) -> Result<Value, EvalError> {
+        if matches!(
+            object,
+            ResolvedObject::Ellipse(_) | ResolvedObject::Bspline(_)
+        ) {
+            return self.eval_curve_property(object, name, args, span);
+        }
         match object {
             ResolvedObject::Segment(segment) => segment_property(*segment, name, args, span),
             ResolvedObject::Circle(circle) => self.circle_property(*circle, name, args, span),
@@ -763,6 +805,92 @@ impl<'a> ExpressionEvaluator<'a> {
                 format!("property `{name}` is not defined for this object"),
             )),
         }
+    }
+
+    fn eval_curve_property(
+        &mut self,
+        object: &ResolvedObject,
+        name: &str,
+        args: &[Expr],
+        span: Span,
+    ) -> Result<Value, EvalError> {
+        match object {
+            ResolvedObject::Ellipse(ellipse) => self.ellipse_property(*ellipse, name, args, span),
+            ResolvedObject::Bspline(spline) => self.bspline_property(spline, name, args, span),
+            _ => Err(type_error(span, "expected a curve")),
+        }
+    }
+
+    fn ellipse_property(
+        &mut self,
+        ellipse: Ellipse,
+        name: &str,
+        args: &[Expr],
+        span: Span,
+    ) -> Result<Value, EvalError> {
+        let point = ellipse_point_property(ellipse, name);
+        if let Some(point) = point {
+            return point_property(point, args, span);
+        }
+        self.ellipse_nonpoint_property(ellipse, name, args, span)
+    }
+
+    fn ellipse_nonpoint_property(
+        &mut self,
+        ellipse: Ellipse,
+        name: &str,
+        args: &[Expr],
+        span: Span,
+    ) -> Result<Value, EvalError> {
+        match name {
+            "at" => {
+                expect_arity("ellipse.at", args, 1, span)?;
+                let angle = self.eval_angle_value(&args[0])?;
+                ellipse
+                    .at(angle)
+                    .map(point_value)
+                    .map_err(|error| EvalError::construction(span, error))
+            }
+            "semimajor" => scalar_property(ellipse.semimajor, Dimension::Length, args, span),
+            "semiminor" => scalar_property(ellipse.semiminor, Dimension::Length, args, span),
+            "rotation" => angle_property(ellipse.rotation, args, span),
+            _ => Err(type_error(
+                span,
+                format!("ellipse has no property `{name}`"),
+            )),
+        }
+    }
+
+    fn bspline_property(
+        &mut self,
+        spline: &Bspline,
+        name: &str,
+        args: &[Expr],
+        span: Span,
+    ) -> Result<Value, EvalError> {
+        let point = match name {
+            "start" => Some(spline.controls()[0]),
+            "end" => Some(spline.controls()[spline.controls().len() - 1]),
+            "at" => {
+                expect_arity("bspline.at", args, 1, span)?;
+                let parameter = self.eval_number(&args[0], Dimension::Scalar)?;
+                Some(
+                    spline
+                        .at(parameter)
+                        .map_err(|error| EvalError::construction(span, error))?,
+                )
+            }
+            _ => None,
+        };
+        point.map_or_else(
+            || {
+                Err(type_error(
+                    span,
+                    format!("B-spline has no property `{name}`"),
+                ))
+            },
+            |point| point_property(point, &[], span),
+        )
     }
 
     fn circle_property(
@@ -864,15 +992,6 @@ impl<'a> ExpressionEvaluator<'a> {
         }
     }
 
-    pub(crate) fn eval_polygon(&mut self, expression: &Expr) -> Result<Polygon, EvalError> {
-        match self.eval_resolved_object(expression)? {
-            ResolvedObject::Polygon(value)
-            | ResolvedObject::Rect(value)
-            | ResolvedObject::Diamond(value) => Ok(value),
-            _ => Err(type_error(expression.span(), "expected a polygon")),
-        }
-    }
-
     pub(crate) fn eval_number(
         &mut self,
         expression: &Expr,
@@ -925,6 +1044,42 @@ impl<'a> ExpressionEvaluator<'a> {
             ObjectRef::Anchor(_) => Err(type_error(span, "expected an object, found an anchor")),
         }
     }
+}
+
+fn ellipse_point_property(ellipse: Ellipse, name: &str) -> Option<Point> {
+    let major = ellipse.major_unit();
+    match name {
+        "center" => Some(ellipse.center),
+        "major_start" => Some(ellipse.center - major * ellipse.semimajor),
+        "major_end" => Some(ellipse.center + major * ellipse.semimajor),
+        "focus1" => Some(ellipse.center - major * ellipse.focal_distance()),
+        "focus2" => Some(ellipse.center + major * ellipse.focal_distance()),
+        _ => ellipse_minor_point_property(ellipse, name),
+    }
+}
+
+fn ellipse_minor_point_property(ellipse: Ellipse, name: &str) -> Option<Point> {
+    let minor = ellipse.minor_unit();
+    match name {
+        "minor_start" => Some(ellipse.center - minor * ellipse.semiminor),
+        "minor_end" => Some(ellipse.center + minor * ellipse.semiminor),
+        _ => None,
+    }
+}
+
+fn scalar_property(
+    value: f64,
+    dimension: Dimension,
+    args: &[Expr],
+    span: Span,
+) -> Result<Value, EvalError> {
+    expect_arity("numeric property", args, 0, span)?;
+    finite_scalar(value, dimension, span)
+}
+
+fn angle_property(value: f64, args: &[Expr], span: Span) -> Result<Value, EvalError> {
+    expect_arity("angle property", args, 0, span)?;
+    finite_angle(value, span)
 }
 
 fn is_numeric_function(name: &str) -> bool {

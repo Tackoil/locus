@@ -28,6 +28,8 @@ pub struct RenderOptions {
     pub pixels_per_unit: f64,
     /// Padding on each side in scene units, after fitting visible content.
     pub margin: f64,
+    /// Optional opaque viewport fill, painted behind geometry and annotations.
+    pub background: Option<style::Color>,
 }
 
 impl Default for RenderOptions {
@@ -35,6 +37,7 @@ impl Default for RenderOptions {
         Self {
             pixels_per_unit: 32.0,
             margin: 0.5,
+            background: None,
         }
     }
 }

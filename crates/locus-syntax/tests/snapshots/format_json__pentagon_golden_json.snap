@@ -3,7 +3,7 @@ source: crates/locus-syntax/tests/format_json.rs
 expression: json
 ---
 {
-  "version": 2,
+  "version": 3,
   "meta": [
     {
       "key": "title",
@@ -19,7 +19,7 @@ expression: json
       "value": [
         {
           "kind": "plain",
-          "source": "Vertices by rotation (exact); diagonal intersection is relational"
+          "source": "Vertices by rotation around a placed circle; diagonal intersection is derived"
         }
       ]
     }
@@ -28,23 +28,44 @@ expression: json
   "classes": [],
   "ops": [
     {
+      "id": "circ",
+      "kind": "circle",
+      "def": {
+        "source": "circle(3)",
+        "tree": {
+          "kind": "call",
+          "name": "circle",
+          "args": [
+            {
+              "kind": "number",
+              "source": "3",
+              "value": 3.0,
+              "dimension": "length"
+            }
+          ]
+        }
+      },
+      "hint": null,
+      "where": [],
+      "attr": "construction",
+      "props": []
+    },
+    {
       "id": "O",
       "kind": "point",
-      "def": null,
-      "hint": [
-        {
-          "kind": "number",
-          "source": "0",
-          "value": 0.0,
-          "dimension": "length"
-        },
-        {
-          "kind": "number",
-          "source": "0",
-          "value": 0.0,
-          "dimension": "length"
+      "def": {
+        "source": "circ.center",
+        "tree": {
+          "kind": "property",
+          "base": {
+            "kind": "ref",
+            "id": "circ"
+          },
+          "name": "center",
+          "args": []
         }
-      ],
+      },
+      "hint": null,
       "where": [],
       "attr": null,
       "props": []
@@ -52,21 +73,26 @@ expression: json
     {
       "id": "A",
       "kind": "point",
-      "def": null,
-      "hint": [
-        {
-          "kind": "number",
-          "source": "0",
-          "value": 0.0,
-          "dimension": "length"
-        },
-        {
-          "kind": "number",
-          "source": "3",
-          "value": 3.0,
-          "dimension": "length"
+      "def": {
+        "source": "circ.at(90deg)",
+        "tree": {
+          "kind": "property",
+          "base": {
+            "kind": "ref",
+            "id": "circ"
+          },
+          "name": "at",
+          "args": [
+            {
+              "kind": "number",
+              "source": "90deg",
+              "value": 90.0,
+              "dimension": "angle"
+            }
+          ]
         }
-      ],
+      },
+      "hint": null,
       "where": [],
       "attr": null,
       "props": []
@@ -285,48 +311,15 @@ expression: json
     {
       "id": "P",
       "kind": "point",
-      "def": null,
-      "hint": [
-        {
-          "kind": "unary",
-          "op": "neg",
-          "expr": {
-            "kind": "number",
-            "source": "0.7",
-            "value": 0.7,
-            "dimension": "length"
-          },
-          "dimension": "length"
-        },
-        {
-          "kind": "number",
-          "source": "0.9",
-          "value": 0.9,
-          "dimension": "length"
-        }
-      ],
-      "where": [
-        {
+      "def": {
+        "source": "intersect(d1, d2)",
+        "tree": {
           "kind": "call",
-          "name": "on",
+          "name": "intersect",
           "args": [
-            {
-              "kind": "ref",
-              "id": "P"
-            },
             {
               "kind": "ref",
               "id": "d1"
-            }
-          ]
-        },
-        {
-          "kind": "call",
-          "name": "on",
-          "args": [
-            {
-              "kind": "ref",
-              "id": "P"
             },
             {
               "kind": "ref",
@@ -334,7 +327,9 @@ expression: json
             }
           ]
         }
-      ],
+      },
+      "hint": null,
+      "where": [],
       "attr": null,
       "props": []
     },
@@ -646,6 +641,41 @@ expression: json
     {
       "expr": {
         "kind": "binary",
+        "op": "and",
+        "lhs": {
+          "kind": "call",
+          "name": "on",
+          "args": [
+            {
+              "kind": "ref",
+              "id": "P"
+            },
+            {
+              "kind": "ref",
+              "id": "d1"
+            }
+          ]
+        },
+        "rhs": {
+          "kind": "call",
+          "name": "on",
+          "args": [
+            {
+              "kind": "ref",
+              "id": "P"
+            },
+            {
+              "kind": "ref",
+              "id": "d2"
+            }
+          ]
+        }
+      },
+      "tolerance": null
+    },
+    {
+      "expr": {
+        "kind": "binary",
         "op": "eq",
         "lhs": {
           "kind": "call",
@@ -777,11 +807,11 @@ expression: json
               "args": [
                 {
                   "kind": "ref",
-                  "id": "A"
+                  "id": "P"
                 },
                 {
                   "kind": "ref",
-                  "id": "P"
+                  "id": "C"
                 }
               ],
               "dimension": "length"
@@ -792,11 +822,11 @@ expression: json
               "args": [
                 {
                   "kind": "ref",
-                  "id": "P"
+                  "id": "A"
                 },
                 {
                   "kind": "ref",
-                  "id": "C"
+                  "id": "P"
                 }
               ],
               "dimension": "length"

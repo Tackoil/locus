@@ -1,7 +1,7 @@
 //! Visible geometry, directed arc sweeps, and finite clipping.
-use super::{Shape, path};
+use super::{Command, Shape, path};
 use crate::viewport::Viewport;
-use locus_core::{Arc, BBox, Point, PointMark, ResolvedObject, Segment, Vec2};
+use locus_core::{Arc, BBox, Point, PointMark, ResolvedObject, Segment, Vec2, geom::Bspline};
 
 pub(super) fn geometry(object: &ResolvedObject, view: Viewport) -> Vec<Shape> {
     match object {
@@ -25,6 +25,13 @@ fn curved_geometry(object: &ResolvedObject, view: Viewport) -> Vec<Shape> {
         ResolvedObject::Arc(arc) => {
             arc_shapes(arc.geometry, arc.angle_mark_count.unwrap_or(1), view)
         }
+        ResolvedObject::Ellipse(ellipse) => vec![Shape::Ellipse {
+            center: view.to_svg(ellipse.center),
+            radius_x: ellipse.semimajor * view.pixels_per_unit,
+            radius_y: ellipse.semiminor * view.pixels_per_unit,
+            rotation: -ellipse.rotation,
+        }],
+        ResolvedObject::Bspline(spline) => spline_shape(spline, view).into_iter().collect(),
         ResolvedObject::Polygon(poly)
         | ResolvedObject::Rect(poly)
         | ResolvedObject::Diamond(poly) => vec![path(
@@ -34,6 +41,24 @@ fn curved_geometry(object: &ResolvedObject, view: Viewport) -> Vec<Shape> {
         )],
         _ => Vec::new(),
     }
+}
+
+fn spline_shape(spline: &Bspline, view: Viewport) -> Option<Shape> {
+    let spans = spline.bezier_spans().ok()?;
+    let first = spans.first()?;
+    let mut commands = vec![Command::Move(view.to_svg(first[0]))];
+    commands.extend(spans.into_iter().map(|span| {
+        Command::Cubic(
+            view.to_svg(span[1]),
+            view.to_svg(span[2]),
+            view.to_svg(span[3]),
+        )
+    }));
+    Some(Shape::Path {
+        commands,
+        closed: false,
+        ink: false,
+    })
 }
 
 fn point_shapes(point: Point, mark: PointMark, view: Viewport) -> Vec<Shape> {
