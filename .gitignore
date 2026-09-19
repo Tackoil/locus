@@ -2,3 +2,5 @@
 *.locus.svg
 *.locus.png
 *.pending-snap
+.env
+.env.local

@@ -546,6 +546,7 @@ dependencies = [
  "resvg",
  "roxmltree",
  "ryu",
+ "serde_json",
  "svgtypes",
  "thiserror",
 ]

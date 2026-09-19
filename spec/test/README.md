@@ -1,5 +1,9 @@
 # Locus demonstrations and stress tests
 
+The [one-shot live LLM test](llm/README.md) asks DeepSeek Flash to generate a
+Locus file and renders its response, adding only a missing terminal newline.
+It is opt-in and requires an API key.
+
 The positive `.locus` corpus is split by purpose:
 
 - [`demonstrations/`](demonstrations/) contains eleven compact, readable examples of the

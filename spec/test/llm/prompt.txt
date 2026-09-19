@@ -1,0 +1,21 @@
+Draw a textbook geometry diagram of a 3-4-5 right triangle using Locus format 3.
+
+Use these identifiers so an independent test can verify your drawing:
+- A, B, C: vertices, with AB horizontal and length 4, AC vertical and length 3,
+  and the right angle at A. Use parameterless points and relative relationships.
+- tri: the triangle polygon.
+- H: the foot of the perpendicular from A onto the hypotenuse BC.
+- altitude: the highlighted segment AH.
+- circum: the circumcircle through A, B, C, styled as construction geometry.
+- inc: the incircle of triangle ABC, styled as auxiliary geometry.
+
+Show right-angle marks at A and H. Label A, B, C, and H with plain quoted text
+(no TeX). Add a plain-text caption explaining that the triangle has area 6 and
+altitude AH = 2.4. Include at least six meaningful assertions checking the
+requested geometric relationships and measurements.
+Use coincident for point comparisons, for example
+coincident(center(circum), midpoint(B, C)); use == only for numeric measurements.
+
+Return only the complete .locus source, starting with locus 3. No Markdown
+fences, explanation, or external assets. You have one attempt; your response
+will be parsed, solved, checked, and rendered directly without any repair.
