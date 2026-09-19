@@ -13,9 +13,16 @@ publish = false
 name = "locus"
 path = "src/main.rs"
 
+[features]
+default = []
+png = ["locus-render/png"]
+
 [dependencies]
 clap.workspace = true
 locus-core = { path = "../locus-core" }
+locus-layout = { path = "../locus-layout" }
+locus-render = { path = "../locus-render" }
+locus-tex = { path = "../locus-tex", features = ["rex"] }
 locus-syntax = { path = "../locus-syntax" }
 miette.workspace = true
 serde.workspace = true

@@ -1,0 +1,261 @@
+{
+  "command": "describe",
+  "path": "spec/test/demonstrations/ellipse_foci.locus",
+  "objects": [
+    {
+      "id": "e",
+      "kind": "ellipse",
+      "span": {
+        "line": 11,
+        "col": 1,
+        "byte_start": 236,
+        "byte_end": 268
+      },
+      "definition": "ellipse(3, 2, 30deg)",
+      "resolved": {
+        "kind": "ellipse",
+        "semimajor": 3.0,
+        "semiminor": 2.0,
+        "rotation": 0.5235987755982988,
+        "area": 18.84955592153876
+      }
+    },
+    {
+      "id": "inner",
+      "kind": "ellipse",
+      "span": {
+        "line": 12,
+        "col": 1,
+        "byte_start": 269,
+        "byte_end": 334
+      },
+      "definition": "ellipse(e.center, 1.5, 1, 30deg)",
+      "resolved": {
+        "kind": "ellipse",
+        "semimajor": 1.5,
+        "semiminor": 1.0,
+        "rotation": 0.5235987755982988,
+        "area": 4.71238898038469
+      }
+    },
+    {
+      "id": "O",
+      "kind": "point",
+      "span": {
+        "line": 13,
+        "col": 1,
+        "byte_start": 335,
+        "byte_end": 353
+      },
+      "definition": "e.center",
+      "resolved": {
+        "kind": "point",
+        "mark": "dot"
+      }
+    },
+    {
+      "id": "F1",
+      "kind": "point",
+      "span": {
+        "line": 14,
+        "col": 1,
+        "byte_start": 354,
+        "byte_end": 373
+      },
+      "definition": "e.focus1",
+      "resolved": {
+        "kind": "point",
+        "mark": "dot"
+      }
+    },
+    {
+      "id": "F2",
+      "kind": "point",
+      "span": {
+        "line": 15,
+        "col": 1,
+        "byte_start": 374,
+        "byte_end": 393
+      },
+      "definition": "e.focus2",
+      "resolved": {
+        "kind": "point",
+        "mark": "dot"
+      }
+    },
+    {
+      "id": "P",
+      "kind": "point",
+      "span": {
+        "line": 16,
+        "col": 1,
+        "byte_start": 394,
+        "byte_end": 415
+      },
+      "definition": "e.at(60deg)",
+      "resolved": {
+        "kind": "point",
+        "mark": "dot"
+      }
+    },
+    {
+      "id": "major",
+      "kind": "segment",
+      "span": {
+        "line": 18,
+        "col": 1,
+        "byte_start": 417,
+        "byte_end": 478
+      },
+      "definition": "seg(e.major_start, e.major_end)",
+      "resolved": {
+        "kind": "segment",
+        "length": 6.0
+      }
+    },
+    {
+      "id": "minor",
+      "kind": "segment",
+      "span": {
+        "line": 19,
+        "col": 1,
+        "byte_start": 479,
+        "byte_end": 540
+      },
+      "definition": "seg(e.minor_start, e.minor_end)",
+      "resolved": {
+        "kind": "segment",
+        "length": 4.0
+      }
+    },
+    {
+      "id": "focal1",
+      "kind": "segment",
+      "span": {
+        "line": 20,
+        "col": 1,
+        "byte_start": 541,
+        "byte_end": 582
+      },
+      "definition": "seg(F1, P)",
+      "resolved": {
+        "kind": "segment",
+        "length": 4.118033988749895
+      }
+    },
+    {
+      "id": "focal2",
+      "kind": "segment",
+      "span": {
+        "line": 21,
+        "col": 1,
+        "byte_start": 583,
+        "byte_end": 624
+      },
+      "definition": "seg(F2, P)",
+      "resolved": {
+        "kind": "segment",
+        "length": 1.881966011250105
+      }
+    },
+    {
+      "id": "lO",
+      "kind": "label",
+      "span": {
+        "line": 24,
+        "col": 1,
+        "byte_start": 689,
+        "byte_end": 726
+      },
+      "definition": "label(O, $O$)",
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "lF1",
+      "kind": "label",
+      "span": {
+        "line": 25,
+        "col": 1,
+        "byte_start": 727,
+        "byte_end": 768
+      },
+      "definition": "label(F1, $F_1$)",
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "lF2",
+      "kind": "label",
+      "span": {
+        "line": 26,
+        "col": 1,
+        "byte_start": 769,
+        "byte_end": 810
+      },
+      "definition": "label(F2, $F_2$)",
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "lP",
+      "kind": "label",
+      "span": {
+        "line": 27,
+        "col": 1,
+        "byte_start": 811,
+        "byte_end": 848
+      },
+      "definition": "label(P, $P$)",
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "identity",
+      "kind": "text_block",
+      "span": {
+        "line": 28,
+        "col": 1,
+        "byte_start": 849,
+        "byte_end": 920
+      },
+      "definition": "text_block($PF_1 + PF_2 = 2a$)",
+      "resolved": {
+        "kind": "annotation"
+      }
+    }
+  ],
+  "solve": {
+    "unknowns": 2,
+    "equations": 0,
+    "rank": 0,
+    "attempts": 0,
+    "accepted_steps": 0,
+    "max_normalized_residual": 0.0,
+    "final_damping": 0.001,
+    "dof": {
+      "global_remaining": 2,
+      "objects": [
+        {
+          "id": "e",
+          "span": {
+            "line": 11,
+            "col": 1,
+            "byte_start": 236,
+            "byte_end": 268
+          },
+          "hint_settled_dofs": 2,
+          "suggestion": "add a relation if unintended, e.g. on(e, …) or vdist(…) == …"
+        }
+      ]
+    },
+    "branch_resolutions": [],
+    "hint_displacements": [],
+    "redundant_relations": [],
+    "relation_residuals": []
+  }
+}

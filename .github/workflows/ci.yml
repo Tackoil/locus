@@ -12,12 +12,19 @@ env:
 
 jobs:
   quality:
-    name: Specification, formatting, and Clippy
-    runs-on: ubuntu-latest
+    name: Specification, formatting, and Clippy (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - name: Install pinned Rust toolchain
         run: rustup show active-toolchain
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
       - name: Install specification-check dependencies
         run: python3 -m pip install --disable-pip-version-check -r requirements-dev.txt
       - name: Check normative specification artifacts

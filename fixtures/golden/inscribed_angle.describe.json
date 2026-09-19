@@ -1,0 +1,333 @@
+{
+  "command": "describe",
+  "path": "spec/test/demonstrations/inscribed_angle.locus",
+  "objects": [
+    {
+      "id": "c",
+      "kind": "circle",
+      "span": {
+        "line": 10,
+        "col": 1,
+        "byte_start": 132,
+        "byte_end": 152
+      },
+      "definition": "circle(3)",
+      "resolved": {
+        "kind": "circle",
+        "radius": 3.0
+      }
+    },
+    {
+      "id": "O",
+      "kind": "point",
+      "span": {
+        "line": 11,
+        "col": 1,
+        "byte_start": 153,
+        "byte_end": 171
+      },
+      "definition": "c.center",
+      "resolved": {
+        "kind": "point",
+        "mark": "dot"
+      }
+    },
+    {
+      "id": "P",
+      "kind": "point",
+      "span": {
+        "line": 13,
+        "col": 1,
+        "byte_start": 173,
+        "byte_end": 203
+      },
+      "definition": "on_circle(c, 110deg)",
+      "resolved": {
+        "kind": "point",
+        "mark": "dot"
+      }
+    },
+    {
+      "id": "A",
+      "kind": "point",
+      "span": {
+        "line": 14,
+        "col": 1,
+        "byte_start": 204,
+        "byte_end": 234
+      },
+      "definition": "on_circle(c, 200deg)",
+      "resolved": {
+        "kind": "point",
+        "mark": "dot"
+      }
+    },
+    {
+      "id": "B",
+      "kind": "point",
+      "span": {
+        "line": 15,
+        "col": 1,
+        "byte_start": 235,
+        "byte_end": 265
+      },
+      "definition": "on_circle(c, 340deg)",
+      "resolved": {
+        "kind": "point",
+        "mark": "dot"
+      }
+    },
+    {
+      "id": "pa",
+      "kind": "segment",
+      "span": {
+        "line": 17,
+        "col": 1,
+        "byte_start": 267,
+        "byte_end": 289
+      },
+      "definition": "seg(P, A)",
+      "resolved": {
+        "kind": "segment",
+        "length": 4.242640687119285
+      }
+    },
+    {
+      "id": "pb",
+      "kind": "segment",
+      "span": {
+        "line": 18,
+        "col": 1,
+        "byte_start": 290,
+        "byte_end": 312
+      },
+      "definition": "seg(P, B)",
+      "resolved": {
+        "kind": "segment",
+        "length": 5.437846722219899
+      }
+    },
+    {
+      "id": "oa",
+      "kind": "segment",
+      "span": {
+        "line": 19,
+        "col": 1,
+        "byte_start": 313,
+        "byte_end": 349
+      },
+      "definition": "seg(O, A)",
+      "resolved": {
+        "kind": "segment",
+        "length": 3.0
+      }
+    },
+    {
+      "id": "ob",
+      "kind": "segment",
+      "span": {
+        "line": 20,
+        "col": 1,
+        "byte_start": 350,
+        "byte_end": 386
+      },
+      "definition": "seg(O, B)",
+      "resolved": {
+        "kind": "segment",
+        "length": 3.0
+      }
+    },
+    {
+      "id": "sub",
+      "kind": "arc",
+      "span": {
+        "line": 22,
+        "col": 1,
+        "byte_start": 388,
+        "byte_end": 431
+      },
+      "definition": "arc(c, A, B, false)",
+      "resolved": {
+        "kind": "arc",
+        "radius": 3.0,
+        "counterclockwise": false,
+        "angle_mark_count": null
+      }
+    },
+    {
+      "id": "inscribed",
+      "kind": "arc",
+      "span": {
+        "line": 24,
+        "col": 1,
+        "byte_start": 466,
+        "byte_end": 506
+      },
+      "definition": "angle_arc(A, P, B, 0.55)",
+      "resolved": {
+        "kind": "arc",
+        "radius": 0.55,
+        "counterclockwise": true,
+        "angle_mark_count": 1
+      }
+    },
+    {
+      "id": "central",
+      "kind": "arc",
+      "span": {
+        "line": 25,
+        "col": 1,
+        "byte_start": 507,
+        "byte_end": 546
+      },
+      "definition": "angle_arc(A, O, B, 0.4)",
+      "resolved": {
+        "kind": "arc",
+        "radius": 0.4,
+        "counterclockwise": true,
+        "angle_mark_count": 1
+      }
+    },
+    {
+      "id": "lP",
+      "kind": "label",
+      "span": {
+        "line": 28,
+        "col": 1,
+        "byte_start": 610,
+        "byte_end": 634
+      },
+      "definition": "label(P, $P$)",
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "lA",
+      "kind": "label",
+      "span": {
+        "line": 29,
+        "col": 1,
+        "byte_start": 635,
+        "byte_end": 659
+      },
+      "definition": "label(A, $A$)",
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "lB",
+      "kind": "label",
+      "span": {
+        "line": 30,
+        "col": 1,
+        "byte_start": 660,
+        "byte_end": 684
+      },
+      "definition": "label(B, $B$)",
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "lO",
+      "kind": "label",
+      "span": {
+        "line": 31,
+        "col": 1,
+        "byte_start": 685,
+        "byte_end": 721
+      },
+      "definition": "label(O, $O$)",
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "li",
+      "kind": "label",
+      "span": {
+        "line": 33,
+        "col": 1,
+        "byte_start": 723,
+        "byte_end": 786
+      },
+      "definition": "label(P, $\\theta$)",
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "lc",
+      "kind": "label",
+      "span": {
+        "line": 34,
+        "col": 1,
+        "byte_start": 787,
+        "byte_end": 850
+      },
+      "definition": "label(O, $2\\theta$)",
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "see",
+      "kind": "arrow",
+      "span": {
+        "line": 36,
+        "col": 1,
+        "byte_start": 852,
+        "byte_end": 936
+      },
+      "definition": "arrow(li.center, lc.center)",
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "thm",
+      "kind": "text_block",
+      "span": {
+        "line": 38,
+        "col": 1,
+        "byte_start": 938,
+        "byte_end": 1013
+      },
+      "definition": "text_block($\\angle AOB = 2\\,\\angle APB$)",
+      "resolved": {
+        "kind": "annotation"
+      }
+    }
+  ],
+  "solve": {
+    "unknowns": 2,
+    "equations": 0,
+    "rank": 0,
+    "attempts": 0,
+    "accepted_steps": 0,
+    "max_normalized_residual": 0.0,
+    "final_damping": 0.001,
+    "dof": {
+      "global_remaining": 2,
+      "objects": [
+        {
+          "id": "c",
+          "span": {
+            "line": 10,
+            "col": 1,
+            "byte_start": 132,
+            "byte_end": 152
+          },
+          "hint_settled_dofs": 2,
+          "suggestion": "add a relation if unintended, e.g. on(c, …) or vdist(…) == …"
+        }
+      ]
+    },
+    "branch_resolutions": [],
+    "hint_displacements": [],
+    "redundant_relations": [],
+    "relation_residuals": []
+  }
+}

@@ -75,8 +75,8 @@ fn intended_agent_loop() -> Result<(), Box<dyn Error>> {
                 .ok_or("non-UTF-8 path")?,
         ])
         .output()?;
-    assert_eq!(render.status.code(), Some(2));
-    assert!(output_text(render.stderr)?.contains("render is not implemented in this build"));
+    assert_eq!(render.status.code(), Some(0));
+    assert!(fs::read_to_string(directory.path().join("agent-loop.svg"))?.starts_with("<svg"));
     Ok(())
 }
 

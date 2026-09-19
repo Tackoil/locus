@@ -1,6 +1,8 @@
 //! Thin command orchestration over `locus-syntax` and `locus-core`.
 #![allow(missing_docs, reason = "command report plumbing is crate-internal")]
 
+mod render;
+
 use std::fs::{self, OpenOptions};
 use std::io::{self, Read as _, Write as _};
 use std::path::{Path, PathBuf};
@@ -18,8 +20,7 @@ use crate::output::{
     AnchorReport, AnnotationReport, BranchReport, CheckFileResult, CheckResult, CliDiagnostic,
     CommandOutput, DescribeResult, DofReport, Execution, FailureResult, FormatResult, HintReport,
     InspectResult, MutationResult, ObjectAnchorReport, ObjectDofReport, ObjectReport, PointReport,
-    RelationReport, RenderResult, ResolvedValue, Severity, SolveReport, SourceDocument,
-    TextBlockPlacementReport,
+    RelationReport, ResolvedValue, Severity, SolveReport, SourceDocument, TextBlockPlacementReport,
 };
 use crate::{Command, Style};
 
@@ -32,7 +33,7 @@ pub(crate) fn execute(command: Command) -> Execution {
         command @ (Command::Describe(_) | Command::Inspect(_)) => execute_analysis(command),
         Command::Check(args) => check(&args.files, args.strict),
         Command::Fmt(args) => fmt(&args.file),
-        Command::Render(args) => render(&args.file),
+        Command::Render(args) => render::execute(&args),
     }
 }
 
@@ -311,19 +312,6 @@ fn fmt(path: &Path) -> Execution {
         ast: locus_syntax::to_interchange(&parsed.file),
     };
     success(CommandOutput::Format(result), loaded.document())
-}
-
-fn render(path: &Path) -> Execution {
-    Execution {
-        output: CommandOutput::Render(RenderResult {
-            command: "render",
-            path: path_string(path),
-            implemented: false,
-            message: "render is not implemented in this build".to_owned(),
-        }),
-        exit: Exit::Evaluation,
-        sources: Vec::new(),
-    }
 }
 
 #[derive(Clone, Debug)]

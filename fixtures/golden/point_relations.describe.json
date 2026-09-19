@@ -1,0 +1,271 @@
+{
+  "command": "describe",
+  "path": "spec/test/demonstrations/point_relations.locus",
+  "objects": [
+    {
+      "id": "A",
+      "kind": "point",
+      "span": {
+        "line": 11,
+        "col": 1,
+        "byte_start": 255,
+        "byte_end": 272
+      },
+      "definition": "point()",
+      "resolved": {
+        "kind": "point",
+        "mark": "dot"
+      }
+    },
+    {
+      "id": "B",
+      "kind": "point",
+      "span": {
+        "line": 12,
+        "col": 1,
+        "byte_start": 273,
+        "byte_end": 335
+      },
+      "definition": "point()",
+      "resolved": {
+        "kind": "point",
+        "mark": "dot"
+      }
+    },
+    {
+      "id": "C",
+      "kind": "point",
+      "span": {
+        "line": 13,
+        "col": 1,
+        "byte_start": 336,
+        "byte_end": 396
+      },
+      "definition": "point()",
+      "resolved": {
+        "kind": "point",
+        "mark": "dot"
+      }
+    },
+    {
+      "id": "tri",
+      "kind": "polygon",
+      "span": {
+        "line": 16,
+        "col": 1,
+        "byte_start": 461,
+        "byte_end": 491
+      },
+      "definition": "polygon(A, B, C)",
+      "resolved": {
+        "kind": "polygon",
+        "area": 6.0,
+        "perimeter": 12.0
+      }
+    },
+    {
+      "id": "M",
+      "kind": "point",
+      "span": {
+        "line": 17,
+        "col": 1,
+        "byte_start": 492,
+        "byte_end": 516
+      },
+      "definition": "midpoint(B, C)",
+      "resolved": {
+        "kind": "point",
+        "mark": "dot"
+      }
+    },
+    {
+      "id": "circum",
+      "kind": "circle",
+      "span": {
+        "line": 18,
+        "col": 1,
+        "byte_start": 517,
+        "byte_end": 571
+      },
+      "definition": "circle(M, dist(M, A))",
+      "resolved": {
+        "kind": "circle",
+        "radius": 2.5
+      }
+    },
+    {
+      "id": "corner",
+      "kind": "right_angle",
+      "span": {
+        "line": 19,
+        "col": 1,
+        "byte_start": 572,
+        "byte_end": 613
+      },
+      "definition": "right_angle(A, B, C)",
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "lA",
+      "kind": "label",
+      "span": {
+        "line": 21,
+        "col": 1,
+        "byte_start": 615,
+        "byte_end": 653
+      },
+      "definition": "label(A, $A$)",
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "lB",
+      "kind": "label",
+      "span": {
+        "line": 22,
+        "col": 1,
+        "byte_start": 654,
+        "byte_end": 692
+      },
+      "definition": "label(B, $B$)",
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "lC",
+      "kind": "label",
+      "span": {
+        "line": 23,
+        "col": 1,
+        "byte_start": 693,
+        "byte_end": 731
+      },
+      "definition": "label(C, $C$)",
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "lM",
+      "kind": "label",
+      "span": {
+        "line": 24,
+        "col": 1,
+        "byte_start": 732,
+        "byte_end": 770
+      },
+      "definition": "label(M, $M$)",
+      "resolved": {
+        "kind": "annotation"
+      }
+    }
+  ],
+  "solve": {
+    "unknowns": 6,
+    "equations": 4,
+    "rank": 4,
+    "attempts": 0,
+    "accepted_steps": 0,
+    "max_normalized_residual": 0.0,
+    "final_damping": 0.001,
+    "dof": {
+      "global_remaining": 2,
+      "objects": [
+        {
+          "id": "A",
+          "span": {
+            "line": 11,
+            "col": 1,
+            "byte_start": 255,
+            "byte_end": 272
+          },
+          "hint_settled_dofs": 2,
+          "suggestion": "add a relation if unintended, e.g. on(A, …) or vdist(…) == …"
+        },
+        {
+          "id": "B",
+          "span": {
+            "line": 12,
+            "col": 1,
+            "byte_start": 273,
+            "byte_end": 335
+          },
+          "hint_settled_dofs": 2,
+          "suggestion": "add a relation if unintended, e.g. on(B, …) or vdist(…) == …"
+        },
+        {
+          "id": "C",
+          "span": {
+            "line": 13,
+            "col": 1,
+            "byte_start": 336,
+            "byte_end": 396
+          },
+          "hint_settled_dofs": 2,
+          "suggestion": "add a relation if unintended, e.g. on(C, …) or vdist(…) == …"
+        }
+      ]
+    },
+    "branch_resolutions": [],
+    "hint_displacements": [],
+    "redundant_relations": [],
+    "relation_residuals": [
+      {
+        "span": {
+          "line": 12,
+          "col": 27,
+          "byte_start": 299,
+          "byte_end": 315
+        },
+        "max_normalized_residual": 0.0,
+        "implicated_unknowns": [
+          "A",
+          "B"
+        ]
+      },
+      {
+        "span": {
+          "line": 12,
+          "col": 45,
+          "byte_start": 317,
+          "byte_end": 333
+        },
+        "max_normalized_residual": 0.0,
+        "implicated_unknowns": [
+          "A",
+          "B"
+        ]
+      },
+      {
+        "span": {
+          "line": 13,
+          "col": 27,
+          "byte_start": 362,
+          "byte_end": 376
+        },
+        "max_normalized_residual": 0.0,
+        "implicated_unknowns": [
+          "A",
+          "C"
+        ]
+      },
+      {
+        "span": {
+          "line": 13,
+          "col": 43,
+          "byte_start": 378,
+          "byte_end": 394
+        },
+        "max_normalized_residual": 0.0,
+        "implicated_unknowns": [
+          "A",
+          "C"
+        ]
+      }
+    ]
+  }
+}

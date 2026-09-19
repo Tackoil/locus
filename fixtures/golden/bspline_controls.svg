@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="333.688854" height="191.576854" viewBox="0 0 333.688854 191.576854">
+  <g id="frame" data-source-start="260" data-source-end="265" opacity="1.000000">
+    <path d="M 35.320854 160.960000 L 291.320854 160.960000 L 291.320854 32.960000 L 35.320854 32.960000 Z" fill="none" stroke="#6B7280" stroke-width="0.750000" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="1.000000 3.000000"/>
+  </g>
+  <g id="P0" data-source-start="302" data-source-end="304" opacity="1.000000">
+    <circle cx="35.320854" cy="160.960000" r="2.000000" fill="#111827" stroke="none"/>
+  </g>
+  <g id="P1" data-source-start="322" data-source-end="324" opacity="1.000000">
+    <circle cx="35.320854" cy="32.960000" r="2.000000" fill="#111827" stroke="none"/>
+  </g>
+  <g id="P2" data-source-start="342" data-source-end="344" opacity="1.000000">
+    <circle cx="163.320854" cy="32.960000" r="2.000000" fill="#111827" stroke="none"/>
+  </g>
+  <g id="P3" data-source-start="361" data-source-end="363" opacity="1.000000">
+    <circle cx="291.320854" cy="160.960000" r="2.000000" fill="#111827" stroke="none"/>
+  </g>
+  <g id="P4" data-source-start="381" data-source-end="383" opacity="1.000000">
+    <circle cx="291.320854" cy="96.960000" r="2.000000" fill="#111827" stroke="none"/>
+  </g>
+  <g id="curve" data-source-start="403" data-source-end="408" opacity="1.000000">
+    <path d="M 35.320854 160.960000 C 35.320854 32.960000 99.320854 32.960000 163.320854 64.960000 C 227.320854 96.960000 291.320854 160.960000 291.320854 96.960000" fill="none" stroke="#2563EB" stroke-width="1.250000" stroke-linecap="butt" stroke-linejoin="miter"/>
+  </g>
+  <g id="control01" data-source-start="461" data-source-end="470" opacity="1.000000">
+    <path d="M 35.320854 160.960000 L 35.320854 32.960000" fill="none" stroke="#111827" stroke-width="0.750000" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="5.000000 3.000000"/>
+  </g>
+  <g id="control12" data-source-start="507" data-source-end="516" opacity="1.000000">
+    <path d="M 35.320854 32.960000 L 163.320854 32.960000" fill="none" stroke="#111827" stroke-width="0.750000" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="5.000000 3.000000"/>
+  </g>
+  <g id="control23" data-source-start="553" data-source-end="562" opacity="1.000000">
+    <path d="M 163.320854 32.960000 L 291.320854 160.960000" fill="none" stroke="#111827" stroke-width="0.750000" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="5.000000 3.000000"/>
+  </g>
+  <g id="control34" data-source-start="599" data-source-end="608" opacity="1.000000">
+    <path d="M 291.320854 160.960000 L 291.320854 96.960000" fill="none" stroke="#111827" stroke-width="0.750000" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="5.000000 3.000000"/>
+  </g>
+  <g id="M" data-source-start="718" data-source-end="719" opacity="1.000000">
+    <circle cx="163.320854" cy="64.960000" r="2.000000" fill="#111827" stroke="none"/>
+  </g>
+  <g id="Q" data-source-start="742" data-source-end="743" opacity="1.000000">
+    <circle cx="75.320854" cy="52.960000" r="2.000000" fill="#111827" stroke="none"/>
+  </g>
+  <g id="lP0" data-source-start="831" data-source-end="834" opacity="1.000000">
+    <path d="M 35.320854 160.960000 L 34.368000 166.616854" fill="none" stroke="#111827" stroke-width="1.250000" stroke-linecap="butt" stroke-linejoin="miter"/>
+  </g>
+  <g id="lP1" data-source-start="874" data-source-end="877" opacity="1.000000">
+    <path d="M 35.320854 32.960000 L 34.368000 27.303146" fill="none" stroke="#111827" stroke-width="1.250000" stroke-linecap="butt" stroke-linejoin="miter"/>
+  </g>
+  <g id="lP2" data-source-start="917" data-source-end="920" opacity="1.000000">
+    <path d="M 163.320854 32.960000 L 163.320854 24.960000" fill="none" stroke="#111827" stroke-width="1.250000" stroke-linecap="butt" stroke-linejoin="miter"/>
+  </g>
+  <g id="lP3" data-source-start="959" data-source-end="962" opacity="1.000000">
+    <path d="M 291.320854 160.960000 L 292.273708 166.616854" fill="none" stroke="#111827" stroke-width="1.250000" stroke-linecap="butt" stroke-linejoin="miter"/>
+  </g>
+  <g id="lP4" data-source-start="1002" data-source-end="1005" opacity="1.000000">
+    <path d="M 291.320854 96.960000 L 299.320854 96.960000" fill="none" stroke="#111827" stroke-width="1.250000" stroke-linecap="butt" stroke-linejoin="miter"/>
+  </g>
+  <g id="lM" data-source-start="1044" data-source-end="1046" opacity="1.000000">
+    <path d="M 163.320854 64.960000 L 163.320854 56.960000" fill="none" stroke="#111827" stroke-width="1.250000" stroke-linecap="butt" stroke-linejoin="miter"/>
+  </g>
+  <g id="lQ" data-source-start="1090" data-source-end="1092" opacity="1.000000">
+    <path d="M 75.320854 52.960000 L 83.320854 52.960000" fill="none" stroke="#111827" stroke-width="1.250000" stroke-linecap="butt" stroke-linejoin="miter"/>
+  </g>
+</svg>

@@ -1,0 +1,327 @@
+{
+  "command": "describe",
+  "path": "spec/test/demonstrations/pentagon_golden.locus",
+  "objects": [
+    {
+      "id": "circ",
+      "kind": "circle",
+      "span": {
+        "line": 11,
+        "col": 1,
+        "byte_start": 233,
+        "byte_end": 273
+      },
+      "definition": "circle(3)",
+      "resolved": {
+        "kind": "circle",
+        "radius": 3.0
+      }
+    },
+    {
+      "id": "O",
+      "kind": "point",
+      "span": {
+        "line": 12,
+        "col": 1,
+        "byte_start": 274,
+        "byte_end": 295
+      },
+      "definition": "circ.center",
+      "resolved": {
+        "kind": "point",
+        "mark": "dot"
+      }
+    },
+    {
+      "id": "A",
+      "kind": "point",
+      "span": {
+        "line": 13,
+        "col": 1,
+        "byte_start": 296,
+        "byte_end": 320
+      },
+      "definition": "circ.at(90deg)",
+      "resolved": {
+        "kind": "point",
+        "mark": "dot"
+      }
+    },
+    {
+      "id": "B",
+      "kind": "point",
+      "span": {
+        "line": 15,
+        "col": 1,
+        "byte_start": 322,
+        "byte_end": 351
+      },
+      "definition": "rotate(A, O, 72deg)",
+      "resolved": {
+        "kind": "point",
+        "mark": "dot"
+      }
+    },
+    {
+      "id": "C",
+      "kind": "point",
+      "span": {
+        "line": 16,
+        "col": 1,
+        "byte_start": 352,
+        "byte_end": 382
+      },
+      "definition": "rotate(A, O, 144deg)",
+      "resolved": {
+        "kind": "point",
+        "mark": "dot"
+      }
+    },
+    {
+      "id": "D",
+      "kind": "point",
+      "span": {
+        "line": 17,
+        "col": 1,
+        "byte_start": 383,
+        "byte_end": 413
+      },
+      "definition": "rotate(A, O, 216deg)",
+      "resolved": {
+        "kind": "point",
+        "mark": "dot"
+      }
+    },
+    {
+      "id": "E",
+      "kind": "point",
+      "span": {
+        "line": 18,
+        "col": 1,
+        "byte_start": 414,
+        "byte_end": 444
+      },
+      "definition": "rotate(A, O, 288deg)",
+      "resolved": {
+        "kind": "point",
+        "mark": "dot"
+      }
+    },
+    {
+      "id": "pent",
+      "kind": "polygon",
+      "span": {
+        "line": 20,
+        "col": 1,
+        "byte_start": 446,
+        "byte_end": 483
+      },
+      "definition": "polygon(A, B, C, D, E)",
+      "resolved": {
+        "kind": "polygon",
+        "area": 21.398771616640953,
+        "perimeter": 17.633557568774194
+      }
+    },
+    {
+      "id": "d1",
+      "kind": "segment",
+      "span": {
+        "line": 22,
+        "col": 1,
+        "byte_start": 485,
+        "byte_end": 521
+      },
+      "definition": "seg(A, C)",
+      "resolved": {
+        "kind": "segment",
+        "length": 5.706339097770921
+      }
+    },
+    {
+      "id": "d2",
+      "kind": "segment",
+      "span": {
+        "line": 23,
+        "col": 1,
+        "byte_start": 522,
+        "byte_end": 558
+      },
+      "definition": "seg(B, E)",
+      "resolved": {
+        "kind": "segment",
+        "length": 5.706339097770922
+      }
+    },
+    {
+      "id": "P",
+      "kind": "point",
+      "span": {
+        "line": 26,
+        "col": 1,
+        "byte_start": 638,
+        "byte_end": 665
+      },
+      "definition": "intersect(d1, d2)",
+      "resolved": {
+        "kind": "point",
+        "mark": "dot"
+      }
+    },
+    {
+      "id": "t1",
+      "kind": "tick",
+      "span": {
+        "line": 29,
+        "col": 1,
+        "byte_start": 687,
+        "byte_end": 715
+      },
+      "definition": "tick(seg(A, B), 1)",
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "t2",
+      "kind": "tick",
+      "span": {
+        "line": 30,
+        "col": 1,
+        "byte_start": 716,
+        "byte_end": 744
+      },
+      "definition": "tick(seg(B, C), 1)",
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "lA",
+      "kind": "label",
+      "span": {
+        "line": 33,
+        "col": 1,
+        "byte_start": 808,
+        "byte_end": 832
+      },
+      "definition": "label(A, $A$)",
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "lB",
+      "kind": "label",
+      "span": {
+        "line": 34,
+        "col": 1,
+        "byte_start": 833,
+        "byte_end": 857
+      },
+      "definition": "label(B, $B$)",
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "lC",
+      "kind": "label",
+      "span": {
+        "line": 35,
+        "col": 1,
+        "byte_start": 858,
+        "byte_end": 882
+      },
+      "definition": "label(C, $C$)",
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "lD",
+      "kind": "label",
+      "span": {
+        "line": 36,
+        "col": 1,
+        "byte_start": 883,
+        "byte_end": 907
+      },
+      "definition": "label(D, $D$)",
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "lE",
+      "kind": "label",
+      "span": {
+        "line": 37,
+        "col": 1,
+        "byte_start": 908,
+        "byte_end": 932
+      },
+      "definition": "label(E, $E$)",
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "lP",
+      "kind": "label",
+      "span": {
+        "line": 38,
+        "col": 1,
+        "byte_start": 933,
+        "byte_end": 969
+      },
+      "definition": "label(P, $P$)",
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "phi",
+      "kind": "text_block",
+      "span": {
+        "line": 40,
+        "col": 1,
+        "byte_start": 971,
+        "byte_end": 1066
+      },
+      "definition": "text_block($\\dfrac{AC}{AB} = \\varphi = \\dfrac{1+\\sqrt5}{2}$)",
+      "resolved": {
+        "kind": "annotation"
+      }
+    }
+  ],
+  "solve": {
+    "unknowns": 2,
+    "equations": 0,
+    "rank": 0,
+    "attempts": 0,
+    "accepted_steps": 0,
+    "max_normalized_residual": 0.0,
+    "final_damping": 0.001,
+    "dof": {
+      "global_remaining": 2,
+      "objects": [
+        {
+          "id": "circ",
+          "span": {
+            "line": 11,
+            "col": 1,
+            "byte_start": 233,
+            "byte_end": 273
+          },
+          "hint_settled_dofs": 2,
+          "suggestion": "add a relation if unintended, e.g. on(circ, …) or vdist(…) == …"
+        }
+      ]
+    },
+    "branch_resolutions": [],
+    "hint_displacements": [],
+    "redundant_relations": [],
+    "relation_residuals": []
+  }
+}

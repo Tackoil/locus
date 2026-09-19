@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="279.296000" height="257.920000" viewBox="0 0 279.296000 257.920000">
+  <g id="circ" data-source-start="240" data-source-end="244" opacity="1.000000">
+    <circle cx="139.648000" cy="128.960000" r="96.000000" fill="none" stroke="#6B7280" stroke-width="0.750000" stroke-linecap="butt" stroke-linejoin="miter" stroke-dasharray="1.000000 3.000000"/>
+  </g>
+  <g id="O" data-source-start="280" data-source-end="281" opacity="1.000000">
+    <circle cx="139.648000" cy="128.960000" r="2.000000" fill="#111827" stroke="none"/>
+  </g>
+  <g id="A" data-source-start="302" data-source-end="303" opacity="1.000000">
+    <circle cx="139.648000" cy="32.960000" r="2.000000" fill="#111827" stroke="none"/>
+  </g>
+  <g id="B" data-source-start="328" data-source-end="329" opacity="1.000000">
+    <circle cx="48.346574" cy="99.294369" r="2.000000" fill="#111827" stroke="none"/>
+  </g>
+  <g id="C" data-source-start="358" data-source-end="359" opacity="1.000000">
+    <circle cx="83.220616" cy="206.625631" r="2.000000" fill="#111827" stroke="none"/>
+  </g>
+  <g id="D" data-source-start="389" data-source-end="390" opacity="1.000000">
+    <circle cx="196.075384" cy="206.625631" r="2.000000" fill="#111827" stroke="none"/>
+  </g>
+  <g id="E" data-source-start="420" data-source-end="421" opacity="1.000000">
+    <circle cx="230.949426" cy="99.294369" r="2.000000" fill="#111827" stroke="none"/>
+  </g>
+  <g id="pent" data-source-start="454" data-source-end="458" opacity="1.000000">
+    <path d="M 139.648000 32.960000 L 48.346574 99.294369 L 83.220616 206.625631 L 196.075384 206.625631 L 230.949426 99.294369 Z" fill="none" stroke="#111827" stroke-width="1.250000" stroke-linecap="butt" stroke-linejoin="miter"/>
+  </g>
+  <g id="d1" data-source-start="493" data-source-end="495" opacity="1.000000">
+    <path d="M 139.648000 32.960000 L 83.220616 206.625631" fill="none" stroke="#2563EB" stroke-width="1.250000" stroke-linecap="butt" stroke-linejoin="miter"/>
+  </g>
+  <g id="d2" data-source-start="530" data-source-end="532" opacity="1.000000">
+    <path d="M 48.346574 99.294369 L 230.949426 99.294369" fill="none" stroke="#2563EB" stroke-width="1.250000" stroke-linecap="butt" stroke-linejoin="miter"/>
+  </g>
+  <g id="P" data-source-start="644" data-source-end="645" opacity="1.000000">
+    <circle cx="118.094657" cy="99.294369" r="2.000000" fill="#111827" stroke="none"/>
+  </g>
+  <g id="t1" data-source-start="692" data-source-end="694" opacity="1.000000">
+    <path d="M 92.116374 63.538330 L 95.878200 68.716039" fill="none" stroke="#111827" stroke-width="1.250000" stroke-linecap="butt" stroke-linejoin="miter"/>
+  </g>
+  <g id="t2" data-source-start="721" data-source-end="723" opacity="1.000000">
+    <path d="M 62.740214 153.948854 L 68.826976 151.971146" fill="none" stroke="#111827" stroke-width="1.250000" stroke-linecap="butt" stroke-linejoin="miter"/>
+  </g>
+  <g id="lA" data-source-start="814" data-source-end="816" opacity="1.000000">
+    <path d="M 139.648000 32.960000 L 139.648000 24.960000" fill="none" stroke="#111827" stroke-width="1.250000" stroke-linecap="butt" stroke-linejoin="miter"/>
+  </g>
+  <g id="lB" data-source-start="839" data-source-end="841" opacity="1.000000">
+    <path d="M 48.346574 99.294369 L 40.738122 99.294369" fill="none" stroke="#111827" stroke-width="1.250000" stroke-linecap="butt" stroke-linejoin="miter"/>
+  </g>
+  <g id="lC" data-source-start="864" data-source-end="866" opacity="1.000000">
+    <path d="M 83.220616 206.625631 L 78.518334 212.934101" fill="none" stroke="#111827" stroke-width="1.250000" stroke-linecap="butt" stroke-linejoin="miter"/>
+  </g>
+  <g id="lD" data-source-start="889" data-source-end="891" opacity="1.000000">
+    <path d="M 196.075384 206.625631 L 200.777666 212.934101" fill="none" stroke="#111827" stroke-width="1.250000" stroke-linecap="butt" stroke-linejoin="miter"/>
+  </g>
+  <g id="lE" data-source-start="914" data-source-end="916" opacity="1.000000">
+    <path d="M 230.949426 99.294369 L 238.557878 99.294369" fill="none" stroke="#111827" stroke-width="1.250000" stroke-linecap="butt" stroke-linejoin="miter"/>
+  </g>
+  <g id="lP" data-source-start="939" data-source-end="941" opacity="1.000000">
+    <path d="M 118.094657 99.294369 L 118.094657 91.294369" fill="none" stroke="#111827" stroke-width="1.250000" stroke-linecap="butt" stroke-linejoin="miter"/>
+  </g>
+</svg>

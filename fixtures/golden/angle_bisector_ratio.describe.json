@@ -1,0 +1,287 @@
+{
+  "command": "describe",
+  "path": "spec/test/demonstrations/angle_bisector_ratio.locus",
+  "objects": [
+    {
+      "id": "circum",
+      "kind": "circle",
+      "span": {
+        "line": 11,
+        "col": 1,
+        "byte_start": 226,
+        "byte_end": 270
+      },
+      "definition": "circle(3.5)",
+      "resolved": {
+        "kind": "circle",
+        "radius": 3.5
+      }
+    },
+    {
+      "id": "A",
+      "kind": "point",
+      "span": {
+        "line": 12,
+        "col": 1,
+        "byte_start": 271,
+        "byte_end": 297
+      },
+      "definition": "circum.at(80deg)",
+      "resolved": {
+        "kind": "point",
+        "mark": "dot"
+      }
+    },
+    {
+      "id": "B",
+      "kind": "point",
+      "span": {
+        "line": 13,
+        "col": 1,
+        "byte_start": 298,
+        "byte_end": 325
+      },
+      "definition": "circum.at(210deg)",
+      "resolved": {
+        "kind": "point",
+        "mark": "dot"
+      }
+    },
+    {
+      "id": "C",
+      "kind": "point",
+      "span": {
+        "line": 14,
+        "col": 1,
+        "byte_start": 326,
+        "byte_end": 353
+      },
+      "definition": "circum.at(330deg)",
+      "resolved": {
+        "kind": "point",
+        "mark": "dot"
+      }
+    },
+    {
+      "id": "tri",
+      "kind": "polygon",
+      "span": {
+        "line": 16,
+        "col": 1,
+        "byte_start": 355,
+        "byte_end": 385
+      },
+      "definition": "polygon(A, B, C)",
+      "resolved": {
+        "kind": "polygon",
+        "area": 15.752045114597117,
+        "perimeter": 18.14039664577056
+      }
+    },
+    {
+      "id": "bis",
+      "kind": "line",
+      "span": {
+        "line": 18,
+        "col": 1,
+        "byte_start": 387,
+        "byte_end": 438
+      },
+      "definition": "angle_bisector(B, A, C)",
+      "resolved": {
+        "kind": "line"
+      }
+    },
+    {
+      "id": "D",
+      "kind": "point",
+      "span": {
+        "line": 21,
+        "col": 1,
+        "byte_start": 507,
+        "byte_end": 542
+      },
+      "definition": "intersect(bis, seg(B, C))",
+      "resolved": {
+        "kind": "point",
+        "mark": "dot"
+      }
+    },
+    {
+      "id": "ad",
+      "kind": "segment",
+      "span": {
+        "line": 23,
+        "col": 1,
+        "byte_start": 544,
+        "byte_end": 592
+      },
+      "definition": "seg(A, D)",
+      "resolved": {
+        "kind": "segment",
+        "length": 5.216678170941361
+      }
+    },
+    {
+      "id": "m1",
+      "kind": "arc",
+      "span": {
+        "line": 26,
+        "col": 1,
+        "byte_start": 669,
+        "byte_end": 711
+      },
+      "definition": "angle_arc(B, A, D, 0.5)",
+      "resolved": {
+        "kind": "arc",
+        "radius": 0.5,
+        "counterclockwise": true,
+        "angle_mark_count": 1
+      }
+    },
+    {
+      "id": "m2",
+      "kind": "arc",
+      "span": {
+        "line": 27,
+        "col": 1,
+        "byte_start": 712,
+        "byte_end": 754
+      },
+      "definition": "angle_arc(D, A, C, 0.5)",
+      "resolved": {
+        "kind": "arc",
+        "radius": 0.5,
+        "counterclockwise": true,
+        "angle_mark_count": 1
+      }
+    },
+    {
+      "id": "lA",
+      "kind": "label",
+      "span": {
+        "line": 30,
+        "col": 1,
+        "byte_start": 818,
+        "byte_end": 842
+      },
+      "definition": "label(A, $A$)",
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "lB",
+      "kind": "label",
+      "span": {
+        "line": 31,
+        "col": 1,
+        "byte_start": 843,
+        "byte_end": 867
+      },
+      "definition": "label(B, $B$)",
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "lC",
+      "kind": "label",
+      "span": {
+        "line": 32,
+        "col": 1,
+        "byte_start": 868,
+        "byte_end": 892
+      },
+      "definition": "label(C, $C$)",
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "lD",
+      "kind": "label",
+      "span": {
+        "line": 33,
+        "col": 1,
+        "byte_start": 893,
+        "byte_end": 929
+      },
+      "definition": "label(D, $D$)",
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "lbd",
+      "kind": "label",
+      "span": {
+        "line": 35,
+        "col": 1,
+        "byte_start": 931,
+        "byte_end": 996
+      },
+      "definition": "label(seg(B, D).midpoint, $m$)",
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "ldc",
+      "kind": "label",
+      "span": {
+        "line": 36,
+        "col": 1,
+        "byte_start": 997,
+        "byte_end": 1062
+      },
+      "definition": "label(seg(D, C).midpoint, $n$)",
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "eq",
+      "kind": "text_block",
+      "span": {
+        "line": 38,
+        "col": 1,
+        "byte_start": 1064,
+        "byte_end": 1141
+      },
+      "definition": "text_block($\\dfrac{m}{n} = \\dfrac{AB}{AC}$)",
+      "resolved": {
+        "kind": "annotation"
+      }
+    }
+  ],
+  "solve": {
+    "unknowns": 2,
+    "equations": 0,
+    "rank": 0,
+    "attempts": 0,
+    "accepted_steps": 0,
+    "max_normalized_residual": 0.0,
+    "final_damping": 0.001,
+    "dof": {
+      "global_remaining": 2,
+      "objects": [
+        {
+          "id": "circum",
+          "span": {
+            "line": 11,
+            "col": 1,
+            "byte_start": 226,
+            "byte_end": 270
+          },
+          "hint_settled_dofs": 2,
+          "suggestion": "add a relation if unintended, e.g. on(circum, …) or vdist(…) == …"
+        }
+      ]
+    },
+    "branch_resolutions": [],
+    "hint_displacements": [],
+    "redundant_relations": [],
+    "relation_residuals": []
+  }
+}

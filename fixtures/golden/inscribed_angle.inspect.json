@@ -1,0 +1,317 @@
+{
+  "command": "inspect",
+  "path": "spec/test/demonstrations/inscribed_angle.locus",
+  "measurements": {
+    "distances": [
+      {
+        "first": "O",
+        "second": "P",
+        "distance": 3.0
+      },
+      {
+        "first": "O",
+        "second": "A",
+        "distance": 3.0
+      },
+      {
+        "first": "O",
+        "second": "B",
+        "distance": 3.0
+      },
+      {
+        "first": "P",
+        "second": "A",
+        "distance": 4.242640687119285
+      },
+      {
+        "first": "P",
+        "second": "B",
+        "distance": 5.437846722219899
+      },
+      {
+        "first": "A",
+        "second": "B",
+        "distance": 5.638155724715451
+      }
+    ],
+    "triangle_angles": [
+      {
+        "first": "P",
+        "vertex": "O",
+        "second": "A",
+        "radians": 1.5707963267948966
+      },
+      {
+        "first": "O",
+        "vertex": "P",
+        "second": "A",
+        "radians": 0.7853981633974483
+      },
+      {
+        "first": "O",
+        "vertex": "A",
+        "second": "P",
+        "radians": 0.7853981633974483
+      },
+      {
+        "first": "P",
+        "vertex": "O",
+        "second": "B",
+        "radians": 2.2689280275926285
+      },
+      {
+        "first": "O",
+        "vertex": "P",
+        "second": "B",
+        "radians": 0.4363323129985825
+      },
+      {
+        "first": "O",
+        "vertex": "B",
+        "second": "P",
+        "radians": 0.4363323129985825
+      },
+      {
+        "first": "A",
+        "vertex": "O",
+        "second": "B",
+        "radians": 2.4434609527920617
+      },
+      {
+        "first": "O",
+        "vertex": "A",
+        "second": "B",
+        "radians": 0.34906585039886573
+      },
+      {
+        "first": "O",
+        "vertex": "B",
+        "second": "A",
+        "radians": 0.3490658503988658
+      },
+      {
+        "first": "A",
+        "vertex": "P",
+        "second": "B",
+        "radians": 1.2217304763960308
+      },
+      {
+        "first": "P",
+        "vertex": "A",
+        "second": "B",
+        "radians": 1.1344640137963142
+      },
+      {
+        "first": "P",
+        "vertex": "B",
+        "second": "A",
+        "radians": 0.7853981633974483
+      }
+    ],
+    "line_ratios": []
+  },
+  "incidences": [
+    {
+      "kind": "point_on_object",
+      "point": "O",
+      "object": "oa"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "O",
+      "object": "ob"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "P",
+      "object": "c"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "P",
+      "object": "pa"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "P",
+      "object": "pb"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "P",
+      "object": "sub"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "A",
+      "object": "c"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "A",
+      "object": "pa"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "A",
+      "object": "oa"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "A",
+      "object": "sub"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "B",
+      "object": "c"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "B",
+      "object": "pb"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "B",
+      "object": "ob"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "B",
+      "object": "sub"
+    }
+  ],
+  "diagnostics": [
+    {
+      "kind": "unreferenced",
+      "id": "pa",
+      "span": {
+        "line": 17,
+        "col": 9,
+        "byte_start": 275,
+        "byte_end": 277
+      }
+    },
+    {
+      "kind": "unreferenced",
+      "id": "pb",
+      "span": {
+        "line": 18,
+        "col": 9,
+        "byte_start": 298,
+        "byte_end": 300
+      }
+    },
+    {
+      "kind": "unreferenced",
+      "id": "oa",
+      "span": {
+        "line": 19,
+        "col": 9,
+        "byte_start": 321,
+        "byte_end": 323
+      }
+    },
+    {
+      "kind": "unreferenced",
+      "id": "ob",
+      "span": {
+        "line": 20,
+        "col": 9,
+        "byte_start": 358,
+        "byte_end": 360
+      }
+    },
+    {
+      "kind": "unreferenced",
+      "id": "sub",
+      "span": {
+        "line": 22,
+        "col": 5,
+        "byte_start": 392,
+        "byte_end": 395
+      }
+    },
+    {
+      "kind": "unreferenced",
+      "id": "inscribed",
+      "span": {
+        "line": 24,
+        "col": 5,
+        "byte_start": 470,
+        "byte_end": 479
+      }
+    },
+    {
+      "kind": "unreferenced",
+      "id": "central",
+      "span": {
+        "line": 25,
+        "col": 5,
+        "byte_start": 511,
+        "byte_end": 518
+      }
+    },
+    {
+      "kind": "unreferenced",
+      "id": "lP",
+      "span": {
+        "line": 28,
+        "col": 7,
+        "byte_start": 616,
+        "byte_end": 618
+      }
+    },
+    {
+      "kind": "unreferenced",
+      "id": "lA",
+      "span": {
+        "line": 29,
+        "col": 7,
+        "byte_start": 641,
+        "byte_end": 643
+      }
+    },
+    {
+      "kind": "unreferenced",
+      "id": "lB",
+      "span": {
+        "line": 30,
+        "col": 7,
+        "byte_start": 666,
+        "byte_end": 668
+      }
+    },
+    {
+      "kind": "unreferenced",
+      "id": "lO",
+      "span": {
+        "line": 31,
+        "col": 7,
+        "byte_start": 691,
+        "byte_end": 693
+      }
+    },
+    {
+      "kind": "unreferenced",
+      "id": "see",
+      "span": {
+        "line": 36,
+        "col": 8,
+        "byte_start": 859,
+        "byte_end": 862
+      }
+    },
+    {
+      "kind": "unreferenced",
+      "id": "thm",
+      "span": {
+        "line": 38,
+        "col": 12,
+        "byte_start": 949,
+        "byte_end": 952
+      }
+    }
+  ]
+}

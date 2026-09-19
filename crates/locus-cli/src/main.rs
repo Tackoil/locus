@@ -45,7 +45,7 @@ enum Command {
     Check(CheckArgs),
     /// Canonically format source or export the parsed AST.
     Fmt(FileArgs),
-    /// Render a scene (reserved for a later build).
+    /// Render a scene as SVG, PNG, or `TikZ`.
     Render(RenderArgs),
 }
 
@@ -115,17 +115,28 @@ struct RenderArgs {
     /// Locus source file.
     file: PathBuf,
     /// Output path.
-    #[arg(short, long)]
+    #[arg(short, long, required_unless_present = "stdout")]
     output: Option<PathBuf>,
-    /// Request PNG output.
-    #[arg(long)]
+    /// Request PNG output (requires the png build feature).
+    #[cfg(feature = "png")]
+    #[arg(long, conflicts_with = "tikz")]
     png: bool,
     /// Request `TikZ` output.
     #[arg(long)]
     tikz: bool,
     /// Write rendered output to stdout.
-    #[arg(long)]
+    #[arg(long, conflicts_with = "json")]
     stdout: bool,
+    /// Select the TeX engine; mock is reserved for deterministic tests.
+    #[arg(long, value_enum, default_value_t, hide = true)]
+    tex_engine: TextEngine,
+}
+
+#[derive(Clone, Copy, Debug, Default, ValueEnum)]
+enum TextEngine {
+    #[default]
+    Rex,
+    Mock,
 }
 
 fn main() -> std::process::ExitCode {
@@ -134,8 +145,7 @@ fn main() -> std::process::ExitCode {
         Err(error) => return clap_exit(&error),
     };
     let execution = execute(cli.command);
-    output::emit(&execution, cli.json);
-    execution.exit.into()
+    output::emit(&execution, cli.json).into()
 }
 
 fn clap_exit(error: &clap::Error) -> std::process::ExitCode {

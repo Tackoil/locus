@@ -1,0 +1,717 @@
+{
+  "command": "describe",
+  "path": "spec/test/demonstrations/sequence_check.locus",
+  "objects": [
+    {
+      "id": "bw",
+      "kind": "num",
+      "span": {
+        "line": 14,
+        "col": 1,
+        "byte_start": 408,
+        "byte_end": 420
+      },
+      "definition": "2.6",
+      "resolved": {
+        "kind": "number",
+        "value": 2.6,
+        "dimension": "length"
+      }
+    },
+    {
+      "id": "bh",
+      "kind": "num",
+      "span": {
+        "line": 15,
+        "col": 1,
+        "byte_start": 454,
+        "byte_end": 466
+      },
+      "definition": "0.9",
+      "resolved": {
+        "kind": "number",
+        "value": 0.9,
+        "dimension": "length"
+      }
+    },
+    {
+      "id": "hp",
+      "kind": "num",
+      "span": {
+        "line": 16,
+        "col": 1,
+        "byte_start": 501,
+        "byte_end": 513
+      },
+      "definition": "4.0",
+      "resolved": {
+        "kind": "number",
+        "value": 4.0,
+        "dimension": "length"
+      }
+    },
+    {
+      "id": "rp",
+      "kind": "num",
+      "span": {
+        "line": 17,
+        "col": 1,
+        "byte_start": 543,
+        "byte_end": 556
+      },
+      "definition": "0.85",
+      "resolved": {
+        "kind": "number",
+        "value": 0.85,
+        "dimension": "length"
+      }
+    },
+    {
+      "id": "boxA",
+      "kind": "rect",
+      "span": {
+        "line": 20,
+        "col": 1,
+        "byte_start": 652,
+        "byte_end": 676
+      },
+      "definition": "rect(bw, bh)",
+      "resolved": {
+        "kind": "rect",
+        "area": 2.3399999999999994,
+        "perimeter": 7.0
+      }
+    },
+    {
+      "id": "hA",
+      "kind": "label",
+      "span": {
+        "line": 21,
+        "col": 1,
+        "byte_start": 677,
+        "byte_end": 732
+      },
+      "definition": "label(boxA.center, \"Agent\")",
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "boxB",
+      "kind": "rect",
+      "span": {
+        "line": 23,
+        "col": 1,
+        "byte_start": 734,
+        "byte_end": 844
+      },
+      "definition": "rect(bw, bh)",
+      "resolved": {
+        "kind": "rect",
+        "area": 2.34,
+        "perimeter": 7.0
+      }
+    },
+    {
+      "id": "hB",
+      "kind": "label",
+      "span": {
+        "line": 24,
+        "col": 1,
+        "byte_start": 845,
+        "byte_end": 904
+      },
+      "definition": "label(boxB.center, \"locus CLI\")",
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "boxC",
+      "kind": "rect",
+      "span": {
+        "line": 26,
+        "col": 1,
+        "byte_start": 906,
+        "byte_end": 1016
+      },
+      "definition": "rect(bw, bh)",
+      "resolved": {
+        "kind": "rect",
+        "area": 2.3399999999999994,
+        "perimeter": 7.0
+      }
+    },
+    {
+      "id": "hC",
+      "kind": "label",
+      "span": {
+        "line": 27,
+        "col": 1,
+        "byte_start": 1017,
+        "byte_end": 1073
+      },
+      "definition": "label(boxC.center, \"Kernel\")",
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "lifeA",
+      "kind": "segment",
+      "span": {
+        "line": 30,
+        "col": 1,
+        "byte_start": 1151,
+        "byte_end": 1213
+      },
+      "definition": "seg(boxA.s, offset(boxA.s, 0, -6))",
+      "resolved": {
+        "kind": "segment",
+        "length": 6.0
+      }
+    },
+    {
+      "id": "lifeB",
+      "kind": "segment",
+      "span": {
+        "line": 31,
+        "col": 1,
+        "byte_start": 1214,
+        "byte_end": 1276
+      },
+      "definition": "seg(boxB.s, offset(boxB.s, 0, -6))",
+      "resolved": {
+        "kind": "segment",
+        "length": 6.0
+      }
+    },
+    {
+      "id": "lifeC",
+      "kind": "segment",
+      "span": {
+        "line": 32,
+        "col": 1,
+        "byte_start": 1277,
+        "byte_end": 1339
+      },
+      "definition": "seg(boxC.s, offset(boxC.s, 0, -6))",
+      "resolved": {
+        "kind": "segment",
+        "length": 6.0
+      }
+    },
+    {
+      "id": "r1",
+      "kind": "point",
+      "span": {
+        "line": 35,
+        "col": 1,
+        "byte_start": 1412,
+        "byte_end": 1461
+      },
+      "definition": "offset(boxA.s, 0, -rp)",
+      "resolved": {
+        "kind": "point",
+        "mark": "none"
+      }
+    },
+    {
+      "id": "r2",
+      "kind": "point",
+      "span": {
+        "line": 36,
+        "col": 1,
+        "byte_start": 1462,
+        "byte_end": 1511
+      },
+      "definition": "offset(r1, 0, -rp)",
+      "resolved": {
+        "kind": "point",
+        "mark": "none"
+      }
+    },
+    {
+      "id": "r3",
+      "kind": "point",
+      "span": {
+        "line": 37,
+        "col": 1,
+        "byte_start": 1512,
+        "byte_end": 1561
+      },
+      "definition": "offset(r2, 0, -rp)",
+      "resolved": {
+        "kind": "point",
+        "mark": "none"
+      }
+    },
+    {
+      "id": "r4",
+      "kind": "point",
+      "span": {
+        "line": 38,
+        "col": 1,
+        "byte_start": 1562,
+        "byte_end": 1611
+      },
+      "definition": "offset(r3, 0, -rp)",
+      "resolved": {
+        "kind": "point",
+        "mark": "none"
+      }
+    },
+    {
+      "id": "r5",
+      "kind": "point",
+      "span": {
+        "line": 39,
+        "col": 1,
+        "byte_start": 1612,
+        "byte_end": 1661
+      },
+      "definition": "offset(r4, 0, -rp)",
+      "resolved": {
+        "kind": "point",
+        "mark": "none"
+      }
+    },
+    {
+      "id": "r6",
+      "kind": "point",
+      "span": {
+        "line": 40,
+        "col": 1,
+        "byte_start": 1662,
+        "byte_end": 1711
+      },
+      "definition": "offset(r5, 0, -rp)",
+      "resolved": {
+        "kind": "point",
+        "mark": "none"
+      }
+    },
+    {
+      "id": "p1b",
+      "kind": "point",
+      "span": {
+        "line": 43,
+        "col": 1,
+        "byte_start": 1781,
+        "byte_end": 1824
+      },
+      "definition": "foot(r1, lifeB)",
+      "resolved": {
+        "kind": "point",
+        "mark": "none"
+      }
+    },
+    {
+      "id": "m1",
+      "kind": "arrow",
+      "span": {
+        "line": 44,
+        "col": 1,
+        "byte_start": 1825,
+        "byte_end": 1864
+      },
+      "definition": "arrow(r1, p1b)",
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "l1",
+      "kind": "label",
+      "span": {
+        "line": 45,
+        "col": 1,
+        "byte_start": 1865,
+        "byte_end": 1946
+      },
+      "definition": "label(seg(r1, p1b).midpoint, \"check fig.locus\")",
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "p2b",
+      "kind": "point",
+      "span": {
+        "line": 47,
+        "col": 1,
+        "byte_start": 1948,
+        "byte_end": 1991
+      },
+      "definition": "foot(r2, lifeB)",
+      "resolved": {
+        "kind": "point",
+        "mark": "none"
+      }
+    },
+    {
+      "id": "p2c",
+      "kind": "point",
+      "span": {
+        "line": 48,
+        "col": 1,
+        "byte_start": 1992,
+        "byte_end": 2035
+      },
+      "definition": "foot(r2, lifeC)",
+      "resolved": {
+        "kind": "point",
+        "mark": "none"
+      }
+    },
+    {
+      "id": "m2",
+      "kind": "arrow",
+      "span": {
+        "line": 49,
+        "col": 1,
+        "byte_start": 2036,
+        "byte_end": 2076
+      },
+      "definition": "arrow(p2b, p2c)",
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "l2",
+      "kind": "label",
+      "span": {
+        "line": 50,
+        "col": 1,
+        "byte_start": 2077,
+        "byte_end": 2168
+      },
+      "definition": "label(seg(p2b, p2c).midpoint, \"parse + solve + evaluate\")",
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "p3b",
+      "kind": "point",
+      "span": {
+        "line": 52,
+        "col": 1,
+        "byte_start": 2170,
+        "byte_end": 2213
+      },
+      "definition": "foot(r3, lifeB)",
+      "resolved": {
+        "kind": "point",
+        "mark": "none"
+      }
+    },
+    {
+      "id": "p3c",
+      "kind": "point",
+      "span": {
+        "line": 53,
+        "col": 1,
+        "byte_start": 2214,
+        "byte_end": 2257
+      },
+      "definition": "foot(r3, lifeC)",
+      "resolved": {
+        "kind": "point",
+        "mark": "none"
+      }
+    },
+    {
+      "id": "m3",
+      "kind": "arrow",
+      "span": {
+        "line": 54,
+        "col": 1,
+        "byte_start": 2258,
+        "byte_end": 2305
+      },
+      "definition": "arrow(p3c, p3b)",
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "l3",
+      "kind": "label",
+      "span": {
+        "line": 55,
+        "col": 1,
+        "byte_start": 2318,
+        "byte_end": 2412
+      },
+      "definition": "label(seg(p3b, p3c).midpoint, \"resolved scene + DOF report\")",
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "p4b",
+      "kind": "point",
+      "span": {
+        "line": 57,
+        "col": 1,
+        "byte_start": 2414,
+        "byte_end": 2457
+      },
+      "definition": "foot(r4, lifeB)",
+      "resolved": {
+        "kind": "point",
+        "mark": "none"
+      }
+    },
+    {
+      "id": "p4c",
+      "kind": "point",
+      "span": {
+        "line": 58,
+        "col": 1,
+        "byte_start": 2458,
+        "byte_end": 2501
+      },
+      "definition": "foot(r4, lifeC)",
+      "resolved": {
+        "kind": "point",
+        "mark": "none"
+      }
+    },
+    {
+      "id": "m4",
+      "kind": "arrow",
+      "span": {
+        "line": 59,
+        "col": 1,
+        "byte_start": 2502,
+        "byte_end": 2542
+      },
+      "definition": "arrow(p4b, p4c)",
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "l4",
+      "kind": "label",
+      "span": {
+        "line": 60,
+        "col": 1,
+        "byte_start": 2543,
+        "byte_end": 2621
+      },
+      "definition": "label(seg(p4b, p4c).midpoint, \"run asserts\")",
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "p5b",
+      "kind": "point",
+      "span": {
+        "line": 62,
+        "col": 1,
+        "byte_start": 2623,
+        "byte_end": 2666
+      },
+      "definition": "foot(r5, lifeB)",
+      "resolved": {
+        "kind": "point",
+        "mark": "none"
+      }
+    },
+    {
+      "id": "p5c",
+      "kind": "point",
+      "span": {
+        "line": 63,
+        "col": 1,
+        "byte_start": 2667,
+        "byte_end": 2710
+      },
+      "definition": "foot(r5, lifeC)",
+      "resolved": {
+        "kind": "point",
+        "mark": "none"
+      }
+    },
+    {
+      "id": "m5",
+      "kind": "arrow",
+      "span": {
+        "line": 64,
+        "col": 1,
+        "byte_start": 2711,
+        "byte_end": 2758
+      },
+      "definition": "arrow(p5c, p5b)",
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "l5",
+      "kind": "label",
+      "span": {
+        "line": 65,
+        "col": 1,
+        "byte_start": 2759,
+        "byte_end": 2849
+      },
+      "definition": "label(seg(p5b, p5c).midpoint, \"$a_3$ failed: got 1.618\")",
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "p6b",
+      "kind": "point",
+      "span": {
+        "line": 67,
+        "col": 1,
+        "byte_start": 2851,
+        "byte_end": 2894
+      },
+      "definition": "foot(r6, lifeB)",
+      "resolved": {
+        "kind": "point",
+        "mark": "none"
+      }
+    },
+    {
+      "id": "m6",
+      "kind": "arrow",
+      "span": {
+        "line": 68,
+        "col": 1,
+        "byte_start": 2895,
+        "byte_end": 2941
+      },
+      "definition": "arrow(p6b, r6)",
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "l6",
+      "kind": "label",
+      "span": {
+        "line": 69,
+        "col": 1,
+        "byte_start": 2942,
+        "byte_end": 3028
+      },
+      "definition": "label(seg(r6, p6b).midpoint, \"exit 1 + JSON report\")",
+      "resolved": {
+        "kind": "annotation"
+      }
+    }
+  ],
+  "solve": {
+    "unknowns": 6,
+    "equations": 4,
+    "rank": 4,
+    "attempts": 3,
+    "accepted_steps": 3,
+    "max_normalized_residual": 3.4815540554140916e-13,
+    "final_damping": 1.0000000000000002e-6,
+    "dof": {
+      "global_remaining": 2,
+      "objects": [
+        {
+          "id": "boxA",
+          "span": {
+            "line": 20,
+            "col": 1,
+            "byte_start": 652,
+            "byte_end": 676
+          },
+          "hint_settled_dofs": 2,
+          "suggestion": "add a relation if unintended, e.g. on(boxA, …) or vdist(…) == …"
+        },
+        {
+          "id": "boxB",
+          "span": {
+            "line": 23,
+            "col": 1,
+            "byte_start": 734,
+            "byte_end": 844
+          },
+          "hint_settled_dofs": 2,
+          "suggestion": "add a relation if unintended, e.g. on(boxB, …) or vdist(…) == …"
+        },
+        {
+          "id": "boxC",
+          "span": {
+            "line": 26,
+            "col": 1,
+            "byte_start": 906,
+            "byte_end": 1016
+          },
+          "hint_settled_dofs": 2,
+          "suggestion": "add a relation if unintended, e.g. on(boxC, …) or vdist(…) == …"
+        }
+      ]
+    },
+    "branch_resolutions": [],
+    "hint_displacements": [],
+    "redundant_relations": [],
+    "relation_residuals": [
+      {
+        "span": {
+          "line": 23,
+          "col": 34,
+          "byte_start": 767,
+          "byte_end": 803
+        },
+        "max_normalized_residual": 1.2124601574842064e-13,
+        "implicated_unknowns": [
+          "boxA",
+          "boxB"
+        ]
+      },
+      {
+        "span": {
+          "line": 23,
+          "col": 72,
+          "byte_start": 805,
+          "byte_end": 842
+        },
+        "max_normalized_residual": 3.233724735860602e-13,
+        "implicated_unknowns": [
+          "boxA",
+          "boxB"
+        ]
+      },
+      {
+        "span": {
+          "line": 26,
+          "col": 34,
+          "byte_start": 939,
+          "byte_end": 975
+        },
+        "max_normalized_residual": 1.3055827707802844e-13,
+        "implicated_unknowns": [
+          "boxB",
+          "boxC"
+        ]
+      },
+      {
+        "span": {
+          "line": 26,
+          "col": 72,
+          "byte_start": 977,
+          "byte_end": 1014
+        },
+        "max_normalized_residual": 3.4815540554140916e-13,
+        "implicated_unknowns": [
+          "boxB",
+          "boxC"
+        ]
+      }
+    ]
+  }
+}

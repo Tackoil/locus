@@ -328,8 +328,11 @@ impl Serialize for FormatResult {
 pub(crate) struct RenderResult {
     pub command: &'static str,
     pub path: String,
-    pub implemented: bool,
-    pub message: String,
+    pub format: &'static str,
+    pub output: Option<String>,
+    pub diagnostics: Vec<CliDiagnostic>,
+    #[serde(skip)]
+    pub stdout: Option<Vec<u8>>,
 }
 
 #[derive(Clone, Debug, Serialize)]
@@ -351,12 +354,23 @@ pub(crate) struct Execution {
     pub sources: Vec<SourceDocument>,
 }
 
-pub(crate) fn emit(execution: &Execution, json: bool) {
+pub(crate) fn emit(execution: &Execution, json: bool) -> Exit {
+    if let CommandOutput::Render(result) = &execution.output {
+        if let Some(bytes) = &result.stdout {
+            emit_diagnostics(&result.diagnostics, &execution.sources);
+            if let Err(error) = io::stdout().lock().write_all(bytes) {
+                eprintln!("error: cannot write rendered output: {error}");
+                return Exit::Usage;
+            }
+            return execution.exit;
+        }
+    }
     if json {
         emit_json(&execution.output);
     } else {
         emit_human(execution);
     }
+    execution.exit
 }
 
 pub(crate) fn usage_error(message: &str) -> Execution {
@@ -400,8 +414,15 @@ fn emit_human(execution: &Execution) {
         }
         CommandOutput::Format(value) => print!("{}", value.source),
         CommandOutput::Failure(value) => emit_diagnostics(&value.diagnostics, &execution.sources),
-        CommandOutput::Render(value) => eprintln!("error: {}", value.message),
+        CommandOutput::Render(value) => emit_render(value, &execution.sources),
     }
+}
+
+fn emit_render(value: &RenderResult, sources: &[SourceDocument]) {
+    if let Some(path) = &value.output {
+        println!("rendered {} to {path}", value.format);
+    }
+    emit_diagnostics(&value.diagnostics, sources);
 }
 
 fn human_describe(result: &DescribeResult) -> String {
