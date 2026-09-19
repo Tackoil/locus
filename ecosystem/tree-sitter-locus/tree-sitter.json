@@ -1,0 +1,17 @@
+{
+  "grammars": [
+    {
+      "name": "locus",
+      "camelcase": "Locus",
+      "scope": "source.locus",
+      "path": ".",
+      "file-types": ["locus"],
+      "highlights": "../zed/languages/locus/highlights.scm"
+    }
+  ],
+  "metadata": {
+    "version": "0.1.0",
+    "license": "MIT OR Apache-2.0",
+    "description": "Locus geometry and diagram language"
+  }
+}

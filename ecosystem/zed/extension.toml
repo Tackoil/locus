@@ -1,0 +1,15 @@
+id = "locus"
+name = "Locus"
+version = "0.2.0"
+schema_version = 1
+authors = ["Locus contributors"]
+description = "Syntax highlighting and language server support for Locus geometry diagrams"
+languages = ["languages/locus"]
+
+# prepare.py adds the local grammar repository and revision to the staged
+# extension's manifest. Install target/dev-extension, not this source directory.
+
+[language_servers.locus-lsp]
+name = "Locus LSP"
+languages = ["Locus"]
+language_ids = { Locus = "locus" }

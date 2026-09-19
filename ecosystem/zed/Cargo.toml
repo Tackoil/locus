@@ -1,0 +1,21 @@
+[package]
+name = "locus-zed"
+version = "0.2.0"
+edition = "2024"
+rust-version = "1.88"
+license = "MIT OR Apache-2.0"
+description = "Locus language server integration for Zed"
+publish = false
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+zed_extension_api = "0.7.0"
+
+# Zed builds this extension for WebAssembly, independently of the native LSP.
+[workspace]
+
+[lints.clippy]
+all = "warn"
+pedantic = "warn"

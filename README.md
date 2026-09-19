@@ -27,6 +27,13 @@ cargo run -p locus-cli -- check spec/test/stress/*.locus
 
 See [`spec/README.md`](spec/README.md) for the normative contract and [`documents/structure.md`](documents/structure.md) for the implementation roadmap.
 
+## Editor integration
+
+The [Zed extension](ecosystem/zed/README.md) adds syntax highlighting with the
+bundled Tree-sitter grammar and connects `.locus` files to `locus-lsp` for
+diagnostics, completion, hover, go-to-definition, and formatting.
+See its README for local installation and server configuration.
+
 ## Rendering
 
 Run `locus check figure.locus` first; after it exits 0, render for human review:

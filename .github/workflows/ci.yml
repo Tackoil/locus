@@ -11,6 +11,35 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
+  zed-extension:
+    name: Zed extension
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: ecosystem/tree-sitter-locus/package-lock.json
+      - name: Install grammar development tools
+        run: npm ci --prefix ecosystem/tree-sitter-locus
+      - name: Check generated grammar
+        run: |
+          npm run generate --prefix ecosystem/tree-sitter-locus
+          git diff --exit-code -- ecosystem/tree-sitter-locus/src
+      - name: Test grammar and Zed queries
+        run: npm test --prefix ecosystem/tree-sitter-locus
+      - name: Prepare local Zed extension
+        run: python3 ecosystem/zed/prepare.py
+      - name: Install extension compilation target
+        run: rustup target add wasm32-wasip2
+      - name: Check extension formatting
+        run: cargo fmt --manifest-path ecosystem/zed/Cargo.toml -- --check
+      - name: Check extension with Clippy
+        run: cargo clippy --manifest-path ecosystem/zed/Cargo.toml --locked --target wasm32-wasip2 -- -D warnings
+      - name: Build extension for Zed
+        run: cargo build --manifest-path ecosystem/zed/Cargo.toml --locked --release --target wasm32-wasip2
+
   quality:
     name: Specification, formatting, and Clippy (${{ matrix.os }})
     strategy:

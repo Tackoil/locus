@@ -1,0 +1,14 @@
+{
+  "name": "tree-sitter-locus",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Tree-sitter grammar for the Locus diagram language",
+  "license": "MIT OR Apache-2.0",
+  "scripts": {
+    "generate": "tree-sitter generate --abi 14",
+    "test": "tree-sitter test && node scripts/check-examples.js"
+  },
+  "devDependencies": {
+    "tree-sitter-cli": "0.25.10"
+  }
+}
