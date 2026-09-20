@@ -1,0 +1,54 @@
+penrose_id	title	outcome	feature_area	evidence	limitation
+set-theory-domain/tree-euler	Sets as Euler Diagram	approximation	set containment	spec/test/stress/tangent_circles.locus	No shape-containment or disjointness relation; a static nested-circle arrangement must be authored directly.
+group-theory/quaternion-multiplication-table	Quaternions as table	approximation	tables	spec/test/stress/gantt_chart.locus	Cells and labels can be enumerated, but there are no collections, grid layout, or reusable table rules.
+walk-on-spheres/SignedAngleOutside	Walk on Stars - Signed Angle Outside	approximation	angles and sampled boundaries	spec/test/stress/inscribed_angle.locus	Angle arcs exist, but the star boundary, repeated signed-angle construction, and sampling must be expanded manually.
+spectral-graphs/examples/hypercube	Hypercube	approximation	graph layout	spec/test/stress/software_architecture.locus	Nodes and edges are drawable, but there is no graph data model, loop, or automatic layout.
+group-theory/quaternion-cayley-graph	Quaternions as Cayley graph	approximation	curved directed graph	spec/test/stress/software_architecture.locus	Bent arrows are available, but group expansion, repeated styling rules, and graph layout are manual.
+set-theory-domain/tree-euler-3d	Sets as Euler Diagram in 2.5D	blocked	2.5D styling	-	The figure depends on imported SVG shading, layering, and pseudo-3D effects.
+structural-formula/molecules/caffeine	A Caffeine Molecule	approximation	molecular graph	spec/test/stress/software_architecture.locus	The bond graph is drawable, but molecule rules, automatic layout, image-based shading, and blur are absent.
+walk-on-spheres/walk-on-stars	Walk on Stars - Laplace Estimator	blocked	stochastic simulation	-	The central result needs generated walks, custom SVG assets, polygonal domains, and simulation-specific computation.
+set-theory-domain/continuousmap	Continuous Map	native	set mapping	spec/test/demonstrations/aec3_filter_alignment.locus	-
+mobius/mobius	Mobius Transformation of Circles	approximation	complex transform	spec/test/stress/tangent_circles.locus	Circles can be placed, but Locus has no Mobius transform or reusable mapping rule.
+array-models/insertionSort	Insertion Sort	approximation	array states	spec/test/stress/gantt_chart.locus	Boxes and arrows are drawable, but arrays, indexed expansion, and state-to-state generation are manual.
+exterior-algebra/vector-wedge	Wedge Product	native	vectors and filled polygons	spec/test/demonstrations/pentagon_golden.locus	-
+spectral-graphs/examples/hexagonal-lattice	Hexagonal Lattice Graph	approximation	generated graph	spec/test/stress/software_architecture.locus	The lattice can be enumerated, but generation and spectral layout are absent.
+dinoshade/dinoshade	3D Reflections and Shadows	blocked	3D rendering	-	Locus has no 3D projection, lighting, reflection, shadow, or blur model.
+graph-domain/textbook/sec1/fig5	Computer Network with Multiple One-Way Links	approximation	multigraph layout	spec/test/stress/software_architecture.locus	Directed bent edges are supported, but parallel-edge routing and graph layout must be authored manually.
+triangle-mesh-3d/two-triangles	Two 3D Triangles	blocked	3D mesh	-	The defining perspective projection and 3D triangle geometry are outside the language.
+random-sampling/test	Random Sampling	approximation	sampled marks	spec/test/stress/xy_parabola.locus	A fixed sample can be enumerated, but random distributions and collection generation are absent.
+geometry-domain/textbook_problems/c11p12	Circle Example	native	Euclidean circle construction	spec/test/demonstrations/inscribed_angle.locus	-
+curve-examples/catmull-rom/catmull-rom	Catmull-Rom Interpolation Test	approximation	interpolating curves	spec/test/demonstrations/bspline_controls.locus	Locus has only open uniform cubic B-splines; it cannot express Catmull-Rom interpolation or custom knots.
+word-cloud/example	Word Cloud	blocked	text layout	-	Per-label font sizing, rotation, and global word-cloud collision layout are unavailable.
+geometry-domain/siggraph-teaser	SIGGRAPH teaser - Euclidean Geometry	native	Euclidean construction	spec/test/demonstrations/angle_bisector_ratio.locus	-
+lagrange-bases/lagrange-bases	Lagrange Bases	approximation	function plots	spec/test/stress/xy_parabola.locus	Polynomial evaluation and curve sampling must be expanded into individual points and segments.
+hypergraph/hypergraph	Hypergraph	approximation	hyperedges	spec/test/stress/software_architecture.locus	Nodes are drawable, but smooth multi-node hyperedges need arbitrary closed paths or manual substitutes.
+persistent-homology/persistent-homology	Persistent Homology	approximation	filtration diagram	spec/test/stress/tangent_circles.locus	Circle filtrations can be drawn, but staged data rules, translucent overlap shading, and imported SVG shading are missing.
+walk-on-spheres/laplace-estimator	Walk on Spheres - Laplace Estimator	blocked	stochastic simulation	-	The defining stochastic process, 3D-style assets, and generated walk geometry are unavailable.
+graph-domain/other-examples/hamiltonian-cycle	Hamiltonian Cycle	approximation	graph highlighting	spec/test/stress/software_architecture.locus	A fixed highlighted cycle is drawable, but the graph abstraction and automatic layout are absent.
+structural-formula/reactions/methane-combustion	Methane Combustion Reaction	approximation	chemical reaction	spec/test/stress/tangent_circles.locus	A static reaction is possible, but molecule templates, atom/bond rules, and chemical layout are manual.
+matrix-ops/tests/matrix-matrix-multiplication	Matrix-matrix multiplication	approximation	matrix visualization	spec/test/stress/gantt_chart.locus	The grid can be authored, but matrices, indexed products, and generated highlights are absent.
+logic-circuit-domain/half-adder	Half Adder	blocked	circuit glyphs	-	Conventional logic-gate bodies require arbitrary closed paths and routed connectors not present in Locus.
+triangle-mesh-2d/diagrams/cotan-formula	Cotan Formula	native	triangle geometry and angles	spec/test/demonstrations/angle_bisector_ratio.locus	-
+triangle-mesh-2d/diagrams/concyclic-pair	Concyclic Euclidean Edge Flip	native	concyclic geometry	spec/test/demonstrations/inscribed_angle.locus	-
+graph-domain/other-examples/arpanet	Curved graph example with dots	approximation	curved graph	spec/test/stress/software_architecture.locus	Quadratic arrow bends exist, but arbitrary polyline routing and graph layout are manual.
+fancy-text/fancy-text	Fancy Text + Equations	approximation	styled text	spec/test/stress/sequence_check.locus	Mixed plain text and TeX work, but per-label fonts, sizes, rotations, and rich typographic styles do not.
+curve-examples/blobs	Blobs	blocked	closed organic curves	-	Locus has no closed or fitted spline and cannot fill an open B-spline.
+geometric-queries/ray-intersect/test-group	Ray Casting	blocked	generic intersections	-	Generic ray intersections against ellipses, polygons, polylines, and rectangles are unavailable.
+ray-tracing/next-event-estimation	Next Event Estimation	blocked	ray-tracing diagram	-	The example combines 3D projection, imported assets, and ray-tracing-specific computations.
+geometric-queries/test	Geometric Queries	blocked	shape queries	-	Generic closest-point, silhouette-point, and ray-intersection operations across shape types are missing.
+geometric-queries/closest-point/test-group	Closest Point Queries	blocked	closest points	-	Locus supports selected projections, not generic nearest points for ellipses, polygons, polylines, and rectangles.
+box-arrow-diagram/computer-architecture	Computer Architecture Box-Arrow Diagram	native	box-and-arrow diagram	spec/test/demonstrations/flowchart_agent_loop.locus	-
+stochastic-process/stochastic-process	Brownian Motion in a Ball	approximation	stochastic path	spec/test/demonstrations/bspline_controls.locus	A fixed path can be drawn, but Brownian sampling, boundary handling, and imported shading are absent.
+stochastic-process/epsilon-shell/AbsorbingBoundary	Brownian Motion Absorbed at Boundary	approximation	stochastic boundary process	spec/test/demonstrations/bspline_controls.locus	A fixed path can be drawn, but the absorbing process and generated path are absent.
+spectral-graphs/examples/dodecahedral-graph	Dodecahedral Graph	approximation	spectral graph layout	spec/test/stress/software_architecture.locus	The 2D node-edge result is drawable, but graph generation, spectral layout, and glow effects are absent.
+spectral-graphs/examples/mobius	Mobius Strip	blocked	3D surface	-	A projected twisted surface with depth ordering is outside Locus's 2D object model.
+impossible-ngon/ngon	Impossible Polygons	blocked	layered optical illusion	-	The figure relies on arbitrary paths, gradients, blur, imported SVG, and explicit layer ordering.
+Dynamics/Lyapunov	Lyapunov Exponent	blocked	dynamical-system plot	-	The Lyapunov computation and dense generated curve/path cannot be expressed without functions and iteration.
+fractals/chaos-game/sierpinski-triangle	Chaos Game: Sierpinski Triangle	approximation	fractal point cloud	spec/test/stress/xy_parabola.locus	A finite snapshot can be enumerated, but random iteration and bulk point generation are absent.
+fractals/ifs/ifs	Iterated Functions System	approximation	fractal generation	spec/test/stress/xy_parabola.locus	A finite snapshot can be sampled manually, but affine iteration and collections are absent.
+envelopes/nephroid	Nephroid as Envelope of Circles	approximation	curve envelope	spec/test/stress/tangent_circles.locus	Individual circles and lines exist, but the parametric family and envelope generation require loops and functions.
+dataviz/linearreg	Linear Regression	approximation	data visualization	spec/test/stress/xy_parabola.locus	Points and a line are drawable, but datasets, regression, axes, and repeated marks are manual.
+interactive/ellipse-rays	Ellipse Rays	blocked	interactive geometric optics	-	The central ellipse-ray intersection/reflection computation and interactive updates are unavailable.
+interactive/viewport	Viewport	blocked	interactive 3D projection	-	The figure requires a camera, 3D projection, cursor interaction, and dynamic recomputation.
+interactive/planets	Planets	approximation	interactive orbits	spec/test/stress/tangent_circles.locus	A static orbit diagram is possible, but animation and interaction are unavailable.
+set-potatoes/non-surjection-not-epimorphism	A non-surjection is not an epimorphism	native	set-and-arrow proof diagram	spec/test/demonstrations/flowchart_agent_loop.locus	-

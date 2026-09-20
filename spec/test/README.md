@@ -116,6 +116,15 @@ An opt-in [competitor benchmark](../../benchmarks/competitors/README.md) measure
 source-to-SVG CLI latency for Locus, Mermaid, and D2 on equivalent agent-flowchart and
 software-architecture workloads.
 
+The [Penrose feature-coverage benchmark](../../benchmarks/penrose/README.md) audits all 53
+figures in Penrose's pinned public gallery and distinguishes native coverage, static
+approximation, and blocked central capabilities. Its executable inventory and rendering
+contract runs with:
+
+```sh
+cargo test -p locus-render --test penrose_features
+```
+
 ## Known solver limitation
 
 [`stress/known_limits/closed_segment_bisectors.locus`](stress/known_limits/closed_segment_bisectors.locus)
