@@ -8,8 +8,8 @@
       "span": {
         "line": 11,
         "col": 1,
-        "byte_start": 243,
-        "byte_end": 258
+        "byte_start": 250,
+        "byte_end": 265
       },
       "definition": "3.4",
       "resolved": {
@@ -24,8 +24,8 @@
       "span": {
         "line": 12,
         "col": 1,
-        "byte_start": 279,
-        "byte_end": 294
+        "byte_start": 286,
+        "byte_end": 301
       },
       "definition": "1.1",
       "resolved": {
@@ -40,8 +40,8 @@
       "span": {
         "line": 13,
         "col": 1,
-        "byte_start": 316,
-        "byte_end": 331
+        "byte_start": 323,
+        "byte_end": 338
       },
       "definition": "2.3",
       "resolved": {
@@ -56,8 +56,8 @@
       "span": {
         "line": 14,
         "col": 1,
-        "byte_start": 374,
-        "byte_end": 389
+        "byte_start": 381,
+        "byte_end": 396
       },
       "definition": "5.6",
       "resolved": {
@@ -72,8 +72,8 @@
       "span": {
         "line": 17,
         "col": 1,
-        "byte_start": 491,
-        "byte_end": 513
+        "byte_start": 498,
+        "byte_end": 520
       },
       "definition": "rect(bw, bh)",
       "resolved": {
@@ -88,8 +88,8 @@
       "span": {
         "line": 18,
         "col": 1,
-        "byte_start": 514,
-        "byte_end": 572
+        "byte_start": 521,
+        "byte_end": 579
       },
       "definition": "label(n1.center, \"locus init\")",
       "resolved": {
@@ -102,8 +102,8 @@
       "span": {
         "line": 20,
         "col": 1,
-        "byte_start": 574,
-        "byte_end": 675
+        "byte_start": 581,
+        "byte_end": 682
       },
       "definition": "rect(bw, bh)",
       "resolved": {
@@ -118,8 +118,8 @@
       "span": {
         "line": 21,
         "col": 1,
-        "byte_start": 676,
-        "byte_end": 745
+        "byte_start": 683,
+        "byte_end": 752
       },
       "definition": "label(n2.center, \"locus add < ops.locus\")",
       "resolved": {
@@ -132,8 +132,8 @@
       "span": {
         "line": 23,
         "col": 1,
-        "byte_start": 747,
-        "byte_end": 848
+        "byte_start": 754,
+        "byte_end": 855
       },
       "definition": "rect(bw, bh)",
       "resolved": {
@@ -148,8 +148,8 @@
       "span": {
         "line": 24,
         "col": 1,
-        "byte_start": 849,
-        "byte_end": 908
+        "byte_start": 856,
+        "byte_end": 915
       },
       "definition": "label(n3.center, \"locus check\")",
       "resolved": {
@@ -162,8 +162,8 @@
       "span": {
         "line": 26,
         "col": 1,
-        "byte_start": 910,
-        "byte_end": 1019
+        "byte_start": 917,
+        "byte_end": 1026
       },
       "definition": "diamond(3.2, 1.5)",
       "resolved": {
@@ -178,8 +178,8 @@
       "span": {
         "line": 27,
         "col": 1,
-        "byte_start": 1020,
-        "byte_end": 1077
+        "byte_start": 1027,
+        "byte_end": 1084
       },
       "definition": "label(n4.center, \"exit 0?\")",
       "resolved": {
@@ -192,8 +192,8 @@
       "span": {
         "line": 29,
         "col": 1,
-        "byte_start": 1079,
-        "byte_end": 1194
+        "byte_start": 1086,
+        "byte_end": 1201
       },
       "definition": "rect(bw, bh)",
       "resolved": {
@@ -208,8 +208,8 @@
       "span": {
         "line": 30,
         "col": 1,
-        "byte_start": 1195,
-        "byte_end": 1266
+        "byte_start": 1202,
+        "byte_end": 1273
       },
       "definition": "label(n5.center, \"locus render -o fig.svg\")",
       "resolved": {
@@ -222,8 +222,8 @@
       "span": {
         "line": 33,
         "col": 1,
-        "byte_start": 1334,
-        "byte_end": 1436
+        "byte_start": 1341,
+        "byte_end": 1443
       },
       "definition": "rect(bw, bh)",
       "resolved": {
@@ -238,8 +238,8 @@
       "span": {
         "line": 34,
         "col": 1,
-        "byte_start": 1437,
-        "byte_end": 1508
+        "byte_start": 1444,
+        "byte_end": 1515
       },
       "definition": "label(nf.center, \"fix ops (update / edit)\")",
       "resolved": {
@@ -252,8 +252,8 @@
       "span": {
         "line": 37,
         "col": 1,
-        "byte_start": 1577,
-        "byte_end": 1619
+        "byte_start": 1584,
+        "byte_end": 1626
       },
       "definition": "arrow(n1.s, n2.n)",
       "resolved": {
@@ -266,8 +266,8 @@
       "span": {
         "line": 38,
         "col": 1,
-        "byte_start": 1620,
-        "byte_end": 1662
+        "byte_start": 1627,
+        "byte_end": 1669
       },
       "definition": "arrow(n2.s, n3.n)",
       "resolved": {
@@ -280,8 +280,8 @@
       "span": {
         "line": 39,
         "col": 1,
-        "byte_start": 1663,
-        "byte_end": 1705
+        "byte_start": 1670,
+        "byte_end": 1712
       },
       "definition": "arrow(n3.s, n4.n)",
       "resolved": {
@@ -294,8 +294,8 @@
       "span": {
         "line": 40,
         "col": 1,
-        "byte_start": 1706,
-        "byte_end": 1748
+        "byte_start": 1713,
+        "byte_end": 1755
       },
       "definition": "arrow(n4.s, n5.n)",
       "resolved": {
@@ -308,8 +308,8 @@
       "span": {
         "line": 41,
         "col": 1,
-        "byte_start": 1749,
-        "byte_end": 1802
+        "byte_start": 1756,
+        "byte_end": 1809
       },
       "definition": "label(n4.s, \"yes\")",
       "resolved": {
@@ -322,8 +322,8 @@
       "span": {
         "line": 42,
         "col": 1,
-        "byte_start": 1803,
-        "byte_end": 1845
+        "byte_start": 1810,
+        "byte_end": 1852
       },
       "definition": "arrow(n4.e, nf.w)",
       "resolved": {
@@ -336,8 +336,8 @@
       "span": {
         "line": 43,
         "col": 1,
-        "byte_start": 1846,
-        "byte_end": 1899
+        "byte_start": 1853,
+        "byte_end": 1906
       },
       "definition": "label(n4.e, \"no\")",
       "resolved": {
@@ -350,8 +350,8 @@
       "span": {
         "line": 44,
         "col": 1,
-        "byte_start": 1900,
-        "byte_end": 1955
+        "byte_start": 1907,
+        "byte_end": 1962
       },
       "definition": "arrow(nf.n, n2.e)",
       "resolved": {
@@ -375,8 +375,8 @@
           "span": {
             "line": 17,
             "col": 1,
-            "byte_start": 491,
-            "byte_end": 513
+            "byte_start": 498,
+            "byte_end": 520
           },
           "hint_settled_dofs": 2,
           "suggestion": "add a relation if unintended, e.g. on(n1, …) or vdist(…) == …"
@@ -386,8 +386,8 @@
           "span": {
             "line": 20,
             "col": 1,
-            "byte_start": 574,
-            "byte_end": 675
+            "byte_start": 581,
+            "byte_end": 682
           },
           "hint_settled_dofs": 2,
           "suggestion": "add a relation if unintended, e.g. on(n2, …) or vdist(…) == …"
@@ -397,8 +397,8 @@
           "span": {
             "line": 23,
             "col": 1,
-            "byte_start": 747,
-            "byte_end": 848
+            "byte_start": 754,
+            "byte_end": 855
           },
           "hint_settled_dofs": 2,
           "suggestion": "add a relation if unintended, e.g. on(n3, …) or vdist(…) == …"
@@ -408,8 +408,8 @@
           "span": {
             "line": 26,
             "col": 1,
-            "byte_start": 910,
-            "byte_end": 1019
+            "byte_start": 917,
+            "byte_end": 1026
           },
           "hint_settled_dofs": 2,
           "suggestion": "add a relation if unintended, e.g. on(n4, …) or vdist(…) == …"
@@ -419,8 +419,8 @@
           "span": {
             "line": 29,
             "col": 1,
-            "byte_start": 1079,
-            "byte_end": 1194
+            "byte_start": 1086,
+            "byte_end": 1201
           },
           "hint_settled_dofs": 2,
           "suggestion": "add a relation if unintended, e.g. on(n5, …) or vdist(…) == …"
@@ -430,8 +430,8 @@
           "span": {
             "line": 33,
             "col": 1,
-            "byte_start": 1334,
-            "byte_end": 1436
+            "byte_start": 1341,
+            "byte_end": 1443
           },
           "hint_settled_dofs": 2,
           "suggestion": "add a relation if unintended, e.g. on(nf, …) or vdist(…) == …"
@@ -446,8 +446,8 @@
         "span": {
           "line": 20,
           "col": 32,
-          "byte_start": 605,
-          "byte_end": 635
+          "byte_start": 612,
+          "byte_end": 642
         },
         "max_normalized_residual": 1.3122247380314848e-16,
         "implicated_unknowns": [
@@ -459,8 +459,8 @@
         "span": {
           "line": 20,
           "col": 64,
-          "byte_start": 637,
-          "byte_end": 673
+          "byte_start": 644,
+          "byte_end": 680
         },
         "max_normalized_residual": 2.9525056605708413e-16,
         "implicated_unknowns": [
@@ -472,8 +472,8 @@
         "span": {
           "line": 23,
           "col": 32,
-          "byte_start": 778,
-          "byte_end": 808
+          "byte_start": 785,
+          "byte_end": 815
         },
         "max_normalized_residual": 9.841685535236137e-17,
         "implicated_unknowns": [
@@ -485,8 +485,8 @@
         "span": {
           "line": 23,
           "col": 64,
-          "byte_start": 810,
-          "byte_end": 846
+          "byte_start": 817,
+          "byte_end": 853
         },
         "max_normalized_residual": 1.9683371070472273e-16,
         "implicated_unknowns": [
@@ -498,8 +498,8 @@
         "span": {
           "line": 26,
           "col": 40,
-          "byte_start": 949,
-          "byte_end": 979
+          "byte_start": 956,
+          "byte_end": 986
         },
         "max_normalized_residual": 3.1165337528247766e-16,
         "implicated_unknowns": [
@@ -511,8 +511,8 @@
         "span": {
           "line": 26,
           "col": 72,
-          "byte_start": 981,
-          "byte_end": 1017
+          "byte_start": 988,
+          "byte_end": 1024
         },
         "max_normalized_residual": 1.9683371070472273e-16,
         "implicated_unknowns": [
@@ -524,8 +524,8 @@
         "span": {
           "line": 29,
           "col": 32,
-          "byte_start": 1110,
-          "byte_end": 1140
+          "byte_start": 1117,
+          "byte_end": 1147
         },
         "max_normalized_residual": 4.9208427676180684e-17,
         "implicated_unknowns": [
@@ -537,8 +537,8 @@
         "span": {
           "line": 29,
           "col": 64,
-          "byte_start": 1142,
-          "byte_end": 1178
+          "byte_start": 1149,
+          "byte_end": 1185
         },
         "max_normalized_residual": 0.0,
         "implicated_unknowns": [
@@ -550,8 +550,8 @@
         "span": {
           "line": 33,
           "col": 32,
-          "byte_start": 1365,
-          "byte_end": 1397
+          "byte_start": 1372,
+          "byte_end": 1404
         },
         "max_normalized_residual": 3.280561845078712e-17,
         "implicated_unknowns": [
@@ -563,8 +563,8 @@
         "span": {
           "line": 33,
           "col": 66,
-          "byte_start": 1399,
-          "byte_end": 1434
+          "byte_start": 1406,
+          "byte_end": 1441
         },
         "max_normalized_residual": 1.9683371070472273e-16,
         "implicated_unknowns": [

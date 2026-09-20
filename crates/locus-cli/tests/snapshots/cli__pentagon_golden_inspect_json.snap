@@ -846,8 +846,8 @@ expression: stdout
       "span": {
         "line": 29,
         "col": 6,
-        "byte_start": 692,
-        "byte_end": 694
+        "byte_start": 699,
+        "byte_end": 701
       }
     },
     {
@@ -856,8 +856,8 @@ expression: stdout
       "span": {
         "line": 30,
         "col": 6,
-        "byte_start": 721,
-        "byte_end": 723
+        "byte_start": 728,
+        "byte_end": 730
       }
     },
     {
@@ -866,8 +866,8 @@ expression: stdout
       "span": {
         "line": 33,
         "col": 7,
-        "byte_start": 814,
-        "byte_end": 816
+        "byte_start": 821,
+        "byte_end": 823
       }
     },
     {
@@ -876,8 +876,8 @@ expression: stdout
       "span": {
         "line": 34,
         "col": 7,
-        "byte_start": 839,
-        "byte_end": 841
+        "byte_start": 846,
+        "byte_end": 848
       }
     },
     {
@@ -886,8 +886,8 @@ expression: stdout
       "span": {
         "line": 35,
         "col": 7,
-        "byte_start": 864,
-        "byte_end": 866
+        "byte_start": 871,
+        "byte_end": 873
       }
     },
     {
@@ -896,8 +896,8 @@ expression: stdout
       "span": {
         "line": 36,
         "col": 7,
-        "byte_start": 889,
-        "byte_end": 891
+        "byte_start": 896,
+        "byte_end": 898
       }
     },
     {
@@ -906,8 +906,8 @@ expression: stdout
       "span": {
         "line": 37,
         "col": 7,
-        "byte_start": 914,
-        "byte_end": 916
+        "byte_start": 921,
+        "byte_end": 923
       }
     },
     {
@@ -916,8 +916,8 @@ expression: stdout
       "span": {
         "line": 38,
         "col": 7,
-        "byte_start": 939,
-        "byte_end": 941
+        "byte_start": 946,
+        "byte_end": 948
       }
     },
     {
@@ -926,8 +926,8 @@ expression: stdout
       "span": {
         "line": 40,
         "col": 12,
-        "byte_start": 982,
-        "byte_end": 985
+        "byte_start": 989,
+        "byte_end": 992
       }
     }
   ]

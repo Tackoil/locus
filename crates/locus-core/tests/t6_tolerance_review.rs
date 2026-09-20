@@ -5,28 +5,26 @@ use locus_core::{BBox, Point, ResolvedObject, ResolvedPoint, ResolvedScene, eval
 use locus_syntax::{Statement, parse};
 
 #[test]
-fn zero_bbox_uses_positive_point_hint() {
+fn zero_bbox_uses_positive_constructor_length() {
     let parsed = parse(
-        "locus 2\npoint A = free ~(100, 0)\nrel pin(A, 0, 0)\nassert pin(A, 0.00000005, 0)\n",
+        "locus 0 beta 4\npoint A = point()\npoint B = offset(A, 100, 0)\nassert coincident(A, offset(A, 0.00000005, 0))\n",
     );
     assert!(parsed.diagnostics.is_empty());
-    let op = parsed
+    let origin = Point::new(0.0, 0.0);
+    let objects = parsed
         .file
         .statements
-        .first()
-        .and_then(|statement| match statement {
-            Statement::Op(op) => Some(op),
+        .iter()
+        .filter_map(|statement| match statement {
+            Statement::Op(op) => Some((
+                op.id.clone(),
+                ResolvedObject::Point(ResolvedPoint::new(origin)),
+            )),
             _ => None,
         })
-        .expect("point declaration");
-    let origin = Point::new(0.0, 0.0);
+        .collect();
     let scene = ResolvedScene {
-        objects: [(
-            op.id.clone(),
-            ResolvedObject::Point(ResolvedPoint::new(origin)),
-        )]
-        .into_iter()
-        .collect(),
+        objects,
         bbox: BBox::from_points([origin]).expect("bbox"),
     };
     assert!(
@@ -39,7 +37,7 @@ fn zero_bbox_uses_positive_point_hint() {
 #[test]
 fn zero_bbox_uses_nested_positive_length_literals() {
     let parsed = parse(
-        "locus 2\npoint A = free ~(0, 0)\npoint B = offset(A, 100 - 100, 0)\nassert pin(A, 0.00000005, 0)\n",
+        "locus 0 beta 4\npoint A = point()\npoint B = offset(A, 100 - 100, 0)\nassert coincident(A, offset(A, 0.00000005, 0))\n",
     );
     assert!(parsed.diagnostics.is_empty());
     let origin = Point::new(0.0, 0.0);
@@ -67,7 +65,7 @@ fn zero_bbox_uses_nested_positive_length_literals() {
 
 #[test]
 fn angle_tolerance_is_always_in_radians() {
-    let parsed = parse("locus 2\nassert 0rad == 3rad tol 2\n");
+    let parsed = parse("locus 0 beta 4\nassert 0rad == 3rad tol 2\n");
     assert!(parsed.diagnostics.is_empty());
     let scene = ResolvedScene {
         objects: indexmap::IndexMap::new(),

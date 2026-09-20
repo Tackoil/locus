@@ -442,7 +442,7 @@ mod tests {
                     "uri": URI,
                     "languageId": "locus",
                     "version": 1,
-                    "text": "locus 2\nnum a = 1\n"
+                    "text": "locus 0 beta 4\nnum a = 1\n"
                 }
             }),
         );
@@ -454,7 +454,7 @@ mod tests {
             "textDocument/didChange",
             json!({
                 "textDocument": {"uri": URI, "version": 2},
-                "contentChanges": [{"text": "locus 2\nnum a = \"😀\" +\n"}]
+                "contentChanges": [{"text": "locus 0 beta 4\nnum a = \"😀\" +\n"}]
             }),
         );
         let changed = transcript.diagnostics();
@@ -481,7 +481,7 @@ mod tests {
                     "uri": URI,
                     "languageId": "locus",
                     "version": 1,
-                    "text": "locus 2\npoint A=free ~(0,0)\npoint M = midpoint(A,A)\npoint Z = midpoint(M,M)\n"
+                    "text": "locus 0 beta 4\npoint A=point()\npoint M = midpoint(A,A)\npoint Z = midpoint(M,M)\n"
                 }
             }),
         );
@@ -537,18 +537,18 @@ mod tests {
                     "uri": URI,
                     "languageId": "locus",
                     "version": 1,
-                    "text": "locus 2\nnum a = 90d\n"
+                    "text": "locus 0 beta 4\nnum a = 90d\n"
                 }
             }),
         );
         let _ = transcript.diagnostics();
 
         for (version, source, cursor, expected_start, unit) in [
-            (2, "locus 2\nnum a = 90\n", 10, 10, "deg"),
-            (3, "locus 2\nnum a = 90d\n", 11, 10, "deg"),
-            (4, "locus 2\nnum a = 1.5\n", 11, 11, "rad"),
-            (5, "locus 2\nnum a = 1.5r\n", 12, 11, "rad"),
-            (6, "locus 2\nnum a = 1e-3 d\n", 14, 13, "deg"),
+            (2, "locus 0 beta 4\nnum a = 90\n", 10, 10, "deg"),
+            (3, "locus 0 beta 4\nnum a = 90d\n", 11, 10, "deg"),
+            (4, "locus 0 beta 4\nnum a = 1.5\n", 11, 11, "rad"),
+            (5, "locus 0 beta 4\nnum a = 1.5r\n", 12, 11, "rad"),
+            (6, "locus 0 beta 4\nnum a = 1e-3 d\n", 14, 13, "deg"),
         ] {
             transcript.change(version, source);
             let completion =
@@ -561,7 +561,7 @@ mod tests {
             assert_eq!(item["textEdit"]["range"]["end"]["character"], cursor);
         }
 
-        transcript.change(7, "locus 2\npoint A = free ~(0, 0)\nnum x = A.\n");
+        transcript.change(7, "locus 0 beta 4\npoint A = point()\nnum x = A.\n");
         let property = transcript.request("textDocument/completion", text_position(URI, 2, 10));
         assert!(completion_contains(&property, "midpoint"));
         assert!(!completion_contains(&property, "deg"));
@@ -571,7 +571,7 @@ mod tests {
     #[test]
     fn completion_edits_replace_complete_tokens() {
         let mut transcript = Transcript::start();
-        let mut source = "locus 2\npoint P = free ~(0, 0)\n";
+        let mut source = "locus 0 beta 4\npoint P = point()\n";
         transcript.notify(
             "textDocument/didOpen",
             json!({"textDocument": {
@@ -586,7 +586,7 @@ mod tests {
             source
         );
 
-        source = "locus 2\nnum a = 90deg\n";
+        source = "locus 0 beta 4\nnum a = 90deg\n";
         transcript.change(2, source);
         let unit = transcript.request("textDocument/completion", text_position(URI, 1, 11));
         assert_eq!(
@@ -594,20 +594,20 @@ mod tests {
             source
         );
 
-        source = "locus 2\narrow ar = arrow(A, A) { head: - }\n";
+        source = "locus 0 beta 4\narrow ar = arrow(A, A) { head: - }\n";
         transcript.change(3, source);
         let dash = transcript.request("textDocument/completion", text_position(URI, 1, 32));
         assert_eq!(
             apply_completion(source, completion_item(&dash, "->")),
-            "locus 2\narrow ar = arrow(A, A) { head: -> }\n"
+            "locus 0 beta 4\narrow ar = arrow(A, A) { head: -> }\n"
         );
 
-        source = "locus 2\narrow ar = arrow(A, A) { head: <- }\n";
+        source = "locus 0 beta 4\narrow ar = arrow(A, A) { head: <- }\n";
         transcript.change(4, source);
         let both = transcript.request("textDocument/completion", text_position(URI, 1, 33));
         assert_eq!(
             apply_completion(source, completion_item(&both, "<->")),
-            "locus 2\narrow ar = arrow(A, A) { head: <-> }\n"
+            "locus 0 beta 4\narrow ar = arrow(A, A) { head: <-> }\n"
         );
         transcript.finish();
     }
@@ -622,7 +622,7 @@ mod tests {
                     "uri": URI,
                     "languageId": "locus",
                     "version": 1,
-                    "text": "locus 2\npoint A = fr\n"
+                    "text": "locus 0 beta 4\npoint A = fr\n"
                 }
             }),
         );
@@ -632,13 +632,13 @@ mod tests {
         assert!(completion_contains(&free, "free"));
         assert!(!completion_contains(&free, "false"));
 
-        transcript.change(2, "locus 2\nstyle te\n");
+        transcript.change(2, "locus 0 beta 4\nstyle te\n");
         let style = transcript.request("textDocument/completion", text_position(URI, 1, 8));
         assert_eq!(completion_labels(&style), ["textbook"]);
 
         transcript.change(
             3,
-            "locus 2\npoint A = free ~(0, 0)\nlabel l = label(A, \"hi\") { dir: \n",
+            "locus 0 beta 4\npoint A = point()\nlabel l = label(A, \"hi\") { dir: \n",
         );
         let direction = transcript.request("textDocument/completion", text_position(URI, 2, 32));
         assert!(completion_contains(&direction, "S"));
@@ -646,11 +646,11 @@ mod tests {
         assert!(!completion_contains(&direction, "min"));
         assert!(!completion_contains(&direction, "miter"));
 
-        transcript.change(4, "locus 2\npoint P = free ~(0, 0) { he\n");
+        transcript.change(4, "locus 0 beta 4\npoint P = point() { he\n");
         let point_props = transcript.request("textDocument/completion", text_position(URI, 1, 27));
         assert!(!completion_contains(&point_props, "head"));
 
-        transcript.change(5, "locus 2\nclass signal { stroke: dash(2, \n");
+        transcript.change(5, "locus 0 beta 4\nclass signal { stroke: dash(2, \n");
         let nested = transcript.request("textDocument/completion", text_position(URI, 1, 31));
         assert!(completion_contains(&nested, "min"));
         assert!(!completion_contains(&nested, "dashed"));
@@ -658,10 +658,10 @@ mod tests {
 
         transcript.change(
             6,
-            "locus 2\npoint A = free ~(0, 0)\npoint M = free ~(1, 1) where { coincident(M, \n",
+            "locus 0 beta 4\npoint A = point()\npoint M = point() where { coincident(M, \n",
         );
         let self_reference =
-            transcript.request("textDocument/completion", text_position(URI, 2, 45));
+            transcript.request("textDocument/completion", text_position(URI, 2, 40));
         assert!(completion_contains(&self_reference, "M"));
         assert!(completion_contains(&self_reference, "A"));
         transcript.finish();
@@ -677,7 +677,7 @@ mod tests {
                     "uri": URI,
                     "languageId": "locus",
                     "version": 1,
-                    "text": "locus 2\n// mi\n"
+                    "text": "locus 0 beta 4\n// mi\n"
                 }
             }),
         );
@@ -685,15 +685,18 @@ mod tests {
         let comment = transcript.request("textDocument/completion", text_position(URI, 1, 5));
         assert!(completion_labels(&comment).is_empty());
 
-        transcript.change(2, "locus 2\nlabel l = label(A, \"mi\n");
+        transcript.change(2, "locus 0 beta 4\nlabel l = label(A, \"mi\n");
         let string = transcript.request("textDocument/completion", text_position(URI, 1, 22));
         assert!(completion_labels(&string).is_empty());
 
-        transcript.change(3, "locus 2\nlabel l = label(A, $mi\n");
+        transcript.change(3, "locus 0 beta 4\nlabel l = label(A, $mi\n");
         let tex = transcript.request("textDocument/completion", text_position(URI, 1, 22));
         assert!(completion_labels(&tex).is_empty());
 
-        transcript.change(4, "locus 2\nlabel l = label(A, \"$\\text{\"mi\"}$\")\n");
+        transcript.change(
+            4,
+            "locus 0 beta 4\nlabel l = label(A, \"$\\text{\"mi\"}$\")\n",
+        );
         let inline_tex = transcript.request("textDocument/completion", text_position(URI, 1, 30));
         assert!(completion_labels(&inline_tex).is_empty());
         transcript.finish();
@@ -712,7 +715,7 @@ mod tests {
             "textDocument/didOpen",
             json!({"textDocument": {
                 "uri": URI, "languageId": "locus", "version": 1,
-                "text": "locus 2\npoint A = free ~(0, 0)\n"
+                "text": "locus 0 beta 4\npoint A = point()\n"
             }}),
         );
         let _ = modern.diagnostics();
@@ -736,7 +739,7 @@ mod tests {
             "textDocument/didOpen",
             json!({"textDocument": {
                 "uri": URI, "languageId": "locus", "version": 1,
-                "text": "locus 2\npoint A = free ~(0, 0)\n"
+                "text": "locus 0 beta 4\npoint A = point()\n"
             }}),
         );
         let _ = fallback.diagnostics();
@@ -763,15 +766,18 @@ mod tests {
             "textDocument/didOpen",
             json!({"textDocument": {
                 "uri": URI, "languageId": "locus", "version": 1,
-                "text": "locus 2\npoint A = free ~(0, 0)\ncircle c = circle(A, -1)\n"
+                "text": "locus 0 beta 4\npoint A = point()\ncircle c = circle(A, -1)\n"
             }}),
         );
         assert!(diagnostic_codes(&transcript.diagnostics()).contains(&"E404"));
 
-        transcript.change(2, "locus 2\nnum x = free ~0\nrel x == 1\nrel x == 2\n");
+        transcript.change(
+            2,
+            "locus 0 beta 4\nnum x = free ~0\nrel x == 1\nrel x == 2\n",
+        );
         assert!(diagnostic_codes(&transcript.diagnostics()).contains(&"E402"));
 
-        transcript.change(3, "locus 2\nnum bad = 1 / 0\npoint broken =\n");
+        transcript.change(3, "locus 0 beta 4\nnum bad = 1 / 0\npoint broken =\n");
         let before_diagnostics = transcript.diagnostics();
         let before = diagnostic_codes(&before_diagnostics);
         assert!(before.contains(&"E204"));
@@ -779,7 +785,7 @@ mod tests {
 
         transcript.change(
             4,
-            "locus 2\npoint A = free ~(0, 0)\npoint broken =\nnum bad = 1 / 0\n",
+            "locus 0 beta 4\npoint A = point()\npoint broken =\nnum bad = 1 / 0\n",
         );
         let after_diagnostics = transcript.diagnostics();
         let after = diagnostic_codes(&after_diagnostics);
@@ -790,7 +796,7 @@ mod tests {
                 .any(|code| code.starts_with("E2") || code.starts_with("E4"))
         );
 
-        transcript.change(5, "locus 2\nnum x = 1\npoint bad = midpoint(x, x)\n");
+        transcript.change(5, "locus 0 beta 4\nnum x = 1\npoint bad = midpoint(x, x)\n");
         let type_diagnostics = transcript.diagnostics();
         let type_codes = diagnostic_codes(&type_diagnostics);
         assert!(type_codes.contains(&"E209"), "actual codes: {type_codes:?}");
@@ -808,8 +814,8 @@ mod tests {
                     "languageId": "locus",
                     "version": 1,
                     "text": concat!(
-                        "locus 2\n",
-                        "point midpoint = free ~(0, 0)\n",
+                        "locus 0 beta 4\n",
+                        "point midpoint = point()\n",
                         "point P = midpoint(midpoint, midpoint) // midpoint\n",
                         "label note = label(P, \"midpoint\")\n",
                     )
@@ -850,10 +856,10 @@ mod tests {
                     "languageId": "locus",
                     "version": 1,
                     "text": concat!(
-                        "locus 2\n",
+                        "locus 0 beta 4\n",
                         "class faint { stroke: dashed }\n",
-                        "point A = free ~(0, 0)\n",
-                        "point M = free ~(1, 1) where { coincident(M, A) } [faint]\n",
+                        "point A = point()\n",
+                        "point M = point() where { coincident(M, A) } [faint]\n",
                         "point Z = midpoint(M, A)\n",
                     )
                 }
@@ -862,12 +868,12 @@ mod tests {
         let _ = transcript.diagnostics();
 
         let where_completion =
-            transcript.request("textDocument/completion", text_position(URI, 3, 43));
+            transcript.request("textDocument/completion", text_position(URI, 3, 38));
         assert!(completion_contains(&where_completion, "M"));
         assert!(!completion_contains(&where_completion, "Z"));
 
         let class_completion =
-            transcript.request("textDocument/completion", text_position(URI, 3, 56));
+            transcript.request("textDocument/completion", text_position(URI, 3, 51));
         assert!(completion_contains(&class_completion, "faint"));
         transcript.finish();
     }
@@ -900,7 +906,7 @@ mod tests {
             "textDocument/didChange",
             json!({
                 "textDocument": {"uri": URI, "version": 2},
-                "contentChanges": [{"text": "locus 2\n\n"}]
+                "contentChanges": [{"text": "locus 0 beta 4\n\n"}]
             }),
         );
         let after_header = transcript.request("textDocument/completion", text_position(URI, 1, 0));
@@ -919,7 +925,7 @@ mod tests {
                     "uri": URI,
                     "languageId": "locus",
                     "version": 1,
-                    "text": "locus 2\rpoint A = free ~(0, 0)\rpoint M = midpoint(A, A)\r"
+                    "text": "locus 0 beta 4\rpoint A = point()\rpoint M = midpoint(A, A)\r"
                 }
             }),
         );
@@ -933,7 +939,7 @@ mod tests {
             "textDocument/didChange",
             json!({
                 "textDocument": {"uri": URI, "version": 2},
-                "contentChanges": [{"text": "locus 2\rnum a = \"😀\" +\r"}]
+                "contentChanges": [{"text": "locus 0 beta 4\rnum a = \"😀\" +\r"}]
             }),
         );
         let changed = transcript.diagnostics();
@@ -947,10 +953,11 @@ mod tests {
         let Ok(uri) = Uri::from_str(URI) else {
             return;
         };
-        let stale_document = Document::new(uri.clone(), 1, "locus 2\nnum a = 1\n".to_owned());
+        let stale_document =
+            Document::new(uri.clone(), 1, "locus 0 beta 4\nnum a = 1\n".to_owned());
         let stale = Analysis::new(&stale_document);
         let mut server_state = State::default();
-        let current = server_state.open(uri, 2, "locus 2\nnum a = 2\n".to_owned());
+        let current = server_state.open(uri, 2, "locus 0 beta 4\nnum a = 2\n".to_owned());
         let (server, client) = Connection::memory();
         assert!(!publish_analysis(&server, &server_state, &stale).expect("stale check"));
         assert!(

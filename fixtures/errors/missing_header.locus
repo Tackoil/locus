@@ -1,1 +1,1 @@
-point A = free ~(0, 0)
+point A = point()

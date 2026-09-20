@@ -9,7 +9,7 @@ use locus_syntax::{File, Statement, parse};
 
 fn fixture(assertion: &str) -> (File, ResolvedScene) {
     let source = format!(
-        "locus 2\npoint A = free ~(0, 0)\npoint B = free ~(4, 0)\ncircle c = circle(A, 1)\ncircle d = circle(A, 1)\nassert {assertion}\n"
+        "locus 0 beta 4\npoint A = point()\npoint B = point()\ncircle c = circle(A, 1)\ncircle d = circle(A, 1)\nassert {assertion}\n"
     );
     let parsed = parse(&source);
     assert!(parsed.diagnostics.is_empty(), "{:?}", parsed.diagnostics);
@@ -52,7 +52,7 @@ fn identical_circles_are_not_tangent() {
 
 #[test]
 fn near_equal_circles_can_be_internally_tangent() {
-    let (file, mut scene) = fixture("tangent(c, d)");
+    let (file, mut scene) = fixture("internally_tangent(d, c)");
     let radius_delta = 1.0e-13;
     *scene.objects.get_index_mut(2).expect("first circle").1 =
         ResolvedObject::Circle(Circle::new(Point::new(0.0, 0.0), 1.0).expect("first circle"));

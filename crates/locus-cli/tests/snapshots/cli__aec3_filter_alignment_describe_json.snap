@@ -12,8 +12,8 @@ expression: stdout
       "span": {
         "line": 19,
         "col": 1,
-        "byte_start": 760,
-        "byte_end": 773
+        "byte_start": 767,
+        "byte_end": 780
       },
       "definition": "4",
       "resolved": {
@@ -28,8 +28,8 @@ expression: stdout
       "span": {
         "line": 20,
         "col": 1,
-        "byte_start": 806,
-        "byte_end": 819
+        "byte_start": 813,
+        "byte_end": 826
       },
       "definition": "1",
       "resolved": {
@@ -44,8 +44,8 @@ expression: stdout
       "span": {
         "line": 21,
         "col": 1,
-        "byte_start": 847,
-        "byte_end": 862
+        "byte_start": 854,
+        "byte_end": 869
       },
       "definition": "1.2",
       "resolved": {
@@ -60,8 +60,8 @@ expression: stdout
       "span": {
         "line": 22,
         "col": 1,
-        "byte_start": 891,
-        "byte_end": 906
+        "byte_start": 898,
+        "byte_end": 913
       },
       "definition": "1.8",
       "resolved": {
@@ -76,8 +76,8 @@ expression: stdout
       "span": {
         "line": 23,
         "col": 1,
-        "byte_start": 946,
-        "byte_end": 962
+        "byte_start": 953,
+        "byte_end": 969
       },
       "definition": "1",
       "resolved": {
@@ -92,8 +92,8 @@ expression: stdout
       "span": {
         "line": 26,
         "col": 1,
-        "byte_start": 1096,
-        "byte_end": 1132
+        "byte_start": 1103,
+        "byte_end": 1139
       },
       "definition": "rect(fw, bh)",
       "resolved": {
@@ -108,8 +108,8 @@ expression: stdout
       "span": {
         "line": 29,
         "col": 1,
-        "byte_start": 1199,
-        "byte_end": 1269
+        "byte_start": 1206,
+        "byte_end": 1276
       },
       "definition": "offset(f0.sw, 0, -(4 * pitch + axis_gap))",
       "resolved": {
@@ -123,8 +123,8 @@ expression: stdout
       "span": {
         "line": 30,
         "col": 1,
-        "byte_start": 1270,
-        "byte_end": 1318
+        "byte_start": 1277,
+        "byte_end": 1325
       },
       "definition": "offset(A0, 16, 0)",
       "resolved": {
@@ -138,8 +138,8 @@ expression: stdout
       "span": {
         "line": 32,
         "col": 1,
-        "byte_start": 1320,
-        "byte_end": 1378
+        "byte_start": 1327,
+        "byte_end": 1385
       },
       "definition": "arrow(A0, offset(A512, 0.6, 0))",
       "resolved": {
@@ -152,8 +152,8 @@ expression: stdout
       "span": {
         "line": 33,
         "col": 1,
-        "byte_start": 1379,
-        "byte_end": 1446
+        "byte_start": 1386,
+        "byte_end": 1453
       },
       "definition": "label(A0, \"render history x[t]\")",
       "resolved": {
@@ -166,8 +166,8 @@ expression: stdout
       "span": {
         "line": 36,
         "col": 1,
-        "byte_start": 1507,
-        "byte_end": 1560
+        "byte_start": 1514,
+        "byte_end": 1567
       },
       "definition": "lerp(A0, A512,  96/512)",
       "resolved": {
@@ -181,8 +181,8 @@ expression: stdout
       "span": {
         "line": 37,
         "col": 1,
-        "byte_start": 1561,
-        "byte_end": 1614
+        "byte_start": 1568,
+        "byte_end": 1621
       },
       "definition": "lerp(A0, A512, 128/512)",
       "resolved": {
@@ -196,8 +196,8 @@ expression: stdout
       "span": {
         "line": 38,
         "col": 1,
-        "byte_start": 1615,
-        "byte_end": 1668
+        "byte_start": 1622,
+        "byte_end": 1675
       },
       "definition": "lerp(A0, A512, 192/512)",
       "resolved": {
@@ -211,8 +211,8 @@ expression: stdout
       "span": {
         "line": 39,
         "col": 1,
-        "byte_start": 1669,
-        "byte_end": 1722
+        "byte_start": 1676,
+        "byte_end": 1729
       },
       "definition": "lerp(A0, A512, 224/512)",
       "resolved": {
@@ -226,8 +226,8 @@ expression: stdout
       "span": {
         "line": 40,
         "col": 1,
-        "byte_start": 1723,
-        "byte_end": 1776
+        "byte_start": 1730,
+        "byte_end": 1783
       },
       "definition": "lerp(A0, A512, 288/512)",
       "resolved": {
@@ -241,8 +241,8 @@ expression: stdout
       "span": {
         "line": 41,
         "col": 1,
-        "byte_start": 1777,
-        "byte_end": 1830
+        "byte_start": 1784,
+        "byte_end": 1837
       },
       "definition": "lerp(A0, A512, 320/512)",
       "resolved": {
@@ -256,8 +256,8 @@ expression: stdout
       "span": {
         "line": 42,
         "col": 1,
-        "byte_start": 1831,
-        "byte_end": 1884
+        "byte_start": 1838,
+        "byte_end": 1891
       },
       "definition": "lerp(A0, A512, 384/512)",
       "resolved": {
@@ -271,8 +271,8 @@ expression: stdout
       "span": {
         "line": 43,
         "col": 1,
-        "byte_start": 1885,
-        "byte_end": 1938
+        "byte_start": 1892,
+        "byte_end": 1945
       },
       "definition": "lerp(A0, A512, 416/512)",
       "resolved": {
@@ -286,8 +286,8 @@ expression: stdout
       "span": {
         "line": 45,
         "col": 1,
-        "byte_start": 1940,
-        "byte_end": 1997
+        "byte_start": 1947,
+        "byte_end": 2004
       },
       "definition": "label(A0,   \"0 ms\")",
       "resolved": {
@@ -300,8 +300,8 @@ expression: stdout
       "span": {
         "line": 46,
         "col": 1,
-        "byte_start": 1998,
-        "byte_end": 2055
+        "byte_start": 2005,
+        "byte_end": 2062
       },
       "definition": "label(t96,  \"96\")",
       "resolved": {
@@ -314,8 +314,8 @@ expression: stdout
       "span": {
         "line": 47,
         "col": 1,
-        "byte_start": 2056,
-        "byte_end": 2113
+        "byte_start": 2063,
+        "byte_end": 2120
       },
       "definition": "label(t128, \"128\")",
       "resolved": {
@@ -328,8 +328,8 @@ expression: stdout
       "span": {
         "line": 48,
         "col": 1,
-        "byte_start": 2114,
-        "byte_end": 2171
+        "byte_start": 2121,
+        "byte_end": 2178
       },
       "definition": "label(t192, \"192\")",
       "resolved": {
@@ -342,8 +342,8 @@ expression: stdout
       "span": {
         "line": 49,
         "col": 1,
-        "byte_start": 2172,
-        "byte_end": 2229
+        "byte_start": 2179,
+        "byte_end": 2236
       },
       "definition": "label(t224, \"224\")",
       "resolved": {
@@ -356,8 +356,8 @@ expression: stdout
       "span": {
         "line": 50,
         "col": 1,
-        "byte_start": 2230,
-        "byte_end": 2287
+        "byte_start": 2237,
+        "byte_end": 2294
       },
       "definition": "label(t288, \"288\")",
       "resolved": {
@@ -370,8 +370,8 @@ expression: stdout
       "span": {
         "line": 51,
         "col": 1,
-        "byte_start": 2288,
-        "byte_end": 2345
+        "byte_start": 2295,
+        "byte_end": 2352
       },
       "definition": "label(t320, \"320\")",
       "resolved": {
@@ -384,8 +384,8 @@ expression: stdout
       "span": {
         "line": 52,
         "col": 1,
-        "byte_start": 2346,
-        "byte_end": 2403
+        "byte_start": 2353,
+        "byte_end": 2410
       },
       "definition": "label(t384, \"384\")",
       "resolved": {
@@ -398,8 +398,8 @@ expression: stdout
       "span": {
         "line": 53,
         "col": 1,
-        "byte_start": 2404,
-        "byte_end": 2461
+        "byte_start": 2411,
+        "byte_end": 2468
       },
       "definition": "label(t416, \"416\")",
       "resolved": {
@@ -412,8 +412,8 @@ expression: stdout
       "span": {
         "line": 54,
         "col": 1,
-        "byte_start": 2462,
-        "byte_end": 2519
+        "byte_start": 2469,
+        "byte_end": 2526
       },
       "definition": "label(A512, \"512 ms\")",
       "resolved": {
@@ -426,8 +426,8 @@ expression: stdout
       "span": {
         "line": 58,
         "col": 1,
-        "byte_start": 2663,
-        "byte_end": 2733
+        "byte_start": 2670,
+        "byte_end": 2740
       },
       "definition": "label(offset(f0.n, 0, -0.28), \"Filter 0\")",
       "resolved": {
@@ -440,8 +440,8 @@ expression: stdout
       "span": {
         "line": 59,
         "col": 1,
-        "byte_start": 2734,
-        "byte_end": 2808
+        "byte_start": 2741,
+        "byte_end": 2815
       },
       "definition": "label(offset(f0.w, 0.9, -0.25), \"0–128 ms\")",
       "resolved": {
@@ -454,8 +454,8 @@ expression: stdout
       "span": {
         "line": 61,
         "col": 1,
-        "byte_start": 2810,
-        "byte_end": 2914
+        "byte_start": 2817,
+        "byte_end": 2921
       },
       "definition": "rect(fw, bh)",
       "resolved": {
@@ -470,8 +470,8 @@ expression: stdout
       "span": {
         "line": 62,
         "col": 1,
-        "byte_start": 2915,
-        "byte_end": 2985
+        "byte_start": 2922,
+        "byte_end": 2992
       },
       "definition": "label(offset(f1.n, 0, -0.28), \"Filter 1\")",
       "resolved": {
@@ -484,8 +484,8 @@ expression: stdout
       "span": {
         "line": 63,
         "col": 1,
-        "byte_start": 2986,
-        "byte_end": 3061
+        "byte_start": 2993,
+        "byte_end": 3068
       },
       "definition": "label(offset(f1.w, 0.9, -0.25), \"96–224 ms\")",
       "resolved": {
@@ -498,8 +498,8 @@ expression: stdout
       "span": {
         "line": 65,
         "col": 1,
-        "byte_start": 3063,
-        "byte_end": 3168
+        "byte_start": 3070,
+        "byte_end": 3175
       },
       "definition": "rect(fw, bh)",
       "resolved": {
@@ -514,8 +514,8 @@ expression: stdout
       "span": {
         "line": 66,
         "col": 1,
-        "byte_start": 3169,
-        "byte_end": 3239
+        "byte_start": 3176,
+        "byte_end": 3246
       },
       "definition": "label(offset(f2.n, 0, -0.28), \"Filter 2\")",
       "resolved": {
@@ -528,8 +528,8 @@ expression: stdout
       "span": {
         "line": 67,
         "col": 1,
-        "byte_start": 3240,
-        "byte_end": 3316
+        "byte_start": 3247,
+        "byte_end": 3323
       },
       "definition": "label(offset(f2.w, 0.9, -0.25), \"192–320 ms\")",
       "resolved": {
@@ -542,8 +542,8 @@ expression: stdout
       "span": {
         "line": 69,
         "col": 1,
-        "byte_start": 3318,
-        "byte_end": 3423
+        "byte_start": 3325,
+        "byte_end": 3430
       },
       "definition": "rect(fw, bh)",
       "resolved": {
@@ -558,8 +558,8 @@ expression: stdout
       "span": {
         "line": 70,
         "col": 1,
-        "byte_start": 3424,
-        "byte_end": 3494
+        "byte_start": 3431,
+        "byte_end": 3501
       },
       "definition": "label(offset(f3.n, 0, -0.28), \"Filter 3\")",
       "resolved": {
@@ -572,8 +572,8 @@ expression: stdout
       "span": {
         "line": 71,
         "col": 1,
-        "byte_start": 3495,
-        "byte_end": 3571
+        "byte_start": 3502,
+        "byte_end": 3578
       },
       "definition": "label(offset(f3.w, 0.9, -0.25), \"288–416 ms\")",
       "resolved": {
@@ -586,8 +586,8 @@ expression: stdout
       "span": {
         "line": 73,
         "col": 1,
-        "byte_start": 3573,
-        "byte_end": 3678
+        "byte_start": 3580,
+        "byte_end": 3685
       },
       "definition": "rect(fw, bh)",
       "resolved": {
@@ -602,8 +602,8 @@ expression: stdout
       "span": {
         "line": 74,
         "col": 1,
-        "byte_start": 3679,
-        "byte_end": 3749
+        "byte_start": 3686,
+        "byte_end": 3756
       },
       "definition": "label(offset(f4.n, 0, -0.28), \"Filter 4\")",
       "resolved": {
@@ -616,8 +616,8 @@ expression: stdout
       "span": {
         "line": 75,
         "col": 1,
-        "byte_start": 3750,
-        "byte_end": 3826
+        "byte_start": 3757,
+        "byte_end": 3833
       },
       "definition": "label(offset(f4.w, 0.9, -0.25), \"384–512 ms\")",
       "resolved": {
@@ -630,8 +630,8 @@ expression: stdout
       "span": {
         "line": 78,
         "col": 1,
-        "byte_start": 3894,
-        "byte_end": 3953
+        "byte_start": 3901,
+        "byte_end": 3960
       },
       "definition": "rect(offset(f0.e, -ov/2, 0), ov, bh)",
       "resolved": {
@@ -646,8 +646,8 @@ expression: stdout
       "span": {
         "line": 79,
         "col": 1,
-        "byte_start": 3954,
-        "byte_end": 4013
+        "byte_start": 3961,
+        "byte_end": 4020
       },
       "definition": "rect(offset(f1.w,  ov/2, 0), ov, bh)",
       "resolved": {
@@ -662,8 +662,8 @@ expression: stdout
       "span": {
         "line": 80,
         "col": 1,
-        "byte_start": 4014,
-        "byte_end": 4073
+        "byte_start": 4021,
+        "byte_end": 4080
       },
       "definition": "rect(offset(f1.e, -ov/2, 0), ov, bh)",
       "resolved": {
@@ -678,8 +678,8 @@ expression: stdout
       "span": {
         "line": 81,
         "col": 1,
-        "byte_start": 4074,
-        "byte_end": 4133
+        "byte_start": 4081,
+        "byte_end": 4140
       },
       "definition": "rect(offset(f2.w,  ov/2, 0), ov, bh)",
       "resolved": {
@@ -694,8 +694,8 @@ expression: stdout
       "span": {
         "line": 82,
         "col": 1,
-        "byte_start": 4134,
-        "byte_end": 4193
+        "byte_start": 4141,
+        "byte_end": 4200
       },
       "definition": "rect(offset(f2.e, -ov/2, 0), ov, bh)",
       "resolved": {
@@ -710,8 +710,8 @@ expression: stdout
       "span": {
         "line": 83,
         "col": 1,
-        "byte_start": 4194,
-        "byte_end": 4253
+        "byte_start": 4201,
+        "byte_end": 4260
       },
       "definition": "rect(offset(f3.w,  ov/2, 0), ov, bh)",
       "resolved": {
@@ -726,8 +726,8 @@ expression: stdout
       "span": {
         "line": 84,
         "col": 1,
-        "byte_start": 4254,
-        "byte_end": 4313
+        "byte_start": 4261,
+        "byte_end": 4320
       },
       "definition": "rect(offset(f3.e, -ov/2, 0), ov, bh)",
       "resolved": {
@@ -742,8 +742,8 @@ expression: stdout
       "span": {
         "line": 85,
         "col": 1,
-        "byte_start": 4314,
-        "byte_end": 4373
+        "byte_start": 4321,
+        "byte_end": 4380
       },
       "definition": "rect(offset(f4.w,  ov/2, 0), ov, bh)",
       "resolved": {
@@ -758,8 +758,8 @@ expression: stdout
       "span": {
         "line": 88,
         "col": 1,
-        "byte_start": 4441,
-        "byte_end": 4496
+        "byte_start": 4448,
+        "byte_end": 4503
       },
       "definition": "offset(f0.w, -1.2, 0.6)",
       "resolved": {
@@ -773,8 +773,8 @@ expression: stdout
       "span": {
         "line": 89,
         "col": 1,
-        "byte_start": 4497,
-        "byte_end": 4574
+        "byte_start": 4504,
+        "byte_end": 4581
       },
       "definition": "offset(cap_top, 0, vdist(cap_top, f4.center))",
       "resolved": {
@@ -788,8 +788,8 @@ expression: stdout
       "span": {
         "line": 90,
         "col": 1,
-        "byte_start": 4575,
-        "byte_end": 4610
+        "byte_start": 4582,
+        "byte_end": 4617
       },
       "definition": "seg(cap_top, cap_bot)",
       "resolved": {
@@ -803,8 +803,8 @@ expression: stdout
       "span": {
         "line": 91,
         "col": 1,
-        "byte_start": 4611,
-        "byte_end": 4677
+        "byte_start": 4618,
+        "byte_end": 4684
       },
       "definition": "label(cap_top, \"capture y[t]\")",
       "resolved": {
@@ -817,8 +817,8 @@ expression: stdout
       "span": {
         "line": 93,
         "col": 1,
-        "byte_start": 4679,
-        "byte_end": 4737
+        "byte_start": 4686,
+        "byte_end": 4744
       },
       "definition": "arrow(foot(f0.center, cap), f0.w)",
       "resolved": {
@@ -831,8 +831,8 @@ expression: stdout
       "span": {
         "line": 94,
         "col": 1,
-        "byte_start": 4738,
-        "byte_end": 4796
+        "byte_start": 4745,
+        "byte_end": 4803
       },
       "definition": "arrow(foot(f1.center, cap), f1.w)",
       "resolved": {
@@ -845,8 +845,8 @@ expression: stdout
       "span": {
         "line": 95,
         "col": 1,
-        "byte_start": 4797,
-        "byte_end": 4855
+        "byte_start": 4804,
+        "byte_end": 4862
       },
       "definition": "arrow(foot(f2.center, cap), f2.w)",
       "resolved": {
@@ -859,8 +859,8 @@ expression: stdout
       "span": {
         "line": 96,
         "col": 1,
-        "byte_start": 4856,
-        "byte_end": 4914
+        "byte_start": 4863,
+        "byte_end": 4921
       },
       "definition": "arrow(foot(f3.center, cap), f3.w)",
       "resolved": {
@@ -873,8 +873,8 @@ expression: stdout
       "span": {
         "line": 97,
         "col": 1,
-        "byte_start": 4915,
-        "byte_end": 4973
+        "byte_start": 4922,
+        "byte_end": 4980
       },
       "definition": "arrow(foot(f4.center, cap), f4.w)",
       "resolved": {
@@ -887,8 +887,8 @@ expression: stdout
       "span": {
         "line": 100,
         "col": 1,
-        "byte_start": 5041,
-        "byte_end": 5095
+        "byte_start": 5048,
+        "byte_end": 5102
       },
       "definition": "offset(f2.sw, 0.35, 0.25)",
       "resolved": {
@@ -902,8 +902,8 @@ expression: stdout
       "span": {
         "line": 101,
         "col": 1,
-        "byte_start": 5096,
-        "byte_end": 5150
+        "byte_start": 5103,
+        "byte_end": 5157
       },
       "definition": "offset(f2.se, -0.35, 0.25)",
       "resolved": {
@@ -917,8 +917,8 @@ expression: stdout
       "span": {
         "line": 102,
         "col": 1,
-        "byte_start": 5151,
-        "byte_end": 5198
+        "byte_start": 5158,
+        "byte_end": 5205
       },
       "definition": "seg(sb0, sb1)",
       "resolved": {
@@ -932,8 +932,8 @@ expression: stdout
       "span": {
         "line": 104,
         "col": 1,
-        "byte_start": 5200,
-        "byte_end": 5272
+        "byte_start": 5207,
+        "byte_end": 5279
       },
       "definition": "offset(lerp(sb0, sb1, 0.05), 0, 0.22)",
       "resolved": {
@@ -947,8 +947,8 @@ expression: stdout
       "span": {
         "line": 105,
         "col": 1,
-        "byte_start": 5273,
-        "byte_end": 5325
+        "byte_start": 5280,
+        "byte_end": 5332
       },
       "definition": "seg(lerp(sb0, sb1, 0.05), q1)",
       "resolved": {
@@ -962,8 +962,8 @@ expression: stdout
       "span": {
         "line": 106,
         "col": 1,
-        "byte_start": 5326,
-        "byte_end": 5398
+        "byte_start": 5333,
+        "byte_end": 5405
       },
       "definition": "offset(lerp(sb0, sb1, 0.18), 0, 0.30)",
       "resolved": {
@@ -977,8 +977,8 @@ expression: stdout
       "span": {
         "line": 107,
         "col": 1,
-        "byte_start": 5399,
-        "byte_end": 5451
+        "byte_start": 5406,
+        "byte_end": 5458
       },
       "definition": "seg(lerp(sb0, sb1, 0.18), q2)",
       "resolved": {
@@ -992,8 +992,8 @@ expression: stdout
       "span": {
         "line": 108,
         "col": 1,
-        "byte_start": 5452,
-        "byte_end": 5524
+        "byte_start": 5459,
+        "byte_end": 5531
       },
       "definition": "offset(lerp(sb0, sb1, 0.32), 0, 0.24)",
       "resolved": {
@@ -1007,8 +1007,8 @@ expression: stdout
       "span": {
         "line": 109,
         "col": 1,
-        "byte_start": 5525,
-        "byte_end": 5577
+        "byte_start": 5532,
+        "byte_end": 5584
       },
       "definition": "seg(lerp(sb0, sb1, 0.32), q3)",
       "resolved": {
@@ -1022,8 +1022,8 @@ expression: stdout
       "span": {
         "line": 110,
         "col": 1,
-        "byte_start": 5578,
-        "byte_end": 5650
+        "byte_start": 5585,
+        "byte_end": 5657
       },
       "definition": "offset(lerp(sb0, sb1, 0.66), 0, 0.28)",
       "resolved": {
@@ -1037,8 +1037,8 @@ expression: stdout
       "span": {
         "line": 111,
         "col": 1,
-        "byte_start": 5651,
-        "byte_end": 5703
+        "byte_start": 5658,
+        "byte_end": 5710
       },
       "definition": "seg(lerp(sb0, sb1, 0.66), q4)",
       "resolved": {
@@ -1052,8 +1052,8 @@ expression: stdout
       "span": {
         "line": 112,
         "col": 1,
-        "byte_start": 5704,
-        "byte_end": 5776
+        "byte_start": 5711,
+        "byte_end": 5783
       },
       "definition": "offset(lerp(sb0, sb1, 0.80), 0, 0.20)",
       "resolved": {
@@ -1067,8 +1067,8 @@ expression: stdout
       "span": {
         "line": 113,
         "col": 1,
-        "byte_start": 5777,
-        "byte_end": 5829
+        "byte_start": 5784,
+        "byte_end": 5836
       },
       "definition": "seg(lerp(sb0, sb1, 0.80), q5)",
       "resolved": {
@@ -1082,8 +1082,8 @@ expression: stdout
       "span": {
         "line": 114,
         "col": 1,
-        "byte_start": 5830,
-        "byte_end": 5902
+        "byte_start": 5837,
+        "byte_end": 5909
       },
       "definition": "offset(lerp(sb0, sb1, 0.93), 0, 0.26)",
       "resolved": {
@@ -1097,8 +1097,8 @@ expression: stdout
       "span": {
         "line": 115,
         "col": 1,
-        "byte_start": 5903,
-        "byte_end": 5955
+        "byte_start": 5910,
+        "byte_end": 5962
       },
       "definition": "seg(lerp(sb0, sb1, 0.93), q6)",
       "resolved": {
@@ -1112,8 +1112,8 @@ expression: stdout
       "span": {
         "line": 118,
         "col": 1,
-        "byte_start": 5999,
-        "byte_end": 6049
+        "byte_start": 6006,
+        "byte_end": 6056
       },
       "definition": "lerp(sb0, sb1, 0.5)",
       "resolved": {
@@ -1127,8 +1127,8 @@ expression: stdout
       "span": {
         "line": 119,
         "col": 1,
-        "byte_start": 6050,
-        "byte_end": 6107
+        "byte_start": 6057,
+        "byte_end": 6114
       },
       "definition": "offset(kb, 0, 0.45)",
       "resolved": {
@@ -1142,8 +1142,8 @@ expression: stdout
       "span": {
         "line": 120,
         "col": 1,
-        "byte_start": 6108,
-        "byte_end": 6150
+        "byte_start": 6115,
+        "byte_end": 6157
       },
       "definition": "seg(kb, kstar)",
       "resolved": {
@@ -1157,8 +1157,8 @@ expression: stdout
       "span": {
         "line": 121,
         "col": 1,
-        "byte_start": 6151,
-        "byte_end": 6221
+        "byte_start": 6158,
+        "byte_end": 6228
       },
       "definition": "label(kstar, \"local peak k*\")",
       "resolved": {
@@ -1171,8 +1171,8 @@ expression: stdout
       "span": {
         "line": 122,
         "col": 1,
-        "byte_start": 6222,
-        "byte_end": 6278
+        "byte_start": 6229,
+        "byte_end": 6285
       },
       "definition": "arrow(lk.center, kstar)",
       "resolved": {
@@ -1185,8 +1185,8 @@ expression: stdout
       "span": {
         "line": 125,
         "col": 1,
-        "byte_start": 6348,
-        "byte_end": 6394
+        "byte_start": 6355,
+        "byte_end": 6401
       },
       "definition": "seg(f2.sw, t192)",
       "resolved": {
@@ -1200,8 +1200,8 @@ expression: stdout
       "span": {
         "line": 126,
         "col": 1,
-        "byte_start": 6395,
-        "byte_end": 6487
+        "byte_start": 6402,
+        "byte_end": 6494
       },
       "definition": "label(o2drop.midpoint, \"filter offset $O_2$\")",
       "resolved": {
@@ -1214,8 +1214,8 @@ expression: stdout
       "span": {
         "line": 128,
         "col": 1,
-        "byte_start": 6489,
-        "byte_end": 6542
+        "byte_start": 6496,
+        "byte_end": 6549
       },
       "definition": "foot(kb, seg(A0, A512))",
       "resolved": {
@@ -1229,8 +1229,8 @@ expression: stdout
       "span": {
         "line": 129,
         "col": 1,
-        "byte_start": 6543,
-        "byte_end": 6587
+        "byte_start": 6550,
+        "byte_end": 6594
       },
       "definition": "seg(kb, kdrop)",
       "resolved": {
@@ -1244,8 +1244,8 @@ expression: stdout
       "span": {
         "line": 132,
         "col": 1,
-        "byte_start": 6655,
-        "byte_end": 6743
+        "byte_start": 6662,
+        "byte_end": 6750
       },
       "definition": "rect(9.5, 1)",
       "resolved": {
@@ -1260,8 +1260,8 @@ expression: stdout
       "span": {
         "line": 133,
         "col": 1,
-        "byte_start": 6744,
-        "byte_end": 6845
+        "byte_start": 6751,
+        "byte_end": 6852
       },
       "definition": "label(td.center, \"total delay = filter offset $O_2$ + local peak $k^*$\")",
       "resolved": {
@@ -1274,8 +1274,8 @@ expression: stdout
       "span": {
         "line": 136,
         "col": 1,
-        "byte_start": 6915,
-        "byte_end": 7022
+        "byte_start": 6922,
+        "byte_end": 7029
       },
       "definition": "rect(0.6, 0.45)",
       "resolved": {
@@ -1290,8 +1290,8 @@ expression: stdout
       "span": {
         "line": 137,
         "col": 1,
-        "byte_start": 7023,
-        "byte_end": 7085
+        "byte_start": 7030,
+        "byte_end": 7092
       },
       "definition": "label(lg.e, \"32 ms overlap\")",
       "resolved": {
@@ -1304,8 +1304,8 @@ expression: stdout
       "span": {
         "line": 139,
         "col": 1,
-        "byte_start": 7087,
-        "byte_end": 7194
+        "byte_start": 7094,
+        "byte_end": 7201
       },
       "definition": "label(offset(td.center, -3, -1.3), \"coefficient position → delay\")",
       "resolved": {
@@ -1318,8 +1318,8 @@ expression: stdout
       "span": {
         "line": 140,
         "col": 1,
-        "byte_start": 7195,
-        "byte_end": 7302
+        "byte_start": 7202,
+        "byte_end": 7309
       },
       "definition": "label(offset(td.center,  4, -1.3), \"coefficient height → echo gain\")",
       "resolved": {
@@ -1332,8 +1332,8 @@ expression: stdout
       "span": {
         "line": 142,
         "col": 1,
-        "byte_start": 7304,
-        "byte_end": 7429
+        "byte_start": 7311,
+        "byte_end": 7436
       },
       "definition": "text_block(\"Each filter reads a different, overlapping region of the same render history\")",
       "resolved": {
@@ -1346,8 +1346,8 @@ expression: stdout
       "span": {
         "line": 143,
         "col": 1,
-        "byte_start": 7430,
-        "byte_end": 7534
+        "byte_start": 7437,
+        "byte_end": 7541
       },
       "definition": "text_block($\\hat{y}[t] = \\textstyle\\sum_n h_n[k]\\, x[t - (O_n + k)]$)",
       "resolved": {
@@ -1371,8 +1371,8 @@ expression: stdout
           "span": {
             "line": 26,
             "col": 1,
-            "byte_start": 1096,
-            "byte_end": 1132
+            "byte_start": 1103,
+            "byte_end": 1139
           },
           "hint_settled_dofs": 2,
           "suggestion": "add a relation if unintended, e.g. on(f0, …) or vdist(…) == …"
@@ -1382,8 +1382,8 @@ expression: stdout
           "span": {
             "line": 61,
             "col": 1,
-            "byte_start": 2810,
-            "byte_end": 2914
+            "byte_start": 2817,
+            "byte_end": 2921
           },
           "hint_settled_dofs": 2,
           "suggestion": "add a relation if unintended, e.g. on(f1, …) or vdist(…) == …"
@@ -1393,8 +1393,8 @@ expression: stdout
           "span": {
             "line": 65,
             "col": 1,
-            "byte_start": 3063,
-            "byte_end": 3168
+            "byte_start": 3070,
+            "byte_end": 3175
           },
           "hint_settled_dofs": 2,
           "suggestion": "add a relation if unintended, e.g. on(f2, …) or vdist(…) == …"
@@ -1404,8 +1404,8 @@ expression: stdout
           "span": {
             "line": 69,
             "col": 1,
-            "byte_start": 3318,
-            "byte_end": 3423
+            "byte_start": 3325,
+            "byte_end": 3430
           },
           "hint_settled_dofs": 2,
           "suggestion": "add a relation if unintended, e.g. on(f3, …) or vdist(…) == …"
@@ -1415,8 +1415,8 @@ expression: stdout
           "span": {
             "line": 73,
             "col": 1,
-            "byte_start": 3573,
-            "byte_end": 3678
+            "byte_start": 3580,
+            "byte_end": 3685
           },
           "hint_settled_dofs": 2,
           "suggestion": "add a relation if unintended, e.g. on(f4, …) or vdist(…) == …"
@@ -1426,8 +1426,8 @@ expression: stdout
           "span": {
             "line": 132,
             "col": 1,
-            "byte_start": 6655,
-            "byte_end": 6743
+            "byte_start": 6662,
+            "byte_end": 6750
           },
           "hint_settled_dofs": 2,
           "suggestion": "add a relation if unintended, e.g. on(td, …) or vdist(…) == …"
@@ -1437,8 +1437,8 @@ expression: stdout
           "span": {
             "line": 136,
             "col": 1,
-            "byte_start": 6915,
-            "byte_end": 7022
+            "byte_start": 6922,
+            "byte_end": 7029
           },
           "hint_settled_dofs": 2,
           "suggestion": "add a relation if unintended, e.g. on(lg, …) or vdist(…) == …"
@@ -1453,8 +1453,8 @@ expression: stdout
         "span": {
           "line": 61,
           "col": 32,
-          "byte_start": 2841,
-          "byte_end": 2860
+          "byte_start": 2848,
+          "byte_end": 2867
         },
         "max_normalized_residual": 3.7743261481199196e-17,
         "implicated_unknowns": [
@@ -1466,8 +1466,8 @@ expression: stdout
         "span": {
           "line": 61,
           "col": 53,
-          "byte_start": 2862,
-          "byte_end": 2898
+          "byte_start": 2869,
+          "byte_end": 2905
         },
         "max_normalized_residual": 6.605070759209859e-17,
         "implicated_unknowns": [
@@ -1479,8 +1479,8 @@ expression: stdout
         "span": {
           "line": 65,
           "col": 32,
-          "byte_start": 3094,
-          "byte_end": 3114
+          "byte_start": 3101,
+          "byte_end": 3121
         },
         "max_normalized_residual": 2.453311996277948e-16,
         "implicated_unknowns": [
@@ -1492,8 +1492,8 @@ expression: stdout
         "span": {
           "line": 65,
           "col": 54,
-          "byte_start": 3116,
-          "byte_end": 3152
+          "byte_start": 3123,
+          "byte_end": 3159
         },
         "max_normalized_residual": 1.5097304592479679e-16,
         "implicated_unknowns": [
@@ -1505,8 +1505,8 @@ expression: stdout
         "span": {
           "line": 69,
           "col": 32,
-          "byte_start": 3349,
-          "byte_end": 3369
+          "byte_start": 3356,
+          "byte_end": 3376
         },
         "max_normalized_residual": 9.4358153702998e-17,
         "implicated_unknowns": [
@@ -1518,8 +1518,8 @@ expression: stdout
         "span": {
           "line": 69,
           "col": 54,
-          "byte_start": 3371,
-          "byte_end": 3407
+          "byte_start": 3378,
+          "byte_end": 3414
         },
         "max_normalized_residual": 2.8307446110899394e-17,
         "implicated_unknowns": [
@@ -1531,8 +1531,8 @@ expression: stdout
         "span": {
           "line": 73,
           "col": 32,
-          "byte_start": 3604,
-          "byte_end": 3624
+          "byte_start": 3611,
+          "byte_end": 3631
         },
         "max_normalized_residual": 2.2645956888719515e-16,
         "implicated_unknowns": [
@@ -1544,8 +1544,8 @@ expression: stdout
         "span": {
           "line": 73,
           "col": 54,
-          "byte_start": 3626,
-          "byte_end": 3662
+          "byte_start": 3633,
+          "byte_end": 3669
         },
         "max_normalized_residual": 6.605070759209859e-17,
         "implicated_unknowns": [
@@ -1557,8 +1557,8 @@ expression: stdout
         "span": {
           "line": 132,
           "col": 32,
-          "byte_start": 6686,
-          "byte_end": 6712
+          "byte_start": 6693,
+          "byte_end": 6719
         },
         "max_normalized_residual": 1.1322978444359758e-16,
         "implicated_unknowns": [
@@ -1570,8 +1570,8 @@ expression: stdout
         "span": {
           "line": 132,
           "col": 60,
-          "byte_start": 6714,
-          "byte_end": 6741
+          "byte_start": 6721,
+          "byte_end": 6748
         },
         "max_normalized_residual": 5.661489222179879e-17,
         "implicated_unknowns": [
@@ -1583,8 +1583,8 @@ expression: stdout
         "span": {
           "line": 136,
           "col": 35,
-          "byte_start": 6949,
-          "byte_end": 6981
+          "byte_start": 6956,
+          "byte_end": 6988
         },
         "max_normalized_residual": 3.7743261481199196e-17,
         "implicated_unknowns": [
@@ -1596,8 +1596,8 @@ expression: stdout
         "span": {
           "line": 136,
           "col": 69,
-          "byte_start": 6983,
-          "byte_end": 7008
+          "byte_start": 6990,
+          "byte_end": 7015
         },
         "max_normalized_residual": 3.7743261481199196e-17,
         "implicated_unknowns": [

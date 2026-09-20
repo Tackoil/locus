@@ -1,11 +1,11 @@
-//! Format-version-2 demonstration and stress corpus tests.
+//! Current-format demonstration and stress corpus tests.
 
 use locus_syntax::parse;
 use std::fs;
 use std::path::PathBuf;
 
 #[test]
-fn parses_every_format_v2_example() -> Result<(), Box<dyn std::error::Error>> {
+fn parses_every_current_format_example() -> Result<(), Box<dyn std::error::Error>> {
     let corpus = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../spec/test");
     let mut paths = Vec::new();
     for group in ["demonstrations", "stress"] {

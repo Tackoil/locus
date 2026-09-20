@@ -1,4 +1,4 @@
-//! Serializable source AST for Locus format versions 2 and 3.
+//! Serializable source AST for Locus 0 beta 4.
 #![allow(
     missing_docs,
     reason = "AST fields mirror the normative grammar directly"
@@ -10,8 +10,6 @@ use serde::Serialize;
 /// A parsed Locus source file.
 #[derive(Clone, Debug, PartialEq, Serialize)]
 pub struct File {
-    /// Header format version, or zero when header recovery was required.
-    pub version: u32,
     /// Statements in source order.
     pub statements: Vec<Statement>,
     /// Full source span.
@@ -142,12 +140,6 @@ pub enum Constructor {
     },
     /// A derived numeric expression.
     Expr { expr: Box<Expr>, span: Span },
-    /// A free point and its mandatory two-coordinate hint.
-    FreePoint {
-        x: Box<Expr>,
-        y: Box<Expr>,
-        span: Span,
-    },
     /// A free numeric value and its mandatory scalar hint.
     FreeNum { hint: Box<Expr>, span: Span },
 }
@@ -156,10 +148,7 @@ impl Constructor {
     #[must_use]
     pub const fn span(&self) -> Span {
         match self {
-            Self::Call { span, .. }
-            | Self::Expr { span, .. }
-            | Self::FreePoint { span, .. }
-            | Self::FreeNum { span, .. } => *span,
+            Self::Call { span, .. } | Self::Expr { span, .. } | Self::FreeNum { span, .. } => *span,
         }
     }
 }

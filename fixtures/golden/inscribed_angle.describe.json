@@ -8,8 +8,8 @@
       "span": {
         "line": 10,
         "col": 1,
-        "byte_start": 132,
-        "byte_end": 152
+        "byte_start": 139,
+        "byte_end": 159
       },
       "definition": "circle(3)",
       "resolved": {
@@ -23,8 +23,8 @@
       "span": {
         "line": 11,
         "col": 1,
-        "byte_start": 153,
-        "byte_end": 171
+        "byte_start": 160,
+        "byte_end": 178
       },
       "definition": "c.center",
       "resolved": {
@@ -38,8 +38,8 @@
       "span": {
         "line": 13,
         "col": 1,
-        "byte_start": 173,
-        "byte_end": 203
+        "byte_start": 180,
+        "byte_end": 210
       },
       "definition": "on_circle(c, 110deg)",
       "resolved": {
@@ -53,8 +53,8 @@
       "span": {
         "line": 14,
         "col": 1,
-        "byte_start": 204,
-        "byte_end": 234
+        "byte_start": 211,
+        "byte_end": 241
       },
       "definition": "on_circle(c, 200deg)",
       "resolved": {
@@ -68,8 +68,8 @@
       "span": {
         "line": 15,
         "col": 1,
-        "byte_start": 235,
-        "byte_end": 265
+        "byte_start": 242,
+        "byte_end": 272
       },
       "definition": "on_circle(c, 340deg)",
       "resolved": {
@@ -83,8 +83,8 @@
       "span": {
         "line": 17,
         "col": 1,
-        "byte_start": 267,
-        "byte_end": 289
+        "byte_start": 274,
+        "byte_end": 296
       },
       "definition": "seg(P, A)",
       "resolved": {
@@ -98,8 +98,8 @@
       "span": {
         "line": 18,
         "col": 1,
-        "byte_start": 290,
-        "byte_end": 312
+        "byte_start": 297,
+        "byte_end": 319
       },
       "definition": "seg(P, B)",
       "resolved": {
@@ -113,8 +113,8 @@
       "span": {
         "line": 19,
         "col": 1,
-        "byte_start": 313,
-        "byte_end": 349
+        "byte_start": 320,
+        "byte_end": 356
       },
       "definition": "seg(O, A)",
       "resolved": {
@@ -128,8 +128,8 @@
       "span": {
         "line": 20,
         "col": 1,
-        "byte_start": 350,
-        "byte_end": 386
+        "byte_start": 357,
+        "byte_end": 393
       },
       "definition": "seg(O, B)",
       "resolved": {
@@ -143,8 +143,8 @@
       "span": {
         "line": 22,
         "col": 1,
-        "byte_start": 388,
-        "byte_end": 431
+        "byte_start": 395,
+        "byte_end": 438
       },
       "definition": "arc(c, A, B, false)",
       "resolved": {
@@ -160,8 +160,8 @@
       "span": {
         "line": 24,
         "col": 1,
-        "byte_start": 466,
-        "byte_end": 506
+        "byte_start": 473,
+        "byte_end": 513
       },
       "definition": "angle_arc(A, P, B, 0.55)",
       "resolved": {
@@ -177,8 +177,8 @@
       "span": {
         "line": 25,
         "col": 1,
-        "byte_start": 507,
-        "byte_end": 546
+        "byte_start": 514,
+        "byte_end": 553
       },
       "definition": "angle_arc(A, O, B, 0.4)",
       "resolved": {
@@ -194,8 +194,8 @@
       "span": {
         "line": 28,
         "col": 1,
-        "byte_start": 610,
-        "byte_end": 634
+        "byte_start": 617,
+        "byte_end": 641
       },
       "definition": "label(P, $P$)",
       "resolved": {
@@ -208,8 +208,8 @@
       "span": {
         "line": 29,
         "col": 1,
-        "byte_start": 635,
-        "byte_end": 659
+        "byte_start": 642,
+        "byte_end": 666
       },
       "definition": "label(A, $A$)",
       "resolved": {
@@ -222,8 +222,8 @@
       "span": {
         "line": 30,
         "col": 1,
-        "byte_start": 660,
-        "byte_end": 684
+        "byte_start": 667,
+        "byte_end": 691
       },
       "definition": "label(B, $B$)",
       "resolved": {
@@ -236,8 +236,8 @@
       "span": {
         "line": 31,
         "col": 1,
-        "byte_start": 685,
-        "byte_end": 721
+        "byte_start": 692,
+        "byte_end": 728
       },
       "definition": "label(O, $O$)",
       "resolved": {
@@ -250,8 +250,8 @@
       "span": {
         "line": 33,
         "col": 1,
-        "byte_start": 723,
-        "byte_end": 786
+        "byte_start": 730,
+        "byte_end": 793
       },
       "definition": "label(P, $\\theta$)",
       "resolved": {
@@ -264,8 +264,8 @@
       "span": {
         "line": 34,
         "col": 1,
-        "byte_start": 787,
-        "byte_end": 850
+        "byte_start": 794,
+        "byte_end": 857
       },
       "definition": "label(O, $2\\theta$)",
       "resolved": {
@@ -278,8 +278,8 @@
       "span": {
         "line": 36,
         "col": 1,
-        "byte_start": 852,
-        "byte_end": 936
+        "byte_start": 859,
+        "byte_end": 943
       },
       "definition": "arrow(li.center, lc.center)",
       "resolved": {
@@ -292,8 +292,8 @@
       "span": {
         "line": 38,
         "col": 1,
-        "byte_start": 938,
-        "byte_end": 1013
+        "byte_start": 945,
+        "byte_end": 1020
       },
       "definition": "text_block($\\angle AOB = 2\\,\\angle APB$)",
       "resolved": {
@@ -317,8 +317,8 @@
           "span": {
             "line": 10,
             "col": 1,
-            "byte_start": 132,
-            "byte_end": 152
+            "byte_start": 139,
+            "byte_end": 159
           },
           "hint_settled_dofs": 2,
           "suggestion": "add a relation if unintended, e.g. on(c, …) or vdist(…) == …"

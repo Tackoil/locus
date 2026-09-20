@@ -25,12 +25,12 @@ function checkEditing() {
   try {
     const path = join(directory, "editing.locus");
     for (const ending of ["\n", "\r\n", "\r"]) {
-      writeFileSync(path, ["locus 3", "point A = point()", "point B = A"].join(ending));
+      writeFileSync(path, ["locus 0 beta 4", "point A = point()", "point B = A"].join(ending));
       run(["parse", "--quiet", path]);
     }
     // Malformed input must not consume the following valid declaration.
     for (const incomplete of ["point A = point(", 'label a = label(A, "unfinished', "label a = label(A, $unfinished"]) {
-      writeFileSync(path, `locus 3\n${incomplete}\npoint B = point()\n`);
+      writeFileSync(path, `locus 0 beta 4\n${incomplete}\npoint B = point()\n`);
       const result = spawnSync("tree-sitter", ["parse", "--xml", path], { encoding: "utf8" });
       assert.equal(result.status, 1, "Incomplete input should contain a syntax error");
       assert.match(result.stdout, /<object_declaration[^>]*>\s*<kind[^>]*>\s*point\s*<\/kind>\s*<identifier[^>]*>B<\/identifier>/);

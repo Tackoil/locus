@@ -1,8 +1,8 @@
-//! Open-document snapshots and version-gated analysis results.
+//! Open-document snapshots and analysis results.
 
 use std::collections::BTreeMap;
 
-use locus_core::{Evaluation, evaluate};
+use locus_core::evaluate;
 use locus_syntax::{File, Statement, parse};
 use lsp_types::{ClientCapabilities, Diagnostic, MarkupKind, TextDocumentContentChangeEvent, Uri};
 
@@ -14,7 +14,6 @@ pub(crate) struct Analysis {
     uri: Uri,
     version: i32,
     pub(crate) file: File,
-    pub(crate) evaluation: Option<Evaluation>,
     pub(crate) diagnostics: Vec<Diagnostic>,
 }
 
@@ -27,17 +26,9 @@ impl Analysis {
             .map(|value| diagnostics::syntax(document, value))
             .collect::<Vec<_>>();
         let prefix = evaluable_prefix(&parsed.file, &parsed.diagnostics);
-        let evaluation = if prefix.version == 2 {
-            match evaluate(&prefix) {
-                Ok(value) => Some(value),
-                Err(error) => {
-                    lsp_diagnostics.push(diagnostics::evaluation(document, &error));
-                    None
-                }
-            }
-        } else {
-            None
-        };
+        if let Err(error) = evaluate(&prefix) {
+            lsp_diagnostics.push(diagnostics::evaluation(document, &error));
+        }
         lsp_diagnostics.sort_by(|left, right| {
             (left.range.start.line, left.range.start.character)
                 .cmp(&(right.range.start.line, right.range.start.character))
@@ -47,7 +38,6 @@ impl Analysis {
             uri: document.uri().clone(),
             version: document.version(),
             file: parsed.file,
-            evaluation,
             diagnostics: lsp_diagnostics,
         }
     }
@@ -189,12 +179,6 @@ fn diagnostic_code(value: &Diagnostic) -> &str {
     match value.code.as_ref() {
         Some(lsp_types::NumberOrString::String(code)) => code,
         Some(lsp_types::NumberOrString::Number(_)) | None => "",
-    }
-}
-
-pub(crate) fn resolved_scene(evaluation: &Evaluation) -> &locus_core::ResolvedScene {
-    match evaluation {
-        Evaluation::Resolved(scene) | Evaluation::Solved { scene, .. } => scene,
     }
 }
 

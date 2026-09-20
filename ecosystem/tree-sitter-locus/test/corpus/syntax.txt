@@ -1,7 +1,7 @@
 ==================
 Declarations, calls, anchors, and primed identifiers
 ==================
-locus 3
+locus 0 beta 4
 point A' = point()
 point B = A'
 point C = seg(A', B).midpoint
@@ -10,8 +10,7 @@ num x = c.at(.5).width
 ---
 
 (source_file
-  (header
-    (number))
+  (header)
   (object_declaration
     (kind)
     (identifier)
@@ -46,7 +45,7 @@ num x = c.at(.5).width
 ==================
 Arithmetic and boolean precedence
 ==================
-locus 3
+locus 0 beta 4
 num x = -1 + 2 * 3 / (4 - 5)
 rel not x < 2 and x >= 0 or x == 3
 assert x <= 1 and x > -2 tol 1e-6
@@ -54,8 +53,7 @@ assert x <= 1 and x > -2 tol 1e-6
 ---
 
 (source_file
-  (header
-    (number))
+  (header)
   (object_declaration
     (kind)
     (identifier)
@@ -98,7 +96,7 @@ assert x <= 1 and x > -2 tol 1e-6
 ==================
 Metadata, style classes, attributes and all property values
 ==================
-locus 3
+locus 0 beta 4
 meta {
   // Preserve blank and comment-only lines.
 
@@ -114,8 +112,7 @@ arrow d = arrow(A, B) { head: - }
 ---
 
 (source_file
-  (header
-    (number))
+  (header)
   (meta_block
     (comment)
     (meta_entry
@@ -211,7 +208,7 @@ arrow d = arrow(A, B) { head: - }
 ==================
 Strings, escaped delimiters, Unicode, inline TeX, and comments
 ==================
-locus 3
+locus 0 beta 4
 label a = label(A, "a // b \"quoted\" \\ \$ \n 中文 😀 $\alpha + \$5$")
 label b = label(B, $\frac{1}{2} // \$x$) // a real comment
 text_block c = text_block("")
@@ -220,8 +217,7 @@ label d = label(A, $$)
 ---
 
 (source_file
-  (header
-    (number))
+  (header)
   (object_declaration
     (kind)
     (identifier)
@@ -276,28 +272,25 @@ label d = label(A, $$)
         (tex)))))
 
 ==================
-Format 2 coordinate hints and format 3 numeric hints
+Free numeric hints and booleans
 ==================
-locus 2
-point A = free ~(-1.2e+3, .4)
+locus 0 beta 4
+point A = point()
 num theta = free ~(90deg + 1.5rad)
-rel pin(A)
+rel coincident(A, A)
 num r = free ~2.
 assert true and not false
 
 ---
 
 (source_file
-  (header
-    (number))
+  (header)
   (object_declaration
     (kind)
     (identifier)
-    (free_expression
-      (coordinate_hint
-        (unary_expression
-          (number))
-        (number))))
+    (call_expression
+      (identifier)
+      (arguments)))
   (object_declaration
     (kind)
     (identifier)
@@ -312,6 +305,7 @@ assert true and not false
     (call_expression
       (identifier)
       (arguments
+        (identifier)
         (identifier))))
   (object_declaration
     (kind)

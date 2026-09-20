@@ -8,8 +8,9 @@ use assert_cmd::Command;
 
 type Result<T = ()> = std::result::Result<T, Box<dyn Error>>;
 
-const PLAIN: &str = "locus 3\ncircle c = circle(2)\nlabel name = label(c.center, \"circle\")\n";
-const TEX: &str = "locus 3\ncircle c = circle(2)\nlabel name = label(c.center, $x^2$)\n";
+const PLAIN: &str =
+    "locus 0 beta 4\ncircle c = circle(2)\nlabel name = label(c.center, \"circle\")\n";
+const TEX: &str = "locus 0 beta 4\ncircle c = circle(2)\nlabel name = label(c.center, $x^2$)\n";
 
 fn render(path: &Path) -> Result<Command> {
     let mut command = Command::cargo_bin("locus")?;
@@ -147,7 +148,7 @@ fn failure_case(source: &str, code: &str, exit: i32, line: u64) -> Result {
 #[test]
 fn failures_preserve_codes_spans_and_existing_artifacts() -> Result {
     failure_case("num a = 1\n", "E110", 3, 1)?;
-    failure_case("locus 3\nnum a = 1 / 0\n", "E204", 2, 2)?;
+    failure_case("locus 0 beta 4\nnum a = 1 / 0\n", "E204", 2, 2)?;
     failure_case(&TEX.replace("x^2", r"\notacommand{x}"), "E414", 2, 3)?;
     let directory = tempfile::tempdir()?;
     let input = directory.path().join("good.locus");

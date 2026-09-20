@@ -6,7 +6,7 @@ E140
 
   × unknown constructor `cricle`
    ╭─[fixtures/errors/unknown_constructor.locus:3:11]
- 2 │ point A = free ~(0, 0)
+ 2 │ point A = point()
  3 │ point B = cricle(A, 1)
    ·           ───┬──
    ·              ╰── unknown constructor `cricle`

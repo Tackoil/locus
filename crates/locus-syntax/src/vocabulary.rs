@@ -196,7 +196,6 @@ pub const PREDICATE_NAMES: &[&str] = &[
     "midpoint",
     "horizontal",
     "vertical",
-    "pin",
     "between",
     "inside",
 ];

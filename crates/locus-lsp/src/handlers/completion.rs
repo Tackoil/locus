@@ -466,10 +466,7 @@ impl<'a> CompletionItems<'a> {
     }
 }
 
-fn header_precedes_cursor(document: &Document, analysis: &Analysis, cursor: usize) -> bool {
-    if analysis.file.version != 2 {
-        return false;
-    }
+fn header_precedes_cursor(document: &Document, _analysis: &Analysis, cursor: usize) -> bool {
     let cursor_line = document.byte_to_position(cursor).line as usize;
     first_code_line(document).is_some_and(|header_line| header_line < cursor_line)
 }

@@ -13,7 +13,6 @@ use super::ad::{
 pub(crate) enum CircleBranch {
     External,
     InternalFirstOuter,
-    InternalSecondOuter,
 }
 
 #[derive(Clone, Debug)]
@@ -67,72 +66,25 @@ fn flatten<'a>(expression: &'a Expr, result: &mut Vec<SourceRelation<'a>>) {
 }
 
 pub(crate) fn select_circle_branches(
-    version: u32,
-    differentiated: &DifferentiatedFile,
     relations: &[SourceRelation<'_>],
-) -> Result<Vec<Option<CircleBranch>>, EvalError> {
+) -> Vec<Option<CircleBranch>> {
     relations
         .iter()
-        .map(|relation| select_circle_branch(version, differentiated, relation.expression))
+        .map(|relation| select_circle_branch(relation.expression))
         .collect()
 }
 
-fn select_circle_branch(
-    version: u32,
-    differentiated: &DifferentiatedFile,
-    expression: &Expr,
-) -> Result<Option<CircleBranch>, EvalError> {
-    let Expr::Call { name, args, span } = expression else {
-        return Ok(None);
+fn select_circle_branch(expression: &Expr) -> Option<CircleBranch> {
+    let Expr::Call { name, args, .. } = expression else {
+        return None;
     };
     if args.len() != 2 || !matches!(name.name.as_str(), "tangent" | "internally_tangent") {
-        return Ok(None);
+        return None;
     }
     if name.name == "internally_tangent" {
-        return Ok(Some(CircleBranch::InternalFirstOuter));
+        return Some(CircleBranch::InternalFirstOuter);
     }
-    if version >= 3 {
-        return Ok(Some(CircleBranch::External));
-    }
-    let lhs = differentiated.object(&args[0])?;
-    let rhs = differentiated.object(&args[1])?;
-    let (DObject::Circle(lhs), DObject::Circle(rhs)) = (lhs, rhs) else {
-        return Ok(None);
-    };
-    choose_circle_branch(&lhs, &rhs, *span).map(Some)
-}
-
-fn choose_circle_branch(
-    lhs: &DCircle,
-    rhs: &DCircle,
-    span: Span,
-) -> Result<CircleBranch, EvalError> {
-    if lhs.radius.value <= 0.0 || rhs.radius.value <= 0.0 {
-        return Err(relation_error(
-            span,
-            "circle tangency seed radii must be positive",
-        ));
-    }
-    let distance = rhs
-        .center
-        .sub(&lhs.center)
-        .norm()
-        .map_err(|()| relation_error(span, "circle tangency centers coincide"))?
-        .value;
-    let external_error = (distance - (lhs.radius.value + rhs.radius.value)).abs();
-    let internal_error = (distance - (lhs.radius.value - rhs.radius.value).abs()).abs();
-    if external_error <= internal_error {
-        Ok(CircleBranch::External)
-    } else if lhs.radius.value > rhs.radius.value {
-        Ok(CircleBranch::InternalFirstOuter)
-    } else if rhs.radius.value > lhs.radius.value {
-        Ok(CircleBranch::InternalSecondOuter)
-    } else {
-        Err(relation_error(
-            span,
-            "equal seed radii cannot select internal tangency",
-        ))
-    }
+    Some(CircleBranch::External)
 }
 
 pub(crate) fn evaluate(
@@ -308,7 +260,6 @@ fn evaluate_point_predicate(
             diameter,
             equations,
         ),
-        "pin" => pin_relation(differentiated, args, relation, span, diameter, equations),
         _ => Err(relation_error(
             span,
             format!("unsupported relation `{name}`"),
@@ -467,15 +418,6 @@ fn circle_tangent_residual(
                 ));
             }
             lhs.radius.sub(&rhs.radius)
-        }
-        CircleBranch::InternalSecondOuter => {
-            if rhs.radius.value < lhs.radius.value {
-                return Err(relation_error(
-                    span,
-                    "internal tangency radius ordering reversed",
-                ));
-            }
-            rhs.radius.sub(&lhs.radius)
         }
     };
     Ok(distance.sub(&target))
@@ -656,36 +598,6 @@ fn axis_relation(
         rhs.x.sub(&lhs.x)
     };
     push(equations, residual.scale(1.0 / diameter), relation, span)
-}
-
-fn pin_relation(
-    differentiated: &DifferentiatedFile,
-    args: &[Expr],
-    relation: usize,
-    span: Span,
-    diameter: f64,
-    equations: &mut Vec<Equation>,
-) -> Result<(), EvalError> {
-    require_arity("pin", args, 3, span)?;
-    let point = expect_point(differentiated.object(&args[0])?, args[0].span())?;
-    let x = differentiated
-        .number_as(&args[1], NumericDimension::Length)?
-        .0;
-    let y = differentiated
-        .number_as(&args[2], NumericDimension::Length)?
-        .0;
-    push(
-        equations,
-        point.x.sub(&x).scale(1.0 / diameter),
-        relation,
-        span,
-    )?;
-    push(
-        equations,
-        point.y.sub(&y).scale(1.0 / diameter),
-        relation,
-        span,
-    )
 }
 
 fn point_circle_residual(point: &DPoint, circle: &DCircle, span: Span) -> Result<Jet, EvalError> {

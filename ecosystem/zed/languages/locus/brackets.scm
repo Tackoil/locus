@@ -1,6 +1,5 @@
 (arguments "(" @open ")" @close)
 (group_expression "(" @open ")" @close)
-(coordinate_hint "(" @open ")" @close)
 (attribute "[" @open "]" @close)
 (properties "{" @open "}" @close)
 (where_clause "{" @open "}" @close)

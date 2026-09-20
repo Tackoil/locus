@@ -2,12 +2,11 @@
 
 use std::fmt::Write as _;
 
-use locus_core::{Dimension, ResolvedObject};
 use locus_syntax::CONSTRUCTOR_SIGNATURES;
 use lsp_types::{Hover, HoverContents, HoverParams, MarkupContent, MarkupKind};
 
 use super::target::{Target, at, class_definition, object_definition};
-use crate::state::{State, resolved_scene};
+use crate::state::State;
 
 pub(crate) fn handle(state: &State, params: &HoverParams) -> Option<Hover> {
     let uri = &params.text_document_position_params.text_document.uri;
@@ -19,7 +18,7 @@ pub(crate) fn handle(state: &State, params: &HoverParams) -> Option<Hover> {
     let (contents, span) = match target {
         Target::Object(id) => {
             let op = object_definition(&analysis.file, &id.name)?;
-            (object_hover(document, analysis, op, markdown), id.span)
+            (object_hover(document, op, markdown), id.span)
         }
         Target::Class(id) => {
             let class = class_definition(&analysis.file, &id.name)?;
@@ -49,7 +48,6 @@ pub(crate) fn handle(state: &State, params: &HoverParams) -> Option<Hover> {
 
 fn object_hover(
     document: &crate::document::Document,
-    analysis: &crate::state::Analysis,
     op: &locus_syntax::OpStmt,
     markdown: bool,
 ) -> String {
@@ -66,16 +64,6 @@ fn object_hover(
             let _ = write!(text, "\n\n{definition}");
         }
     }
-    if let Some(evaluation) = &analysis.evaluation {
-        let scene = resolved_scene(evaluation);
-        if let Some((_, object)) = scene.objects.iter().find(|(id, _)| id.name == op.id.name) {
-            if markdown {
-                let _ = write!(text, "\n\nResolved: `{}`", resolved_value(object));
-            } else {
-                let _ = write!(text, "\n\nResolved: {}", resolved_value(object));
-            }
-        }
-    }
     text
 }
 
@@ -84,86 +72,5 @@ fn class_hover(name: &str, source: &str, markdown: bool) -> String {
         format!("`class {name}`\n\n```locus\n{source}\n```")
     } else {
         format!("class {name}\n\n{source}")
-    }
-}
-
-fn resolved_value(object: &ResolvedObject) -> String {
-    match object {
-        ResolvedObject::Num(_) | ResolvedObject::Angle(_) | ResolvedObject::Point(_) => {
-            scalar_value(object)
-        }
-        ResolvedObject::Line(_) | ResolvedObject::Ray(_) | ResolvedObject::Segment(_) => {
-            linear_value(object)
-        }
-        ResolvedObject::Circle(_)
-        | ResolvedObject::Arc(_)
-        | ResolvedObject::Ellipse(_)
-        | ResolvedObject::Bspline(_) => curved_value(object),
-        ResolvedObject::Polygon(value)
-        | ResolvedObject::Rect(value)
-        | ResolvedObject::Diamond(value) => format!(
-            "area {}, perimeter {}",
-            locus_core::geom::measure::area(value),
-            locus_core::geom::measure::perimeter(value)
-        ),
-        ResolvedObject::Annotation(_) => "annotation".to_owned(),
-    }
-}
-
-fn scalar_value(object: &ResolvedObject) -> String {
-    match object {
-        ResolvedObject::Num(value) => {
-            format!("{} {}", value.value, dimension_name(value.dimension))
-        }
-        ResolvedObject::Angle(value) => format!("{value} rad"),
-        ResolvedObject::Point(value) => {
-            format!("({}, {})", value.geometry.x, value.geometry.y)
-        }
-        _ => String::new(),
-    }
-}
-
-fn linear_value(object: &ResolvedObject) -> String {
-    match object {
-        ResolvedObject::Line(value) => format!(
-            "line through ({}, {}) and ({}, {})",
-            value.start.x, value.start.y, value.through.x, value.through.y
-        ),
-        ResolvedObject::Ray(value) => format!(
-            "ray from ({}, {}) through ({}, {})",
-            value.start.x, value.start.y, value.through.x, value.through.y
-        ),
-        ResolvedObject::Segment(value) => {
-            format!("length {}", locus_core::geom::measure::length(*value))
-        }
-        _ => String::new(),
-    }
-}
-
-fn curved_value(object: &ResolvedObject) -> String {
-    match object {
-        ResolvedObject::Circle(value) => format!(
-            "center ({}, {}), radius {}",
-            value.center.x, value.center.y, value.radius
-        ),
-        ResolvedObject::Arc(value) => format!("radius {}", value.geometry.circle.radius),
-        ResolvedObject::Ellipse(value) => format!(
-            "semiaxes {} and {}, rotation {} rad",
-            value.semimajor, value.semiminor, value.rotation
-        ),
-        ResolvedObject::Bspline(value) => format!(
-            "cubic B-spline, {} controls, {} spans",
-            value.controls().len(),
-            value.controls().len() - 3
-        ),
-        _ => String::new(),
-    }
-}
-
-const fn dimension_name(dimension: Dimension) -> &'static str {
-    match dimension {
-        Dimension::Scalar => "scalar",
-        Dimension::Length => "length",
-        Dimension::Area => "area",
     }
 }

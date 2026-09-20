@@ -7,8 +7,8 @@ It is opt-in and requires an API key.
 The positive `.locus` corpus is split by purpose:
 
 - [`demonstrations/`](demonstrations/) contains eleven compact, readable examples of the
-  [v0.4 language](../../documents/specification.md): points and shapes own placement;
-  anchors and constructions remain derived. The CLI checks and reports these as format 3.
+  [`0 beta 4` language](../specification.md): points and shapes own placement;
+  anchors and constructions remain derived.
 - [`stress/`](stress/) contains 16 expanded workloads. These exercise large construction
   graphs, dense annotations, shared constraints, assertions, deterministic layout, and every
   rendering backend.
@@ -16,8 +16,8 @@ The positive `.locus` corpus is split by purpose:
 Invalid-input fixtures remain in [`fixtures/errors/`](../../fixtures/errors/) so they are not
 mistaken for runnable examples.
 
-Run the checks from the repository root. The demonstrations are the format-3 acceptance
-suite, and all stress sources, including the known solver-limit fixture, also use format 3.
+Run the checks from the repository root. The demonstrations are the `0 beta 4` acceptance
+suite, and all stress sources, including the known solver-limit fixture, use the same draft.
 
 ```sh
 cargo run -p locus-cli -- check spec/test/demonstrations/*.locus
@@ -41,16 +41,15 @@ cargo test -p locus-cli -p locus-render --test spec_examples --all-features
 | [sequence_check.locus](demonstrations/sequence_check.locus) | Sequence-diagram participants and messages |
 | [tangent_circles.locus](demonstrations/tangent_circles.locus) | Solved tangent circles and common tangents |
 
-### Format-3 coverage
+### `0 beta 4` coverage
 
 The eleven demonstrations exercise parameterless points; dimension-only circles, ellipses,
 rectangles, and diamonds; derived object aliases; explicit external and internal tangency;
 and cubic, open, non-rational, clamped B-splines. Together they contain 63 assertions that
 run through the native parser, solver, evaluator, inspection, and rendering pipeline.
 
-Format-3 public reports intentionally describe resolved relationships and measurements
-without exposing Locus-owned initialization coordinates. Format-2 reports retain their
-coordinate-rich shape for compatibility. Stress workloads now use parameterless points,
+Public reports intentionally describe resolved relationships and measurements
+without exposing Locus-owned initialization coordinates. Stress workloads use parameterless points,
 shape-owned placement, relative constructions, and ordered internal circle tangency.
 Free numeric lengths, angles, and branch magnitudes retain deliberate perturbations to
 exercise convergence without authoring point coordinates or placement hints.
@@ -83,8 +82,7 @@ legitimately take zero solver iterations.
 
 [`stress/stress.tsv`](stress/stress.tsv) sets per-file minimum object, assertion, and
 equation counts. Relational cases must perform at least one solver iteration where required by the manifest.
-Format 3 removes the two translation-pinning equations from each previously pinned
-network. The function intersections now construct incidence on the linear function and
+The current draft removes translation-pinning equations from each network. The function intersections construct incidence on the linear function and
 solve two nonlinear branch magnitudes instead of four point coordinates. Their equation
 minimum is therefore two; object and assertion minimums are retained. Both stress test runners verify the manifest against the discovered files, so a
 new workload needs an explicit contract and cannot be silently omitted from rendering.

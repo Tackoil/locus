@@ -1,8 +1,8 @@
-locus 3
+locus 0 beta 4
 
 meta {
   title "Externally tangent circles with a common external tangent"
-  note  "v0.4 showcase: tangency is stated once as a relation; the tangent point, center distance, and common tangent follow"
+  note  "0 beta 4 showcase: tangency is stated once as a relation; the tangent point, center distance, and common tangent follow"
 }
 
 style textbook

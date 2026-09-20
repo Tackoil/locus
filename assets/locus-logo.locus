@@ -1,4 +1,4 @@
-locus 2
+locus 0 beta 4
 
 meta {
   title "Locus logo"
@@ -14,7 +14,7 @@ class solution { accent: #4F46E5, fill: #4F46E5, weight: 1 }
 class wordmark { accent: #4F46E5 }
 
 // The figure: an exact locus with three related points and their shared center.
-point O     = free ~(0, 0) { mark: none }
+point O     = point() { mark: none }
 num radius  = 1
 circle path = circle(O, radius) [orbit]
 

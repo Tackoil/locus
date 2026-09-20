@@ -1,10 +1,11 @@
 (identifier) @variable
 (kind) @type
-["locus" "meta" "style" "class" "rel" "assert" "where" "free" "tol"] @keyword
+["locus" "beta" "meta" "style" "class" "rel" "assert" "where" "free" "tol"] @keyword
 ["and" "or" "not"] @operator
 ["=" "==" "<" ">" "<=" ">=" "+" "-" "*" "/" "~"] @operator
 (boolean) @boolean
 (number) @number
+["0" "4"] @number
 (hex_color) @string.special
 (arrow_head) @operator
 (comment) @comment

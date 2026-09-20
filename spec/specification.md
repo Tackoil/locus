@@ -1,10 +1,10 @@
-# Locus Specification v0.4
+# Locus Specification 0 beta 4
 
 *A relational language and CLI toolchain for plane-geometry figures and technical diagrams with precise alignment and ratios.*
 
-This document is self-contained and normative. It supersedes v0.3 (the relational, coordinate-hinted format-2 model); the version changes are summarized in §0.1.
+This document is self-contained and normative. The project is under development and supports only this latest draft; earlier file formats are not accepted.
 
-This revision adopts object-owned placement and replaces hinted free-point declarations with parameterless `point()` declarations. It is a breaking specification change; existing implementations and fixtures using point hints require migration. Format version 3 remains unfrozen pending the initialization rules in Part 12.
+This revision adopts object-owned placement and parameterless `point()` declarations. The `0 beta 4` format remains unfrozen pending the initialization rules in Part 12.
 
 ---
 
@@ -16,9 +16,9 @@ This revision adopts object-owned placement and replaces hinted free-point decla
 4. **Determinism is normative.** Identical file → identical solve → identical resolved geometry → byte-identical SVG.
 5. **Statement-per-line syntax with compiler-grade diagnostics.** Local errors stay local; error messages name source lines and suggest fixes.
 
-### 0.1 Version history and the v0.4 model (informative)
+### 0.1 Current model (informative)
 
-v0.2 was purely **constructive**. v0.3 introduced **relations** and a solver, with coordinate hints on free points. v0.4 keeps the relational model, moves placement initialization into Locus, introduces parameterless `point()` and dimension-only shape declarations, makes circle tangency choices explicit, and adds ellipses and B-splines:
+The current draft uses a relational model, keeps placement initialization inside Locus, provides parameterless `point()` and dimension-only shape declarations, makes circle tangency choices explicit, and includes ellipses and B-splines:
 
 1. Geometry is declared by its intrinsic properties (`point()`, `circle(2)`, `rect(4, 2)`); its placement belongs to Locus. Objects are related through points and anchors, never through authored coordinates.
 2. Relations between objects (`tangent`, `on`, `horizontal`, `dist(A,B) == 6`, …) are first-class statements that *define* geometry, not just check it.
@@ -33,15 +33,15 @@ This is the geometric-constraint paradigm proven by CAD sketchers (SolveSpace, F
 
 - Extension: `*.locus`; encoding UTF-8; newline-terminated statements.
 - Comments: `//` to end of line. Outside strings and TeX spans, a comment may occupy a whole line or follow any statement.
-- Header: `locus 3` (the v0.4 language is format version 3).
-- **Compatibility:** `locus 2` denotes the v0.3 language. Its coordinate-hinted declarations and seed-selected tangency must not be silently interpreted using format-3 semantics. Migration requires rewriting the intended relationships and changing the header together. This spec version does not imply a CLI/package release.
+- Header: `locus 0 beta 4`. This exact header is mandatory.
+- **Compatibility:** Earlier headers and file formats are rejected. Backward compatibility is not maintained while the project is under development.
 - The file stores the **relational program**, never resolved coordinates. Resolved geometry is always derived by solving + evaluation.
 - Machine interchange: `locus fmt --json` emits the parsed AST as JSON (§9.4). The DSL is the authoring format; JSON is derived, never authored.
 
 ### 1.2 File shape
 
 ```locus
-locus 3                      // format version header, mandatory, first statement
+locus 0 beta 4                      // format version header, mandatory, first statement
 
 meta {
   title "Externally tangent circles"
@@ -71,7 +71,7 @@ assert dist(O_1, O_2) == 5
 
 ```
 file          := header (statement | eol)*
-header        := "locus" integer eol
+header        := "locus" "0" "beta" "4" eol
 statement     := op | rel | assert | meta | style | class
 
 op            := free_num_op | object_op
@@ -117,7 +117,6 @@ cmp         := expr ("==" | "<" | ">" | "<=" | ">=") expr
 predicate   := ident "(" args ")"
 
 number      := (digits ["." [digits]] | "." digits) [exponent]
-integer     := digits
 exponent    := ("e" | "E") [("+" | "-")] digits
 digits      := digit+
 digit       := "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
@@ -262,7 +261,7 @@ There are **no vocabulary aliases**: exactly one name per concept. (A `touch` al
 
 ### 3.3 Assert-only predicates
 
-Inherently inequality-shaped conditions cannot be solved for in v0.4 and are **assert-only**: `between(A, B, C)`, `inside(P, poly)`, `inside(P, c)`, and the comparisons `<  >  <=  >=`. Boolean `or` and `not` are also assert-only because they do not define a single smooth equation set. A `rel` or `where` clause may contain a solvable atomic equality/predicate or an `and` conjunction of them; using an assert-only form there is a semantic error. Ordering, containment, and other discrete choices are established by geometric relations or explicit constructions, then *verified* by asserts.
+Inherently inequality-shaped conditions cannot be solved for in `0 beta 4` and are **assert-only**: `between(A, B, C)`, `inside(P, poly)`, `inside(P, c)`, and the comparisons `<  >  <=  >=`. Boolean `or` and `not` are also assert-only because they do not define a single smooth equation set. A `rel` or `where` clause may contain a solvable atomic equality/predicate or an `and` conjunction of them; using an assert-only form there is a semantic error. Ordering, containment, and other discrete choices are established by geometric relations or explicit constructions, then *verified* by asserts.
 
 `between(A, B, C)` is strict: it requires `B` to be collinear with distinct `A` and `C`, and the projection parameter of `B` on directed segment `A→C` to lie inside the tolerance-shrunk interval `(ε, 1−ε)`. Endpoints are not between. `inside(P, c)` is also strict and requires `(radius(c) − dist(center(c), P)) / D > ε`; a boundary point is not inside. `inside(P, poly)` requires a valid simple polygon, first rejects points within tolerance of any closed edge, then uses the nonzero winding rule; boundary points are not inside. These definitions use the assert's `ε` from §7.4.
 
@@ -523,7 +522,7 @@ Every numeric expression has one of four dimensions: **scalar**, **length**, **a
 - Geometry determines dimensions: `dist`, `hdist`, `vdist`, `radius`, `length`, rectangle dimensions, ellipse semiaxes, and relative point offsets are lengths; `area` is area; `angle`, `dir_angle`, ellipse rotation and ellipse `.at` arguments, and arrow `bend` are angles; B-spline `.at` arguments, counts, and ratios are scalars.
 - A numeric literal without `deg` or `rad` begins as a dimension variable and is unified from context. Thus the `6` in `dist(A, B) == 6` becomes a length, while the `2` in `2 * angle(A, B, C)` is scalar. An otherwise unconstrained literal defaults to scalar.
 - Each named `num`, including a free `num`, has one dimension inferred from all of its uses in the file. Conflicting uses are a type error. A free numeric hint has the inferred dimension of its declaration.
-- Addition, subtraction, comparison, `min`, and `max` require matching dimensions. Multiplication or division by a scalar preserves the other operand's dimension. `length * length` produces area; `area / length` produces length; equal-dimension division produces scalar. Other dimension products are errors in format version 3.
+- Addition, subtraction, comparison, `min`, and `max` require matching dimensions. Multiplication or division by a scalar preserves the other operand's dimension. `length * length` produces area; `area / length` produces length; equal-dimension division produces scalar. Other dimension products are errors in `0 beta 4`.
 - `abs` preserves dimension. `sqrt` accepts a scalar or an area and returns a scalar or length respectively. `ratio(a, b)` requires equal dimensions and returns scalar.
 - Constructor arguments and properties impose their documented dimensions. In particular, circle radii, rectangle/diamond sizes, label gaps, tick/right-angle sizes, and all point offsets are lengths. A bare number in an angle position remains an error; contextual inference never turns it into an angle without `deg` or `rad`.
 
@@ -567,7 +566,7 @@ The format-version-3 solve contract is defined below. The numerical iteration is
 
 All arithmetic is IEEE-754 binary64, round-to-nearest ties-to-even, with subnormals preserved. Transcendental functions come from the format-version-pinned `libm` implementation. No randomness, parallel reductions, locale-sensitive parsing/formatting, reassociation, or platform BLAS/LAPACK calls are permitted in the normative path.
 
-For the one-sided Jacobi SVD, start with `A = J` and `V = I`. A sweep visits every column pair `(p, q)` in lexicographic order. Let `α = dot(Ap, Ap)`, `β = dot(Aq, Aq)`, and `γ = dot(Ap, Aq)`, with dots summed by ascending row. Skip the pair if either norm is zero or `abs(γ) <= 2^-48 × sqrt(αβ)`. Otherwise set `ζ = (β−α)/(2γ)`, `t = 1` when `ζ = 0`, and otherwise `t = sign(ζ)/(abs(ζ)+sqrt(1+ζ²))`; then `c = 1/sqrt(1+t²)` and `s = c×t`. Replace the columns with `(c×Ap−s×Aq, s×Ap+c×Aq)` and apply the same rotation to `V`. Stop after the first sweep that performs no rotations, or fail with numerical non-convergence after 64 sweeps. Singular values are the final column norms; sort them descending with the original column index as the stable tie-break, and derive `U` by normalizing nonzero columns. This procedure, including its skip threshold and ordering, is part of format version 3.
+For the one-sided Jacobi SVD, start with `A = J` and `V = I`. A sweep visits every column pair `(p, q)` in lexicographic order. Let `α = dot(Ap, Ap)`, `β = dot(Aq, Aq)`, and `γ = dot(Ap, Aq)`, with dots summed by ascending row. Skip the pair if either norm is zero or `abs(γ) <= 2^-48 × sqrt(αβ)`. Otherwise set `ζ = (β−α)/(2γ)`, `t = 1` when `ζ = 0`, and otherwise `t = sign(ζ)/(abs(ζ)+sqrt(1+ζ²))`; then `c = 1/sqrt(1+t²)` and `s = c×t`. Replace the columns with `(c×Ap−s×Aq, s×Ap+c×Aq)` and apply the same rotation to `V`. Stop after the first sweep that performs no rotations, or fail with numerical non-convergence after 64 sweeps. Singular values are the final column norms; sort them descending with the original column index as the stable tie-break, and derive `U` by normalizing nonzero columns. This procedure, including its skip threshold and ordering, is part of `0 beta 4`.
 
 ### 7.2 DOF accounting
 
@@ -781,7 +780,7 @@ Recommended agent policy: **never `render` until `check` exits 0.**
 
 ---
 
-## Part 10 — Out of scope for v0.4 (reserved)
+## Part 10 — Out of scope for 0 beta 4 (reserved)
 
 - Inequality relations in `rel` (only asserts may compare with `< > <= >=`).
 - Content-driven box sizing (rect width from measured label extents) and arrow routing (elbows, box clipping) — the rest of "diagram mode."
@@ -790,14 +789,14 @@ Recommended agent policy: **never `render` until `check` exits 0.**
 - User-defined presets or named palettes; per-op inline style declarations; whole-figure transforms; layers; animation; 3D. Exact values remain reusable through classes (§8.3).
 - Statement continuations or other multi-line statements beyond the structured `meta` block; includes/imports; user-defined functions.
 
-The `locus <n>` header exists so these can arrive without breaking earlier files.
+The file header identifies the language draft and will change when a future draft makes incompatible changes.
 
 ---
 
 ## Part 11 — Complete example
 
 ```locus
-locus 3
+locus 0 beta 4
 
 meta {
   title "Externally tangent circles with a common external tangent"
@@ -847,9 +846,9 @@ The agent states radii and a tangency relation, then derives anchors, the contac
 
 ## Part 12 — Open questions before freezing
 
-1. **Deterministic placement initialization** — specify and validate the exact dimension-aware initial arrangements, construction-domain handling, bounded retry schedule, and tie-breaks between otherwise valid arrangements. Cover standalone points and shapes, points related into nondegenerate triangles and spline controls, tangent and concentric circles, relation-dependent intersections, and disconnected diagrams. Authors must never repair initialization by supplying coordinates. This algorithm is required before freezing format version 3; the iteration rules alone no longer define a complete reference solver.
+1. **Deterministic placement initialization** — specify and validate the exact dimension-aware initial arrangements, construction-domain handling, bounded retry schedule, and tie-breaks between otherwise valid arrangements. Cover standalone points and shapes, points related into nondegenerate triangles and spline controls, tangent and concentric circles, relation-dependent intersections, and disconnected diagrams. Authors must never repair initialization by supplying coordinates. This algorithm is required before freezing `0 beta 4`; the iteration rules alone no longer define a complete reference solver.
 2. **Rigid symmetry classification** — common translation is handled by §7.2. Define when common rotation is also presentation-only, accounting for horizontal/vertical relations, compass anchors, relative offsets, and angle-based constructions, before exempting it from strict checks.
-3. **Solver constants** — empirically validate the specified normalization, rank threshold, damping schedule, and `1e-12`/`1e-9` gap on extreme-scale figures before freezing format version 3; any change after freezing requires a new format version.
+3. **Solver constants** — empirically validate the specified normalization, rank threshold, damping schedule, and `1e-12`/`1e-9` gap on extreme-scale figures before freezing `0 beta 4`; any change after freezing requires a new file header.
 4. **Implementation migration** — update parser/AST, constructor typing, unknown ownership, solver initialization, CLI/JSON reports, and fixtures together. Existing coordinate hints are not silently discarded: translate their intended relative geometry into relations and explicit construction branches.
 5. **KaTeX subset boundary** — which TeX commands are guaranteed? Needs an explicit whitelist appendix before v1.
 6. **Curve implementation** — add ellipse/B-spline syntax and typed overloads, parameter domains, analytic evaluation and differentiation (including B-spline endpoint derivatives), rotated/conservative bounds, exact cubic span conversion, and curve-aware layout. Pin conversion operation order and collision tolerances; verify endpoint, interior-knot, repeated-control, and rotated-ellipse cases across renderers. The curve demonstrations are draft acceptance cases, not claims of existing runtime support.

@@ -7,20 +7,19 @@ use std::fs::{self, OpenOptions};
 use std::io::{self, Read as _, Write as _};
 use std::path::{Path, PathBuf};
 
-use locus_core::scene::{LabelDirection, TextBlockPlacement};
 use locus_core::{
-    AnchorSpec, AnnotationSpec, DependencyGraph, Dimension, EvalError, Evaluation,
-    InspectDiagnostic, Point, PointMark, RemovalImpact, ResolvedObject, ResolvedScene, Scene,
-    SolveSummary, evaluate_assertions, inspect_scene,
+    DependencyGraph, Dimension, EvalError, Evaluation, InspectDiagnostic, Point, PointMark,
+    RemovalImpact, ResolvedObject, ResolvedScene, Scene, SolveSummary, evaluate_assertions,
+    inspect_scene,
 };
 use locus_syntax::{Diagnostic, File, OpStmt, Span, Statement, format, parse};
 
 use crate::exit::Exit;
 use crate::output::{
-    AnchorReport, AnnotationReport, BranchReport, CheckFileResult, CheckResult, CliDiagnostic,
-    CommandOutput, DescribeResult, DofReport, Execution, FailureResult, FormatResult, HintReport,
-    InspectResult, MutationResult, ObjectAnchorReport, ObjectDofReport, ObjectReport, PointReport,
-    RelationReport, ResolvedValue, Severity, SolveReport, SourceDocument, TextBlockPlacementReport,
+    BranchReport, CheckFileResult, CheckResult, CliDiagnostic, CommandOutput, DescribeResult,
+    DofReport, Execution, FailureResult, FormatResult, HintReport, InspectResult, MutationResult,
+    ObjectAnchorReport, ObjectDofReport, ObjectReport, PointReport, RelationReport, ResolvedValue,
+    Severity, SolveReport, SourceDocument,
 };
 use crate::{Command, Style};
 
@@ -74,7 +73,7 @@ fn init(path: &Path, style: Style) -> Execution {
     let style = match style {
         Style::Textbook => "textbook",
     };
-    let source = format!("locus 2\n\nstyle {style}\n");
+    let source = format!("{}\n\nstyle {style}\n", locus_syntax::FILE_HEADER);
     let result = OpenOptions::new().write(true).create_new(true).open(path);
     match result.and_then(|mut file| file.write_all(source.as_bytes())) {
         Ok(()) => mutation("init", path, None, format!("created {}", path.display())),
@@ -741,7 +740,7 @@ fn describe_objects(file: &File, scene: &ResolvedScene, source: &str) -> Vec<Obj
                 .objects
                 .iter()
                 .find(|(id, _)| id.name == op.id.name)
-                .map(|(_, object)| object_report(op, object, source, file.version)),
+                .map(|(_, object)| object_report(op, object, source)),
             _ => None,
         })
         .collect()
@@ -760,38 +759,36 @@ fn object_anchors(file: &File) -> Vec<ObjectAnchorReport> {
         .collect()
 }
 
-fn object_report(op: &OpStmt, object: &ResolvedObject, source: &str, version: u32) -> ObjectReport {
+fn object_report(op: &OpStmt, object: &ResolvedObject, source: &str) -> ObjectReport {
     ObjectReport {
         id: op.id.name.clone(),
         kind: op.kind.as_str().to_owned(),
         span: op.span,
         definition: source[op.ctor.span().byte_start..op.ctor.span().byte_end].to_owned(),
-        resolved: resolved_value(object, version),
+        resolved: resolved_value(object),
     }
 }
 
-fn resolved_value(object: &ResolvedObject, version: u32) -> ResolvedValue {
+fn resolved_value(object: &ResolvedObject) -> ResolvedValue {
     match object {
         ResolvedObject::Num(_) | ResolvedObject::Angle(_) | ResolvedObject::Point(_) => {
-            scalar_value(object, version)
+            scalar_value(object)
         }
         ResolvedObject::Line(_) | ResolvedObject::Ray(_) | ResolvedObject::Segment(_) => {
-            linear_value(object, version)
+            linear_value(object)
         }
         ResolvedObject::Circle(_)
         | ResolvedObject::Arc(_)
         | ResolvedObject::Ellipse(_)
-        | ResolvedObject::Bspline(_) => curved_value(object, version),
+        | ResolvedObject::Bspline(_) => curved_value(object),
         ResolvedObject::Polygon(_) | ResolvedObject::Rect(_) | ResolvedObject::Diamond(_) => {
-            polygon_object_value(object, version)
+            polygon_object_value(object)
         }
-        ResolvedObject::Annotation(annotation) => ResolvedValue::Annotation {
-            value: (version < 3).then(|| annotation_report(annotation)),
-        },
+        ResolvedObject::Annotation(_) => ResolvedValue::Annotation,
     }
 }
 
-fn scalar_value(object: &ResolvedObject, version: u32) -> ResolvedValue {
+fn scalar_value(object: &ResolvedObject) -> ResolvedValue {
     match object {
         ResolvedObject::Num(number) => ResolvedValue::Number {
             value: number.value,
@@ -799,27 +796,27 @@ fn scalar_value(object: &ResolvedObject, version: u32) -> ResolvedValue {
         },
         ResolvedObject::Angle(radians) => ResolvedValue::Angle { radians: *radians },
         ResolvedObject::Point(point) => ResolvedValue::Point {
-            x: (version < 3).then_some(point.geometry.x),
-            y: (version < 3).then_some(point.geometry.y),
+            x: None,
+            y: None,
             mark: point_mark_name(point.mark).to_owned(),
         },
         _ => unreachable!("scalar value received non-scalar object"),
     }
 }
 
-fn linear_value(object: &ResolvedObject, version: u32) -> ResolvedValue {
+fn linear_value(object: &ResolvedObject) -> ResolvedValue {
     match object {
-        ResolvedObject::Line(line) => ResolvedValue::Line {
-            start: (version < 3).then(|| line.start.into()),
-            through: (version < 3).then(|| line.through.into()),
+        ResolvedObject::Line(_) => ResolvedValue::Line {
+            start: None,
+            through: None,
         },
-        ResolvedObject::Ray(ray) => ResolvedValue::Ray {
-            start: (version < 3).then(|| ray.start.into()),
-            through: (version < 3).then(|| ray.through.into()),
+        ResolvedObject::Ray(_) => ResolvedValue::Ray {
+            start: None,
+            through: None,
         },
         ResolvedObject::Segment(segment) => ResolvedValue::Segment {
-            start: (version < 3).then(|| segment.start.into()),
-            end: (version < 3).then(|| segment.end.into()),
+            start: None,
+            end: None,
             length: locus_core::geom::measure::length(*segment),
         },
         _ => unreachable!("linear value received non-linear object"),
@@ -830,17 +827,17 @@ fn linear_value(object: &ResolvedObject, version: u32) -> ResolvedValue {
     clippy::cast_precision_loss,
     reason = "an allocated control-point count is exactly representable at every feasible size"
 )]
-fn curved_value(object: &ResolvedObject, version: u32) -> ResolvedValue {
+fn curved_value(object: &ResolvedObject) -> ResolvedValue {
     match object {
         ResolvedObject::Circle(circle) => ResolvedValue::Circle {
-            center: (version < 3).then(|| circle.center.into()),
+            center: None,
             radius: circle.radius,
         },
         ResolvedObject::Arc(arc) => ResolvedValue::Arc {
-            center: (version < 3).then(|| arc.geometry.circle.center.into()),
+            center: None,
             radius: arc.geometry.circle.radius,
-            start: (version < 3).then(|| arc.geometry.start.into()),
-            end: (version < 3).then(|| arc.geometry.end.into()),
+            start: None,
+            end: None,
             counterclockwise: arc.geometry.ccw,
             angle_mark_count: arc.angle_mark_count,
         },
@@ -865,11 +862,11 @@ fn curved_value(object: &ResolvedObject, version: u32) -> ResolvedValue {
     }
 }
 
-fn polygon_object_value(object: &ResolvedObject, version: u32) -> ResolvedValue {
+fn polygon_object_value(object: &ResolvedObject) -> ResolvedValue {
     match object {
-        ResolvedObject::Polygon(polygon) => polygon_value(polygon, PolygonKind::Polygon, version),
-        ResolvedObject::Rect(polygon) => polygon_value(polygon, PolygonKind::Rect, version),
-        ResolvedObject::Diamond(polygon) => polygon_value(polygon, PolygonKind::Diamond, version),
+        ResolvedObject::Polygon(polygon) => polygon_value(polygon, PolygonKind::Polygon),
+        ResolvedObject::Rect(polygon) => polygon_value(polygon, PolygonKind::Rect),
+        ResolvedObject::Diamond(polygon) => polygon_value(polygon, PolygonKind::Diamond),
         _ => unreachable!("polygon value received non-polygon object"),
     }
 }
@@ -881,15 +878,8 @@ enum PolygonKind {
     Diamond,
 }
 
-fn polygon_value(polygon: &locus_core::Polygon, kind: PolygonKind, version: u32) -> ResolvedValue {
-    let vertices = (version < 3).then(|| {
-        polygon
-            .vertices()
-            .iter()
-            .copied()
-            .map(PointReport::from)
-            .collect()
-    });
+fn polygon_value(polygon: &locus_core::Polygon, kind: PolygonKind) -> ResolvedValue {
+    let vertices = None;
     let area = locus_core::geom::measure::area(polygon);
     let perimeter = locus_core::geom::measure::perimeter(polygon);
     match kind {
@@ -908,86 +898,6 @@ fn polygon_value(polygon: &locus_core::Polygon, kind: PolygonKind, version: u32)
             area,
             perimeter,
         },
-    }
-}
-
-fn annotation_report(annotation: &AnnotationSpec) -> AnnotationReport {
-    match annotation {
-        AnnotationSpec::Label {
-            anchor,
-            text,
-            direction,
-            gap,
-        } => AnnotationReport::Label {
-            anchor: anchor_report(anchor),
-            text: text.clone(),
-            direction: format!("{direction:?}").to_ascii_lowercase(),
-            gap: *gap,
-        },
-        AnnotationSpec::Arrow {
-            from,
-            to,
-            head,
-            bend,
-        } => AnnotationReport::Arrow {
-            from: anchor_report(from),
-            to: anchor_report(to),
-            head: format!("{head:?}").to_ascii_lowercase(),
-            bend: *bend,
-        },
-        AnnotationSpec::Tick { segment, count } => AnnotationReport::Tick {
-            start: segment.start.into(),
-            end: segment.end.into(),
-            count: *count,
-        },
-        AnnotationSpec::RightAngle {
-            vertex,
-            first,
-            second,
-            size,
-        } => AnnotationReport::RightAngle {
-            vertex: (*vertex).into(),
-            first: (*first).into(),
-            second: (*second).into(),
-            size: *size,
-        },
-        AnnotationSpec::TextBlock { text, placement } => AnnotationReport::TextBlock {
-            text: text.clone(),
-            placement: placement_report(placement),
-        },
-    }
-}
-
-fn anchor_report(anchor: &AnchorSpec) -> AnchorReport {
-    match anchor {
-        AnchorSpec::Point(point) => AnchorReport::Point {
-            point: (*point).into(),
-        },
-        AnchorSpec::AnnotationCenter { id, span } => AnchorReport::AnnotationCenter {
-            id: id.clone(),
-            span: *span,
-        },
-    }
-}
-
-fn placement_report(placement: &TextBlockPlacement) -> TextBlockPlacementReport {
-    match placement {
-        TextBlockPlacement::Below => TextBlockPlacementReport::Below,
-        TextBlockPlacement::Above => TextBlockPlacementReport::Above,
-        TextBlockPlacement::Left => TextBlockPlacementReport::Left,
-        TextBlockPlacement::Right => TextBlockPlacementReport::Right,
-        TextBlockPlacement::Anchor { anchor, direction } => TextBlockPlacementReport::Anchor {
-            anchor: anchor_report(anchor),
-            direction: label_direction_name(*direction),
-        },
-    }
-}
-
-fn label_direction_name(direction: LabelDirection) -> String {
-    match direction {
-        LabelDirection::Auto => "auto".to_owned(),
-        LabelDirection::Center => "center".to_owned(),
-        LabelDirection::Compass(direction) => format!("{direction:?}").to_ascii_lowercase(),
     }
 }
 

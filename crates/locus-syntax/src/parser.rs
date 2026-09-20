@@ -11,7 +11,7 @@ use crate::vocabulary::{
     BUILTIN_ATTR_NAMES, CONSTRUCTOR_NAMES, KIND_NAMES, PREDICATE_NAMES, PROP_NAMES, PROPERTY_NAMES,
     STYLE_PROP_NAMES, all_call_names, is_known_call, prop_names_for_kind,
 };
-use crate::{Diagnostic, Span};
+use crate::{Diagnostic, FILE_HEADER, Span};
 use std::collections::BTreeSet;
 
 type OperatorSpec = (fn(&TokenKind) -> bool, BinOp, u8, u8);
@@ -123,7 +123,7 @@ impl FileParser {
     }
 
     fn run(mut self) -> ParseOutput {
-        let version = self.parse_header();
+        self.parse_header();
         let mut statements = Vec::new();
         while self.line_index < self.lines.len() {
             if self.lines[self.line_index].is_empty() {
@@ -154,7 +154,7 @@ impl FileParser {
                 );
             }
             if let Some(statement) = statement {
-                self.validate_and_record(version, &statement);
+                self.validate_and_record(&statement);
                 statements.push(statement);
             }
             self.diagnostics.extend(parser.diagnostics);
@@ -162,7 +162,6 @@ impl FileParser {
         }
         ParseOutput {
             file: File {
-                version,
                 statements,
                 span: Span::new(1, 1, 0, self.source_len),
             },
@@ -170,32 +169,31 @@ impl FileParser {
         }
     }
 
-    fn parse_header(&mut self) -> u32 {
+    fn parse_header(&mut self) {
         self.skip_empty_lines();
         if self.line_index >= self.lines.len() {
             self.diagnostics.push(Diagnostic::new(
                 "E110",
                 Span::empty(1, 1, 0),
-                "missing mandatory `locus 3` header",
+                format!("missing mandatory `{FILE_HEADER}` header"),
             ));
-            return 0;
+            return;
         }
         if !line_starts_with(&self.lines[self.line_index], "locus") {
             let span = line_span(&self.lines[self.line_index]);
             self.diagnostics.push(
                 Diagnostic::new("E110", span, "the first statement must be a `locus` header")
-                    .with_suggestion("locus 3"),
+                    .with_suggestion(FILE_HEADER),
             );
-            return 0;
+            return;
         }
         let line = &self.lines[self.line_index];
         let mut parser = LineParser::new(line, self.line_ends[self.line_index]);
         parser.take_keyword("locus");
-        let version = parser.parse_header_version();
+        parser.parse_header_version();
         let _ = parser.expect_end();
         self.diagnostics.extend(parser.diagnostics);
         self.line_index += 1;
-        version
     }
 
     fn parse_meta_block(&mut self) -> Option<MetaBlock> {
@@ -270,8 +268,7 @@ impl FileParser {
         }
     }
 
-    fn validate_and_record(&mut self, version: u32, statement: &Statement) {
-        validate_version_semantics(version, statement, &mut self.diagnostics);
+    fn validate_and_record(&mut self, statement: &Statement) {
         self.validate_statement(statement);
         match statement {
             Statement::Op(op) => self.record_name(&op.id),
@@ -333,10 +330,6 @@ impl FileParser {
                 }
             }
             Constructor::Expr { expr, .. } => self.validate_refs(expr, None),
-            Constructor::FreePoint { x, y, .. } => {
-                self.validate_refs(x, None);
-                self.validate_refs(y, None);
-            }
             Constructor::FreeNum { hint, .. } => self.validate_refs(hint, None),
         }
     }
@@ -446,38 +439,30 @@ impl<'a> LineParser<'a> {
         }
     }
 
-    fn parse_header_version(&mut self) -> u32 {
-        let Some(token) = self.advance().cloned() else {
+    fn parse_header_version(&mut self) {
+        let Some(major) = self.advance().cloned() else {
             self.error(
                 "E110",
                 self.current_span(),
-                "header requires integer version `2` or `3`",
+                format!("header must be `{FILE_HEADER}`"),
             );
-            return 0;
+            return;
         };
-        let TokenKind::Number {
-            raw, unit: None, ..
-        } = &token.kind
-        else {
-            self.error(
-                "E110",
-                token.span,
-                "header version must be the integer `2` or `3`",
-            );
-            return 0;
-        };
-        if !matches!(raw.as_str(), "2" | "3") {
+        let beta = self.advance().cloned();
+        let revision = self.advance().cloned();
+        let valid = matches!(major.kind, TokenKind::Number { ref raw, unit: None, .. } if raw == "0")
+            && matches!(beta.as_ref().map(|token| &token.kind), Some(TokenKind::Ident(value)) if value == "beta")
+            && matches!(revision.as_ref().map(|token| &token.kind), Some(TokenKind::Number { raw, unit: None, .. }) if raw == "4");
+        if !valid {
+            let span = revision
+                .as_ref()
+                .or(beta.as_ref())
+                .map_or(major.span, |token| major.span.join(token.span));
             self.diagnostics.push(
-                Diagnostic::new(
-                    "E111",
-                    token.span,
-                    format!("unsupported Locus format version `{raw}`"),
-                )
-                .with_suggestion("3"),
+                Diagnostic::new("E111", span, "unsupported Locus file header")
+                    .with_suggestion(FILE_HEADER),
             );
-            return raw.parse().unwrap_or(0);
         }
-        raw.parse().unwrap_or(0)
     }
 
     fn parse_op_or_unknown(&mut self) -> Option<Statement> {
@@ -546,12 +531,8 @@ impl<'a> LineParser<'a> {
 
     fn parse_free_constructor(&mut self, kind: Kind) -> Option<Constructor> {
         let free = self.advance()?.span;
-        if !matches!(kind, Kind::Point | Kind::Num) {
-            self.error(
-                "E123",
-                free,
-                "only `point` and `num` declarations may use `free`",
-            );
+        if kind != Kind::Num {
+            self.error("E123", free, "only `num` declarations may use `free`");
             return None;
         }
         if self
@@ -561,33 +542,7 @@ impl<'a> LineParser<'a> {
             self.replace_last_code("E124");
             return None;
         }
-        if kind == Kind::Point {
-            self.parse_free_point(free)
-        } else {
-            self.parse_free_num(free)
-        }
-    }
-
-    fn parse_free_point(&mut self, start: Span) -> Option<Constructor> {
-        if self
-            .expect_simple(is_lparen, "`(` starting point hint")
-            .is_err()
-        {
-            self.replace_last_code("E124");
-            return None;
-        }
-        let x = self.parse_expr(0)?;
-        self.expect_simple(is_comma, "`,` between point hint coordinates")
-            .ok()?;
-        let y = self.parse_expr(0)?;
-        let end = self
-            .expect_simple(is_rparen, "`)` ending point hint")
-            .ok()?;
-        Some(Constructor::FreePoint {
-            x: Box::new(x),
-            y: Box::new(y),
-            span: start.join(end),
-        })
+        self.parse_free_num(free)
     }
 
     fn parse_free_num(&mut self, start: Span) -> Option<Constructor> {
@@ -1367,113 +1322,6 @@ fn constructors_for_kind(kind: Kind) -> &'static [&'static str] {
     BY_KIND[kind as usize]
 }
 
-fn validate_version_semantics(
-    version: u32,
-    statement: &Statement,
-    diagnostics: &mut Vec<Diagnostic>,
-) {
-    if version == 2 {
-        validate_format_two_semantics(statement, diagnostics);
-        return;
-    }
-    if version != 3 {
-        return;
-    }
-    validate_format_three_semantics(statement, diagnostics);
-}
-
-fn validate_format_three_semantics(statement: &Statement, diagnostics: &mut Vec<Diagnostic>) {
-    match statement {
-        Statement::Op(op) if matches!(op.ctor, Constructor::FreePoint { .. }) => diagnostics.push(
-            Diagnostic::new(
-                "E123",
-                op.ctor.span(),
-                "format 3 points use parameterless `point()`, not coordinate hints",
-            )
-            .with_suggestion(format!("point {} = point()", op.id.name)),
-        ),
-        Statement::Rel(rel) => reject_pin(&rel.expr, diagnostics),
-        Statement::Assert(assertion) => reject_pin(&assertion.expr, diagnostics),
-        Statement::Op(op) => {
-            for clause in &op.where_clauses {
-                reject_pin(clause, diagnostics);
-            }
-        }
-        _ => {}
-    }
-}
-
-fn validate_format_two_semantics(statement: &Statement, diagnostics: &mut Vec<Diagnostic>) {
-    match statement {
-        Statement::Op(op) => {
-            if is_format_three_op(op) {
-                diagnostics.push(Diagnostic::new(
-                    "E144",
-                    op.ctor.span(),
-                    "this constructor requires a `locus 3` header",
-                ));
-            }
-            for clause in &op.where_clauses {
-                reject_format_three_predicate(clause, diagnostics);
-            }
-        }
-        Statement::Rel(relation) => reject_format_three_predicate(&relation.expr, diagnostics),
-        Statement::Assert(assertion) => reject_format_three_predicate(&assertion.expr, diagnostics),
-        _ => {}
-    }
-}
-
-fn is_format_three_op(op: &OpStmt) -> bool {
-    if matches!(op.kind, Kind::Ellipse | Kind::Bspline) {
-        return true;
-    }
-    let Constructor::Call { name, args, .. } = &op.ctor else {
-        return false;
-    };
-    matches!(
-        (op.kind, name.name.as_str(), args.len()),
-        (Kind::Point, "point", 0)
-            | (Kind::Circle, "circle", 1)
-            | (Kind::Rect | Kind::Diamond, "rect" | "diamond", 2)
-    )
-}
-
-fn reject_format_three_predicate(expression: &Expr, diagnostics: &mut Vec<Diagnostic>) {
-    match expression {
-        Expr::Call { name, span, .. } if name.name == "internally_tangent" => {
-            diagnostics.push(Diagnostic::new(
-                "E144",
-                *span,
-                "`internally_tangent` requires a `locus 3` header",
-            ));
-        }
-        Expr::Group { expr, .. } | Expr::Unary { expr, .. } => {
-            reject_format_three_predicate(expr, diagnostics);
-        }
-        Expr::Binary { lhs, rhs, .. } => {
-            reject_format_three_predicate(lhs, diagnostics);
-            reject_format_three_predicate(rhs, diagnostics);
-        }
-        _ => {}
-    }
-}
-
-fn reject_pin(expression: &Expr, diagnostics: &mut Vec<Diagnostic>) {
-    match expression {
-        Expr::Call { name, span, .. } if name.name == "pin" => diagnostics.push(Diagnostic::new(
-            "E144",
-            *span,
-            "`pin` is not available in format 3; express relative geometry with relations",
-        )),
-        Expr::Group { expr, .. } | Expr::Unary { expr, .. } => reject_pin(expr, diagnostics),
-        Expr::Binary { lhs, rhs, .. } => {
-            reject_pin(lhs, diagnostics);
-            reject_pin(rhs, diagnostics);
-        }
-        _ => {}
-    }
-}
-
 fn validate_props_for_op(op: &OpStmt, diagnostics: &mut Vec<Diagnostic>) {
     let allowed = props_for_op(op);
     validate_props(&op.props, allowed, PROP_NAMES, diagnostics);
@@ -1552,10 +1400,6 @@ fn validate_constructor_exprs(ctor: &Constructor, diagnostics: &mut Vec<Diagnost
             }
         }
         Constructor::Expr { expr, .. } => validate_angles(expr, diagnostics),
-        Constructor::FreePoint { x, y, .. } => {
-            validate_angles(x, diagnostics);
-            validate_angles(y, diagnostics);
-        }
         Constructor::FreeNum { hint, .. } => validate_angles(hint, diagnostics),
     }
 }
@@ -1884,10 +1728,10 @@ mod tests {
     use crate::ast::{Constructor, Expr, Kind, Statement, TextSegmentKind};
 
     #[test]
-    fn parses_free_where_props_and_mixed_text() {
-        let source = r#"locus 2
-point A = free ~(0, 0)
-point B = free ~(2, 0) where { horizontal(A, B) } { mark: cross }
+    fn parses_point_where_props_and_mixed_text() {
+        let source = r#"locus 0 beta 4
+point A = point()
+point B = point() where { horizontal(A, B) } { mark: cross }
 label text = label(B, "point $B$") { dir: NE }
 assert dist(A, B) == 2
 "#;
@@ -1897,7 +1741,7 @@ assert dist(A, B) == 2
         assert!(matches!(output.file.statements[1], Statement::Op(_)));
         if let Statement::Op(op) = &output.file.statements[1] {
             assert_eq!(op.kind, Kind::Point);
-            assert!(matches!(op.ctor, Constructor::FreePoint { .. }));
+            assert!(matches!(op.ctor, Constructor::Call { .. }));
             assert_eq!(op.where_clauses.len(), 1);
         }
         assert!(matches!(output.file.statements[2], Statement::Op(_)));
@@ -1916,24 +1760,24 @@ assert dist(A, B) == 2
     }
 
     #[test]
-    fn format_versions_keep_their_placement_and_tangency_models_distinct() {
-        let legacy = parse(
-            "locus 2\npoint P = point()\ncircle c = circle(2)\nrel internally_tangent(c, c)\n",
-        );
+    fn rejects_old_headers_and_removed_pin_syntax() {
+        let legacy = parse("locus 2\npoint P = point()\n");
         assert!(
             legacy
                 .diagnostics
                 .iter()
-                .any(|diagnostic| diagnostic.code == "E144")
+                .any(|diagnostic| diagnostic.code == "E111")
         );
 
-        let current = parse("locus 3\npoint P = free ~(0, 0)\nassert pin(P, 0, 0)\n");
+        let previous = parse("locus 3\npoint P = point()\n");
         assert!(
-            current
+            previous
                 .diagnostics
                 .iter()
-                .any(|diagnostic| diagnostic.code == "E123")
+                .any(|diagnostic| diagnostic.code == "E111")
         );
+
+        let current = parse("locus 0 beta 4\npoint P = point()\nassert pin(P, 0, 0)\n");
         assert!(
             current
                 .diagnostics
@@ -1944,19 +1788,18 @@ assert dist(A, B) == 2
 
     #[test]
     fn recovers_at_every_bad_physical_line() {
-        let source = r"locus 2
+        let source = r"locus 0 beta 4
 piont A = free ~(0, 0)
-point A = free ~(0)
-point A = free ~(0, 0)
+point A =
+point A = point()
 circle c = incircel(A, 2)
-point B = free ~(2, 0)
+point B = point()
 assert horizontal(A, B)
 ";
         let output = parse(source);
         assert_eq!(output.file.statements.len(), 4);
         let codes: Vec<_> = output.diagnostics.iter().map(|diag| diag.code).collect();
         assert!(codes.contains(&"E120"));
-        assert!(codes.contains(&"E113"));
         assert!(codes.contains(&"E140"));
         assert!(matches!(
             output.file.statements.last(),
@@ -1967,7 +1810,7 @@ assert horizontal(A, B)
     #[test]
     fn enforces_angle_units_at_known_angle_sites() {
         let output = parse(
-            "locus 2\npoint A = free ~(0, 0)\npoint O = free ~(1, 0)\npoint B = rotate(A, O, 60)\nassert angle(A, O, B) == 90\n",
+            "locus 0 beta 4\npoint A = point()\npoint O = point()\npoint B = rotate(A, O, 60)\nassert angle(A, O, B) == 90\n",
         );
         assert_eq!(
             output
@@ -1981,7 +1824,7 @@ assert horizontal(A, B)
 
     #[test]
     fn diagnoses_bad_lines_and_missing_final_newline() {
-        let output = parse("locus 2\n}\npoint A = free ~(0, 0)");
+        let output = parse("locus 0 beta 4\n}\npoint A = point()");
         let codes: Vec<_> = output
             .diagnostics
             .iter()
@@ -1994,7 +1837,7 @@ assert horizontal(A, B)
     #[test]
     fn not_binds_to_a_complete_boolean_primary() {
         let output = parse(
-            "locus 2\npoint A = free ~(0, 0)\npoint B = free ~(1, 0)\nassert not dist(A, B) == 1\n",
+            "locus 0 beta 4\npoint A = point()\npoint B = point()\nassert not dist(A, B) == 1\n",
         );
         assert!(output.diagnostics.is_empty(), "{:#?}", output.diagnostics);
         let Some(Statement::Assert(assertion)) = output.file.statements.last() else {
@@ -2016,7 +1859,7 @@ assert horizontal(A, B)
 
     #[test]
     fn rejects_chained_comparisons() {
-        let output = parse("locus 2\nnum a = 1\nassert a == 1 == 1\n");
+        let output = parse("locus 0 beta 4\nnum a = 1\nassert a == 1 == 1\n");
         assert_eq!(
             output
                 .diagnostics
@@ -2029,18 +1872,18 @@ assert horizontal(A, B)
 
     #[test]
     fn accepts_grouped_scalar_hint_but_rejects_point_shape() {
-        let valid = parse("locus 2\nnum r = free ~(1 + 2)\nnum s = free ~(1 + 2) * 3\n");
+        let valid = parse("locus 0 beta 4\nnum r = free ~(1 + 2)\nnum s = free ~(1 + 2) * 3\n");
         assert!(valid.diagnostics.is_empty(), "{:#?}", valid.diagnostics);
         assert_eq!(valid.file.statements.len(), 2);
 
-        let invalid = parse("locus 2\nnum r = free ~(1, 2)\n");
+        let invalid = parse("locus 0 beta 4\nnum r = free ~(1, 2)\n");
         assert_eq!(invalid.diagnostics.len(), 1);
         assert_eq!(invalid.diagnostics[0].code, "E124");
     }
 
     #[test]
     fn diagnoses_a_tolerance_keyword_without_a_value() {
-        let output = parse("locus 2\nassert true == true tol // missing value\n");
+        let output = parse("locus 0 beta 4\nassert true == true tol // missing value\n");
         assert_eq!(output.diagnostics.len(), 1);
         assert_eq!(output.diagnostics[0].code, "E147");
         assert_eq!(output.diagnostics[0].span.line, 2);
@@ -2049,14 +1892,14 @@ assert horizontal(A, B)
 
     #[test]
     fn meta_recovery_preserves_later_top_level_statements() {
-        let source = r#"locus 2
+        let source = r#"locus 0 beta 4
 meta {
 title "missing close"
-point A = free ~(0, 0)
+point A = point()
 meta {
 note "malformed close"
 } trailing
-point B = free ~(1, 0)
+point B = point()
 assert dist(A, B) == 1
 "#;
         let output = parse(source);
@@ -2078,13 +1921,13 @@ assert dist(A, B) == 1
 
     #[test]
     fn malformed_meta_entry_with_trailing_tokens_stays_in_the_block() {
-        let source = r#"locus 2
+        let source = r#"locus 0 beta 4
 meta {
 point "description" trailing
 point 123
 title "still metadata"
 }
-point A = free ~(0, 0)
+point A = point()
 "#;
         let output = parse(source);
         assert_eq!(
@@ -2106,7 +1949,7 @@ point A = free ~(0, 0)
 
     #[test]
     fn metadata_key_without_a_value_reports_at_logical_line_end() {
-        let output = parse("locus 2\nmeta {\ntitle // missing value\n}\n");
+        let output = parse("locus 0 beta 4\nmeta {\ntitle // missing value\n}\n");
         assert_eq!(output.diagnostics.len(), 1);
         assert_eq!(output.diagnostics[0].code, "E150");
         assert_eq!(output.diagnostics[0].span.line, 3);
@@ -2115,8 +1958,8 @@ point A = free ~(0, 0)
 
     #[test]
     fn rejects_empty_predicate_and_property_argument_lists() {
-        let source = r"locus 2
-point O = free ~(0, 0)
+        let source = r"locus 0 beta 4
+point O = point()
 num r = free ~1
 circle c = circle(O, r)
 rel horizontal()
@@ -2135,9 +1978,9 @@ num n = c.at()
 
     #[test]
     fn rejects_free_in_every_identifier_path() {
-        let source = r#"locus 2
-point free = free ~(0, 0)
-point A = free ~(0, 0)
+        let source = r#"locus 0 beta 4
+point free = point()
+point A = point()
 point B = midpoint(free, A)
 assert free(A)
 style free
@@ -2162,7 +2005,7 @@ free "value"
 
     #[test]
     fn synthesized_columns_count_unicode_scalars_after_text_literals() {
-        let output = parse("locus 2\nlabel L = label(A, \"é\"\nlabel T = label(A, $α$\n");
+        let output = parse("locus 0 beta 4\nlabel L = label(A, \"é\"\nlabel T = label(A, $α$\n");
         assert_eq!(output.diagnostics.len(), 2);
         assert_eq!(output.diagnostics[0].code, "E113");
         assert_eq!(output.diagnostics[0].span.line, 2);

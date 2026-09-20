@@ -9,7 +9,7 @@ use locus_syntax::{Expr, PropValue, Statement};
 #[test]
 fn textbook_semantics_and_exact_overrides() {
     let file = locus_syntax::parse(
-        "locus 2\nclass exact { stroke: dash(6, 3, 2), weight: 1.5, accent: #2563EB, fill: #CCFBF1, opacity: 0.85, cap: square, join: bevel }\nclass colored { fill: tint, accent: red }\nclass minimal { accent: teal }\npoint a = free ~(0, 0) [exact]\n",
+        "locus 0 beta 4\nclass exact { stroke: dash(6, 3, 2), weight: 1.5, accent: #2563EB, fill: #CCFBF1, opacity: 0.85, cap: square, join: bevel }\nclass colored { fill: tint, accent: red }\nclass minimal { accent: teal }\npoint a = point() [exact]\n",
     );
     assert!(file.diagnostics.is_empty(), "{:?}", file.diagnostics);
     let sheet = StyleSheet::from_file(&file.file).expect("styles");
@@ -55,8 +55,10 @@ fn invalid_exact_values_keep_property_spans() {
         ("opacity", -0.1),
         ("opacity", f64::NAN),
     ] {
-        let mut file =
-            locus_syntax::parse(&format!("locus 2\nclass exact {{ {property}: 1 }}\n")).file;
+        let mut file = locus_syntax::parse(&format!(
+            "locus 0 beta 4\nclass exact {{ {property}: 1 }}\n"
+        ))
+        .file;
         let Statement::Class(class) = &mut file.statements[0] else {
             unreachable!()
         };
@@ -74,7 +76,7 @@ fn invalid_exact_values_keep_property_spans() {
 
 #[test]
 fn invalid_dash_length_keeps_argument_span() {
-    let mut file = locus_syntax::parse("locus 2\nclass exact { stroke: dash(6, 3) }\n").file;
+    let mut file = locus_syntax::parse("locus 0 beta 4\nclass exact { stroke: dash(6, 3) }\n").file;
     let Statement::Class(class) = &mut file.statements[0] else {
         unreachable!()
     };

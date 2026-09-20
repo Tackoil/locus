@@ -332,57 +332,6 @@
     }
   },
   {
-    "type": "coordinate_hint",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "binary_expression",
-          "named": true
-        },
-        {
-          "type": "boolean",
-          "named": true
-        },
-        {
-          "type": "call_expression",
-          "named": true
-        },
-        {
-          "type": "group_expression",
-          "named": true
-        },
-        {
-          "type": "identifier",
-          "named": true
-        },
-        {
-          "type": "member_expression",
-          "named": true
-        },
-        {
-          "type": "number",
-          "named": true
-        },
-        {
-          "type": "string",
-          "named": true
-        },
-        {
-          "type": "tex",
-          "named": true
-        },
-        {
-          "type": "unary_expression",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
     "type": "free_expression",
     "named": true,
     "fields": {},
@@ -400,10 +349,6 @@
         },
         {
           "type": "call_expression",
-          "named": true
-        },
-        {
-          "type": "coordinate_hint",
           "named": true
         },
         {
@@ -491,18 +436,7 @@
   {
     "type": "header",
     "named": true,
-    "fields": {
-      "version": {
-        "multiple": false,
-        "required": true,
-        "types": [
-          {
-            "type": "number",
-            "named": true
-          }
-        ]
-      }
-    }
+    "fields": {}
   },
   {
     "type": "inline_tex",
@@ -1161,6 +1095,14 @@
     "named": false
   },
   {
+    "type": "0",
+    "named": false
+  },
+  {
+    "type": "4",
+    "named": false
+  },
+  {
     "type": ":",
     "named": false
   },
@@ -1214,6 +1156,10 @@
   },
   {
     "type": "assert",
+    "named": false
+  },
+  {
+    "type": "beta",
     "named": false
   },
   {

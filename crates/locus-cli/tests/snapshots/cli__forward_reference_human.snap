@@ -6,10 +6,10 @@ E135
 
   × unknown or forward reference `C`
    ╭─[fixtures/errors/forward_reference.locus:3:21]
- 2 │ point A = free ~(0, 0)
+ 2 │ point A = point()
  3 │ segment AC = seg(A, C)
    ·                     ┬
    ·                     ╰── unknown or forward reference `C`
- 4 │ point C = free ~(1, 0)
+ 4 │ point C = point()
    ╰────
   help: A

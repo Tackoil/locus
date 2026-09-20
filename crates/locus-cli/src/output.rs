@@ -154,68 +154,13 @@ pub(crate) enum ResolvedValue {
         area: f64,
         perimeter: f64,
     },
-    Annotation {
-        #[serde(skip_serializing_if = "Option::is_none")]
-        value: Option<AnnotationReport>,
-    },
+    Annotation,
 }
 
 #[derive(Clone, Copy, Debug, Serialize)]
 pub(crate) struct PointReport {
     pub x: f64,
     pub y: f64,
-}
-
-#[derive(Clone, Debug, Serialize)]
-#[serde(tag = "kind", rename_all = "snake_case")]
-pub(crate) enum AnnotationReport {
-    Label {
-        anchor: AnchorReport,
-        text: locus_syntax::TextValue,
-        direction: String,
-        gap: Option<f64>,
-    },
-    Arrow {
-        from: AnchorReport,
-        to: AnchorReport,
-        head: String,
-        bend: f64,
-    },
-    Tick {
-        start: PointReport,
-        end: PointReport,
-        count: u8,
-    },
-    RightAngle {
-        vertex: PointReport,
-        first: PointReport,
-        second: PointReport,
-        size: Option<f64>,
-    },
-    TextBlock {
-        text: locus_syntax::TextValue,
-        placement: TextBlockPlacementReport,
-    },
-}
-
-#[derive(Clone, Debug, Serialize)]
-#[serde(tag = "kind", rename_all = "snake_case")]
-pub(crate) enum TextBlockPlacementReport {
-    Below,
-    Above,
-    Left,
-    Right,
-    Anchor {
-        anchor: AnchorReport,
-        direction: String,
-    },
-}
-
-#[derive(Clone, Debug, Serialize)]
-#[serde(tag = "kind", rename_all = "snake_case")]
-pub(crate) enum AnchorReport {
-    Point { point: PointReport },
-    AnnotationCenter { id: String, span: Span },
 }
 
 #[derive(Clone, Debug, Serialize)]
@@ -491,9 +436,7 @@ fn resolved_summary(value: &ResolvedValue) -> String {
         ResolvedValue::Polygon { .. }
         | ResolvedValue::Rect { .. }
         | ResolvedValue::Diamond { .. } => polygon_object_summary(value),
-        ResolvedValue::Annotation { value } => value
-            .as_ref()
-            .map_or_else(|| "derived annotation".to_owned(), annotation_summary),
+        ResolvedValue::Annotation => "derived annotation".to_owned(),
     }
 }
 
@@ -637,86 +580,6 @@ fn polygon_summary(label: &str, vertices: &[PointReport]) -> String {
         .collect::<Vec<_>>()
         .join(", ");
     format!("{label} [{points}]")
-}
-
-fn annotation_summary(annotation: &AnnotationReport) -> String {
-    match annotation {
-        AnnotationReport::Label {
-            anchor,
-            text,
-            direction,
-            gap,
-        } => format!(
-            "label anchor {}, text={}, direction {direction}, gap {}",
-            anchor_summary(anchor),
-            text_summary(text),
-            gap.map_or_else(|| "default".to_owned(), |value| format!("{value:.6}"))
-        ),
-        AnnotationReport::Arrow {
-            from,
-            to,
-            head,
-            bend,
-        } => format!(
-            "arrow from {}, to {}, head {head}, bend {bend:.6}",
-            anchor_summary(from),
-            anchor_summary(to)
-        ),
-        AnnotationReport::Tick { start, end, count } => format!(
-            "tick start {}, end {}, count {count}",
-            point_summary(start),
-            point_summary(end)
-        ),
-        AnnotationReport::RightAngle {
-            vertex,
-            first,
-            second,
-            size,
-        } => format!(
-            "right angle vertex {}, first {}, second {}, size {}",
-            point_summary(vertex),
-            point_summary(first),
-            point_summary(second),
-            size.map_or_else(|| "default".to_owned(), |value| format!("{value:.6}"))
-        ),
-        AnnotationReport::TextBlock { text, placement } => {
-            format!(
-                "text block text={}, {}",
-                text_summary(text),
-                placement_summary(placement)
-            )
-        }
-    }
-}
-
-fn anchor_summary(anchor: &AnchorReport) -> String {
-    match anchor {
-        AnchorReport::Point { point } => point_summary(point),
-        AnchorReport::AnnotationCenter { id, span } => {
-            format!("center of {id}@{}:{}", span.line, span.col)
-        }
-    }
-}
-
-fn placement_summary(placement: &TextBlockPlacementReport) -> String {
-    match placement {
-        TextBlockPlacementReport::Below => "placement below".to_owned(),
-        TextBlockPlacementReport::Above => "placement above".to_owned(),
-        TextBlockPlacementReport::Left => "placement left".to_owned(),
-        TextBlockPlacementReport::Right => "placement right".to_owned(),
-        TextBlockPlacementReport::Anchor { anchor, direction } => {
-            format!("anchor {}, direction {direction}", anchor_summary(anchor))
-        }
-    }
-}
-
-fn text_summary(text: &locus_syntax::TextValue) -> String {
-    let source = text
-        .segments
-        .iter()
-        .map(|segment| segment.source.as_str())
-        .collect::<String>();
-    format!("{source:?}")
 }
 
 fn human_inspect(result: &InspectResult) -> String {

@@ -1,4 +1,4 @@
-locus 3
+locus 0 beta 4
 // <- keyword
 //    ^ number
 point A' = point()

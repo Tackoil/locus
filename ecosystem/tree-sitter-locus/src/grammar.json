@@ -86,12 +86,16 @@
           "value": "locus"
         },
         {
-          "type": "FIELD",
-          "name": "version",
-          "content": {
-            "type": "SYMBOL",
-            "name": "number"
-          }
+          "type": "STRING",
+          "value": "0"
+        },
+        {
+          "type": "STRING",
+          "value": "beta"
+        },
+        {
+          "type": "STRING",
+          "value": "4"
         }
       ]
     },
@@ -363,42 +367,8 @@
           "value": "~"
         },
         {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "coordinate_hint"
-            },
-            {
-              "type": "SYMBOL",
-              "name": "_expression"
-            }
-          ]
-        }
-      ]
-    },
-    "coordinate_hint": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "STRING",
-          "value": "("
-        },
-        {
           "type": "SYMBOL",
           "name": "_expression"
-        },
-        {
-          "type": "STRING",
-          "value": ","
-        },
-        {
-          "type": "SYMBOL",
-          "name": "_expression"
-        },
-        {
-          "type": "STRING",
-          "value": ")"
         }
       ]
     },

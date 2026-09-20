@@ -365,10 +365,6 @@ fn collect_constructor_length_literals(
         Constructor::Expr { expr, .. } | Constructor::FreeNum { hint: expr, .. } => {
             collect_expression_length_literals(evaluator, expr, values);
         }
-        Constructor::FreePoint { x, y, .. } => {
-            collect_expression_length_literals(evaluator, x, values);
-            collect_expression_length_literals(evaluator, y, values);
-        }
     }
 }
 
@@ -437,10 +433,6 @@ fn collect_constructor_fallbacks(
     values: &mut Vec<f64>,
 ) {
     match &op.ctor {
-        Constructor::FreePoint { x, y, .. } => {
-            push_evaluated_length(evaluator, x, true, values);
-            push_evaluated_length(evaluator, y, true, values);
-        }
         Constructor::FreeNum { hint, .. } => {
             collect_named_length_fallback(evaluator, &op.id.name, hint, true, values);
         }

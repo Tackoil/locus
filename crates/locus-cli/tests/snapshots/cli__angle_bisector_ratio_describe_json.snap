@@ -12,8 +12,8 @@ expression: stdout
       "span": {
         "line": 11,
         "col": 1,
-        "byte_start": 226,
-        "byte_end": 270
+        "byte_start": 233,
+        "byte_end": 277
       },
       "definition": "circle(3.5)",
       "resolved": {
@@ -27,8 +27,8 @@ expression: stdout
       "span": {
         "line": 12,
         "col": 1,
-        "byte_start": 271,
-        "byte_end": 297
+        "byte_start": 278,
+        "byte_end": 304
       },
       "definition": "circum.at(80deg)",
       "resolved": {
@@ -42,8 +42,8 @@ expression: stdout
       "span": {
         "line": 13,
         "col": 1,
-        "byte_start": 298,
-        "byte_end": 325
+        "byte_start": 305,
+        "byte_end": 332
       },
       "definition": "circum.at(210deg)",
       "resolved": {
@@ -57,8 +57,8 @@ expression: stdout
       "span": {
         "line": 14,
         "col": 1,
-        "byte_start": 326,
-        "byte_end": 353
+        "byte_start": 333,
+        "byte_end": 360
       },
       "definition": "circum.at(330deg)",
       "resolved": {
@@ -72,8 +72,8 @@ expression: stdout
       "span": {
         "line": 16,
         "col": 1,
-        "byte_start": 355,
-        "byte_end": 385
+        "byte_start": 362,
+        "byte_end": 392
       },
       "definition": "polygon(A, B, C)",
       "resolved": {
@@ -88,8 +88,8 @@ expression: stdout
       "span": {
         "line": 18,
         "col": 1,
-        "byte_start": 387,
-        "byte_end": 438
+        "byte_start": 394,
+        "byte_end": 445
       },
       "definition": "angle_bisector(B, A, C)",
       "resolved": {
@@ -102,8 +102,8 @@ expression: stdout
       "span": {
         "line": 21,
         "col": 1,
-        "byte_start": 507,
-        "byte_end": 542
+        "byte_start": 514,
+        "byte_end": 549
       },
       "definition": "intersect(bis, seg(B, C))",
       "resolved": {
@@ -117,8 +117,8 @@ expression: stdout
       "span": {
         "line": 23,
         "col": 1,
-        "byte_start": 544,
-        "byte_end": 592
+        "byte_start": 551,
+        "byte_end": 599
       },
       "definition": "seg(A, D)",
       "resolved": {
@@ -132,8 +132,8 @@ expression: stdout
       "span": {
         "line": 26,
         "col": 1,
-        "byte_start": 669,
-        "byte_end": 711
+        "byte_start": 676,
+        "byte_end": 718
       },
       "definition": "angle_arc(B, A, D, 0.5)",
       "resolved": {
@@ -149,8 +149,8 @@ expression: stdout
       "span": {
         "line": 27,
         "col": 1,
-        "byte_start": 712,
-        "byte_end": 754
+        "byte_start": 719,
+        "byte_end": 761
       },
       "definition": "angle_arc(D, A, C, 0.5)",
       "resolved": {
@@ -166,8 +166,8 @@ expression: stdout
       "span": {
         "line": 30,
         "col": 1,
-        "byte_start": 818,
-        "byte_end": 842
+        "byte_start": 825,
+        "byte_end": 849
       },
       "definition": "label(A, $A$)",
       "resolved": {
@@ -180,8 +180,8 @@ expression: stdout
       "span": {
         "line": 31,
         "col": 1,
-        "byte_start": 843,
-        "byte_end": 867
+        "byte_start": 850,
+        "byte_end": 874
       },
       "definition": "label(B, $B$)",
       "resolved": {
@@ -194,8 +194,8 @@ expression: stdout
       "span": {
         "line": 32,
         "col": 1,
-        "byte_start": 868,
-        "byte_end": 892
+        "byte_start": 875,
+        "byte_end": 899
       },
       "definition": "label(C, $C$)",
       "resolved": {
@@ -208,8 +208,8 @@ expression: stdout
       "span": {
         "line": 33,
         "col": 1,
-        "byte_start": 893,
-        "byte_end": 929
+        "byte_start": 900,
+        "byte_end": 936
       },
       "definition": "label(D, $D$)",
       "resolved": {
@@ -222,8 +222,8 @@ expression: stdout
       "span": {
         "line": 35,
         "col": 1,
-        "byte_start": 931,
-        "byte_end": 996
+        "byte_start": 938,
+        "byte_end": 1003
       },
       "definition": "label(seg(B, D).midpoint, $m$)",
       "resolved": {
@@ -236,8 +236,8 @@ expression: stdout
       "span": {
         "line": 36,
         "col": 1,
-        "byte_start": 997,
-        "byte_end": 1062
+        "byte_start": 1004,
+        "byte_end": 1069
       },
       "definition": "label(seg(D, C).midpoint, $n$)",
       "resolved": {
@@ -250,8 +250,8 @@ expression: stdout
       "span": {
         "line": 38,
         "col": 1,
-        "byte_start": 1064,
-        "byte_end": 1141
+        "byte_start": 1071,
+        "byte_end": 1148
       },
       "definition": "text_block($\\dfrac{m}{n} = \\dfrac{AB}{AC}$)",
       "resolved": {
@@ -275,8 +275,8 @@ expression: stdout
           "span": {
             "line": 11,
             "col": 1,
-            "byte_start": 226,
-            "byte_end": 270
+            "byte_start": 233,
+            "byte_end": 277
           },
           "hint_settled_dofs": 2,
           "suggestion": "add a relation if unintended, e.g. on(circum, …) or vdist(…) == …"

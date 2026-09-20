@@ -98,7 +98,6 @@ pub fn evaluate_assertions(
         assertions.push(evaluate_one(
             assertions.len(),
             assertion,
-            file.version,
             &environment,
             &dimensions,
             base_tolerance,
@@ -131,7 +130,6 @@ fn environment_from_scene(scene: &ResolvedScene) -> Result<Environment, EvalErro
 fn evaluate_one(
     index: usize,
     assertion: &AssertStmt,
-    version: u32,
     environment: &Environment,
     dimensions: &DimensionMap,
     base_tolerance: Tolerance,
@@ -140,7 +138,6 @@ fn evaluate_one(
     let mut context = AssertionContext {
         expressions: ExpressionEvaluator::new(environment, tolerance, dimensions),
         tolerance,
-        version,
     };
     let passed = context.eval_boolean(&assertion.expr)?;
     let actuals = if passed {
@@ -173,7 +170,6 @@ fn assertion_tolerance(assertion: &AssertStmt, base: Tolerance) -> Result<Tolera
 struct AssertionContext<'a> {
     expressions: ExpressionEvaluator<'a>,
     tolerance: Tolerance,
-    version: u32,
 }
 
 impl AssertionContext<'_> {
@@ -337,9 +333,6 @@ impl AssertionContext<'_> {
         if name == "horizontal" || name == "vertical" {
             return self.eval_axis(name, args, span);
         }
-        if name == "pin" {
-            return self.eval_pin(args, span);
-        }
         if name == "between" {
             return self.eval_between(args, span);
         }
@@ -373,10 +366,8 @@ impl AssertionContext<'_> {
         let rhs = self.expressions.eval_resolved_object(&args[1])?;
         if name == "internally_tangent" {
             internally_tangent_objects(&lhs, &rhs, self.tolerance, span)
-        } else if self.version >= 3 {
-            external_tangent_objects(&lhs, &rhs, self.tolerance, span)
         } else {
-            tangent_objects(&lhs, &rhs, self.tolerance, span)
+            external_tangent_objects(&lhs, &rhs, self.tolerance, span)
         }
     }
 
@@ -474,14 +465,6 @@ impl AssertionContext<'_> {
         Ok(self.tolerance.length_zero(residual))
     }
 
-    fn eval_pin(&mut self, args: &[Expr], span: Span) -> Result<bool, EvalError> {
-        require_arity("pin", args, 3, span)?;
-        let point = self.expressions.eval_point(&args[0])?;
-        let x = self.length_value(&args[1])?;
-        let y = self.length_value(&args[2])?;
-        Ok(self.tolerance.points_eq(point, Point::new(x, y)))
-    }
-
     fn eval_between(&mut self, args: &[Expr], span: Span) -> Result<bool, EvalError> {
         require_arity("between", args, 3, span)?;
         let points = self.expressions.eval_points(args)?;
@@ -518,19 +501,6 @@ impl AssertionContext<'_> {
             _ => Err(assertion_error(
                 args[1].span(),
                 "inside target must be a circle, ellipse, or polygon",
-            )),
-        }
-    }
-
-    fn length_value(&mut self, expression: &Expr) -> Result<f64, EvalError> {
-        match self
-            .expressions
-            .eval_as(expression, Expected::Number(Dimension::Length))?
-        {
-            Value::Scalar(number) if number.dimension == Dimension::Length => Ok(number.value),
-            _ => Err(assertion_error(
-                expression.span(),
-                "expected a length value",
             )),
         }
     }
@@ -623,11 +593,6 @@ fn visit_call_children(
     expected: Option<Expected>,
     actuals: &mut Vec<SubtermActual>,
 ) -> Result<(), EvalError> {
-    if name == "pin" && args.len() == 3 {
-        context.walk_actuals(&args[0], None, actuals)?;
-        context.walk_actuals(&args[1], Some(Expected::Number(Dimension::Length)), actuals)?;
-        return context.walk_actuals(&args[2], Some(Expected::Number(Dimension::Length)), actuals);
-    }
     if name == "abs" && args.len() == 1 {
         return context.walk_actuals(&args[0], expected, actuals);
     }
@@ -733,7 +698,6 @@ fn is_predicate(name: &str) -> bool {
             | "midpoint"
             | "horizontal"
             | "vertical"
-            | "pin"
             | "between"
             | "inside"
     )
@@ -1068,18 +1032,18 @@ mod tests {
     #[test]
     fn every_relation_and_assert_only_predicate_evaluates() {
         let (file, scene) = resolved(
-            "locus 2\n\
-             point A = free ~(0, 0)\npoint B = free ~(2, 0)\npoint M = midpoint(A, B)\n\
-             point C = free ~(0, 2)\nsegment AB = seg(A, B)\nsegment AM = seg(A, M)\n\
+            "locus 0 beta 4\n\
+             point A = point()\npoint B = point()\npoint M = midpoint(A, B)\n\
+             point C = point()\nsegment AB = seg(A, B)\nsegment AM = seg(A, M)\n\
              line x = line(A, B)\nline y = line(A, C)\ncircle unit = circle(A, 1)\n\
-             point U = free ~(1, 0)\npoint V = free ~(0, 1)\npoint W = free ~(-1, 0)\npoint Z = free ~(0, -1)\n\
-             point T = free ~(1, 1)\npoint P = free ~(0.25, 0.25)\n\
+             point U = point()\npoint V = point()\npoint W = point()\npoint Z = point()\n\
+             point T = point()\npoint P = point()\n\
              polygon tri = polygon(A, B, C)\n\
              assert on(M, AB)\nassert tangent(unit, line(U, T))\nassert perpendicular(x, y)\n\
              assert parallel(x, line(M, B))\nassert collinear(A, M, B)\nassert concyclic(U, V, W, Z)\n\
              assert congruent(AM, seg(M, B))\nassert coincident(M, midpoint(A, B))\n\
              assert midpoint(M, A, B)\nassert horizontal(A, B)\nassert vertical(A, C)\n\
-             assert pin(M, 1, 0)\nassert between(A, M, B)\nassert not inside(M, tri)\n\
+             assert between(A, M, B)\nassert not inside(M, tri)\n\
              assert inside(P, tri)\nassert dist(A, B) >= 2\n",
             assertion_fixture_values(),
         );
@@ -1090,7 +1054,7 @@ mod tests {
     #[test]
     fn failing_assert_snapshots_every_measurable_subterm() {
         let (file, scene) = resolved(
-            "locus 2\npoint A = free ~(0, 0)\npoint B = free ~(3, 4)\nnum expected = 6\n\
+            "locus 0 beta 4\npoint A = point()\npoint B = point()\nnum expected = 6\n\
              assert abs(dist(A, B) - expected) <= 0.5\n",
             vec![
                 ("A", point(Point::new(0.0, 0.0))),
@@ -1111,8 +1075,8 @@ mod tests {
     #[test]
     fn strict_between_obeys_custom_tolerance_boundary() {
         let (inside_file, inside_scene) = resolved(
-            "locus 2\npoint A = free ~(0, 0)\npoint B = free ~(0.1000001, 0)\n\
-             point C = free ~(1, 0)\nassert between(A, B, C) tol 0.1\n",
+            "locus 0 beta 4\npoint A = point()\npoint B = point()\n\
+             point C = point()\nassert between(A, B, C) tol 0.1\n",
             between_fixture_values(0.100_000_1),
         );
         assert!(
@@ -1121,8 +1085,8 @@ mod tests {
                 .passed
         );
         let (outside_file, outside_scene) = resolved(
-            "locus 2\npoint A = free ~(0, 0)\npoint B = free ~(0.0999999, 0)\n\
-             point C = free ~(1, 0)\nassert between(A, B, C) tol 0.1\n",
+            "locus 0 beta 4\npoint A = point()\npoint B = point()\n\
+             point C = point()\nassert between(A, B, C) tol 0.1\n",
             between_fixture_values(0.099_999_9),
         );
         assert!(

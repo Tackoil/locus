@@ -1,8 +1,8 @@
-locus 3
+locus 0 beta 4
 
 meta {
   title "Agent workflow: never render until check passes"
-  note  "v0.4 shape-owned nodes and anchor relations define the spine and fix branch"
+  note  "0 beta 4 shape-owned nodes and anchor relations define the spine and fix branch"
 }
 
 style textbook

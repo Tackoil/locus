@@ -15,10 +15,11 @@ locus/
 ├── Cargo.toml                     # [workspace] members, shared deps, lints
 ├── rust-toolchain.toml            # pin toolchain for reproducible builds
 ├── documents/
-│   ├── specification.md           # the normative v0.4 relational spec
+│   ├── plan.md                    # historical implementation plan
 │   └── structure.md               # this document
 ├── spec/
-│   └── test/                      # *.locus demonstrations (format 3) and stress figures (format 2)
+│   ├── specification.md           # the normative 0 beta 4 relational spec
+│   └── test/                      # *.locus demonstrations and stress figures
 ├── crates/
 │   ├── locus-syntax/              # lexer, parser, AST, formatter, spans
 │   ├── locus-core/                # geometry kernel, constraint solver, evaluator, inspect/assert

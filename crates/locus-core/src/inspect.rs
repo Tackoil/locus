@@ -681,10 +681,6 @@ fn collect_constructor_references(constructor: &Constructor, output: &mut BTreeS
         Constructor::Expr { expr, .. } | Constructor::FreeNum { hint: expr, .. } => {
             collect_expr_references(expr, output);
         }
-        Constructor::FreePoint { x, y, .. } => {
-            collect_expr_references(x, output);
-            collect_expr_references(y, output);
-        }
     }
 }
 
@@ -853,7 +849,6 @@ mod tests {
 
     fn empty_file() -> File {
         File {
-            version: 2,
             statements: Vec::new(),
             span: Span::default(),
         }

@@ -1,4 +1,4 @@
-locus 2
-point A = free ~(0, 0)
+locus 0 beta 4
+point A = point()
 segment AC = seg(A, C)
-point C = free ~(1, 0)
+point C = point()

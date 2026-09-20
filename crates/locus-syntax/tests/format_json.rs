@@ -236,8 +236,7 @@ fn generated_statement() -> BoxedStrategy<GeneratedStatement> {
 
 prop_compose! {
     fn valid_file()
-        (ax in -20_i16..20, ay in -20_i16..20, bx in 1_i16..40,
-         radius in 1_u16..20, padding in 0_usize..4, comment in any::<bool>(),
+        (bx in 1_i16..40, radius in 1_u16..20, padding in 0_usize..4, comment in any::<bool>(),
          meta_after_style in any::<bool>(), statements in prop::collection::vec(generated_statement(), 0..12))
         -> String
     {
@@ -257,9 +256,9 @@ prop_compose! {
             .collect::<Vec<_>>()
             .join(separator);
         format!(
-            "locus 2\n\n{prelude}class ink {{ accent: #123ABC, weight: 1 }}\n\n\
-             point A{pad}={pad}free ~({ax}, {ay}){trailing}\n\
-             point B{pad}={pad}free ~({bx}, {ay}) where {{ horizontal(A, B) }}\n\
+            "locus 0 beta 4\n\n{prelude}class ink {{ accent: #123ABC, weight: 1 }}\n\n\
+             point A{pad}={pad}point(){trailing}\n\
+             point B{pad}={pad}offset(A, {bx}, 0) where {{ horizontal(A, B) }}\n\
              num r{pad}={pad}{radius}\n\
              rect box{pad}={pad}rect(A, r, r)\n\
              circle base_circle{pad}={pad}circle(A, r) [ink]\n\n\

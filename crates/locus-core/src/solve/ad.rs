@@ -438,20 +438,6 @@ impl DifferentiatedFile {
         evaluator.eval_object(expression)
     }
 
-    pub(crate) fn number_as(
-        &self,
-        expression: &Expr,
-        expected: NumericDimension,
-    ) -> Result<(Jet, NumericDimension), EvalError> {
-        let mut evaluator = RelationEvaluator::new(
-            &self.objects,
-            self.unknown_count,
-            self.tolerance,
-            &self.inferred_dimensions,
-        );
-        evaluator.eval_number_as(expression, expected)
-    }
-
     pub(crate) fn matching_numbers(
         &self,
         lhs: &Expr,
@@ -547,7 +533,6 @@ impl AdEvaluator<'_> {
 
     fn eval_regular_op(&mut self, op: &OpStmt) -> Result<DObject, EvalError> {
         match &op.ctor {
-            Constructor::FreePoint { .. } => self.free_point(op.span),
             Constructor::FreeNum { .. } => self.free_number(op),
             Constructor::Expr { expr, .. } if op.kind == Kind::Num => {
                 let expected = self
@@ -606,12 +591,6 @@ impl AdEvaluator<'_> {
             }
             _ => Err(solver_error(op.span, "invalid placed declaration")),
         }
-    }
-
-    fn free_point(&mut self, span: Span) -> Result<DObject, EvalError> {
-        let x = self.variable(span)?;
-        let y = self.variable(span)?;
-        Ok(DObject::Point(DPoint { x, y }))
     }
 
     fn free_number(&mut self, op: &OpStmt) -> Result<DObject, EvalError> {

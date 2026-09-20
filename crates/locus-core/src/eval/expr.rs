@@ -105,7 +105,6 @@ pub(crate) struct ExpressionEvaluator<'a> {
     env: &'a Environment,
     pub(super) tolerance: Tolerance,
     dimensions: &'a DimensionMap,
-    version: u32,
 }
 
 impl<'a> ExpressionEvaluator<'a> {
@@ -118,17 +117,7 @@ impl<'a> ExpressionEvaluator<'a> {
             env,
             tolerance,
             dimensions,
-            version: 2,
         }
-    }
-
-    pub(crate) const fn with_version(mut self, version: u32) -> Self {
-        self.version = version;
-        self
-    }
-
-    pub(crate) const fn version(&self) -> u32 {
-        self.version
     }
 
     pub(crate) fn dimension_of(&self, name: &str) -> Option<InferredDimension> {

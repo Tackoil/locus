@@ -8,8 +8,8 @@
       "span": {
         "line": 11,
         "col": 1,
-        "byte_start": 236,
-        "byte_end": 268
+        "byte_start": 243,
+        "byte_end": 275
       },
       "definition": "ellipse(3, 2, 30deg)",
       "resolved": {
@@ -26,8 +26,8 @@
       "span": {
         "line": 12,
         "col": 1,
-        "byte_start": 269,
-        "byte_end": 334
+        "byte_start": 276,
+        "byte_end": 341
       },
       "definition": "ellipse(e.center, 1.5, 1, 30deg)",
       "resolved": {
@@ -44,8 +44,8 @@
       "span": {
         "line": 13,
         "col": 1,
-        "byte_start": 335,
-        "byte_end": 353
+        "byte_start": 342,
+        "byte_end": 360
       },
       "definition": "e.center",
       "resolved": {
@@ -59,8 +59,8 @@
       "span": {
         "line": 14,
         "col": 1,
-        "byte_start": 354,
-        "byte_end": 373
+        "byte_start": 361,
+        "byte_end": 380
       },
       "definition": "e.focus1",
       "resolved": {
@@ -74,8 +74,8 @@
       "span": {
         "line": 15,
         "col": 1,
-        "byte_start": 374,
-        "byte_end": 393
+        "byte_start": 381,
+        "byte_end": 400
       },
       "definition": "e.focus2",
       "resolved": {
@@ -89,8 +89,8 @@
       "span": {
         "line": 16,
         "col": 1,
-        "byte_start": 394,
-        "byte_end": 415
+        "byte_start": 401,
+        "byte_end": 422
       },
       "definition": "e.at(60deg)",
       "resolved": {
@@ -104,8 +104,8 @@
       "span": {
         "line": 18,
         "col": 1,
-        "byte_start": 417,
-        "byte_end": 478
+        "byte_start": 424,
+        "byte_end": 485
       },
       "definition": "seg(e.major_start, e.major_end)",
       "resolved": {
@@ -119,8 +119,8 @@
       "span": {
         "line": 19,
         "col": 1,
-        "byte_start": 479,
-        "byte_end": 540
+        "byte_start": 486,
+        "byte_end": 547
       },
       "definition": "seg(e.minor_start, e.minor_end)",
       "resolved": {
@@ -134,8 +134,8 @@
       "span": {
         "line": 20,
         "col": 1,
-        "byte_start": 541,
-        "byte_end": 582
+        "byte_start": 548,
+        "byte_end": 589
       },
       "definition": "seg(F1, P)",
       "resolved": {
@@ -149,8 +149,8 @@
       "span": {
         "line": 21,
         "col": 1,
-        "byte_start": 583,
-        "byte_end": 624
+        "byte_start": 590,
+        "byte_end": 631
       },
       "definition": "seg(F2, P)",
       "resolved": {
@@ -164,8 +164,8 @@
       "span": {
         "line": 24,
         "col": 1,
-        "byte_start": 689,
-        "byte_end": 726
+        "byte_start": 696,
+        "byte_end": 733
       },
       "definition": "label(O, $O$)",
       "resolved": {
@@ -178,8 +178,8 @@
       "span": {
         "line": 25,
         "col": 1,
-        "byte_start": 727,
-        "byte_end": 768
+        "byte_start": 734,
+        "byte_end": 775
       },
       "definition": "label(F1, $F_1$)",
       "resolved": {
@@ -192,8 +192,8 @@
       "span": {
         "line": 26,
         "col": 1,
-        "byte_start": 769,
-        "byte_end": 810
+        "byte_start": 776,
+        "byte_end": 817
       },
       "definition": "label(F2, $F_2$)",
       "resolved": {
@@ -206,8 +206,8 @@
       "span": {
         "line": 27,
         "col": 1,
-        "byte_start": 811,
-        "byte_end": 848
+        "byte_start": 818,
+        "byte_end": 855
       },
       "definition": "label(P, $P$)",
       "resolved": {
@@ -220,8 +220,8 @@
       "span": {
         "line": 28,
         "col": 1,
-        "byte_start": 849,
-        "byte_end": 920
+        "byte_start": 856,
+        "byte_end": 927
       },
       "definition": "text_block($PF_1 + PF_2 = 2a$)",
       "resolved": {
@@ -245,8 +245,8 @@
           "span": {
             "line": 11,
             "col": 1,
-            "byte_start": 236,
-            "byte_end": 268
+            "byte_start": 243,
+            "byte_end": 275
           },
           "hint_settled_dofs": 2,
           "suggestion": "add a relation if unintended, e.g. on(e, …) or vdist(…) == …"

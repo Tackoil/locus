@@ -36,7 +36,11 @@ impl Case {
             self.name,
             parsed.diagnostics
         );
-        assert_eq!(parsed.file.version, 3, "{}: expected locus 3", self.name);
+        assert!(
+            parsed.diagnostics.is_empty(),
+            "{}: expected a valid locus 0 beta 4 file",
+            self.name
+        );
         let count = parsed
             .file
             .statements

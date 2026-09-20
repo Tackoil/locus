@@ -1,6 +1,7 @@
 /// <reference types="tree-sitter-cli/dsl" />
-// Syntax is shared by formats 2 and 3. Version, arity, and type validation
-// remain the responsibility of locus-syntax and the language server.
+// This grammar recognizes the current, development-only file format.
+// Arity and type validation remain the responsibility of locus-syntax and the
+// language server.
 module.exports = grammar({
   name: "locus",
 
@@ -23,7 +24,7 @@ module.exports = grammar({
       $.assert_statement,
     ),
 
-    header: $ => seq("locus", field("version", $.number)),
+    header: _ => seq("locus", "0", "beta", "4"),
     meta_block: $ => seq(
       "meta", "{", $._newline,
       repeat(choice($._newline, seq($.meta_entry, $._newline))),
@@ -43,8 +44,7 @@ module.exports = grammar({
       "bspline", "polygon", "rect", "diamond", "label", "arrow", "tick",
       "right_angle", "text_block",
     ),
-    free_expression: $ => seq("free", "~", choice($.coordinate_hint, $._expression)),
-    coordinate_hint: $ => seq("(", $._expression, ",", $._expression, ")"),
+    free_expression: $ => seq("free", "~", $._expression),
     where_clause: $ => seq("where", "{", commaSeparated1($._expression), "}"),
     attribute: $ => seq("[", field("name", $.identifier), "]"),
     properties: $ => seq("{", optional(commaSeparated1($.property)), "}"),

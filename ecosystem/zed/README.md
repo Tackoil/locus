@@ -5,7 +5,7 @@ native `locus-lsp` executable over stdin/stdout. It supports the server's
 diagnostics, completion, hover, go-to-definition, document formatting, and
 document symbols. The bundled [Tree-sitter grammar](../tree-sitter-locus/README.md)
 adds syntax highlighting, bracket matching, a declaration outline, and metadata
-block indentation. Both `locus 2` and `locus 3` syntax are supported, including
+block indentation. Both `locus 0 beta 4` and `locus 0 beta 4` syntax are supported, including
 primed identifiers, style properties, and TeX inside strings.
 
 ## Install locally

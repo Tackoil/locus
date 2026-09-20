@@ -1,4 +1,4 @@
-//! Conservative certificates for incompatible numeric targets and pins.
+//! Conservative certificates for incompatible numeric targets.
 //!
 //! Failure of LM alone cannot establish infeasibility. These certificates use
 //! disjoint tolerance bounds on the same named quantity. Other systems remain
@@ -16,7 +16,6 @@ use crate::tol::solve_targets_disjoint;
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 enum Quantity<'a> {
     Number(&'a str),
-    Coordinate(&'a str, usize),
 }
 
 struct Target<'a> {
@@ -56,9 +55,6 @@ fn targets<'a>(expression: &'a Expr, system: &UnknownSystem) -> Vec<Target<'a>> 
             .or_else(|| numeric_target(rhs, lhs, system))
             .into_iter()
             .collect(),
-        Expr::Call { name, args, .. } if name.name == "pin" && args.len() == 3 => {
-            pin_targets(args, system.diameter)
-        }
         _ => Vec::new(),
     }
 }
@@ -78,23 +74,6 @@ fn numeric_target<'a>(lhs: &'a Expr, rhs: &Expr, system: &UnknownSystem) -> Opti
         value: literal(rhs)?,
         scale,
     })
-}
-
-fn pin_targets(args: &[Expr], diameter: f64) -> Vec<Target<'_>> {
-    let Expr::Ref(id) = ungroup(&args[0]) else {
-        return Vec::new();
-    };
-    args[1..]
-        .iter()
-        .enumerate()
-        .filter_map(|(axis, expr)| {
-            Some(Target {
-                quantity: Quantity::Coordinate(&id.name, axis),
-                value: literal(expr)?,
-                scale: diameter,
-            })
-        })
-        .collect()
 }
 
 fn literal(expression: &Expr) -> Option<f64> {

@@ -113,7 +113,7 @@ fn check_contract(source: &str, scene: &ResolvedScene) -> Result<AssertionReport
 fn render_answer(source: &str, directory: &Path) -> Result<(), Box<dyn Error>> {
     let parsed = locus_syntax::parse(source);
     assert!(parsed.diagnostics.is_empty(), "{:?}", parsed.diagnostics);
-    assert_eq!(parsed.file.version, 3);
+    assert!(parsed.diagnostics.is_empty());
     let solved = solve(&parsed.file)?;
     let assertions = evaluate_assertions(&parsed.file, &solved.scene)?;
     fs::write(

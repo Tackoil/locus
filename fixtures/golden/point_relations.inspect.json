@@ -155,8 +155,8 @@
       "span": {
         "line": 19,
         "col": 13,
-        "byte_start": 584,
-        "byte_end": 590
+        "byte_start": 591,
+        "byte_end": 597
       }
     },
     {
@@ -165,8 +165,8 @@
       "span": {
         "line": 21,
         "col": 7,
-        "byte_start": 621,
-        "byte_end": 623
+        "byte_start": 628,
+        "byte_end": 630
       }
     },
     {
@@ -175,8 +175,8 @@
       "span": {
         "line": 22,
         "col": 7,
-        "byte_start": 660,
-        "byte_end": 662
+        "byte_start": 667,
+        "byte_end": 669
       }
     },
     {
@@ -185,8 +185,8 @@
       "span": {
         "line": 23,
         "col": 7,
-        "byte_start": 699,
-        "byte_end": 701
+        "byte_start": 706,
+        "byte_end": 708
       }
     },
     {
@@ -195,8 +195,8 @@
       "span": {
         "line": 24,
         "col": 7,
-        "byte_start": 738,
-        "byte_end": 740
+        "byte_start": 745,
+        "byte_end": 747
       }
     }
   ]

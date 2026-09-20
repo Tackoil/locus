@@ -2,7 +2,7 @@
 source: crates/locus-syntax/tests/format_json.rs
 expression: formatted.source
 ---
-locus 3
+locus 0 beta 4
 
 meta {
   title "Golden ratio in the regular pentagon"

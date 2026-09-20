@@ -8,11 +8,11 @@ use locus_syntax::parse;
     reason = "the inline snapshot is intentionally explicit"
 )]
 fn snapshots_stable_e1xx_diagnostics() {
-    let source = r"locus 3
+    let source = r"locus 0 beta 4
 piont A = free ~(0, 0)
 point A = free ~0
 line bad = free ~(0, 0)
-point A = free ~(0, 0)
+point A = point()
 circle c = incircel(A, 2)
 point P = rotate(A, A, 60)
 point Q = midpoint(A, Later) [hilight] { mrak: dot, mark: dot, mark: cross }
@@ -46,24 +46,16 @@ meta {
             None,
         ),
         (
-            "E124",
+            "E123",
             3,
-            "expected `(` starting point hint",
+            "only `num` declarations may use `free`",
             None,
         ),
         (
             "E123",
             4,
-            "only `point` and `num` declarations may use `free`",
+            "only `num` declarations may use `free`",
             None,
-        ),
-        (
-            "E123",
-            5,
-            "format 3 points use parameterless `point()`, not coordinate hints",
-            Some(
-                "point A = point()",
-            ),
         ),
         (
             "E140",

@@ -33,7 +33,7 @@ fn placed(scene: &ResolvedScene) -> LayoutScene {
 
 fn triangle() -> ResolvedScene {
     resolved(
-        "locus 2\npoint A = free ~(0, 0)\npoint B = free ~(6, 0)\npoint C = free ~(0, 6)\nsegment AB = seg(A, B)\nsegment BC = seg(B, C)\nsegment CA = seg(C, A)\nlabel a = label(A, \"A\")\nlabel b = label(B, \"B\")\nlabel c = label(C, \"C\")\n",
+        "locus 0 beta 4\npoint A = point()\npoint B = offset(A, 6, 0)\npoint C = offset(A, 0, 6)\nsegment AB = seg(A, B)\nsegment BC = seg(B, C)\nsegment CA = seg(C, A)\nlabel a = label(A, \"A\")\nlabel b = label(B, \"B\")\nlabel c = label(C, \"C\")\n",
     )
 }
 
@@ -75,7 +75,7 @@ fn repeated_layout_is_identical_including_diagnostics_and_leaders() {
 
 #[test]
 fn compass_has_sixteen_candidates_and_explicit_directions_are_pinned() {
-    let scene = resolved("locus 2\npoint A = free ~(0, 0)\n");
+    let scene = resolved("locus 0 beta 4\npoint A = point()\n");
     let anchor = Point::new(0.0, 0.0);
     let size = Vec2::new(2.0, 1.0);
     let automatic = generate(&scene, anchor, size, LabelDirection::Auto, 0.25);
@@ -99,7 +99,7 @@ fn compass_has_sixteen_candidates_and_explicit_directions_are_pinned() {
 #[test]
 fn segment_and_circle_preferences_precede_compass_order() {
     let scene = resolved(
-        "locus 2\npoint A = free ~(0, 0)\npoint B = free ~(8, 0)\nsegment s = seg(A, B)\ncircle c = circle(A, 2)\n",
+        "locus 0 beta 4\npoint A = point()\npoint B = offset(A, 8, 0)\nsegment s = seg(A, B)\ncircle c = circle(A, 2)\n",
     );
     let size = Vec2::new(1.0, 1.0);
     let midpoint = generate(
@@ -126,7 +126,7 @@ fn segment_and_circle_preferences_precede_compass_order() {
 #[test]
 fn unavoidable_crowding_reports_both_labels_and_source_spans() {
     let scene = resolved(
-        "locus 2\npoint A = free ~(0, 0) { mark: none }\nlabel first = label(A, \"X\") { dir: center }\nlabel second = label(A, \"Y\") { dir: center }\n",
+        "locus 0 beta 4\npoint A = point() { mark: none }\nlabel first = label(A, \"X\") { dir: center }\nlabel second = label(A, \"Y\") { dir: center }\n",
     );
     let output = placed(&scene);
     assert_eq!(
@@ -149,7 +149,7 @@ fn unavoidable_crowding_reports_both_labels_and_source_spans() {
 #[test]
 fn automatic_crowding_and_margin_violations_are_reported() {
     let scene = resolved(
-        "locus 2\npoint A = free ~(0, 0)\nlabel a = label(A, \"wide wide wide\")\nlabel b = label(A, \"wide wide wide\")\nlabel c = label(A, \"wide wide wide\")\n",
+        "locus 0 beta 4\npoint A = point()\nlabel a = label(A, \"wide wide wide\")\nlabel b = label(A, \"wide wide wide\")\nlabel c = label(A, \"wide wide wide\")\n",
     );
     let output = layout(
         &scene,
@@ -167,7 +167,7 @@ fn automatic_crowding_and_margin_violations_are_reported() {
 #[test]
 fn pinned_box_is_reserved_before_automatic_box_regardless_of_id_order() {
     let scene = resolved(
-        "locus 2\npoint A = free ~(0, 0) { mark: none }\nlabel auto = label(A, \"X\")\nlabel pinned = label(A, \"Y\") { dir: N }\n",
+        "locus 0 beta 4\npoint A = point() { mark: none }\nlabel auto = label(A, \"X\")\nlabel pinned = label(A, \"Y\") { dir: N }\n",
     );
     let output = placed(&scene);
     assert_eq!(output.annotations["pinned"].bounds.min.y, 0.25);
@@ -178,7 +178,7 @@ fn pinned_box_is_reserved_before_automatic_box_regardless_of_id_order() {
 #[test]
 fn identifier_order_breaks_equal_candidate_assignment_ties() {
     let scene = resolved(
-        "locus 2\npoint A = free ~(0, 0) { mark: none }\nlabel z = label(A, \"X\")\nlabel a = label(A, \"X\")\n",
+        "locus 0 beta 4\npoint A = point() { mark: none }\nlabel z = label(A, \"X\")\nlabel a = label(A, \"X\")\n",
     );
     let output = placed(&scene);
     assert_eq!(output.annotations["a"].candidate_index, 0);
@@ -189,7 +189,7 @@ fn identifier_order_breaks_equal_candidate_assignment_ties() {
 #[test]
 fn mixed_multiline_measurements_keep_baselines_and_actual_extents() {
     let scene = resolved(
-        "locus 2\npoint A = free ~(0, 0) { mark: none }\nlabel a = label(A, \"A$x$\\nWW\") { dir: center }\n",
+        "locus 0 beta 4\npoint A = point() { mark: none }\nlabel a = label(A, \"A$x$\\nWW\") { dir: center }\n",
     );
     let measurements = measured(&scene);
     let options = LayoutOptions {
@@ -222,7 +222,7 @@ fn mixed_multiline_measurements_keep_baselines_and_actual_extents() {
 #[test]
 fn all_annotation_kinds_resolve_deferred_centers_and_leader_info() {
     let scene = resolved(
-        "locus 2\npoint A = free ~(0, 0)\npoint B = free ~(6, 0)\npoint C = free ~(0, 6)\nsegment s = seg(A, B)\nlabel a = label(A, \"A\") { dir: W }\nlabel b = label(a.center, \"B\") { dir: N }\narrow link = arrow(a.center, B) { head: <->, bend: 20deg }\ntick equal = tick(s, 3)\nright_angle square = right_angle(A, B, C) { size: 0.5 }\ntext_block caption = text_block(\"caption\")\ntext_block note = text_block(\"note\") { anchor: b.center, dir: E }\n",
+        "locus 0 beta 4\npoint A = point()\npoint B = offset(A, 6, 0)\npoint C = offset(A, 0, 6)\nsegment s = seg(A, B)\nlabel a = label(A, \"A\") { dir: W }\nlabel b = label(a.center, \"B\") { dir: N }\narrow link = arrow(a.center, B) { head: <->, bend: 20deg }\ntick equal = tick(s, 3)\nright_angle square = right_angle(A, B, C) { size: 0.5 }\ntext_block caption = text_block(\"caption\")\ntext_block note = text_block(\"note\") { anchor: b.center, dir: E }\n",
     );
     let output = placed(&scene);
     assert_eq!(output.annotations.len(), 7);
@@ -263,7 +263,7 @@ fn missing_measurement_and_invalid_metrics_are_source_anchored() {
 #[test]
 fn forward_layout_dependencies_and_cycles_are_handled_without_recursion() {
     let mut scene = resolved(
-        "locus 2\npoint A = free ~(0, 0)\nlabel first = label(A, \"A\")\nlabel next = label(first.center, \"B\")\n",
+        "locus 0 beta 4\npoint A = point()\nlabel first = label(A, \"A\")\nlabel next = label(first.center, \"B\")\n",
     );
     scene.objects.reverse();
     assert_eq!(placed(&scene).annotations.len(), 2);
@@ -292,7 +292,7 @@ fn forward_layout_dependencies_and_cycles_are_handled_without_recursion() {
 #[test]
 fn inspect_accepts_layout_diagnostics_without_core_dependency_changes() {
     let parsed = locus_syntax::parse(
-        "locus 2\npoint A = free ~(0, 0)\nlabel a = label(A, \"A\") { dir: center }\n",
+        "locus 0 beta 4\npoint A = point()\nlabel a = label(A, \"A\") { dir: center }\n",
     );
     let scene = Scene::new(parsed.file.clone()).expect("scene");
     let resolved = scene.resolved().expect("resolved");
@@ -350,7 +350,7 @@ fn empty_scene_has_no_annotations_or_diagnostics() {
 #[test]
 fn angle_arc_supplies_external_bisector_without_drawn_segments() {
     let scene = resolved(
-        "locus 2\npoint A = free ~(2, 0)\npoint V = free ~(0, 0)\npoint B = free ~(0, 2)\narc angle = angle_arc(A, V, B, 0.5)\nlabel a = label(V, \"A\")\n",
+        "locus 0 beta 4\npoint V = point()\npoint A = offset(V, 2, 0)\npoint B = offset(V, 0, 2)\narc angle = angle_arc(A, V, B, 0.5)\nlabel a = label(V, \"A\")\n",
     );
     let output = placed(&scene);
     assert_eq!(output.annotations["a"].candidate_index, 0);
@@ -362,7 +362,7 @@ fn angle_arc_supplies_external_bisector_without_drawn_segments() {
 #[test]
 fn residual_pass_detects_arrow_added_after_its_anchor_label() {
     let scene = resolved(
-        "locus 2\npoint A = free ~(0, 0) { mark: none }\npoint B = free ~(5, 0) { mark: none }\nlabel a = label(A, \"X\") { dir: center }\narrow link = arrow(a.center, B)\n",
+        "locus 0 beta 4\npoint A = point() { mark: none }\npoint B = offset(A, 5, 0) { mark: none }\nlabel a = label(A, \"X\") { dir: center }\narrow link = arrow(a.center, B)\n",
     );
     let output = placed(&scene);
     assert_eq!(output.diagnostics.len(), 1);
@@ -399,7 +399,7 @@ fn missing_anchor_reports_reference_span() {
 #[test]
 fn fewer_available_candidates_take_priority_over_identifier_order() {
     let scene = resolved(
-        "locus 2\npoint A = free ~(0, 0) { mark: none }\nlabel a = label(A, \"X\")\nlabel z = label(A, \"WWWW\")\n",
+        "locus 0 beta 4\npoint A = point() { mark: none }\nlabel a = label(A, \"X\")\nlabel z = label(A, \"WWWW\")\n",
     );
     // The wide label only fits north/south within the two-unit margin. The
     // small label fits in more directions, so z must reserve north first.
@@ -418,7 +418,7 @@ fn connector_fixture(connector_id: &str, direction: &str, connector_first: bool)
         crossed + &connector
     };
     resolved(&format!(
-        "locus 2\npoint A = free ~(0, 0) {{ mark: none }}\npoint B = free ~(0, 2) {{ mark: none }}\n{labels}"
+        "locus 0 beta 4\npoint A = point() {{ mark: none }}\npoint B = offset(A, 0, 2) {{ mark: none }}\n{labels}"
     ))
 }
 
@@ -476,7 +476,7 @@ fn automatic_labels_avoid_previously_placed_text_connectors() {
 #[test]
 fn isolated_labels_do_not_collide_with_their_own_connector_attachment() {
     let scene = resolved(
-        "locus 2\npoint A = free ~(0, 0) { mark: none }\nlabel a = label(A, \"X\") { dir: N, gap: 4 }\n",
+        "locus 0 beta 4\npoint A = point() { mark: none }\nlabel a = label(A, \"X\") { dir: N, gap: 4 }\n",
     );
     for stroke_width in [0.0, 0.04] {
         let output = layout(
@@ -500,7 +500,7 @@ fn nearly_straight_arrows_report_crossings_and_leave_nearby_boxes_clear() {
         for position in [0.4, 1.2, 3.6] {
             for offset in [0.0, 0.1] {
                 let scene = resolved(&format!(
-                    "locus 2\npoint A = free ~(0, 0) {{ mark: none }}\npoint B = free ~(4, 4) {{ mark: none }}\npoint C = free ~({position}, {}) {{ mark: none }}\narrow a = arrow(A, B) {{ bend: {bend}deg }}\nlabel b = label(C, \"X\") {{ dir: center }}\n",
+                    "locus 0 beta 4\npoint A = point() {{ mark: none }}\npoint B = offset(A, 4, 4) {{ mark: none }}\npoint C = offset(A, {position}, {}) {{ mark: none }}\narrow a = arrow(A, B) {{ bend: {bend}deg }}\nlabel b = label(C, \"X\") {{ dir: center }}\n",
                     position + offset
                 ));
                 let mut boxes = measured(&scene);

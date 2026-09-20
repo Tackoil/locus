@@ -1,4 +1,4 @@
-Draw a textbook geometry diagram of a 3-4-5 right triangle using Locus format 3.
+Draw a textbook geometry diagram of a 3-4-5 right triangle using Locus `0 beta 4`.
 
 Use these identifiers so an independent test can verify your drawing:
 - A, B, C: vertices, with AB horizontal and length 4, AC vertical and length 3,
@@ -16,6 +16,6 @@ requested geometric relationships and measurements.
 Use coincident for point comparisons, for example
 coincident(center(circum), midpoint(B, C)); use == only for numeric measurements.
 
-Return only the complete .locus source, starting with locus 3. No Markdown
+Return only the complete .locus source, starting with locus 0 beta 4. No Markdown
 fences, explanation, or external assets. You have one attempt; your response
 will be parsed, solved, checked, and rendered directly without any repair.

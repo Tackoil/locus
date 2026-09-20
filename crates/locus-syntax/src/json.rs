@@ -4,6 +4,7 @@
     reason = "interchange fields mirror the normative JSON contract directly"
 )]
 
+use crate::FORMAT_VERSION;
 use crate::ast::{
     AngleUnit, BinOp, Constructor, Expr, File, HeadKind, Kind, NumberExpr, PropValue, Props,
     Statement, TextSegmentKind, TextValue, UnaryOp,
@@ -12,10 +13,10 @@ use crate::format::format_expr;
 use serde::Serialize;
 use std::collections::{BTreeMap, BTreeSet};
 
-/// The format-version-2/3 JSON interchange document.
+/// The Locus 0 beta 4 JSON interchange document.
 #[derive(Clone, Debug, PartialEq, Serialize)]
 pub struct Interchange {
-    pub version: u32,
+    pub version: String,
     pub meta: Vec<MetaEntry>,
     pub style: String,
     pub classes: Vec<Class>,
@@ -169,7 +170,7 @@ pub struct NumberNode {
 pub fn to_interchange(file: &File) -> Interchange {
     let dimensions = Dimensions::infer(file);
     let mut output = Interchange {
-        version: file.version,
+        version: FORMAT_VERSION.to_owned(),
         meta: Vec::new(),
         style: "textbook".to_owned(),
         classes: Vec::new(),
@@ -278,13 +279,6 @@ fn definition_and_hint(
                 tree: expr_node(expr, dimensions),
             }),
             None,
-        ),
-        Constructor::FreePoint { x, y, .. } => (
-            None,
-            Some(Hint::Point([
-                expr_node(x, dimensions),
-                expr_node(y, dimensions),
-            ])),
         ),
         Constructor::FreeNum { hint, .. } => {
             (None, Some(Hint::Scalar(expr_node(hint, dimensions))))
@@ -554,10 +548,6 @@ impl Dimensions {
                 {
                     self.unify(expr_var, num_var);
                 }
-            }
-            Constructor::FreePoint { x, y, .. } => {
-                self.expect_expr(x, Dimension::Length);
-                self.expect_expr(y, Dimension::Length);
             }
             Constructor::FreeNum { hint, .. } => {
                 if let (Some(hint_var), Some(num_var)) =
@@ -1116,7 +1106,6 @@ fn call_arg_dimensions(name: &str, args: &[Option<usize>]) -> &'static [(usize, 
         ("rect", &[(1, Length), (2, Length)]),
         ("diamond", &[(1, Length), (2, Length)]),
         ("tick", &[(1, Scalar)]),
-        ("pin", &[(1, Length), (2, Length)]),
     ];
     if name == "circle" && args.len() == 1 {
         return &[(0, Length)];
@@ -1156,7 +1145,7 @@ mod tests {
     #[test]
     fn infers_dimensions_through_declarations_and_uses() {
         let parsed = parse(
-            "locus 2\npoint A = free ~(0, 0)\npoint B = free ~(2, 0)\nnum r = 2\ncircle c = circle(A, r)\nassert dist(A, B) == r\n",
+            "locus 0 beta 4\npoint A = point()\npoint B = point()\nnum r = 2\ncircle c = circle(A, r)\nassert dist(A, B) == r\n",
         );
         assert!(parsed.diagnostics.is_empty(), "{:#?}", parsed.diagnostics);
         let json = to_interchange(&parsed.file);
@@ -1175,7 +1164,7 @@ mod tests {
 
     #[test]
     fn defaults_style_and_unconstrained_numbers() {
-        let parsed = parse("locus 2\nnum n = 3\n");
+        let parsed = parse("locus 0 beta 4\nnum n = 3\n");
         let json = to_interchange(&parsed.file);
         assert_eq!(json.style, "textbook");
         assert!(matches!(
@@ -1190,7 +1179,7 @@ mod tests {
     #[test]
     fn infers_scalar_coefficient_of_angle() {
         let parsed = parse(
-            "locus 2\npoint A = free ~(0, 0)\npoint O = free ~(1, 0)\npoint B = free ~(1, 1)\nassert angle(A, O, B) == 2 * angle(A, O, B)\n",
+            "locus 0 beta 4\npoint A = point()\npoint O = point()\npoint B = point()\nassert angle(A, O, B) == 2 * angle(A, O, B)\n",
         );
         let json = to_interchange(&parsed.file);
         let ExprNode::Binary { rhs, .. } = &json.asserts[0].expr else {
@@ -1213,7 +1202,7 @@ mod tests {
     #[test]
     fn resolves_literal_defaults_after_known_product_dimensions() {
         let parsed = parse(
-            "locus 2\npoint A = free ~(0, 0)\npoint B = free ~(2, 0)\nnum mul = 2 * dist(A, B)\nnum div = dist(A, B) / 2\n",
+            "locus 0 beta 4\npoint A = point()\npoint B = point()\nnum mul = 2 * dist(A, B)\nnum div = dist(A, B) / 2\n",
         );
         assert!(parsed.diagnostics.is_empty(), "{:#?}", parsed.diagnostics);
         let json = to_interchange(&parsed.file);
@@ -1257,7 +1246,7 @@ mod tests {
     #[test]
     fn reverse_infers_area_and_length_operands() {
         let parsed = parse(
-            "locus 2\npoint A = free ~(0, 0)\npoint B = free ~(2, 0)\npoint C = free ~(0, 2)\npolygon tri = polygon(A, B, C)\nnum a = free ~4\nnum r = a / dist(A, B)\ncircle c = circle(A, r)\nnum side = free ~2\nnum product = side * dist(A, B)\nassert product == area(tri)\n",
+            "locus 0 beta 4\npoint A = point()\npoint B = point()\npoint C = point()\npolygon tri = polygon(A, B, C)\nnum a = free ~4\nnum r = a / dist(A, B)\ncircle c = circle(A, r)\nnum side = free ~2\nnum product = side * dist(A, B)\nassert product == area(tri)\n",
         );
         assert!(parsed.diagnostics.is_empty(), "{:#?}", parsed.diagnostics);
         let json = to_interchange(&parsed.file);
@@ -1290,7 +1279,7 @@ mod tests {
     #[test]
     fn leaves_sqrt_pending_until_its_input_dimension_is_known() {
         let parsed = parse(
-            "locus 2\npoint A = free ~(0, 0)\npoint B = free ~(2, 0)\npoint C = free ~(0, 2)\npolygon tri = polygon(A, B, C)\nnum n = sqrt(2 * area(tri))\n",
+            "locus 0 beta 4\npoint A = point()\npoint B = point()\npoint C = point()\npolygon tri = polygon(A, B, C)\nnum n = sqrt(2 * area(tri))\n",
         );
         assert!(parsed.diagnostics.is_empty(), "{:#?}", parsed.diagnostics);
         let json = to_interchange(&parsed.file);
@@ -1325,7 +1314,7 @@ mod tests {
     #[test]
     fn infers_shared_multiplication_operands_from_an_area_result() {
         let parsed = parse(
-            "locus 2\npoint A = free ~(0, 0)\npoint B = free ~(2, 0)\npoint C = free ~(0, 2)\npolygon tri = polygon(A, B, C)\nnum r = free ~2\nnum a = r * r\nassert a == area(tri)\n",
+            "locus 0 beta 4\npoint A = point()\npoint B = point()\npoint C = point()\npolygon tri = polygon(A, B, C)\nnum r = free ~2\nnum a = r * r\nassert a == area(tri)\n",
         );
         assert!(parsed.diagnostics.is_empty(), "{:#?}", parsed.diagnostics);
         let json = to_interchange(&parsed.file);
@@ -1365,33 +1354,21 @@ mod tests {
     }
 
     #[test]
-    fn pin_coordinates_constrain_numeric_declarations_to_length() {
-        let parsed = parse(
-            "locus 2\npoint A = free ~(0, 0)\nnum x = free ~1\nnum y = 0\nrel pin(A, x, y)\n",
-        );
+    fn shape_dimensions_constrain_numeric_declarations_to_length() {
+        let parsed = parse("locus 0 beta 4\nnum x = free ~1\ncircle c = circle(x)\n");
         assert!(parsed.diagnostics.is_empty(), "{:#?}", parsed.diagnostics);
         let json = to_interchange(&parsed.file);
         assert!(matches!(
-            &json.ops[1].hint,
+            &json.ops[0].hint,
             Some(Hint::Scalar(ExprNode::Number(NumberNode {
                 dimension: Dimension::Length,
                 ..
             })))
         ));
         assert!(matches!(
-            json.ops[2].def.as_ref().map(|definition| &definition.tree),
-            Some(ExprNode::Number(NumberNode {
-                dimension: Dimension::Length,
-                ..
-            }))
-        ));
-        assert!(matches!(
-            &json.rels[0],
-            ExprNode::Call { args, .. }
-                if matches!(args.get(1), Some(ExprNode::Ref {
-                    dimension: Some(Dimension::Length),
-                    ..
-                })) && matches!(args.get(2), Some(ExprNode::Ref {
+            json.ops[1].def.as_ref().map(|definition| &definition.tree),
+            Some(ExprNode::Call { args, .. })
+                if matches!(args.first(), Some(ExprNode::Ref {
                     dimension: Some(Dimension::Length),
                     ..
                 }))
@@ -1401,7 +1378,7 @@ mod tests {
     #[test]
     fn resolves_constraints_across_sqrt_and_division_before_defaults() {
         let parsed = parse(
-            "locus 2\npoint A = free ~(0, 0)\nnum a = free ~4\nnum n = sqrt(a)\ncircle c = circle(A, n / 2)\n",
+            "locus 0 beta 4\npoint A = point()\nnum a = free ~4\nnum n = sqrt(a)\ncircle c = circle(A, n / 2)\n",
         );
         assert!(parsed.diagnostics.is_empty(), "{:#?}", parsed.diagnostics);
         let json = to_interchange(&parsed.file);
@@ -1452,7 +1429,7 @@ mod tests {
     #[test]
     fn scalar_division_carries_equal_operand_constraints() {
         let parsed = parse(
-            "locus 2\npoint A = free ~(0, 0)\npoint B = free ~(2, 0)\npoint C = free ~(0, 2)\npolygon tri = polygon(A, B, C)\nnum r = free ~2\nnum s = free ~3\nnum a = r * s\nassert a == area(tri)\ntick t = tick(seg(A, B), r / s)\n",
+            "locus 0 beta 4\npoint A = point()\npoint B = point()\npoint C = point()\npolygon tri = polygon(A, B, C)\nnum r = free ~2\nnum s = free ~3\nnum a = r * s\nassert a == area(tri)\ntick t = tick(seg(A, B), r / s)\n",
         );
         assert!(parsed.diagnostics.is_empty(), "{:#?}", parsed.diagnostics);
         let json = to_interchange(&parsed.file);
@@ -1501,7 +1478,7 @@ mod tests {
     #[test]
     fn backtracks_scalar_defaults_across_cyclic_product_constraints() {
         let parsed = parse(
-            "locus 2\npoint A = free ~(0, 0)\npoint B = free ~(2, 0)\npoint C = free ~(0, 2)\npolygon tri = polygon(A, B, C)\nnum r = free ~2\nnum s = free ~3\nnum t = free ~4\nrel r * s == area(tri)\nrel s * t == area(tri)\nrel r * t == area(tri)\n",
+            "locus 0 beta 4\npoint A = point()\npoint B = point()\npoint C = point()\npolygon tri = polygon(A, B, C)\nnum r = free ~2\nnum s = free ~3\nnum t = free ~4\nrel r * s == area(tri)\nrel s * t == area(tri)\nrel r * t == area(tri)\n",
         );
         assert!(parsed.diagnostics.is_empty(), "{:#?}", parsed.diagnostics);
         let json = to_interchange(&parsed.file);
@@ -1540,7 +1517,7 @@ mod tests {
     #[test]
     fn excludes_unrelated_declarations_from_failed_product_search() {
         let parsed = parse(
-            "locus 2\npoint A = free ~(0, 0)\npoint B = free ~(2, 0)\nnum n0 = 1\nnum n1 = 1\nnum n2 = 1\nnum n3 = 1\nnum n4 = 1\nnum n5 = 1\nnum n6 = 1\nnum n7 = 1\nnum n8 = 1\nnum n9 = 1\nnum n10 = 1\nnum n11 = 1\nnum r = free ~2\nnum s = free ~3\nnum t = free ~4\nrel r * s == dist(A, B)\nrel s * t == dist(A, B)\nrel r * t == dist(A, B)\n",
+            "locus 0 beta 4\npoint A = point()\npoint B = point()\nnum n0 = 1\nnum n1 = 1\nnum n2 = 1\nnum n3 = 1\nnum n4 = 1\nnum n5 = 1\nnum n6 = 1\nnum n7 = 1\nnum n8 = 1\nnum n9 = 1\nnum n10 = 1\nnum n11 = 1\nnum r = free ~2\nnum s = free ~3\nnum t = free ~4\nrel r * s == dist(A, B)\nrel s * t == dist(A, B)\nrel r * t == dist(A, B)\n",
         );
         assert!(parsed.diagnostics.is_empty(), "{:#?}", parsed.diagnostics);
         let dimensions = Dimensions::infer(&parsed.file);
@@ -1557,7 +1534,7 @@ mod tests {
     #[test]
     fn fixed_dimensions_do_not_connect_independent_product_groups() {
         let parsed = parse(
-            "locus 2\npoint A = free ~(0, 0)\npoint B = free ~(2, 0)\nnum k = 1\ntick mark = tick(seg(A, B), k)\nnum n0 = 1\nnum p0 = n0 * k\nnum n1 = 1\nnum p1 = n1 * k\nnum n2 = 1\nnum p2 = n2 * k\nnum n3 = 1\nnum p3 = n3 * k\nnum n4 = 1\nnum p4 = n4 * k\nnum n5 = 1\nnum p5 = n5 * k\nnum n6 = 1\nnum p6 = n6 * k\nnum n7 = 1\nnum p7 = n7 * k\nnum n8 = 1\nnum p8 = n8 * k\nnum n9 = 1\nnum p9 = n9 * k\nnum r = free ~2\nnum s = free ~3\nnum t = free ~4\nrel (r * k) * s == dist(A, B)\nrel s * t == dist(A, B)\nrel r * t == dist(A, B)\n",
+            "locus 0 beta 4\npoint A = point()\npoint B = point()\nnum k = 1\ntick mark = tick(seg(A, B), k)\nnum n0 = 1\nnum p0 = n0 * k\nnum n1 = 1\nnum p1 = n1 * k\nnum n2 = 1\nnum p2 = n2 * k\nnum n3 = 1\nnum p3 = n3 * k\nnum n4 = 1\nnum p4 = n4 * k\nnum n5 = 1\nnum p5 = n5 * k\nnum n6 = 1\nnum p6 = n6 * k\nnum n7 = 1\nnum p7 = n7 * k\nnum n8 = 1\nnum p8 = n8 * k\nnum n9 = 1\nnum p9 = n9 * k\nnum r = free ~2\nnum s = free ~3\nnum t = free ~4\nrel (r * k) * s == dist(A, B)\nrel s * t == dist(A, B)\nrel r * t == dist(A, B)\n",
         );
         assert!(parsed.diagnostics.is_empty(), "{:#?}", parsed.diagnostics);
         let dimensions = Dimensions::infer(&parsed.file);
@@ -1579,7 +1556,7 @@ mod tests {
     #[test]
     fn repartitions_product_groups_after_a_branch_fixes_a_dimension() {
         let parsed = parse(
-            "locus 2\npoint A = free ~(0, 0)\npoint B = free ~(2, 0)\nnum k = 1\nnum n0 = 1\nnum p0 = n0 * k\nnum n1 = 1\nnum p1 = n1 * k\nnum n2 = 1\nnum p2 = n2 * k\nnum n3 = 1\nnum p3 = n3 * k\nnum n4 = 1\nnum p4 = n4 * k\nnum n5 = 1\nnum p5 = n5 * k\nnum n6 = 1\nnum p6 = n6 * k\nnum n7 = 1\nnum p7 = n7 * k\nnum n8 = 1\nnum p8 = n8 * k\nnum n9 = 1\nnum p9 = n9 * k\nnum r = free ~2\nnum s = free ~3\nnum t = free ~4\nrel (r * k) * s == dist(A, B)\nrel s * t == dist(A, B)\nrel r * t == dist(A, B)\n",
+            "locus 0 beta 4\npoint A = point()\npoint B = point()\nnum k = 1\nnum n0 = 1\nnum p0 = n0 * k\nnum n1 = 1\nnum p1 = n1 * k\nnum n2 = 1\nnum p2 = n2 * k\nnum n3 = 1\nnum p3 = n3 * k\nnum n4 = 1\nnum p4 = n4 * k\nnum n5 = 1\nnum p5 = n5 * k\nnum n6 = 1\nnum p6 = n6 * k\nnum n7 = 1\nnum p7 = n7 * k\nnum n8 = 1\nnum p8 = n8 * k\nnum n9 = 1\nnum p9 = n9 * k\nnum r = free ~2\nnum s = free ~3\nnum t = free ~4\nrel (r * k) * s == dist(A, B)\nrel s * t == dist(A, B)\nrel r * t == dist(A, B)\n",
         );
         assert!(parsed.diagnostics.is_empty(), "{:#?}", parsed.diagnostics);
         let dimensions = Dimensions::infer(&parsed.file);

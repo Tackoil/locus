@@ -13,6 +13,12 @@ pub mod parser;
 pub mod span;
 pub mod vocabulary;
 
+/// Mandatory first line of every Locus source file.
+pub const FILE_HEADER: &str = "locus 0 beta 4";
+
+/// Version value emitted by the JSON interchange format.
+pub const FORMAT_VERSION: &str = "0 beta 4";
+
 pub use ast::*;
 pub use diag::Diagnostic;
 pub use format::{FormatOutput, format, format_file, format_parsed};

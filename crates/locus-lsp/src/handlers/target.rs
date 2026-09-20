@@ -72,9 +72,6 @@ fn constructor_target(constructor: &Constructor, byte: usize) -> Option<Target<'
         Constructor::Expr { expr, .. } | Constructor::FreeNum { hint: expr, .. } => {
             expr_target(expr, byte)
         }
-        Constructor::FreePoint { x, y, .. } => {
-            expr_target(x, byte).or_else(|| expr_target(y, byte))
-        }
     }
 }
 

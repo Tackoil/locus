@@ -3,7 +3,7 @@ source: crates/locus-syntax/tests/format_json.rs
 expression: json
 ---
 {
-  "version": 3,
+  "version": "0 beta 4",
   "meta": [
     {
       "key": "title",

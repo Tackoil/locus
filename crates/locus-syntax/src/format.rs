@@ -4,7 +4,7 @@ use crate::ast::{
     AngleUnit, AssertStmt, BinOp, ClassStmt, Constructor, Expr, File, HeadKind, MetaBlock,
     MetaEntry, OpStmt, PropValue, Props, Statement, TextSegmentKind, TextValue, UnaryOp,
 };
-use crate::{Diagnostic, parse};
+use crate::{Diagnostic, FILE_HEADER, parse};
 use std::collections::BTreeMap;
 use std::fmt::Write as _;
 
@@ -34,7 +34,7 @@ pub fn format(source: &str) -> FormatOutput {
 /// must split alignment blocks.
 #[must_use]
 pub fn format_file(file: &File) -> String {
-    let mut lines = vec![format!("locus {}", file.version)];
+    let mut lines = vec![FILE_HEADER.to_owned()];
     let mut index = 0;
     while index < file.statements.len() {
         if matches!(file.statements[index], Statement::Op(_)) {
@@ -97,7 +97,7 @@ fn statement_replacements(
 ) -> BTreeMap<usize, Replacement> {
     let mut replacements = BTreeMap::new();
     if let Some(line) = header_line(lines) {
-        replacements.insert(line, Replacement::Code(format!("locus {}", file.version)));
+        replacements.insert(line, Replacement::Code(FILE_HEADER.to_owned()));
     }
     for statement in &file.statements {
         add_statement_replacements(statement, source, &mut replacements);
@@ -305,9 +305,6 @@ fn format_constructor(constructor: &Constructor) -> String {
     match constructor {
         Constructor::Call { name, args, .. } => format_call(&name.name, args),
         Constructor::Expr { expr, .. } => format_expr(expr),
-        Constructor::FreePoint { x, y, .. } => {
-            format!("free ~({}, {})", format_expr(x), format_expr(y))
-        }
         Constructor::FreeNum { hint, .. } => format!("free ~{}", format_expr(hint)),
     }
 }
@@ -519,18 +516,18 @@ mod tests {
 
     #[test]
     fn aligns_ops_and_preserves_comments() {
-        let source = "// lead\nlocus 2\npoint A=free~(0,0)// hint\nsegment long_name=seg(A,A)\n\nassert true == true\n";
+        let source = "// lead\nlocus 0 beta 4\npoint A=point()// hint\nsegment long_name=seg(A,A)\n\nassert true == true\n";
         let output = format(source);
         assert!(output.diagnostics.is_empty(), "{:#?}", output.diagnostics);
         assert_eq!(
             output.source,
-            "// lead\nlocus 2\npoint A           = free ~(0, 0)  // hint\nsegment long_name = seg(A, A)\n\nassert true == true\n"
+            "// lead\nlocus 0 beta 4\npoint A           = point()  // hint\nsegment long_name = seg(A, A)\n\nassert true == true\n"
         );
     }
 
     #[test]
     fn is_idempotent_with_tex_and_comment_markers() {
-        let source = "locus 2\ntext_block t=text_block(\"https://x/$a$\")// keep\n";
+        let source = "locus 0 beta 4\ntext_block t=text_block(\"https://x/$a$\")// keep\n";
         let once = format(source).source;
         let twice = format(&once).source;
         assert_eq!(once, twice);
@@ -538,19 +535,19 @@ mod tests {
 
     #[test]
     fn header_lookup_requires_a_complete_keyword() {
-        assert_eq!(header_line(&["locusfoo 2", "locus 2"]), Some(2));
+        assert_eq!(header_line(&["locusfoo 2", "locus 0 beta 4"]), Some(2));
     }
 
     #[test]
     fn preserves_statements_from_bare_carriage_return_lines() {
-        let source = "locus 2\rpoint A = free ~(0, 0)\r";
+        let source = "locus 0 beta 4\rpoint A = point()\r";
         let formatted = format(source);
         assert!(
             formatted.diagnostics.is_empty(),
             "{:#?}",
             formatted.diagnostics
         );
-        assert_eq!(formatted.source, "locus 2\npoint A = free ~(0, 0)\n");
+        assert_eq!(formatted.source, "locus 0 beta 4\npoint A = point()\n");
         let reparsed = parse(&formatted.source);
         assert!(
             reparsed.diagnostics.is_empty(),

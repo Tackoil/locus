@@ -34,8 +34,8 @@ fn segment(a: Point, b: Point) -> ResolvedObject {
 }
 fn styles(source: &str) -> StyleSheet {
     let source = source.replacen(
-        "locus 2\n",
-        "locus 2\npoint a = free ~(0, 0)\npoint b = free ~(6, 0)\npoint c = free ~(0, 4)\n",
+        "locus 0 beta 4\n",
+        "locus 0 beta 4\npoint a = point()\npoint b = point()\npoint c = point()\n",
         1,
     );
     let parsed = locus_syntax::parse(&source);
@@ -126,7 +126,7 @@ fn triangle() -> (ResolvedScene, LayoutScene, StyleSheet) {
     });
     layout.annotations.insert("caption".into(), annotation);
     let sheet = styles(
-        "locus 2\nclass region { fill: tint, accent: #0F766E, opacity: 0.85, join: round }\nclass signal { weight: 1.5, stroke: dash(6, 3, 2), accent: #2563EB, cap: square }\npolygon face = polygon(a, b, c) [region]\nsegment ab = seg(a, b) [signal]\nlabel caption = label(a, \"A\") [highlight]\n",
+        "locus 0 beta 4\nclass region { fill: tint, accent: #0F766E, opacity: 0.85, join: round }\nclass signal { weight: 1.5, stroke: dash(6, 3, 2), accent: #2563EB, cap: square }\npolygon face = polygon(a, b, c) [region]\nsegment ab = seg(a, b) [signal]\nlabel caption = label(a, \"A\") [highlight]\n",
     );
     (scene, layout, sheet)
 }
@@ -203,7 +203,7 @@ fn circles() -> (ResolvedScene, LayoutScene, StyleSheet) {
     layout.annotations.insert("arrow".into(), arrow);
     layout.annotations.insert("formula".into(),label("formula",bounds(p(1.0,4.5),p(3.0,5.5)),TexBox::new("<g transform=\"translate(0 -0.5)\"><rect x=\"0\" y=\"0\" width=\"2\" height=\"0.05\"/><path d=\"M0 0 C0.5 -0.5 1.5 -0.5 2 0\"/></g>",BoxMetrics::new(2.0,1.0,0.0))));
     let sheet = styles(
-        "locus 2\nline axis = line(a, b) [construction]\nray ray = ray(a, b) [auxiliary]\narc ccw = arc(c, a, b) [highlight]\n",
+        "locus 0 beta 4\nline axis = line(a, b) [construction]\nray ray = ray(a, b) [auxiliary]\narc ccw = arc(c, a, b) [highlight]\n",
     );
     (scene, layout, sheet)
 }

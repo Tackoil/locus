@@ -8,8 +8,8 @@
       "span": {
         "line": 11,
         "col": 1,
-        "byte_start": 233,
-        "byte_end": 273
+        "byte_start": 240,
+        "byte_end": 280
       },
       "definition": "circle(3)",
       "resolved": {
@@ -23,8 +23,8 @@
       "span": {
         "line": 12,
         "col": 1,
-        "byte_start": 274,
-        "byte_end": 295
+        "byte_start": 281,
+        "byte_end": 302
       },
       "definition": "circ.center",
       "resolved": {
@@ -38,8 +38,8 @@
       "span": {
         "line": 13,
         "col": 1,
-        "byte_start": 296,
-        "byte_end": 320
+        "byte_start": 303,
+        "byte_end": 327
       },
       "definition": "circ.at(90deg)",
       "resolved": {
@@ -53,8 +53,8 @@
       "span": {
         "line": 15,
         "col": 1,
-        "byte_start": 322,
-        "byte_end": 351
+        "byte_start": 329,
+        "byte_end": 358
       },
       "definition": "rotate(A, O, 72deg)",
       "resolved": {
@@ -68,8 +68,8 @@
       "span": {
         "line": 16,
         "col": 1,
-        "byte_start": 352,
-        "byte_end": 382
+        "byte_start": 359,
+        "byte_end": 389
       },
       "definition": "rotate(A, O, 144deg)",
       "resolved": {
@@ -83,8 +83,8 @@
       "span": {
         "line": 17,
         "col": 1,
-        "byte_start": 383,
-        "byte_end": 413
+        "byte_start": 390,
+        "byte_end": 420
       },
       "definition": "rotate(A, O, 216deg)",
       "resolved": {
@@ -98,8 +98,8 @@
       "span": {
         "line": 18,
         "col": 1,
-        "byte_start": 414,
-        "byte_end": 444
+        "byte_start": 421,
+        "byte_end": 451
       },
       "definition": "rotate(A, O, 288deg)",
       "resolved": {
@@ -113,8 +113,8 @@
       "span": {
         "line": 20,
         "col": 1,
-        "byte_start": 446,
-        "byte_end": 483
+        "byte_start": 453,
+        "byte_end": 490
       },
       "definition": "polygon(A, B, C, D, E)",
       "resolved": {
@@ -129,8 +129,8 @@
       "span": {
         "line": 22,
         "col": 1,
-        "byte_start": 485,
-        "byte_end": 521
+        "byte_start": 492,
+        "byte_end": 528
       },
       "definition": "seg(A, C)",
       "resolved": {
@@ -144,8 +144,8 @@
       "span": {
         "line": 23,
         "col": 1,
-        "byte_start": 522,
-        "byte_end": 558
+        "byte_start": 529,
+        "byte_end": 565
       },
       "definition": "seg(B, E)",
       "resolved": {
@@ -159,8 +159,8 @@
       "span": {
         "line": 26,
         "col": 1,
-        "byte_start": 638,
-        "byte_end": 665
+        "byte_start": 645,
+        "byte_end": 672
       },
       "definition": "intersect(d1, d2)",
       "resolved": {
@@ -174,8 +174,8 @@
       "span": {
         "line": 29,
         "col": 1,
-        "byte_start": 687,
-        "byte_end": 715
+        "byte_start": 694,
+        "byte_end": 722
       },
       "definition": "tick(seg(A, B), 1)",
       "resolved": {
@@ -188,8 +188,8 @@
       "span": {
         "line": 30,
         "col": 1,
-        "byte_start": 716,
-        "byte_end": 744
+        "byte_start": 723,
+        "byte_end": 751
       },
       "definition": "tick(seg(B, C), 1)",
       "resolved": {
@@ -202,8 +202,8 @@
       "span": {
         "line": 33,
         "col": 1,
-        "byte_start": 808,
-        "byte_end": 832
+        "byte_start": 815,
+        "byte_end": 839
       },
       "definition": "label(A, $A$)",
       "resolved": {
@@ -216,8 +216,8 @@
       "span": {
         "line": 34,
         "col": 1,
-        "byte_start": 833,
-        "byte_end": 857
+        "byte_start": 840,
+        "byte_end": 864
       },
       "definition": "label(B, $B$)",
       "resolved": {
@@ -230,8 +230,8 @@
       "span": {
         "line": 35,
         "col": 1,
-        "byte_start": 858,
-        "byte_end": 882
+        "byte_start": 865,
+        "byte_end": 889
       },
       "definition": "label(C, $C$)",
       "resolved": {
@@ -244,8 +244,8 @@
       "span": {
         "line": 36,
         "col": 1,
-        "byte_start": 883,
-        "byte_end": 907
+        "byte_start": 890,
+        "byte_end": 914
       },
       "definition": "label(D, $D$)",
       "resolved": {
@@ -258,8 +258,8 @@
       "span": {
         "line": 37,
         "col": 1,
-        "byte_start": 908,
-        "byte_end": 932
+        "byte_start": 915,
+        "byte_end": 939
       },
       "definition": "label(E, $E$)",
       "resolved": {
@@ -272,8 +272,8 @@
       "span": {
         "line": 38,
         "col": 1,
-        "byte_start": 933,
-        "byte_end": 969
+        "byte_start": 940,
+        "byte_end": 976
       },
       "definition": "label(P, $P$)",
       "resolved": {
@@ -286,8 +286,8 @@
       "span": {
         "line": 40,
         "col": 1,
-        "byte_start": 971,
-        "byte_end": 1066
+        "byte_start": 978,
+        "byte_end": 1073
       },
       "definition": "text_block($\\dfrac{AC}{AB} = \\varphi = \\dfrac{1+\\sqrt5}{2}$)",
       "resolved": {
@@ -311,8 +311,8 @@
           "span": {
             "line": 11,
             "col": 1,
-            "byte_start": 233,
-            "byte_end": 273
+            "byte_start": 240,
+            "byte_end": 280
           },
           "hint_settled_dofs": 2,
           "suggestion": "add a relation if unintended, e.g. on(circ, …) or vdist(…) == …"
