@@ -389,6 +389,64 @@ fn png_has_expected_dimensions_pixels_and_deterministic_bytes() {
     assert_eq!(f64::from(decoded.height()), libm::round(view.height()));
     assert!(decoded.pixels().iter().any(|pixel| pixel.alpha() > 0));
     assert!(decoded.pixels().iter().any(|pixel| pixel.alpha() == 0));
+    let reader = png::Decoder::new(first.as_slice())
+        .read_info()
+        .expect("metadata");
+    let density = reader.info().pixel_dims.expect("print density");
+    assert_eq!((density.xppu, density.yppu), (3780, 3780));
+    assert_eq!(density.unit, png::Unit::Meter);
+}
+
+#[cfg(feature = "png")]
+#[test]
+fn png_dpi_scales_content_and_records_print_density() {
+    let (scene, layout, sheet) = triangle();
+    let options = RenderOptions {
+        background: Some(Color(255, 255, 255)),
+        ..RenderOptions::default()
+    };
+    let view = Viewport::fit(&scene, &layout, &sheet, options).expect("viewport");
+    for dpi in [48, 192, 300] {
+        let bytes =
+            locus_render::png::render_with_dpi(&scene, &layout, &sheet, options, dpi).expect("PNG");
+        let decoded = resvg::tiny_skia::Pixmap::decode_png(&bytes).expect("PNG decodes");
+        let scale = f64::from(dpi) / 96.0;
+        assert_eq!(
+            f64::from(decoded.width()),
+            libm::round(view.width() * scale)
+        );
+        assert_eq!(
+            f64::from(decoded.height()),
+            libm::round(view.height() * scale)
+        );
+        assert!(decoded.pixels().iter().all(|pixel| pixel.alpha() == 255));
+        assert_eq!(decoded.pixel(0, 0).expect("corner").red(), 255);
+        assert!(decoded.pixels().iter().any(|pixel| pixel.red() < 128));
+        let reader = png::Decoder::new(bytes.as_slice())
+            .read_info()
+            .expect("metadata");
+        let density = reader.info().pixel_dims.expect("print density");
+        assert_eq!(density.unit, png::Unit::Meter);
+        assert_eq!(density.xppu, density.yppu);
+        assert!((f64::from(density.xppu) * 0.0254 - f64::from(dpi)).abs() < 0.013);
+    }
+}
+
+#[cfg(feature = "png")]
+#[test]
+fn png_rejects_invalid_density_and_excessive_scaled_dimensions() {
+    let (scene, layout, sheet) = triangle();
+    for dpi in [0, 100_000, u32::MAX] {
+        let error = locus_render::png::render_with_dpi(
+            &scene,
+            &layout,
+            &sheet,
+            RenderOptions::default(),
+            dpi,
+        )
+        .expect_err("invalid PNG options");
+        assert_eq!(error.code(), "E417");
+    }
 }
 
 #[test]

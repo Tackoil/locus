@@ -121,6 +121,13 @@ struct RenderArgs {
     #[cfg(feature = "png")]
     #[arg(long, conflicts_with = "tikz")]
     png: bool,
+    /// PNG resolution in dots per inch (default: 96).
+    #[cfg(feature = "png")]
+    #[arg(long, requires = "png", value_parser = clap::value_parser!(u32).range(1..))]
+    dpi: Option<u32>,
+    /// Viewport background color.
+    #[arg(long, value_enum, default_value_t)]
+    background: Background,
     /// Request `TikZ` output.
     #[arg(long)]
     tikz: bool,
@@ -137,6 +144,13 @@ enum TextEngine {
     #[default]
     Rex,
     Mock,
+}
+
+#[derive(Clone, Copy, Debug, Default, ValueEnum)]
+enum Background {
+    #[default]
+    Transparent,
+    White,
 }
 
 fn main() -> std::process::ExitCode {

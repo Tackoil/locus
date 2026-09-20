@@ -43,6 +43,7 @@ locus render figure.locus -o figure.svg
 locus render figure.locus --tikz -o figure.tex
 locus render figure.locus --stdout > figure.svg
 cargo run -p locus-cli --features png -- render figure.locus --png -o figure.png
+cargo run -p locus-cli --features png -- render figure.locus --png --background white --dpi 300 -o figure.png
 ```
 
 SVG is the default. `--tikz` and feature-gated `--png` select one alternative
@@ -52,6 +53,13 @@ artifact, including binary PNG bytes. Warnings go to stderr. Use `--json` with
 `-o` for an output-path/format/diagnostics report; `--json` conflicts with
 `--stdout`. Rendering independently parses and solves the source and does not
 require a prior check or reject a scene merely because an assertion fails.
+
+Use `--background white` for an opaque white background in any output format;
+the default is `--background transparent`. For PNG, `--dpi` accepts a positive
+integer (default: 96), increases or decreases the pixel dimensions relative to
+96 DPI, and writes print-density metadata. For example, 300 DPI produces about
+3.125 times as many pixels on each side at the same physical size. PNG exports
+are limited to 64M pixels after scaling; `--dpi` requires `--png`.
 
 Plain text uses the bundled font and actual glyph measurements. The default
 TeX engine is ReX, using bundled STIX Two Math outlines for fractions, roots,

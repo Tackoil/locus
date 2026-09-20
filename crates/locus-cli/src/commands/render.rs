@@ -10,7 +10,7 @@ use super::{
     resolved_scene, success,
 };
 use crate::output::{CommandOutput, Execution, RenderResult};
-use crate::{RenderArgs, TextEngine};
+use crate::{Background, RenderArgs, TextEngine};
 
 pub(super) fn execute(args: &RenderArgs) -> Execution {
     match run(args) {
@@ -64,10 +64,22 @@ fn render(
 ) -> Result<Vec<u8>, RenderError> {
     let styles = StyleSheet::from_file(&loaded.file)?;
     let scene = resolved_scene(&loaded.scene);
-    let options = RenderOptions::default();
+    let options = RenderOptions {
+        background: match args.background {
+            Background::Transparent => None,
+            Background::White => Some(locus_render::style::Color(255, 255, 255)),
+        },
+        ..RenderOptions::default()
+    };
     #[cfg(feature = "png")]
     if args.png {
-        return locus_render::png::render(scene, placed, &styles, options);
+        return locus_render::png::render_with_dpi(
+            scene,
+            placed,
+            &styles,
+            options,
+            args.dpi.unwrap_or(96),
+        );
     }
     let text = if args.tikz {
         render_tikz(scene, placed, &styles, options)?
