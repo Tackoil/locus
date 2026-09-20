@@ -102,6 +102,20 @@ LOCUS_STRESS_PASSES=10 \
 
 `LOCUS_STRESS_PASSES` accepts 2–100 passes.
 
+For statistically sampled performance measurements of parsing, solving, and the complete
+parse-to-SVG pipeline on a representative nonlinear stress workload:
+
+```sh
+cargo bench -p locus-render --bench pipeline
+```
+
+Criterion writes detailed reports under `target/criterion/`. The benchmark is intentionally
+separate from the correctness suite so ordinary tests retain no machine-speed threshold.
+
+An opt-in [competitor benchmark](../../benchmarks/competitors/README.md) measures complete
+source-to-SVG CLI latency for Locus, Mermaid, and D2 on equivalent agent-flowchart and
+software-architecture workloads.
+
 ## Known solver limitation
 
 [`stress/known_limits/closed_segment_bisectors.locus`](stress/known_limits/closed_segment_bisectors.locus)

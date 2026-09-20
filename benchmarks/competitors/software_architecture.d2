@@ -1,0 +1,63 @@
+direction: right
+
+clients: Clients {
+  web: Web client
+  mobile: Mobile app
+  partner: Partner API
+  cdn: CDN
+  monitor: Monitoring
+}
+edge: Edge and control {
+  gateway: API gateway
+  auth: Auth service
+  limit: Rate limiter
+  events: Event ingress
+  schedule: Scheduler
+}
+application: Application {
+  catalog: Catalog
+  orders: Orders
+  payments: Payments
+  inventory: Inventory
+  worker: Worker pool
+}
+persistence: Persistence {
+  products: Product DB { shape: cylinder }
+  orderdb: Order DB { shape: cylinder }
+  cache: Cache { shape: cylinder }
+  queue: Job queue { shape: queue }
+  audit: Audit log { shape: cylinder }
+}
+
+clients.web -> edge.gateway
+clients.mobile -> edge.gateway
+clients.partner -> edge.gateway
+clients.cdn -> edge.gateway
+edge.gateway -> edge.auth
+edge.gateway -> edge.limit
+edge.gateway -> application.catalog
+edge.gateway -> application.orders
+edge.auth -> persistence.cache
+edge.limit -> persistence.cache
+application.catalog -> persistence.products
+application.catalog -> persistence.cache
+application.orders -> persistence.orderdb
+application.orders -> application.payments
+application.orders -> application.inventory
+application.payments -> persistence.audit
+application.inventory -> persistence.products
+application.inventory -> persistence.cache
+edge.events -> persistence.queue: { style.stroke-dash: 4 }
+edge.schedule -> persistence.queue: { style.stroke-dash: 4 }
+persistence.queue -> application.worker: { style.stroke-dash: 4 }
+application.worker -> persistence.orderdb: { style.stroke-dash: 4 }
+application.worker -> persistence.audit: { style.stroke-dash: 4 }
+application.worker -> edge.events: { style.stroke-dash: 4 }
+application.payments -> persistence.queue: { style.stroke-dash: 4 }
+application.orders -> persistence.queue: { style.stroke-dash: 4 }
+clients.monitor -> edge.gateway: { style.stroke-dash: 4 }
+clients.monitor -> application.worker: { style.stroke-dash: 4 }
+clients.partner -> edge.events: { style.stroke-dash: 4 }
+clients.mobile -> edge.auth: { style.stroke-dash: 4 }
+clients.web -> clients.cdn: { style.stroke-dash: 4 }
+edge.schedule -> application.worker: { style.stroke-dash: 4 }

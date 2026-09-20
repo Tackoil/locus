@@ -1,0 +1,57 @@
+direction: down
+
+n1: locus init
+n2: locus add < ops.locus
+n3: locus check
+n4: exit 0? { shape: diamond }
+n5: locus render -o fig.svg
+nf: fix ops update / edit
+
+n1 -> n2
+n2 -> n3
+n3 -> n4
+n4 -> n5: yes
+n4 -> nf: no
+nf -> n2
+
+solver: Solver loop {
+  state0: Validate schema
+  state1: Inputs valid? { shape: diamond }
+  state2: Select branch
+  state3: Build Jacobian
+  state4: Measure residual
+  state5: Converged? { shape: diamond }
+  state6: Try LM step
+  state7: Domain valid? { shape: diamond }
+  state8: Accept trial? { shape: diamond }
+  state9: Lower damping
+  state10: Raise damping
+  state11: Budget left? { shape: diamond }
+  state12: Check assertions
+  state13: Assertions pass? { shape: diamond }
+  state14: Render outputs
+  state15: Report failure
+
+  state0 -> state1
+  state1 -> state2
+  state1 -> state15
+  state2 -> state3
+  state3 -> state4
+  state4 -> state5
+  state5 -> state12
+  state5 -> state6
+  state6 -> state7
+  state7 -> state8
+  state7 -> state10
+  state8 -> state9
+  state8 -> state10
+  state9 -> state4
+  state10 -> state11
+  state11 -> state6
+  state11 -> state15
+  state12 -> state13
+  state13 -> state14
+  state13 -> state15
+}
+
+n3 -> solver.state0

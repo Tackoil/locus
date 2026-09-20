@@ -1,0 +1,36 @@
+flowchart TD
+    n1[locus init] --> n2[locus add &lt; ops.locus]
+    n2 --> n3[locus check]
+    n3 --> n4{exit 0?}
+    n4 -->|yes| n5[locus render -o fig.svg]
+    n4 -->|no| nf[fix ops update / edit]
+    nf --> n2
+
+    subgraph solver[Solver loop]
+        state0[Validate schema] --> state1{Inputs valid?}
+        state1 --> state2[Select branch]
+        state1 --> state15[Report failure]
+        state2 --> state3[Build Jacobian]
+        state3 --> state4[Measure residual]
+        state4 --> state5{Converged?}
+        state5 --> state12[Check assertions]
+        state5 --> state6[Try LM step]
+        state6 --> state7{Domain valid?}
+        state7 --> state8{Accept trial?}
+        state7 --> state10[Raise damping]
+        state8 --> state9[Lower damping]
+        state8 --> state10
+        state9 --> state4
+        state10 --> state11{Budget left?}
+        state11 --> state6
+        state11 --> state15
+        state12 --> state13{Assertions pass?}
+        state13 --> state14[Render outputs]
+        state13 --> state15
+    end
+
+    n3 --> state0
+    classDef decision fill:#fff7d6,stroke:#a16207
+    classDef action fill:#eff6ff,stroke:#2563eb
+    class n4,state1,state5,state7,state8,state11,state13 decision
+    class n1,n2,n3,n5,nf,state0,state2,state3,state4,state6,state9,state10,state12,state14,state15 action
