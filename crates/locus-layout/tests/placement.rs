@@ -46,6 +46,7 @@ fn triangle_labels_use_hand_checkable_external_bisectors() {
     let a = &output.annotations["a"];
     let b = &output.annotations["b"];
     let c = &output.annotations["c"];
+    assert_eq!([&a.leader, &b.leader, &c.leader], [&Leader::None; 3]);
     assert!(a.bounds.max.x < 0.0 && a.bounds.max.y < 0.0);
     assert!(b.bounds.min.x > 6.0 && b.bounds.center().y < 0.0);
     assert!(c.bounds.center().x < 0.0 && c.bounds.min.y > 6.0);
@@ -232,8 +233,10 @@ fn all_annotation_kinds_resolve_deferred_centers_and_leader_info() {
     assert!(
         matches!(output.annotations["link"].leader, Leader::Arrow { from, to, control: Some(_), .. } if from == output.annotations["a"].bounds.center() && to == Point::new(6.0, 0.0))
     );
+    assert_eq!(output.annotations["a"].leader, Leader::None);
+    assert_eq!(output.annotations["b"].leader, Leader::None);
     assert!(
-        matches!(output.annotations["b"].leader, Leader::Segment(s) if s.start == output.annotations["a"].bounds.center())
+        matches!(output.annotations["note"].leader, Leader::Segment(s) if s.start == output.annotations["b"].bounds.center())
     );
     assert_eq!(output, placed(&scene));
 }
@@ -423,6 +426,27 @@ fn connector_fixture(connector_id: &str, direction: &str, connector_first: bool)
 }
 
 #[test]
+fn labels_have_no_connectors_or_connector_collisions_by_default() {
+    for direction in ["center", "auto"] {
+        let scene = connector_fixture("a", direction, true);
+        let output = layout(
+            &scene,
+            &measured(&scene),
+            LayoutOptions {
+                margin: 10.0,
+                ..LayoutOptions::default()
+            },
+        )
+        .expect("layout");
+        assert_eq!(output.annotations["a"].leader, Leader::None);
+        assert_eq!(output.annotations["b"].leader, Leader::None);
+        assert_eq!(output.annotations["a"].bounds.min.y, 4.0);
+        assert_eq!(output.annotations["b"].candidate_index, 0);
+        assert!(output.diagnostics.is_empty(), "{:?}", output.diagnostics);
+    }
+}
+
+#[test]
 fn pinned_connector_collisions_are_reported_in_any_placement_or_declaration_order() {
     for connector_id in ["a", "z"] {
         // Identifier ties place a before b, and z after b. Neither source
@@ -433,6 +457,7 @@ fn pinned_connector_collisions_are_reported_in_any_placement_or_declaration_orde
                 let options = LayoutOptions {
                     margin: 10.0,
                     stroke_width,
+                    label_connectors: true,
                     ..LayoutOptions::default()
                 };
                 let output = layout(&scene, &measured(&scene), options).expect("layout");
@@ -462,6 +487,7 @@ fn automatic_labels_avoid_previously_placed_text_connectors() {
             LayoutOptions {
                 margin: 10.0,
                 stroke_width,
+                label_connectors: true,
                 ..LayoutOptions::default()
             },
         )
@@ -485,6 +511,7 @@ fn isolated_labels_do_not_collide_with_their_own_connector_attachment() {
             LayoutOptions {
                 margin: 10.0,
                 stroke_width,
+                label_connectors: true,
                 ..LayoutOptions::default()
             },
         )

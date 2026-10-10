@@ -26,6 +26,8 @@ pub struct LayoutOptions {
     pub em_size: f64,
     /// Default gap from an anchor to the nearest box edge.
     pub gap: f64,
+    /// Draw connectors from label anchors to their text boxes (off by default).
+    pub label_connectors: bool,
     /// Allowed extension beyond the geometry bounds.
     pub margin: f64,
     /// Width used for geometry and annotation stroke collision checks.
@@ -39,6 +41,7 @@ impl Default for LayoutOptions {
         Self {
             em_size: 1.0,
             gap: 0.25,
+            label_connectors: false,
             margin: 2.0,
             stroke_width: 0.04,
             mark_size: 0.2,
@@ -76,7 +79,7 @@ pub struct LabelBox {
 /// A connector or annotation stroke path.
 #[derive(Clone, Debug, PartialEq)]
 pub enum Leader {
-    /// No leader for centered text or local marks.
+    /// No leader for labels by default, centered text, or local marks.
     None,
     /// Connector from the anchor to the nearest edge of the text box.
     Segment(Segment),

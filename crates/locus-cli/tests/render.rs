@@ -86,6 +86,26 @@ fn svg_paths(svg: &str) -> Result<Vec<&str>> {
 }
 
 #[test]
+fn offset_labels_render_without_connectors_by_default() -> Result {
+    let directory = tempfile::tempdir()?;
+    let source = directory.path().join("label.locus");
+    for properties in ["", " { dir: N, gap: 4 }"] {
+        fs::write(
+            &source,
+            format!(
+                "locus 0 beta 4\npoint anchor = point() {{ mark: none }}\nlabel name = label(anchor, \"X\"){properties}\n"
+            ),
+        )?;
+        let output = render(&source)?.arg("--stdout").output()?;
+        assert!(output.status.success());
+        let svg = String::from_utf8(output.stdout)?;
+        assert_eq!(svg_paths(&svg)?.len(), 1, "only the glyph is drawn");
+        assert!(!svg.contains("<line"));
+    }
+    Ok(())
+}
+
+#[test]
 fn cjk_scripts_render_distinct_glyph_outlines() -> Result {
     let mut outlines = BTreeSet::new();
     for text in ["中", "文", "あ", "カ", "한", "글"] {
@@ -275,6 +295,8 @@ fn mock_is_explicit_and_assertions_do_not_gate_render() -> Result {
     assert!(result.status.success());
     let svg = String::from_utf8(result.stdout)?;
     assert!(svg.starts_with("<svg"));
-    assert!(svg.contains("<g id=\"name\""));
+    assert!(svg.contains("<g id=\"c\""));
+    // Mock text has no glyph outlines; labels no longer leave a connector behind.
+    assert!(!svg.contains("<g id=\"name\""));
     Ok(())
 }

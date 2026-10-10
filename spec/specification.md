@@ -398,6 +398,8 @@ The `text` argument accepts a quoted text string, including any number of inline
 
 `dir: center` places the label centered on its anchor with zero gap — text inside a `rect`/`diamond`/box.
 
+Labels do not draw a connector from the anchor to the text box by default. The `gap` property controls spacing only; use an explicit `arrow` for a visible connection.
+
 ### 5.8 Anchors
 
 Anywhere a point is accepted, an **anchor expression** is accepted:

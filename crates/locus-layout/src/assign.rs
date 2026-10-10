@@ -269,6 +269,7 @@ fn place(
     let leader = choice
         .anchors
         .first()
+        .filter(|_| options.label_connectors || !matches!(item.spec, AnnotationSpec::Label { .. }))
         .map_or(crate::Leader::None, |a| connector(*a, bounds));
     Ok(PlacedAnnotation {
         id: item.id.clone(),
