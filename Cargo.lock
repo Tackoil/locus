@@ -755,7 +755,7 @@ checksum = "32a66949e030da00e8c7d4434b251670a91556f4144941d37452769c25d58a53"
 
 [[package]]
 name = "locus-cli"
-version = "0.0.0"
+version = "0.0.0-beta.5"
 dependencies = [
  "assert_cmd",
  "clap",
@@ -775,7 +775,7 @@ dependencies = [
 
 [[package]]
 name = "locus-core"
-version = "0.0.0"
+version = "0.0.0-beta.5"
 dependencies = [
  "indexmap",
  "insta",
@@ -789,7 +789,7 @@ dependencies = [
 
 [[package]]
 name = "locus-layout"
-version = "0.0.0"
+version = "0.0.0-beta.5"
 dependencies = [
  "indexmap",
  "libm",
@@ -801,7 +801,7 @@ dependencies = [
 
 [[package]]
 name = "locus-lsp"
-version = "0.0.0"
+version = "0.0.0-beta.5"
 dependencies = [
  "crossbeam-channel",
  "locus-core",
@@ -814,7 +814,7 @@ dependencies = [
 
 [[package]]
 name = "locus-render"
-version = "0.0.0"
+version = "0.0.0-beta.5"
 dependencies = [
  "criterion",
  "indexmap",
@@ -835,7 +835,7 @@ dependencies = [
 
 [[package]]
 name = "locus-syntax"
-version = "0.0.0"
+version = "0.0.0-beta.5"
 dependencies = [
  "insta",
  "proptest",
@@ -845,7 +845,7 @@ dependencies = [
 
 [[package]]
 name = "locus-tex"
-version = "0.0.0"
+version = "0.0.0-beta.5"
 dependencies = [
  "rex",
  "rustybuzz",

@@ -1,9 +1,7 @@
-locus 0 beta 4
+locus 0 beta 5
 
-meta {
-  title "Sequence: agent runs locus check"
-  note  "Rows step down lifeline A via offset; other endpoints via foot() — same y by construction"
-}
+meta title = "Sequence: agent runs locus check"
+meta note = "Rows step down lifeline A via offset; other endpoints via foot() — same y by construction"
 
 style textbook
 

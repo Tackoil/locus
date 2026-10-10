@@ -1,9 +1,7 @@
-locus 0 beta 4
+locus 0 beta 5
 
-meta {
-  title "Conserved flow network: three sources, four processes, four outputs"
-  note "Twenty-eight weighted polygon bands split and merge across two stages. Thickness is measured vertically at ports."
-}
+meta title = "Conserved flow network: three sources, four processes, four outputs"
+meta note = "Twenty-eight weighted polygon bands split and merge across two stages. Thickness is measured vertically at ports."
 
 style textbook
 

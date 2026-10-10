@@ -10,7 +10,7 @@ expression: stdout
       "id": "r_1",
       "kind": "num",
       "span": {
-        "line": 11,
+        "line": 9,
         "col": 1,
         "byte_start": 303,
         "byte_end": 314
@@ -26,7 +26,7 @@ expression: stdout
       "id": "r_2",
       "kind": "num",
       "span": {
-        "line": 12,
+        "line": 10,
         "col": 1,
         "byte_start": 315,
         "byte_end": 326
@@ -42,7 +42,7 @@ expression: stdout
       "id": "c1",
       "kind": "circle",
       "span": {
-        "line": 14,
+        "line": 12,
         "col": 1,
         "byte_start": 328,
         "byte_end": 351
@@ -57,7 +57,7 @@ expression: stdout
       "id": "c2",
       "kind": "circle",
       "span": {
-        "line": 15,
+        "line": 13,
         "col": 1,
         "byte_start": 352,
         "byte_end": 418
@@ -72,7 +72,7 @@ expression: stdout
       "id": "O_1",
       "kind": "point",
       "span": {
-        "line": 16,
+        "line": 14,
         "col": 1,
         "byte_start": 419,
         "byte_end": 440
@@ -87,7 +87,7 @@ expression: stdout
       "id": "O_2",
       "kind": "point",
       "span": {
-        "line": 17,
+        "line": 15,
         "col": 1,
         "byte_start": 441,
         "byte_end": 462
@@ -102,7 +102,7 @@ expression: stdout
       "id": "T",
       "kind": "point",
       "span": {
-        "line": 23,
+        "line": 21,
         "col": 1,
         "byte_start": 642,
         "byte_end": 685
@@ -117,7 +117,7 @@ expression: stdout
       "id": "t_int",
       "kind": "line",
       "span": {
-        "line": 26,
+        "line": 24,
         "col": 1,
         "byte_start": 719,
         "byte_end": 778
@@ -131,7 +131,7 @@ expression: stdout
       "id": "E",
       "kind": "point",
       "span": {
-        "line": 29,
+        "line": 27,
         "col": 1,
         "byte_start": 859,
         "byte_end": 902
@@ -146,7 +146,7 @@ expression: stdout
       "id": "t_ext",
       "kind": "line",
       "span": {
-        "line": 32,
+        "line": 30,
         "col": 1,
         "byte_start": 979,
         "byte_end": 1028
@@ -160,7 +160,7 @@ expression: stdout
       "id": "P_1",
       "kind": "point",
       "span": {
-        "line": 33,
+        "line": 31,
         "col": 1,
         "byte_start": 1029,
         "byte_end": 1057
@@ -175,7 +175,7 @@ expression: stdout
       "id": "P_2",
       "kind": "point",
       "span": {
-        "line": 36,
+        "line": 34,
         "col": 1,
         "byte_start": 1125,
         "byte_end": 1153
@@ -190,7 +190,7 @@ expression: stdout
       "id": "s1",
       "kind": "segment",
       "span": {
-        "line": 38,
+        "line": 36,
         "col": 1,
         "byte_start": 1155,
         "byte_end": 1195
@@ -205,7 +205,7 @@ expression: stdout
       "id": "s2",
       "kind": "segment",
       "span": {
-        "line": 39,
+        "line": 37,
         "col": 1,
         "byte_start": 1196,
         "byte_end": 1236
@@ -220,7 +220,7 @@ expression: stdout
       "id": "q1",
       "kind": "right_angle",
       "span": {
-        "line": 41,
+        "line": 39,
         "col": 1,
         "byte_start": 1238,
         "byte_end": 1279
@@ -234,7 +234,7 @@ expression: stdout
       "id": "q2",
       "kind": "right_angle",
       "span": {
-        "line": 42,
+        "line": 40,
         "col": 1,
         "byte_start": 1280,
         "byte_end": 1321
@@ -248,7 +248,7 @@ expression: stdout
       "id": "lO1",
       "kind": "label",
       "span": {
-        "line": 45,
+        "line": 43,
         "col": 1,
         "byte_start": 1385,
         "byte_end": 1426
@@ -262,7 +262,7 @@ expression: stdout
       "id": "lO2",
       "kind": "label",
       "span": {
-        "line": 46,
+        "line": 44,
         "col": 1,
         "byte_start": 1427,
         "byte_end": 1468
@@ -276,7 +276,7 @@ expression: stdout
       "id": "lT",
       "kind": "label",
       "span": {
-        "line": 47,
+        "line": 45,
         "col": 1,
         "byte_start": 1469,
         "byte_end": 1511
@@ -290,7 +290,7 @@ expression: stdout
       "id": "lE",
       "kind": "label",
       "span": {
-        "line": 48,
+        "line": 46,
         "col": 1,
         "byte_start": 1512,
         "byte_end": 1553
@@ -304,7 +304,7 @@ expression: stdout
       "id": "lP1",
       "kind": "label",
       "span": {
-        "line": 49,
+        "line": 47,
         "col": 1,
         "byte_start": 1554,
         "byte_end": 1583
@@ -318,7 +318,7 @@ expression: stdout
       "id": "lP2",
       "kind": "label",
       "span": {
-        "line": 50,
+        "line": 48,
         "col": 1,
         "byte_start": 1584,
         "byte_end": 1613
@@ -332,7 +332,7 @@ expression: stdout
       "id": "homothety",
       "kind": "arrow",
       "span": {
-        "line": 52,
+        "line": 50,
         "col": 1,
         "byte_start": 1615,
         "byte_end": 1687
@@ -357,7 +357,7 @@ expression: stdout
         {
           "id": "c1",
           "span": {
-            "line": 14,
+            "line": 12,
             "col": 1,
             "byte_start": 328,
             "byte_end": 351
@@ -368,7 +368,7 @@ expression: stdout
         {
           "id": "c2",
           "span": {
-            "line": 15,
+            "line": 13,
             "col": 1,
             "byte_start": 352,
             "byte_end": 418
@@ -381,7 +381,7 @@ expression: stdout
     "branch_resolutions": [
       {
         "span": {
-          "line": 20,
+          "line": 18,
           "col": 5,
           "byte_start": 550,
           "byte_end": 565
@@ -394,7 +394,7 @@ expression: stdout
     "relation_residuals": [
       {
         "span": {
-          "line": 15,
+          "line": 13,
           "col": 33,
           "byte_start": 384,
           "byte_end": 416
@@ -407,7 +407,7 @@ expression: stdout
       },
       {
         "span": {
-          "line": 20,
+          "line": 18,
           "col": 5,
           "byte_start": 550,
           "byte_end": 565

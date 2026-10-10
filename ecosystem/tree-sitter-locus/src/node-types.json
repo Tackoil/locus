@@ -535,22 +535,7 @@
     }
   },
   {
-    "type": "meta_block",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": false,
-      "types": [
-        {
-          "type": "meta_entry",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "meta_entry",
+    "type": "meta_statement",
     "named": true,
     "fields": {
       "key": {
@@ -842,7 +827,7 @@
           "named": true
         },
         {
-          "type": "meta_block",
+          "type": "meta_statement",
           "named": true
         },
         {
@@ -1099,7 +1084,7 @@
     "named": false
   },
   {
-    "type": "4",
+    "type": "5",
     "named": false
   },
   {
@@ -1309,10 +1294,6 @@
   },
   {
     "type": "}",
-    "named": false
-  },
-  {
-    "type": "~",
     "named": false
   }
 ]

@@ -1,15 +1,13 @@
-locus 0 beta 4
+locus 0 beta 5
 
-meta {
-  title "Right triangle: altitude and geometric mean theorems"
-  note "Perturbed numeric leg lengths solve to a 3-4-5 triangle; derived assertions test its consequences."
-}
+meta title = "Right triangle: altitude and geometric mean theorems"
+meta note = "Perturbed numeric leg lengths solve to a 3-4-5 triangle; derived assertions test its consequences."
 
 style textbook
 
 point A = point()
-num base = free ~4.2
-num height = free ~2.8
+num base = free 4.2
+num height = free 2.8
 point B = offset(A, base, 0)
 point C = offset(A, 0, height)
 rel dist(A, B) == 4

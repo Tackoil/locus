@@ -54,7 +54,7 @@ fn export_gallery(cases: &[support::Case]) -> Result<(), Box<dyn Error>> {
         )?;
     }
     let gallery = format!(
-        "<!doctype html><html lang=\"en\"><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><title>Locus 0 beta 4 stress drawings</title><style>body{{margin:0;padding:32px;background:#f3f4f6;color:#111827;font:16px system-ui,sans-serif}}main{{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px}}article{{padding:16px;background:white;border:1px solid #d1d5db;border-radius:12px}}img{{display:block;width:100%;height:320px;object-fit:contain;background:white}}h1{{margin-top:0}}h2{{font-size:16px;text-transform:capitalize}}a{{color:#2563eb}}p{{color:#4b5563}}</style><h1>Locus 0 beta 4 stress drawings</h1><p>All {count} workloads, verified and drawn with a white background. Select a drawing to view the full SVG.</p><main>{cards}</main></html>"
+        "<!doctype html><html lang=\"en\"><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><title>Locus 0 beta 5 stress drawings</title><style>body{{margin:0;padding:32px;background:#f3f4f6;color:#111827;font:16px system-ui,sans-serif}}main{{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px}}article{{padding:16px;background:white;border:1px solid #d1d5db;border-radius:12px}}img{{display:block;width:100%;height:320px;object-fit:contain;background:white}}h1{{margin-top:0}}h2{{font-size:16px;text-transform:capitalize}}a{{color:#2563eb}}p{{color:#4b5563}}</style><h1>Locus 0 beta 5 stress drawings</h1><p>All {count} workloads, verified and drawn with a white background. Select a drawing to view the full SVG.</p><main>{cards}</main></html>"
     );
     export("index", "html", gallery.as_bytes())
 }
@@ -87,7 +87,7 @@ fn render_case(case: &support::Case) -> Result<Run, Box<dyn Error>> {
     )?;
     let styles = StyleSheet::from_file(&file)?;
     let options = RenderOptions {
-        background: Some(Color(255, 255, 255)),
+        background: Some(Color(255, 255, 255, 255)),
         ..RenderOptions::default()
     };
     let svg = render_svg(&solved.scene, &placed, &styles, options)?;

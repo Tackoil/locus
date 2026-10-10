@@ -18,7 +18,7 @@ locus/
 │   ├── plan.md                    # historical implementation plan
 │   └── structure.md               # this document
 ├── spec/
-│   ├── specification.md           # the normative 0 beta 4 relational spec
+│   ├── specification.md           # the normative 0 beta 5 relational spec
 │   └── test/                      # *.locus demonstrations and stress figures
 ├── crates/
 │   ├── locus-syntax/              # lexer, parser, AST, formatter, spans

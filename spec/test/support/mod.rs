@@ -38,7 +38,7 @@ impl Case {
         );
         assert!(
             parsed.diagnostics.is_empty(),
-            "{}: expected a valid locus 0 beta 4 file",
+            "{}: expected a valid locus 0 beta 5 file",
             self.name
         );
         let count = parsed

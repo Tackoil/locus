@@ -12,7 +12,7 @@ Locus is an agent-friendly relational language and CLI toolchain for determinist
 
 The core goal of Locus is to let AI agents create, inspect, verify, and revise precise geometry without relying on visual feedback. Agents declare geometric relationships instead of guessing coordinates, use structured diagnostics and stable JSON output to understand failures, and verify intent through persistent assertions. Deterministic output and diffable `.locus` source files make every change reproducible and auditable.
 
-The project is under active development and supports only the latest draft: `locus 0 beta 4`. Backward compatibility is not a goal yet. This draft uses parameterless points, shape-owned placement, explicit circle-tangency branches, ellipses, and B-splines. See the [specification](spec/specification.md) and [demonstrations](spec/test/README.md).
+The project is under active development and supports only the latest draft: `locus 0 beta 5`. Backward compatibility is not a goal yet. This draft uses single-line `meta key = "value"` metadata, scalar seeds directly after `free`, optional alpha in `#RRGGBBAA` colors, parameterless points, shape-owned placement, explicit circle-tangency branches, ellipses, and B-splines. See the [specification](spec/specification.md) and [demonstrations](spec/test/README.md).
 
 ## Development checks
 

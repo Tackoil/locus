@@ -67,7 +67,7 @@ fn render(
     let options = RenderOptions {
         background: match args.background {
             Background::Transparent => None,
-            Background::White => Some(locus_render::style::Color(255, 255, 255)),
+            Background::White => Some(locus_render::style::Color(255, 255, 255, 255)),
         },
         ..RenderOptions::default()
     };

@@ -6,7 +6,7 @@
       "id": "bw",
       "kind": "num",
       "span": {
-        "line": 11,
+        "line": 9,
         "col": 1,
         "byte_start": 250,
         "byte_end": 265
@@ -22,7 +22,7 @@
       "id": "bh",
       "kind": "num",
       "span": {
-        "line": 12,
+        "line": 10,
         "col": 1,
         "byte_start": 286,
         "byte_end": 301
@@ -38,7 +38,7 @@
       "id": "pitch",
       "kind": "num",
       "span": {
-        "line": 13,
+        "line": 11,
         "col": 1,
         "byte_start": 323,
         "byte_end": 338
@@ -54,7 +54,7 @@
       "id": "side",
       "kind": "num",
       "span": {
-        "line": 14,
+        "line": 12,
         "col": 1,
         "byte_start": 381,
         "byte_end": 396
@@ -70,7 +70,7 @@
       "id": "n1",
       "kind": "rect",
       "span": {
-        "line": 17,
+        "line": 15,
         "col": 1,
         "byte_start": 498,
         "byte_end": 520
@@ -86,7 +86,7 @@
       "id": "t1",
       "kind": "label",
       "span": {
-        "line": 18,
+        "line": 16,
         "col": 1,
         "byte_start": 521,
         "byte_end": 579
@@ -100,7 +100,7 @@
       "id": "n2",
       "kind": "rect",
       "span": {
-        "line": 20,
+        "line": 18,
         "col": 1,
         "byte_start": 581,
         "byte_end": 682
@@ -116,7 +116,7 @@
       "id": "t2",
       "kind": "label",
       "span": {
-        "line": 21,
+        "line": 19,
         "col": 1,
         "byte_start": 683,
         "byte_end": 752
@@ -130,7 +130,7 @@
       "id": "n3",
       "kind": "rect",
       "span": {
-        "line": 23,
+        "line": 21,
         "col": 1,
         "byte_start": 754,
         "byte_end": 855
@@ -146,7 +146,7 @@
       "id": "t3",
       "kind": "label",
       "span": {
-        "line": 24,
+        "line": 22,
         "col": 1,
         "byte_start": 856,
         "byte_end": 915
@@ -160,7 +160,7 @@
       "id": "n4",
       "kind": "diamond",
       "span": {
-        "line": 26,
+        "line": 24,
         "col": 1,
         "byte_start": 917,
         "byte_end": 1026
@@ -176,7 +176,7 @@
       "id": "t4",
       "kind": "label",
       "span": {
-        "line": 27,
+        "line": 25,
         "col": 1,
         "byte_start": 1027,
         "byte_end": 1084
@@ -190,7 +190,7 @@
       "id": "n5",
       "kind": "rect",
       "span": {
-        "line": 29,
+        "line": 27,
         "col": 1,
         "byte_start": 1086,
         "byte_end": 1201
@@ -206,7 +206,7 @@
       "id": "t5",
       "kind": "label",
       "span": {
-        "line": 30,
+        "line": 28,
         "col": 1,
         "byte_start": 1202,
         "byte_end": 1273
@@ -220,7 +220,7 @@
       "id": "nf",
       "kind": "rect",
       "span": {
-        "line": 33,
+        "line": 31,
         "col": 1,
         "byte_start": 1341,
         "byte_end": 1443
@@ -236,7 +236,7 @@
       "id": "tf",
       "kind": "label",
       "span": {
-        "line": 34,
+        "line": 32,
         "col": 1,
         "byte_start": 1444,
         "byte_end": 1515
@@ -250,7 +250,7 @@
       "id": "a1",
       "kind": "arrow",
       "span": {
-        "line": 37,
+        "line": 35,
         "col": 1,
         "byte_start": 1584,
         "byte_end": 1626
@@ -264,7 +264,7 @@
       "id": "a2",
       "kind": "arrow",
       "span": {
-        "line": 38,
+        "line": 36,
         "col": 1,
         "byte_start": 1627,
         "byte_end": 1669
@@ -278,7 +278,7 @@
       "id": "a3",
       "kind": "arrow",
       "span": {
-        "line": 39,
+        "line": 37,
         "col": 1,
         "byte_start": 1670,
         "byte_end": 1712
@@ -292,7 +292,7 @@
       "id": "a4",
       "kind": "arrow",
       "span": {
-        "line": 40,
+        "line": 38,
         "col": 1,
         "byte_start": 1713,
         "byte_end": 1755
@@ -306,7 +306,7 @@
       "id": "ly",
       "kind": "label",
       "span": {
-        "line": 41,
+        "line": 39,
         "col": 1,
         "byte_start": 1756,
         "byte_end": 1809
@@ -320,7 +320,7 @@
       "id": "a5",
       "kind": "arrow",
       "span": {
-        "line": 42,
+        "line": 40,
         "col": 1,
         "byte_start": 1810,
         "byte_end": 1852
@@ -334,7 +334,7 @@
       "id": "ln",
       "kind": "label",
       "span": {
-        "line": 43,
+        "line": 41,
         "col": 1,
         "byte_start": 1853,
         "byte_end": 1906
@@ -348,7 +348,7 @@
       "id": "a6",
       "kind": "arrow",
       "span": {
-        "line": 44,
+        "line": 42,
         "col": 1,
         "byte_start": 1907,
         "byte_end": 1962
@@ -373,7 +373,7 @@
         {
           "id": "n1",
           "span": {
-            "line": 17,
+            "line": 15,
             "col": 1,
             "byte_start": 498,
             "byte_end": 520
@@ -384,7 +384,7 @@
         {
           "id": "n2",
           "span": {
-            "line": 20,
+            "line": 18,
             "col": 1,
             "byte_start": 581,
             "byte_end": 682
@@ -395,7 +395,7 @@
         {
           "id": "n3",
           "span": {
-            "line": 23,
+            "line": 21,
             "col": 1,
             "byte_start": 754,
             "byte_end": 855
@@ -406,7 +406,7 @@
         {
           "id": "n4",
           "span": {
-            "line": 26,
+            "line": 24,
             "col": 1,
             "byte_start": 917,
             "byte_end": 1026
@@ -417,7 +417,7 @@
         {
           "id": "n5",
           "span": {
-            "line": 29,
+            "line": 27,
             "col": 1,
             "byte_start": 1086,
             "byte_end": 1201
@@ -428,7 +428,7 @@
         {
           "id": "nf",
           "span": {
-            "line": 33,
+            "line": 31,
             "col": 1,
             "byte_start": 1341,
             "byte_end": 1443
@@ -444,7 +444,7 @@
     "relation_residuals": [
       {
         "span": {
-          "line": 20,
+          "line": 18,
           "col": 32,
           "byte_start": 612,
           "byte_end": 642
@@ -457,7 +457,7 @@
       },
       {
         "span": {
-          "line": 20,
+          "line": 18,
           "col": 64,
           "byte_start": 644,
           "byte_end": 680
@@ -470,7 +470,7 @@
       },
       {
         "span": {
-          "line": 23,
+          "line": 21,
           "col": 32,
           "byte_start": 785,
           "byte_end": 815
@@ -483,7 +483,7 @@
       },
       {
         "span": {
-          "line": 23,
+          "line": 21,
           "col": 64,
           "byte_start": 817,
           "byte_end": 853
@@ -496,7 +496,7 @@
       },
       {
         "span": {
-          "line": 26,
+          "line": 24,
           "col": 40,
           "byte_start": 956,
           "byte_end": 986
@@ -509,7 +509,7 @@
       },
       {
         "span": {
-          "line": 26,
+          "line": 24,
           "col": 72,
           "byte_start": 988,
           "byte_end": 1024
@@ -522,7 +522,7 @@
       },
       {
         "span": {
-          "line": 29,
+          "line": 27,
           "col": 32,
           "byte_start": 1117,
           "byte_end": 1147
@@ -535,7 +535,7 @@
       },
       {
         "span": {
-          "line": 29,
+          "line": 27,
           "col": 64,
           "byte_start": 1149,
           "byte_end": 1185
@@ -548,7 +548,7 @@
       },
       {
         "span": {
-          "line": 33,
+          "line": 31,
           "col": 32,
           "byte_start": 1372,
           "byte_end": 1404
@@ -561,7 +561,7 @@
       },
       {
         "span": {
-          "line": 33,
+          "line": 31,
           "col": 66,
           "byte_start": 1406,
           "byte_end": 1441

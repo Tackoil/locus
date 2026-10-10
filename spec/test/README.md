@@ -7,7 +7,7 @@ It is opt-in and requires an API key.
 The positive `.locus` corpus is split by purpose:
 
 - [`demonstrations/`](demonstrations/) contains eleven compact, readable examples of the
-  [`0 beta 4` language](../specification.md): points and shapes own placement;
+  [`0 beta 5` language](../specification.md): points and shapes own placement;
   anchors and constructions remain derived.
 - [`stress/`](stress/) contains 16 expanded workloads. These exercise large construction
   graphs, dense annotations, shared constraints, assertions, deterministic layout, and every
@@ -16,7 +16,7 @@ The positive `.locus` corpus is split by purpose:
 Invalid-input fixtures remain in [`fixtures/errors/`](../../fixtures/errors/) so they are not
 mistaken for runnable examples.
 
-Run the checks from the repository root. The demonstrations are the `0 beta 4` acceptance
+Run the checks from the repository root. The demonstrations are the `0 beta 5` acceptance
 suite, and all stress sources, including the known solver-limit fixture, use the same draft.
 
 ```sh
@@ -41,7 +41,7 @@ cargo test -p locus-cli -p locus-render --test spec_examples --all-features
 | [sequence_check.locus](demonstrations/sequence_check.locus) | Sequence-diagram participants and messages |
 | [tangent_circles.locus](demonstrations/tangent_circles.locus) | Solved tangent circles and common tangents |
 
-### `0 beta 4` coverage
+### `0 beta 5` coverage
 
 The eleven demonstrations exercise parameterless points; dimension-only circles, ellipses,
 rectangles, and diamonds; derived object aliases; explicit external and internal tangency;

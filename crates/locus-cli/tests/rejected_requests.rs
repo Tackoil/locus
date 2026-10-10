@@ -84,7 +84,7 @@ fn syntax_failures_retain_original_source_and_diagnostics() -> Result<(), Box<dy
 fn rejected_edits_retain_stdin_arguments_and_candidate() -> Result<(), Box<dyn Error>> {
     let directory = tempfile::tempdir()?;
     let path = directory.path().join("scene.locus");
-    let source = "locus 0 beta 4\npoint A = point()\nnum n = 1\n";
+    let source = "locus 0 beta 5\npoint A = point()\nnum n = 1\n";
     let appended = "num bad = 1 / 0\n";
     fs::write(&path, source)?;
     locus(directory.path())?
@@ -112,7 +112,7 @@ fn rejected_edits_retain_stdin_arguments_and_candidate() -> Result<(), Box<dyn E
     assert_eq!(saved[0]["original_files"][0]["source"], source);
     assert_eq!(
         saved[0]["candidate_sources"][0]["source"],
-        "locus 0 beta 4\npoint A = point()\nnum n = 1 / 0\n"
+        "locus 0 beta 5\npoint A = point()\nnum n = 1 / 0\n"
     );
     assert!(
         saved[0]["arguments"]
@@ -129,12 +129,12 @@ fn batch_assertions_and_strict_warnings_are_archived() -> Result<(), Box<dyn Err
     let directory = tempfile::tempdir()?;
     fs::write(
         directory.path().join("assert.locus"),
-        "locus 0 beta 4\nnum a = 1\nassert a == 2\n",
+        "locus 0 beta 5\nnum a = 1\nassert a == 2\n",
     )?;
     fs::write(directory.path().join("bad.locus"), "num a = 1\n")?;
     fs::write(
         directory.path().join("good.locus"),
-        "locus 0 beta 4\nnum a = 1\nassert a == 1\n",
+        "locus 0 beta 5\nnum a = 1\nassert a == 1\n",
     )?;
     locus(directory.path())?
         .args(["check", "assert.locus", "bad.locus", "good.locus"])
@@ -157,7 +157,7 @@ fn batch_assertions_and_strict_warnings_are_archived() -> Result<(), Box<dyn Err
 
     fs::write(
         directory.path().join("warning.locus"),
-        "locus 0 beta 4\npoint A = point()\n",
+        "locus 0 beta 5\npoint A = point()\n",
     )?;
     locus(directory.path())?
         .args(["check", "warning.locus", "--strict"])
@@ -173,7 +173,7 @@ fn batch_assertions_and_strict_warnings_are_archived() -> Result<(), Box<dyn Err
 #[cfg(debug_assertions)]
 fn usage_io_and_non_utf8_failures_keep_available_context() -> Result<(), Box<dyn Error>> {
     let directory = tempfile::tempdir()?;
-    let source = "locus 0 beta 4\npoint A = point()\n";
+    let source = "locus 0 beta 5\npoint A = point()\n";
     fs::write(directory.path().join("scene.locus"), source)?;
     locus(directory.path())?
         .args(["update", "scene.locus"])
@@ -206,7 +206,7 @@ fn success_help_and_version_do_not_create_archives() -> Result<(), Box<dyn Error
     let directory = tempfile::tempdir()?;
     fs::write(
         directory.path().join("good.locus"),
-        "locus 0 beta 4\nnum a = 1\n",
+        "locus 0 beta 5\nnum a = 1\n",
     )?;
     locus(directory.path())?
         .args(["check", "good.locus"])

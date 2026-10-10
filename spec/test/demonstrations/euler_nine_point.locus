@@ -1,9 +1,7 @@
-locus 0 beta 4
+locus 0 beta 5
 
-meta {
-  title "Euler line and the nine-point circle"
-  note  "Almost entirely derived-tier: construct when you can, relate when you must"
-}
+meta title = "Euler line and the nine-point circle"
+meta note = "Almost entirely derived-tier: construct when you can, relate when you must"
 
 style textbook
 

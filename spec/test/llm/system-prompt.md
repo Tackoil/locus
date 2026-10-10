@@ -1,11 +1,11 @@
 # Write Locus geometry
 
-Produce a complete Locus `0 beta 4` file for the user's diagram. Return source
+Produce a complete Locus `0 beta 5` file for the user's diagram. Return source
 only: no Markdown fences, commentary, tool calls, or external assets.
 
 ## File and declaration rules
 
-- Begin with `locus 0 beta 4`, then `style textbook`.
+- Begin with `locus 0 beta 5`, then `style textbook`.
 - Declare one object per line: `kind id = constructor(args)`.
 - Identifiers are unique and case-sensitive. Define every dependency before use.
 - Use parameterless `point()` for independent vertices. Describe placement with

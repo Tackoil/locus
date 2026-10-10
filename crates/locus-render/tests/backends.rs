@@ -34,8 +34,8 @@ fn segment(a: Point, b: Point) -> ResolvedObject {
 }
 fn styles(source: &str) -> StyleSheet {
     let source = source.replacen(
-        "locus 0 beta 4\n",
-        "locus 0 beta 4\npoint a = point()\npoint b = point()\npoint c = point()\n",
+        "locus 0 beta 5\n",
+        "locus 0 beta 5\npoint a = point()\npoint b = point()\npoint c = point()\n",
         1,
     );
     let parsed = locus_syntax::parse(&source);
@@ -126,7 +126,7 @@ fn triangle() -> (ResolvedScene, LayoutScene, StyleSheet) {
     });
     layout.annotations.insert("caption".into(), annotation);
     let sheet = styles(
-        "locus 0 beta 4\nclass region { fill: tint, accent: #0F766E, opacity: 0.85, join: round }\nclass signal { weight: 1.5, stroke: dash(6, 3, 2), accent: #2563EB, cap: square }\npolygon face = polygon(a, b, c) [region]\nsegment ab = seg(a, b) [signal]\nlabel caption = label(a, \"A\") [highlight]\n",
+        "locus 0 beta 5\nclass region { fill: tint, accent: #0F766E, opacity: 0.85, join: round }\nclass signal { weight: 1.5, stroke: dash(6, 3, 2), accent: #2563EB, cap: square }\npolygon face = polygon(a, b, c) [region]\nsegment ab = seg(a, b) [signal]\nlabel caption = label(a, \"A\") [highlight]\n",
     );
     (scene, layout, sheet)
 }
@@ -203,7 +203,7 @@ fn circles() -> (ResolvedScene, LayoutScene, StyleSheet) {
     layout.annotations.insert("arrow".into(), arrow);
     layout.annotations.insert("formula".into(),label("formula",bounds(p(1.0,4.5),p(3.0,5.5)),TexBox::new("<g transform=\"translate(0 -0.5)\"><rect x=\"0\" y=\"0\" width=\"2\" height=\"0.05\"/><path d=\"M0 0 C0.5 -0.5 1.5 -0.5 2 0\"/></g>",BoxMetrics::new(2.0,1.0,0.0))));
     let sheet = styles(
-        "locus 0 beta 4\nline axis = line(a, b) [construction]\nray ray = ray(a, b) [auxiliary]\narc ccw = arc(c, a, b) [highlight]\n",
+        "locus 0 beta 5\nline axis = line(a, b) [construction]\nray ray = ray(a, b) [auxiliary]\narc ccw = arc(c, a, b) [highlight]\n",
     );
     (scene, layout, sheet)
 }
@@ -402,7 +402,7 @@ fn png_has_expected_dimensions_pixels_and_deterministic_bytes() {
 fn png_dpi_scales_content_and_records_print_density() {
     let (scene, layout, sheet) = triangle();
     let options = RenderOptions {
-        background: Some(Color(255, 255, 255)),
+        background: Some(Color(255, 255, 255, 255)),
         ..RenderOptions::default()
     };
     let view = Viewport::fit(&scene, &layout, &sheet, options).expect("viewport");
@@ -453,7 +453,7 @@ fn png_rejects_invalid_density_and_excessive_scaled_dimensions() {
 fn optional_background_covers_the_viewport_before_content() {
     let (scene, layout, sheet) = triangle();
     let options = RenderOptions {
-        background: Some(Color(255, 255, 255)),
+        background: Some(Color(255, 255, 255, 255)),
         ..RenderOptions::default()
     };
     let svg = render_svg(&scene, &layout, &sheet, options).expect("SVG");
@@ -478,4 +478,74 @@ fn optional_background_covers_the_viewport_before_content() {
             (255, 255, 255)
         );
     }
+}
+
+fn alpha_scene(alpha: &str) -> (ResolvedScene, LayoutScene, StyleSheet) {
+    let (scene, layout, _) = triangle();
+    let parsed = locus_syntax::parse(&format!(
+        "locus 0 beta 5\nclass transparent {{ accent: #FF0000{alpha}, fill: #0000FF80, opacity: 0.5 }}\npoint a = point() [transparent]\npoint b = point() [transparent]\npoint c = point()\npolygon face = polygon(a, b, c) [transparent]\nsegment ab = seg(a, b) [transparent]\nlabel caption = label(a, \"A\") [transparent]\n"
+    ));
+    assert!(parsed.diagnostics.is_empty(), "{:?}", parsed.diagnostics);
+    let sheet = StyleSheet::from_file(&parsed.file).expect("styles");
+    (scene, layout, sheet)
+}
+
+#[test]
+fn vector_backends_preserve_stroke_fill_and_glyph_alpha() {
+    let (scene, layout, sheet) = alpha_scene("40");
+    let svg = render_svg(&scene, &layout, &sheet, RenderOptions::default()).expect("SVG");
+    let xml = roxmltree::Document::parse(&svg).expect("XML");
+    let face = xml
+        .descendants()
+        .find(|n| n.attribute("id") == Some("face"))
+        .expect("face");
+    assert_eq!(face.attribute("opacity"), Some("0.500000"));
+    let path = face
+        .children()
+        .find(|n| n.has_tag_name("path"))
+        .expect("path");
+    assert_eq!(path.attribute("stroke"), Some("#FF0000"));
+    assert_eq!(path.attribute("stroke-opacity"), Some("0.250980"));
+    assert_eq!(path.attribute("fill-opacity"), Some("0.501961"));
+    let point = xml
+        .descendants()
+        .find(|n| n.attribute("id") == Some("a"))
+        .expect("point");
+    let disk = point
+        .children()
+        .find(|n| n.has_tag_name("circle"))
+        .expect("disk");
+    assert_eq!(disk.attribute("stroke"), Some("none"));
+    assert_eq!(disk.attribute("fill-opacity"), Some("0.250980"));
+    let caption = xml
+        .descendants()
+        .find(|n| n.attribute("id") == Some("caption"))
+        .expect("caption");
+    assert!(
+        caption
+            .children()
+            .any(|n| n.attribute("stroke") == Some("none")
+                && n.attribute("fill-opacity") == Some("0.250980"))
+    );
+    let tikz = render_tikz(&scene, &layout, &sheet, RenderOptions::default()).expect("TikZ");
+    assert!(tikz.contains("transparency group,opacity=0.500000"));
+    assert!(tikz.contains("draw opacity=0.250980,fill opacity=0.501961"));
+    assert!(tikz.contains("draw=none,fill={rgb,255:red,255;green,0;blue,0},fill opacity=0.250980"));
+}
+
+#[cfg(feature = "png")]
+#[test]
+fn png_composes_color_alpha_with_object_opacity() {
+    let (scene, layout, sheet) = alpha_scene("00");
+    let bytes =
+        locus_render::png::render(&scene, &layout, &sheet, RenderOptions::default()).expect("PNG");
+    let pixmap = resvg::tiny_skia::Pixmap::decode_png(&bytes).expect("PNG decodes");
+    // The blue polygon interior has alpha (128 / 255) * 0.5, rounded to 64.
+    assert!(
+        pixmap
+            .pixels()
+            .iter()
+            .any(|p| p.alpha() == 64 && p.blue() == 64 && p.red() == 0)
+    );
+    assert!(pixmap.pixels().iter().any(|p| p.alpha() == 0));
 }

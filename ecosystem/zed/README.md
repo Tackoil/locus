@@ -4,8 +4,8 @@ This development extension recognizes `.locus` files and connects Zed to the
 native `locus-lsp` executable over stdin/stdout. It supports the server's
 diagnostics, completion, hover, go-to-definition, document formatting, and
 document symbols. The bundled [Tree-sitter grammar](../tree-sitter-locus/README.md)
-adds syntax highlighting, bracket matching, a declaration outline, and metadata
-block indentation. Only `locus 0 beta 4` syntax is supported, including primed
+adds syntax highlighting, bracket matching, a declaration outline, and single-line
+metadata. Only `locus 0 beta 5` syntax is supported, including primed
 identifiers, style properties, and TeX inside strings.
 
 ## Install locally

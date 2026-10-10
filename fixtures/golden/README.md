@@ -12,7 +12,7 @@ parsing the original source, evaluating/solving, measuring text, placing labels,
 and rendering SVG. Every render is preceded by a successful `check`.
 Both operating systems in CI compare against these same expected files.
 
-The sources use the repository's current `0 beta 4` specification.
+The sources use the repository's current `0 beta 5` specification.
 Plain fragments use `PlaintextEngine`; TeX uses `RexEngine` through the explicit
 `--tex-engine=rex` flag. Both emit bundled font outlines, so the SVG expectations
 cover visible mathematical typography as well as geometry and measured layout.

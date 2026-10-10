@@ -1,9 +1,7 @@
-locus 0 beta 4
+locus 0 beta 5
 
-meta {
-  title "Service network: synchronous requests, events, retries, and storage"
-  note "Twenty components across four boundaries; solved anchors drive thirty-two shared dependency edges."
-}
+meta title = "Service network: synchronous requests, events, retries, and storage"
+meta note = "Twenty components across four boundaries; solved anchors drive thirty-two shared dependency edges."
 
 style textbook
 

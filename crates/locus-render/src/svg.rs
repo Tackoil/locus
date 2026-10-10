@@ -3,7 +3,7 @@
 use crate::{
     RenderError, RenderOptions,
     primitives::{self, Command, Drawing, Shape},
-    style::{Style, StyleSheet},
+    style::{Color, Style, StyleSheet},
 };
 use locus_core::{Point, ResolvedScene};
 use locus_layout::LayoutScene;
@@ -94,8 +94,9 @@ pub(crate) fn document(drawing: &Drawing) -> String {
     if let Some(background) = drawing.background {
         let _ = writeln!(
             result,
-            "  <rect width=\"{width}\" height=\"{height}\" fill=\"{}\"/>",
-            background.hex()
+            "  <rect width=\"{width}\" height=\"{height}\" fill=\"{}\"{}/>",
+            background.hex(),
+            alpha_attribute("fill", background)
         );
     }
     for op in &drawing.ops {
@@ -203,7 +204,11 @@ fn path_data(commands: &[Command]) -> String {
 
 fn attributes(style: &Style, closed: bool, ink: bool) -> String {
     if ink {
-        return format!("fill=\"{}\" stroke=\"none\"", style.accent.hex());
+        return format!(
+            "fill=\"{}\" stroke=\"none\"{}",
+            style.accent.hex(),
+            alpha_attribute("fill", style.accent)
+        );
     }
     let fill = if closed {
         style
@@ -219,6 +224,12 @@ fn attributes(style: &Style, closed: bool, ink: bool) -> String {
         style.cap,
         style.join
     );
+    result.push_str(&alpha_attribute("stroke", style.accent));
+    if closed {
+        if let Some(color) = style.fill {
+            result.push_str(&alpha_attribute("fill", color));
+        }
+    }
     if !style.dash.is_empty() {
         let _ = write!(
             result,
@@ -232,6 +243,14 @@ fn attributes(style: &Style, closed: bool, ink: bool) -> String {
         );
     }
     result
+}
+
+fn alpha_attribute(channel: &str, color: Color) -> String {
+    if color.3 == 255 {
+        String::new()
+    } else {
+        format!(" {channel}-opacity=\"{}\"", format_float(color.opacity()))
+    }
 }
 
 fn escape(value: &str) -> String {

@@ -7,7 +7,7 @@ exclude = ["vendor/static_map_macros"]
 static_map_macros = { path = "vendor/static_map_macros" }
 
 [workspace.package]
-version = "0.0.0"
+version = "0.0.0-beta.5"
 edition = "2024"
 rust-version = "1.88"
 authors = ["Locus contributors"]

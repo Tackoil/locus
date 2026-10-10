@@ -274,7 +274,7 @@ mod tests {
     #[test]
     fn reports_transitive_orphans_in_file_order() {
         let parsed =
-            parse("locus 0 beta 4\nnum a = 2\nnum b = a + 1\nnum c = b * 2\nnum spare = 4\n");
+            parse("locus 0 beta 5\nnum a = 2\nnum b = a + 1\nnum c = b * 2\nnum spare = 4\n");
         let graph = DependencyGraph::extract(&parsed.file).expect("valid dependency graph");
         assert_eq!(graph.orphans_after_removing("a"), ["b", "c"]);
         assert!(graph.orphans_after_removing("spare").is_empty());
@@ -282,7 +282,7 @@ mod tests {
 
     #[test]
     fn independently_rejects_forward_references() {
-        let parsed = parse("locus 0 beta 4\nnum a = later + 1\nnum later = 2\n");
+        let parsed = parse("locus 0 beta 5\nnum a = later + 1\nnum later = 2\n");
         let error = DependencyGraph::extract(&parsed.file).expect_err("forward reference");
         assert_eq!(error.code, "E301");
         assert_eq!(error.span.line, 2);
@@ -291,7 +291,7 @@ mod tests {
     #[test]
     fn removal_impact_includes_relations_and_assertions_in_file_order() {
         let parsed =
-            parse("locus 0 beta 4\nnum a = free ~1\nrel a == 1\nassert a == 1\nnum spare = 2\n");
+            parse("locus 0 beta 5\nnum a = free 1\nrel a == 1\nassert a == 1\nnum spare = 2\n");
         let graph = DependencyGraph::extract(&parsed.file).expect("valid dependency graph");
         let impact = graph.removal_impact("a");
         assert!(impact.orphaned_declarations.is_empty());

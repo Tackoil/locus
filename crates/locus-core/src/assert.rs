@@ -1032,7 +1032,7 @@ mod tests {
     #[test]
     fn every_relation_and_assert_only_predicate_evaluates() {
         let (file, scene) = resolved(
-            "locus 0 beta 4\n\
+            "locus 0 beta 5\n\
              point A = point()\npoint B = point()\npoint M = midpoint(A, B)\n\
              point C = point()\nsegment AB = seg(A, B)\nsegment AM = seg(A, M)\n\
              line x = line(A, B)\nline y = line(A, C)\ncircle unit = circle(A, 1)\n\
@@ -1054,7 +1054,7 @@ mod tests {
     #[test]
     fn failing_assert_snapshots_every_measurable_subterm() {
         let (file, scene) = resolved(
-            "locus 0 beta 4\npoint A = point()\npoint B = point()\nnum expected = 6\n\
+            "locus 0 beta 5\npoint A = point()\npoint B = point()\nnum expected = 6\n\
              assert abs(dist(A, B) - expected) <= 0.5\n",
             vec![
                 ("A", point(Point::new(0.0, 0.0))),
@@ -1075,7 +1075,7 @@ mod tests {
     #[test]
     fn strict_between_obeys_custom_tolerance_boundary() {
         let (inside_file, inside_scene) = resolved(
-            "locus 0 beta 4\npoint A = point()\npoint B = point()\n\
+            "locus 0 beta 5\npoint A = point()\npoint B = point()\n\
              point C = point()\nassert between(A, B, C) tol 0.1\n",
             between_fixture_values(0.100_000_1),
         );
@@ -1085,7 +1085,7 @@ mod tests {
                 .passed
         );
         let (outside_file, outside_scene) = resolved(
-            "locus 0 beta 4\npoint A = point()\npoint B = point()\n\
+            "locus 0 beta 5\npoint A = point()\npoint B = point()\n\
              point C = point()\nassert between(A, B, C) tol 0.1\n",
             between_fixture_values(0.099_999_9),
         );

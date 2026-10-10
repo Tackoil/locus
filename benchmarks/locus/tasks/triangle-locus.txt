@@ -17,7 +17,7 @@ Show right-angle marks at A and H. Label A, B, C, H using plain quoted text.
 Add a plain-text caption explaining area = 6 and altitude AH = 2.4.
 Include at least six meaningful assertions about the requested geometry.
 
-Use only Locus 0 beta 4. Do not author coordinates, pins, or external SVG assets.
+Use only Locus 0 beta 5. Do not author coordinates, pins, or external SVG assets.
 Use locus check figure.locus --json to verify and repair your source. The
 benchmark's check also verifies the requested geometry independently. Do not
 weaken assertions. Stop after the requested geometry and annotations are

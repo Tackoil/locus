@@ -1,9 +1,7 @@
-locus 0 beta 4
+locus 0 beta 5
 
-meta {
-  title "Release schedule: twenty tasks, parallel teams, joins, and progress"
-  note "Duration variables start away from their targets; max dependencies propagate through five phases to the release gate."
-}
+meta title = "Release schedule: twenty tasks, parallel teams, joins, and progress"
+meta note = "Duration variables start away from their targets; max dependencies propagate through five phases to the release gate."
 
 style textbook
 
@@ -13,7 +11,7 @@ class progress { accent: teal, fill: tint }
 class dependency { accent: purple, stroke: dashed }
 point O = point() { mark: none }
 num day = 0.75
-num duration0_0 = free ~2.2
+num duration0_0 = free 2.2
 rel duration0_0 == 2
 num start0_0 = 0
 num finish0_0 = start0_0 + duration0_0
@@ -25,7 +23,7 @@ assert task0_0.width / day == 2
 assert hdist(O, task0_0.w) / day == 0
 assert done0_0.width <= task0_0.width
 assert coincident(done0_0.w, task0_0.w)
-num duration0_1 = free ~3.2
+num duration0_1 = free 3.2
 rel duration0_1 == 3
 num start0_1 = 0
 num finish0_1 = start0_1 + duration0_1
@@ -37,7 +35,7 @@ assert task0_1.width / day == 3
 assert hdist(O, task0_1.w) / day == 0
 assert done0_1.width <= task0_1.width
 assert coincident(done0_1.w, task0_1.w)
-num duration0_2 = free ~4.2
+num duration0_2 = free 4.2
 rel duration0_2 == 4
 num start0_2 = 0
 num finish0_2 = start0_2 + duration0_2
@@ -49,7 +47,7 @@ assert task0_2.width / day == 4
 assert hdist(O, task0_2.w) / day == 0
 assert done0_2.width <= task0_2.width
 assert coincident(done0_2.w, task0_2.w)
-num duration0_3 = free ~2.2
+num duration0_3 = free 2.2
 rel duration0_3 == 2
 num start0_3 = 0
 num finish0_3 = start0_3 + duration0_3
@@ -61,7 +59,7 @@ assert task0_3.width / day == 2
 assert hdist(O, task0_3.w) / day == 0
 assert done0_3.width <= task0_3.width
 assert coincident(done0_3.w, task0_3.w)
-num duration1_0 = free ~3.2
+num duration1_0 = free 3.2
 rel duration1_0 == 3
 num start1_0 = max(finish0_0, finish0_1)
 num finish1_0 = start1_0 + duration1_0
@@ -77,7 +75,7 @@ arrow dep0_0_to1_0 = arrow(task0_0.e, task1_0.w) [dependency] { bend: 8deg }
 assert start1_0 >= finish0_0
 arrow dep0_1_to1_0 = arrow(task0_1.e, task1_0.w) [dependency] { bend: 8deg }
 assert start1_0 >= finish0_1
-num duration1_1 = free ~4.2
+num duration1_1 = free 4.2
 rel duration1_1 == 4
 num start1_1 = max(finish0_1, finish0_2)
 num finish1_1 = start1_1 + duration1_1
@@ -93,7 +91,7 @@ arrow dep0_1_to1_1 = arrow(task0_1.e, task1_1.w) [dependency] { bend: 8deg }
 assert start1_1 >= finish0_1
 arrow dep0_2_to1_1 = arrow(task0_2.e, task1_1.w) [dependency] { bend: 8deg }
 assert start1_1 >= finish0_2
-num duration1_2 = free ~2.2
+num duration1_2 = free 2.2
 rel duration1_2 == 2
 num start1_2 = max(finish0_2, finish0_3)
 num finish1_2 = start1_2 + duration1_2
@@ -109,7 +107,7 @@ arrow dep0_2_to1_2 = arrow(task0_2.e, task1_2.w) [dependency] { bend: 8deg }
 assert start1_2 >= finish0_2
 arrow dep0_3_to1_2 = arrow(task0_3.e, task1_2.w) [dependency] { bend: 8deg }
 assert start1_2 >= finish0_3
-num duration1_3 = free ~3.2
+num duration1_3 = free 3.2
 rel duration1_3 == 3
 num start1_3 = max(finish0_3, finish0_0)
 num finish1_3 = start1_3 + duration1_3
@@ -125,7 +123,7 @@ arrow dep0_3_to1_3 = arrow(task0_3.e, task1_3.w) [dependency] { bend: 8deg }
 assert start1_3 >= finish0_3
 arrow dep0_0_to1_3 = arrow(task0_0.e, task1_3.w) [dependency] { bend: 8deg }
 assert start1_3 >= finish0_0
-num duration2_0 = free ~4.2
+num duration2_0 = free 4.2
 rel duration2_0 == 4
 num start2_0 = max(finish1_0, finish1_1)
 num finish2_0 = start2_0 + duration2_0
@@ -141,7 +139,7 @@ arrow dep1_0_to2_0 = arrow(task1_0.e, task2_0.w) [dependency] { bend: 8deg }
 assert start2_0 >= finish1_0
 arrow dep1_1_to2_0 = arrow(task1_1.e, task2_0.w) [dependency] { bend: 8deg }
 assert start2_0 >= finish1_1
-num duration2_1 = free ~2.2
+num duration2_1 = free 2.2
 rel duration2_1 == 2
 num start2_1 = max(finish1_1, finish1_2)
 num finish2_1 = start2_1 + duration2_1
@@ -157,7 +155,7 @@ arrow dep1_1_to2_1 = arrow(task1_1.e, task2_1.w) [dependency] { bend: 8deg }
 assert start2_1 >= finish1_1
 arrow dep1_2_to2_1 = arrow(task1_2.e, task2_1.w) [dependency] { bend: 8deg }
 assert start2_1 >= finish1_2
-num duration2_2 = free ~3.2
+num duration2_2 = free 3.2
 rel duration2_2 == 3
 num start2_2 = max(finish1_2, finish1_3)
 num finish2_2 = start2_2 + duration2_2
@@ -173,7 +171,7 @@ arrow dep1_2_to2_2 = arrow(task1_2.e, task2_2.w) [dependency] { bend: 8deg }
 assert start2_2 >= finish1_2
 arrow dep1_3_to2_2 = arrow(task1_3.e, task2_2.w) [dependency] { bend: 8deg }
 assert start2_2 >= finish1_3
-num duration2_3 = free ~4.2
+num duration2_3 = free 4.2
 rel duration2_3 == 4
 num start2_3 = max(finish1_3, finish1_0)
 num finish2_3 = start2_3 + duration2_3
@@ -189,7 +187,7 @@ arrow dep1_3_to2_3 = arrow(task1_3.e, task2_3.w) [dependency] { bend: 8deg }
 assert start2_3 >= finish1_3
 arrow dep1_0_to2_3 = arrow(task1_0.e, task2_3.w) [dependency] { bend: 8deg }
 assert start2_3 >= finish1_0
-num duration3_0 = free ~2.2
+num duration3_0 = free 2.2
 rel duration3_0 == 2
 num start3_0 = max(finish2_0, finish2_1)
 num finish3_0 = start3_0 + duration3_0
@@ -205,7 +203,7 @@ arrow dep2_0_to3_0 = arrow(task2_0.e, task3_0.w) [dependency] { bend: 8deg }
 assert start3_0 >= finish2_0
 arrow dep2_1_to3_0 = arrow(task2_1.e, task3_0.w) [dependency] { bend: 8deg }
 assert start3_0 >= finish2_1
-num duration3_1 = free ~3.2
+num duration3_1 = free 3.2
 rel duration3_1 == 3
 num start3_1 = max(finish2_1, finish2_2)
 num finish3_1 = start3_1 + duration3_1
@@ -221,7 +219,7 @@ arrow dep2_1_to3_1 = arrow(task2_1.e, task3_1.w) [dependency] { bend: 8deg }
 assert start3_1 >= finish2_1
 arrow dep2_2_to3_1 = arrow(task2_2.e, task3_1.w) [dependency] { bend: 8deg }
 assert start3_1 >= finish2_2
-num duration3_2 = free ~4.2
+num duration3_2 = free 4.2
 rel duration3_2 == 4
 num start3_2 = max(finish2_2, finish2_3)
 num finish3_2 = start3_2 + duration3_2
@@ -237,7 +235,7 @@ arrow dep2_2_to3_2 = arrow(task2_2.e, task3_2.w) [dependency] { bend: 8deg }
 assert start3_2 >= finish2_2
 arrow dep2_3_to3_2 = arrow(task2_3.e, task3_2.w) [dependency] { bend: 8deg }
 assert start3_2 >= finish2_3
-num duration3_3 = free ~2.2
+num duration3_3 = free 2.2
 rel duration3_3 == 2
 num start3_3 = max(finish2_3, finish2_0)
 num finish3_3 = start3_3 + duration3_3
@@ -253,7 +251,7 @@ arrow dep2_3_to3_3 = arrow(task2_3.e, task3_3.w) [dependency] { bend: 8deg }
 assert start3_3 >= finish2_3
 arrow dep2_0_to3_3 = arrow(task2_0.e, task3_3.w) [dependency] { bend: 8deg }
 assert start3_3 >= finish2_0
-num duration4_0 = free ~3.2
+num duration4_0 = free 3.2
 rel duration4_0 == 3
 num start4_0 = max(finish3_0, finish3_1)
 num finish4_0 = start4_0 + duration4_0
@@ -269,7 +267,7 @@ arrow dep3_0_to4_0 = arrow(task3_0.e, task4_0.w) [dependency] { bend: 8deg }
 assert start4_0 >= finish3_0
 arrow dep3_1_to4_0 = arrow(task3_1.e, task4_0.w) [dependency] { bend: 8deg }
 assert start4_0 >= finish3_1
-num duration4_1 = free ~4.2
+num duration4_1 = free 4.2
 rel duration4_1 == 4
 num start4_1 = max(finish3_1, finish3_2)
 num finish4_1 = start4_1 + duration4_1
@@ -285,7 +283,7 @@ arrow dep3_1_to4_1 = arrow(task3_1.e, task4_1.w) [dependency] { bend: 8deg }
 assert start4_1 >= finish3_1
 arrow dep3_2_to4_1 = arrow(task3_2.e, task4_1.w) [dependency] { bend: 8deg }
 assert start4_1 >= finish3_2
-num duration4_2 = free ~2.2
+num duration4_2 = free 2.2
 rel duration4_2 == 2
 num start4_2 = max(finish3_2, finish3_3)
 num finish4_2 = start4_2 + duration4_2
@@ -301,7 +299,7 @@ arrow dep3_2_to4_2 = arrow(task3_2.e, task4_2.w) [dependency] { bend: 8deg }
 assert start4_2 >= finish3_2
 arrow dep3_3_to4_2 = arrow(task3_3.e, task4_2.w) [dependency] { bend: 8deg }
 assert start4_2 >= finish3_3
-num duration4_3 = free ~3.2
+num duration4_3 = free 3.2
 rel duration4_3 == 3
 num start4_3 = max(finish3_3, finish3_0)
 num finish4_3 = start4_3 + duration4_3

@@ -1,9 +1,7 @@
-locus 0 beta 4
+locus 0 beta 5
 
-meta {
-  title "AEC3 adaptive FIR filters aligned along time"
-  note  "Each filter reads a different, overlapping region of the same render history. Scale: 1 unit = 32 ms."
-}
+meta title = "AEC3 adaptive FIR filters aligned along time"
+meta note = "Each filter reads a different, overlapping region of the same render history. Scale: 1 unit = 32 ms."
 
 style textbook
 

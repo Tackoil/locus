@@ -8,10 +8,10 @@ use locus_syntax::parse;
     reason = "the inline snapshot is intentionally explicit"
 )]
 fn snapshots_stable_e1xx_diagnostics() {
-    let source = r"locus 0 beta 4
-piont A = free ~(0, 0)
-point A = free ~0
-line bad = free ~(0, 0)
+    let source = r"locus 0 beta 5
+piont A = free (0, 0)
+point A = free 0
+line bad = free (0, 0)
 point A = point()
 circle c = incircel(A, 2)
 point P = rotate(A, A, 60)
@@ -20,9 +20,7 @@ rel inside(P, c)
 assert dist(A, P)
 assert dist(A, P) == 1 tol 1deg
 point Later = midpoint(A, P) extra
-meta {
-  title $not-a-string$
-}
+meta title = $not-a-string$
 ";
     let output = parse(source);
     let summary: Vec<_> = output
@@ -125,7 +123,7 @@ meta {
         ),
         (
             "E150",
-            14,
+            13,
             "metadata values must be quoted strings",
             None,
         ),

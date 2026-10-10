@@ -242,7 +242,7 @@ prop_compose! {
     {
         let pad = " ".repeat(padding);
         let trailing = if comment { "  // generated hint" } else { "" };
-        let meta = "meta {\n  title \"Generated $c$ file\"\n}\n";
+        let meta = "meta title = \"Generated $c$ file\"\n";
         let prelude = if meta_after_style {
             format!("style textbook\n{meta}")
         } else {
@@ -256,7 +256,7 @@ prop_compose! {
             .collect::<Vec<_>>()
             .join(separator);
         format!(
-            "locus 0 beta 4\n\n{prelude}class ink {{ accent: #123ABC, weight: 1 }}\n\n\
+            "locus 0 beta 5\n\n{prelude}class ink {{ accent: #123ABC, weight: 1 }}\n\n\
              point A{pad}={pad}point(){trailing}\n\
              point B{pad}={pad}offset(A, {bx}, 0) where {{ horizontal(A, B) }}\n\
              num r{pad}={pad}{radius}\n\

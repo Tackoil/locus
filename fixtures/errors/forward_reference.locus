@@ -1,4 +1,4 @@
-locus 0 beta 4
+locus 0 beta 5
 point A = point()
 segment AC = seg(A, C)
 point C = point()

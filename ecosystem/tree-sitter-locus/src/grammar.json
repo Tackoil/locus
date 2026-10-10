@@ -54,7 +54,7 @@
         },
         {
           "type": "SYMBOL",
-          "name": "meta_block"
+          "name": "meta_statement"
         },
         {
           "type": "SYMBOL",
@@ -95,11 +95,11 @@
         },
         {
           "type": "STRING",
-          "value": "4"
+          "value": "5"
         }
       ]
     },
-    "meta_block": {
+    "meta_statement": {
       "type": "SEQ",
       "members": [
         {
@@ -107,54 +107,16 @@
           "value": "meta"
         },
         {
-          "type": "STRING",
-          "value": "{"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "_newline"
-        },
-        {
-          "type": "REPEAT",
-          "content": {
-            "type": "CHOICE",
-            "members": [
-              {
-                "type": "SYMBOL",
-                "name": "_newline"
-              },
-              {
-                "type": "SEQ",
-                "members": [
-                  {
-                    "type": "SYMBOL",
-                    "name": "meta_entry"
-                  },
-                  {
-                    "type": "SYMBOL",
-                    "name": "_newline"
-                  }
-                ]
-              }
-            ]
-          }
-        },
-        {
-          "type": "STRING",
-          "value": "}"
-        }
-      ]
-    },
-    "meta_entry": {
-      "type": "SEQ",
-      "members": [
-        {
           "type": "FIELD",
           "name": "key",
           "content": {
             "type": "SYMBOL",
             "name": "identifier"
           }
+        },
+        {
+          "type": "STRING",
+          "value": "="
         },
         {
           "type": "FIELD",
@@ -363,10 +325,6 @@
           "value": "free"
         },
         {
-          "type": "STRING",
-          "value": "~"
-        },
-        {
           "type": "SYMBOL",
           "name": "_expression"
         }
@@ -538,7 +496,7 @@
     },
     "hex_color": {
       "type": "PATTERN",
-      "value": "#[0-9a-fA-F]{6}"
+      "value": "#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?"
     },
     "relation_statement": {
       "type": "SEQ",

@@ -8,7 +8,7 @@ no retries, and no repair loop. The returned message content is saved as
 `generated.locus`, adding a terminal newline if absent, then parsed, solved,
 checked, and rendered by Locus. No declarations or assertions are repaired.
 
-The guide covers `0 beta 4` declarations, relative placement, geometry
+The guide covers `0 beta 5` declarations, relative placement, geometry
 constructors, plain-text annotations, and assertions needed for this task.
 The full repository specification is not included in the API request.
 

@@ -2,12 +2,10 @@
 source: crates/locus-syntax/tests/format_json.rs
 expression: formatted.source
 ---
-locus 0 beta 4
+locus 0 beta 5
 
-meta {
-  title "Golden ratio in the regular pentagon"
-  note "Vertices by rotation around a placed circle; diagonal intersection is derived"
-}
+meta title = "Golden ratio in the regular pentagon"
+meta note = "Vertices by rotation around a placed circle; diagonal intersection is derived"
 
 style textbook
 

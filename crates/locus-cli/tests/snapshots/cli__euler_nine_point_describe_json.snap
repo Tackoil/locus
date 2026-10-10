@@ -10,7 +10,7 @@ expression: stdout
       "id": "circ",
       "kind": "circle",
       "span": {
-        "line": 12,
+        "line": 10,
         "col": 1,
         "byte_start": 304,
         "byte_end": 343
@@ -25,7 +25,7 @@ expression: stdout
       "id": "A",
       "kind": "point",
       "span": {
-        "line": 13,
+        "line": 11,
         "col": 1,
         "byte_start": 344,
         "byte_end": 368
@@ -40,7 +40,7 @@ expression: stdout
       "id": "B",
       "kind": "point",
       "span": {
-        "line": 14,
+        "line": 12,
         "col": 1,
         "byte_start": 369,
         "byte_end": 394
@@ -55,7 +55,7 @@ expression: stdout
       "id": "C",
       "kind": "point",
       "span": {
-        "line": 15,
+        "line": 13,
         "col": 1,
         "byte_start": 395,
         "byte_end": 420
@@ -70,7 +70,7 @@ expression: stdout
       "id": "tri",
       "kind": "polygon",
       "span": {
-        "line": 17,
+        "line": 15,
         "col": 1,
         "byte_start": 422,
         "byte_end": 452
@@ -86,7 +86,7 @@ expression: stdout
       "id": "O",
       "kind": "point",
       "span": {
-        "line": 19,
+        "line": 17,
         "col": 1,
         "byte_start": 454,
         "byte_end": 475
@@ -101,7 +101,7 @@ expression: stdout
       "id": "G",
       "kind": "point",
       "span": {
-        "line": 20,
+        "line": 18,
         "col": 1,
         "byte_start": 476,
         "byte_end": 503
@@ -116,7 +116,7 @@ expression: stdout
       "id": "H",
       "kind": "point",
       "span": {
-        "line": 21,
+        "line": 19,
         "col": 1,
         "byte_start": 504,
         "byte_end": 534
@@ -131,7 +131,7 @@ expression: stdout
       "id": "euler",
       "kind": "line",
       "span": {
-        "line": 23,
+        "line": 21,
         "col": 1,
         "byte_start": 536,
         "byte_end": 588
@@ -145,7 +145,7 @@ expression: stdout
       "id": "M_a",
       "kind": "point",
       "span": {
-        "line": 26,
+        "line": 24,
         "col": 1,
         "byte_start": 608,
         "byte_end": 634
@@ -160,7 +160,7 @@ expression: stdout
       "id": "M_b",
       "kind": "point",
       "span": {
-        "line": 27,
+        "line": 25,
         "col": 1,
         "byte_start": 635,
         "byte_end": 661
@@ -175,7 +175,7 @@ expression: stdout
       "id": "M_c",
       "kind": "point",
       "span": {
-        "line": 28,
+        "line": 26,
         "col": 1,
         "byte_start": 662,
         "byte_end": 688
@@ -190,7 +190,7 @@ expression: stdout
       "id": "H_a",
       "kind": "point",
       "span": {
-        "line": 31,
+        "line": 29,
         "col": 1,
         "byte_start": 707,
         "byte_end": 738
@@ -205,7 +205,7 @@ expression: stdout
       "id": "H_b",
       "kind": "point",
       "span": {
-        "line": 32,
+        "line": 30,
         "col": 1,
         "byte_start": 739,
         "byte_end": 770
@@ -220,7 +220,7 @@ expression: stdout
       "id": "H_c",
       "kind": "point",
       "span": {
-        "line": 33,
+        "line": 31,
         "col": 1,
         "byte_start": 771,
         "byte_end": 802
@@ -235,7 +235,7 @@ expression: stdout
       "id": "E_a",
       "kind": "point",
       "span": {
-        "line": 36,
+        "line": 34,
         "col": 1,
         "byte_start": 857,
         "byte_end": 883
@@ -250,7 +250,7 @@ expression: stdout
       "id": "E_b",
       "kind": "point",
       "span": {
-        "line": 37,
+        "line": 35,
         "col": 1,
         "byte_start": 884,
         "byte_end": 910
@@ -265,7 +265,7 @@ expression: stdout
       "id": "E_c",
       "kind": "point",
       "span": {
-        "line": 38,
+        "line": 36,
         "col": 1,
         "byte_start": 911,
         "byte_end": 937
@@ -280,7 +280,7 @@ expression: stdout
       "id": "nine",
       "kind": "circle",
       "span": {
-        "line": 40,
+        "line": 38,
         "col": 1,
         "byte_start": 939,
         "byte_end": 994
@@ -295,7 +295,7 @@ expression: stdout
       "id": "N",
       "kind": "point",
       "span": {
-        "line": 41,
+        "line": 39,
         "col": 1,
         "byte_start": 995,
         "byte_end": 1021
@@ -310,7 +310,7 @@ expression: stdout
       "id": "H'",
       "kind": "point",
       "span": {
-        "line": 44,
+        "line": 42,
         "col": 1,
         "byte_start": 1082,
         "byte_end": 1140
@@ -325,7 +325,7 @@ expression: stdout
       "id": "lO",
       "kind": "label",
       "span": {
-        "line": 47,
+        "line": 45,
         "col": 1,
         "byte_start": 1204,
         "byte_end": 1228
@@ -339,7 +339,7 @@ expression: stdout
       "id": "lG",
       "kind": "label",
       "span": {
-        "line": 48,
+        "line": 46,
         "col": 1,
         "byte_start": 1229,
         "byte_end": 1253
@@ -353,7 +353,7 @@ expression: stdout
       "id": "lH",
       "kind": "label",
       "span": {
-        "line": 49,
+        "line": 47,
         "col": 1,
         "byte_start": 1254,
         "byte_end": 1278
@@ -367,7 +367,7 @@ expression: stdout
       "id": "lN",
       "kind": "label",
       "span": {
-        "line": 50,
+        "line": 48,
         "col": 1,
         "byte_start": 1279,
         "byte_end": 1316
@@ -381,7 +381,7 @@ expression: stdout
       "id": "lA",
       "kind": "label",
       "span": {
-        "line": 51,
+        "line": 49,
         "col": 1,
         "byte_start": 1317,
         "byte_end": 1341
@@ -395,7 +395,7 @@ expression: stdout
       "id": "lB",
       "kind": "label",
       "span": {
-        "line": 52,
+        "line": 50,
         "col": 1,
         "byte_start": 1342,
         "byte_end": 1366
@@ -409,7 +409,7 @@ expression: stdout
       "id": "lC",
       "kind": "label",
       "span": {
-        "line": 53,
+        "line": 51,
         "col": 1,
         "byte_start": 1367,
         "byte_end": 1391
@@ -434,7 +434,7 @@ expression: stdout
         {
           "id": "circ",
           "span": {
-            "line": 12,
+            "line": 10,
             "col": 1,
             "byte_start": 304,
             "byte_end": 343

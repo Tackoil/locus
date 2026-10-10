@@ -1,4 +1,4 @@
-# Locus 0 beta 4 authoring reference
+# Locus 0 beta 5 authoring reference
 
 Use this for common authoring tasks. For the complete evolving contract in a
 Locus checkout, read `spec/specification.md`; demonstration files live under
@@ -8,7 +8,7 @@ the current draft.
 ## Syntax and placement
 
 ```locus
-locus 0 beta 4
+locus 0 beta 5
 style textbook
 
 point A = point()
@@ -25,6 +25,8 @@ assert dist(B, C) == 5
 assert area(tri) == 6
 assert on(A, circum) and on(B, circum) and on(C, circum)
 ```
+
+Metadata uses one `meta key = "value"` statement per line.
 
 `kind id = rhs` must declare the RHS's type. Optional suffix order is
 `where { relations }`, `[style_class]`, then `{ properties }`.

@@ -9,7 +9,7 @@ use locus_syntax::{Expr, PropValue, Statement};
 #[test]
 fn textbook_semantics_and_exact_overrides() {
     let file = locus_syntax::parse(
-        "locus 0 beta 4\nclass exact { stroke: dash(6, 3, 2), weight: 1.5, accent: #2563EB, fill: #CCFBF1, opacity: 0.85, cap: square, join: bevel }\nclass colored { fill: tint, accent: red }\nclass minimal { accent: teal }\npoint a = point() [exact]\n",
+        "locus 0 beta 5\nclass exact { stroke: dash(6, 3, 2), weight: 1.5, accent: #2563EB, fill: #CCFBF1, opacity: 0.85, cap: square, join: bevel }\nclass colored { fill: tint, accent: red }\nclass minimal { accent: teal }\npoint a = point() [exact]\n",
     );
     assert!(file.diagnostics.is_empty(), "{:?}", file.diagnostics);
     let sheet = StyleSheet::from_file(&file.file).expect("styles");
@@ -22,17 +22,17 @@ fn textbook_semantics_and_exact_overrides() {
     );
     assert_eq!(
         sheet.class("construction").expect("construction").accent,
-        Color(107, 114, 128)
+        Color(107, 114, 128, 255)
     );
     assert_eq!(
         sheet.class("highlight").expect("highlight").accent,
-        Color(37, 99, 235)
+        Color(37, 99, 235, 255)
     );
     let exact = sheet.for_object("a");
     assert_eq!(exact.weight, 1.5);
     assert_eq!(exact.dash, [6.0, 3.0, 2.0, 6.0, 3.0, 2.0]);
     assert_eq!(exact.accent.hex(), "#2563EB");
-    assert_eq!(exact.fill, Some(Color(204, 251, 241)));
+    assert_eq!(exact.fill, Some(Color(204, 251, 241, 255)));
     assert_eq!(exact.opacity, 0.85);
     assert_eq!(exact.cap, "square");
     assert_eq!(exact.join, "bevel");
@@ -41,7 +41,7 @@ fn textbook_semantics_and_exact_overrides() {
     assert_eq!(minimal.dash, main.dash);
     assert_eq!(
         sheet.class("colored").expect("tint").fill,
-        Some(Color(251, 233, 233))
+        Some(Color(251, 233, 233, 255))
     );
     assert_eq!(sheet.for_object("unassigned"), *main);
 }
@@ -56,7 +56,7 @@ fn invalid_exact_values_keep_property_spans() {
         ("opacity", f64::NAN),
     ] {
         let mut file = locus_syntax::parse(&format!(
-            "locus 0 beta 4\nclass exact {{ {property}: 1 }}\n"
+            "locus 0 beta 5\nclass exact {{ {property}: 1 }}\n"
         ))
         .file;
         let Statement::Class(class) = &mut file.statements[0] else {
@@ -76,7 +76,7 @@ fn invalid_exact_values_keep_property_spans() {
 
 #[test]
 fn invalid_dash_length_keeps_argument_span() {
-    let mut file = locus_syntax::parse("locus 0 beta 4\nclass exact { stroke: dash(6, 3) }\n").file;
+    let mut file = locus_syntax::parse("locus 0 beta 5\nclass exact { stroke: dash(6, 3) }\n").file;
     let Statement::Class(class) = &mut file.statements[0] else {
         unreachable!()
     };
@@ -91,4 +91,23 @@ fn invalid_dash_length_keeps_argument_span() {
     assert!(
         matches!(StyleSheet::from_file(&file),Err(RenderError::Invalid { span: actual,.. }) if actual==span)
     );
+}
+
+#[test]
+fn color_alpha_is_independent_of_object_opacity() {
+    let parsed = locus_syntax::parse(
+        "locus 0 beta 5\nclass exact { accent: #12345680, fill: #ABCDEF00, opacity: 0.5 }\nclass wash { accent: #12345680, fill: tint }\nclass opaque { accent: #123456FF }\n",
+    );
+    assert!(parsed.diagnostics.is_empty());
+    let sheet = StyleSheet::from_file(&parsed.file).expect("styles");
+    let exact = sheet.class("exact").expect("exact");
+    assert_eq!(exact.accent, Color(18, 52, 86, 128));
+    assert_eq!(exact.accent.opacity(), 128.0 / 255.0);
+    assert_eq!(exact.fill, Some(Color(171, 205, 239, 0)));
+    assert_eq!(exact.opacity, 0.5);
+    assert_eq!(
+        sheet.class("wash").expect("wash").fill.expect("fill").3,
+        128
+    );
+    assert_eq!(sheet.class("opaque").expect("opaque").accent.opacity(), 1.0);
 }

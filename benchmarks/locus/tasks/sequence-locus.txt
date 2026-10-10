@@ -1,7 +1,7 @@
 Your disposable workspace is {workspace}. Start by reading these exact files:
 {skill_file}
 {language_file}
-Both paths exist; do not search for them. Create {source_file} using Locus 0 beta 4
+Both paths exist; do not search for them. Create {source_file} using Locus 0 beta 5
 and export {svg_file} using the Locus CLI on PATH.
 
 Draw a checkout sequence diagram with four participants, ordered left to right:

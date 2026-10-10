@@ -1,9 +1,7 @@
-locus 0 beta 4
+locus 0 beta 5
 
-meta {
-  title "Cubic B-spline from a frame's derived anchors"
-  note "Five controls produce two spans; only the endpoint controls are interpolated by definition"
-}
+meta title = "Cubic B-spline from a frame's derived anchors"
+meta note = "Five controls produce two spans; only the endpoint controls are interpolated by definition"
 
 style textbook
 

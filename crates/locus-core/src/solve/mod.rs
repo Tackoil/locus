@@ -891,7 +891,7 @@ mod tests {
     #[test]
     fn alignment_has_known_relative_answer_and_dof_report() {
         let solved = solve_source(
-            "locus 0 beta 4\npoint A = point()\npoint B = point()\nrel horizontal(A, B)\nrel hdist(A, B) == 5\n",
+            "locus 0 beta 5\npoint A = point()\npoint B = point()\nrel horizontal(A, B)\nrel hdist(A, B) == 5\n",
         );
         let delta = scene_point(&solved, "B") - scene_point(&solved, "A");
         assert!((delta.x - 5.0).abs() < 1.0e-10);
@@ -903,10 +903,10 @@ mod tests {
     #[test]
     fn current_format_circle_tangency_is_explicit() {
         let external = solve_source(
-            "locus 0 beta 4\ncircle outer = circle(3)\ncircle inner = circle(2)\nrel tangent(outer, inner)\n",
+            "locus 0 beta 5\ncircle outer = circle(3)\ncircle inner = circle(2)\nrel tangent(outer, inner)\n",
         );
         let internal = solve_source(
-            "locus 0 beta 4\ncircle outer = circle(3)\ncircle inner = circle(2)\nrel internally_tangent(outer, inner)\n",
+            "locus 0 beta 5\ncircle outer = circle(3)\ncircle inner = circle(2)\nrel internally_tangent(outer, inner)\n",
         );
         assert!((circle_distance(&external, "outer", "inner") - 5.0).abs() < 1.0e-12);
         assert!((circle_distance(&internal, "outer", "inner") - 1.0).abs() < 1.0e-12);
@@ -945,7 +945,7 @@ mod tests {
     #[test]
     fn every_relation_vocabulary_entry_expands_without_a_solver_panic() {
         let solved = solve_source(
-            "locus 0 beta 4\npoint A = point()\npoint B = offset(A, 2, 0)\npoint C = offset(A, 1, 0)\npoint D = offset(A, 0, 2)\npoint E = offset(A, 2, 2)\npoint L = offset(A, -2, 1)\npoint R = offset(A, 2, 1)\npoint Q = offset(A, 0, 1)\nnum r = 1\nline ab = line(A, B)\nline de = line(D, E)\nline ad = line(A, D)\nline lr = line(L, R)\nsegment ac = seg(A, C)\nsegment de_seg = seg(D, E)\nray ar = ray(A, B)\ncircle c1 = circle(A, r)\ncircle c2 = circle(B, r)\narc quarter = arc(c1, C, Q, true)\nrel dist(A, B) == 2\nrel on(C, ab)\nrel on(C, ar)\nrel on(C, ac)\nrel on(C, c1)\nrel on(C, quarter)\nrel tangent(c1, lr)\nrel tangent(c1, c2)\nrel parallel(ab, de)\nrel perpendicular(ab, ad)\nrel collinear(A, C, B)\nrel concyclic(A, B, E, D)\nrel congruent(seg(A, B), de_seg)\nrel coincident(C, C)\nrel midpoint(C, A, B)\nrel horizontal(A, B)\nrel vertical(A, D)\n",
+            "locus 0 beta 5\npoint A = point()\npoint B = offset(A, 2, 0)\npoint C = offset(A, 1, 0)\npoint D = offset(A, 0, 2)\npoint E = offset(A, 2, 2)\npoint L = offset(A, -2, 1)\npoint R = offset(A, 2, 1)\npoint Q = offset(A, 0, 1)\nnum r = 1\nline ab = line(A, B)\nline de = line(D, E)\nline ad = line(A, D)\nline lr = line(L, R)\nsegment ac = seg(A, C)\nsegment de_seg = seg(D, E)\nray ar = ray(A, B)\ncircle c1 = circle(A, r)\ncircle c2 = circle(B, r)\narc quarter = arc(c1, C, Q, true)\nrel dist(A, B) == 2\nrel on(C, ab)\nrel on(C, ar)\nrel on(C, ac)\nrel on(C, c1)\nrel on(C, quarter)\nrel tangent(c1, lr)\nrel tangent(c1, c2)\nrel parallel(ab, de)\nrel perpendicular(ab, ad)\nrel collinear(A, C, B)\nrel concyclic(A, B, E, D)\nrel congruent(seg(A, B), de_seg)\nrel coincident(C, C)\nrel midpoint(C, A, B)\nrel horizontal(A, B)\nrel vertical(A, D)\n",
         );
         assert!(solved.summary.max_normalized_residual < SOLVE_EPSILON);
         assert_eq!(solved.summary.relation_residuals.len(), 17);
@@ -954,7 +954,7 @@ mod tests {
     #[test]
     fn automatic_differentiation_covers_intersection_and_tangent_line_constructors() {
         let solved = solve_source(
-            "locus 0 beta 4\npoint A = point()\npoint B = offset(A, 2, 0)\npoint C = offset(A, 1, -1)\npoint D = offset(A, 1, 1)\nline h = line(A, B)\nline v = line(C, D)\npoint X = intersect(h, v)\nnum r = 0.5\ncircle c = circle(A, r)\npoint P = offset(A, 2, 1)\nline t = tangent_line(P, c, 1)\nrel tangent(c, t)\n",
+            "locus 0 beta 5\npoint A = point()\npoint B = offset(A, 2, 0)\npoint C = offset(A, 1, -1)\npoint D = offset(A, 1, 1)\nline h = line(A, B)\nline v = line(C, D)\npoint X = intersect(h, v)\nnum r = 0.5\ncircle c = circle(A, r)\npoint P = offset(A, 2, 1)\nline t = tangent_line(P, c, 1)\nrel tangent(c, t)\n",
         );
         assert!(solved.summary.max_normalized_residual < SOLVE_EPSILON);
     }
@@ -962,7 +962,7 @@ mod tests {
     #[test]
     fn near_tangent_intersection_uses_the_geometry_kernel_branch_count() {
         let solved = solve_source(
-            "locus 0 beta 4\npoint O = point()\npoint A = offset(O, -2, 1.0000000001)\npoint B = offset(O, 2, 1.0000000001)\nline l = line(A, B)\nnum r = 1\ncircle c = circle(O, r)\npoint X = intersect(l, c, 0)\n",
+            "locus 0 beta 5\npoint O = point()\npoint A = offset(O, -2, 1.0000000001)\npoint B = offset(O, 2, 1.0000000001)\nline l = line(A, B)\nnum r = 1\ncircle c = circle(O, r)\npoint X = intersect(l, c, 0)\n",
         );
         assert!(solved.summary.max_normalized_residual < SOLVE_EPSILON);
     }
@@ -970,7 +970,7 @@ mod tests {
     #[test]
     fn small_circle_second_branch_remains_available_during_solving() {
         let solved = solve_source(
-            "locus 0 beta 4\npoint A = point()\npoint B = offset(A, 0.00001, 0)\nnum r = 0.00001\ncircle a = circle(A, r)\ncircle b = circle(B, r)\npoint X = intersect(a, b, 1)\n",
+            "locus 0 beta 5\npoint A = point()\npoint B = offset(A, 0.00001, 0)\nnum r = 0.00001\ncircle a = circle(A, r)\ncircle b = circle(B, r)\npoint X = intersect(a, b, 1)\n",
         );
         let intersection = scene_point(&solved, "X");
         let relative = intersection - scene_point(&solved, "A");
@@ -982,7 +982,7 @@ mod tests {
     #[test]
     fn touching_collinear_segments_intersect_during_solving() {
         let solved = solve_source(
-            "locus 0 beta 4\npoint A = point()\npoint B = offset(A, 1, 0)\npoint C = offset(A, 2, 0)\nsegment ab = seg(A, B)\nsegment bc = seg(B, C)\npoint X = intersect(ab, bc)\n",
+            "locus 0 beta 5\npoint A = point()\npoint B = offset(A, 1, 0)\npoint C = offset(A, 2, 0)\nsegment ab = seg(A, B)\nsegment bc = seg(B, C)\npoint X = intersect(ab, bc)\n",
         );
         assert_eq!(scene_point(&solved, "X"), scene_point(&solved, "B"));
         assert!(solved.summary.max_normalized_residual < SOLVE_EPSILON);
@@ -991,7 +991,7 @@ mod tests {
     #[test]
     fn translated_circumcenter_remains_accurate_during_solving() {
         let solved = solve_source(
-            "locus 0 beta 4\npoint A = point()\npoint B = offset(A, 4, 0)\npoint C = offset(A, 0, 3)\npoint O = circumcenter(A, B, C)\n",
+            "locus 0 beta 5\npoint A = point()\npoint B = offset(A, 4, 0)\npoint C = offset(A, 0, 3)\npoint O = circumcenter(A, B, C)\n",
         );
         assert_eq!(
             scene_point(&solved, "O") - scene_point(&solved, "A"),
@@ -1003,7 +1003,7 @@ mod tests {
     #[test]
     fn large_angle_bisector_supports_projection_during_solving() {
         let solved = solve_source(
-            "locus 0 beta 4\npoint B = point()\npoint A = offset(B, 10000000000000, 0)\npoint C = offset(B, 0, 10000000000000)\nline bisector = angle_bisector(A, B, C)\npoint F = foot(A, bisector)\n",
+            "locus 0 beta 5\npoint B = point()\npoint A = offset(B, 10000000000000, 0)\npoint C = offset(B, 0, 10000000000000)\nline bisector = angle_bisector(A, B, C)\npoint F = foot(A, bisector)\n",
         );
         let tolerance = crate::Tolerance::from_bbox(&solved.scene.bbox);
         let relative = scene_point(&solved, "F") - scene_point(&solved, "B");
@@ -1015,7 +1015,7 @@ mod tests {
     #[test]
     fn repeated_angle_bisectors_do_not_inflate_scene_tolerance() {
         let mut source = String::from(
-            "locus 0 beta 4\npoint B = point()\npoint A = offset(B, 1, 0)\npoint C = offset(B, 0, 1)\n",
+            "locus 0 beta 5\npoint B = point()\npoint A = offset(B, 1, 0)\npoint C = offset(B, 0, 1)\n",
         );
         for index in 0..60 {
             writeln!(source, "line bisector_{index} = angle_bisector(A, B, C)")
@@ -1034,7 +1034,7 @@ mod tests {
     #[test]
     fn redundant_and_underconstrained_systems_are_reported() {
         let solved = solve_source(
-            "locus 0 beta 4\npoint A = point()\npoint B = point()\nrel horizontal(A, B)\nrel horizontal(A, B)\n",
+            "locus 0 beta 5\npoint A = point()\npoint B = point()\nrel horizontal(A, B)\nrel horizontal(A, B)\n",
         );
         assert_eq!(solved.summary.dof.global_remaining, 3);
         assert_eq!(solved.summary.redundant_relations.len(), 1);
@@ -1042,7 +1042,7 @@ mod tests {
 
     #[test]
     fn repeated_solves_are_bit_identical_in_process() {
-        let source = "locus 0 beta 4\npoint A = point()\npoint B = point()\nrel horizontal(A, B)\nrel dist(A, B) == 5\n";
+        let source = "locus 0 beta 5\npoint A = point()\npoint B = point()\nrel horizontal(A, B)\nrel dist(A, B) == 5\n";
         let first = solve_source(source);
         let second = solve_source(source);
         assert_eq!(first, second);
@@ -1053,7 +1053,7 @@ mod tests {
         const CHILD_ENV: &str = "LOCUS_SOLVE_DETERMINISM_CHILD";
         const MARKER: &str = "LOCUS_SOLVE_FINGERPRINT=";
         if std::env::var_os(CHILD_ENV).is_some() {
-            let source = "locus 0 beta 4\npoint A = point()\npoint B = point()\nrel horizontal(A, B)\nrel dist(A, B) == 5\n";
+            let source = "locus 0 beta 5\npoint A = point()\npoint B = point()\nrel horizontal(A, B)\nrel dist(A, B) == 5\n";
             println!("{MARKER}{:?}", solve_source(source));
             return;
         }
@@ -1083,7 +1083,7 @@ mod tests {
 
     #[test]
     fn conflicting_system_returns_report_instead_of_panicking() {
-        let parsed = parse("locus 0 beta 4\nnum a = free ~0\nrel a == 0\nrel a == 1\n");
+        let parsed = parse("locus 0 beta 5\nnum a = free 0\nrel a == 0\nrel a == 1\n");
         let error = solve(&parsed.file).expect_err("values conflict");
         assert_eq!(error.code, "E402");
         assert!(error.message.contains("best-fit residuals worst first"));
@@ -1091,7 +1091,7 @@ mod tests {
 
     #[test]
     fn derived_only_relations_are_solved_and_conflicts_are_reported() {
-        let satisfied = parse("locus 0 beta 4\nnum a = 1\nrel a == 1\n");
+        let satisfied = parse("locus 0 beta 5\nnum a = 1\nrel a == 1\n");
         let evaluation = crate::eval::evaluate(&satisfied.file).expect("relation holds");
         let crate::scene::Evaluation::Solved { summary, .. } = evaluation else {
             panic!("relation-bearing file must enter the solver")
@@ -1099,20 +1099,20 @@ mod tests {
         assert_eq!(summary.unknowns, 0);
         assert_eq!(summary.equations, 1);
 
-        let conflicting = parse("locus 0 beta 4\nnum a = 1\nrel a == 2\n");
+        let conflicting = parse("locus 0 beta 5\nnum a = 1\nrel a == 2\n");
         let error = crate::eval::evaluate(&conflicting.file).expect_err("relation conflicts");
         assert_eq!(error.code, "E402");
     }
 
     #[test]
     fn assert_only_relations_and_invalid_relation_domains_are_targeted() {
-        let assert_only = parse("locus 0 beta 4\nnum a = 1\nrel a < 2\n");
+        let assert_only = parse("locus 0 beta 5\nnum a = 1\nrel a < 2\n");
         let error = solve(&assert_only.file).expect_err("comparison is assert-only");
         assert_eq!(error.code, "E146");
         assert!(error.message.contains("assert-only"));
 
         let non_segment = parse(
-            "locus 0 beta 4\npoint A = point()\npoint B = point()\nline ab = line(A, B)\nrel congruent(ab, ab)\n",
+            "locus 0 beta 5\npoint A = point()\npoint B = point()\nline ab = line(A, B)\nrel congruent(ab, ab)\n",
         );
         let error = solve(&non_segment.file).expect_err("congruent requires segments");
         assert!(error.message.contains("expected a segment"));
@@ -1121,7 +1121,7 @@ mod tests {
     #[test]
     fn iteration_cap_returns_nonconvergence_report() {
         let parsed =
-            parse("locus 0 beta 4\npoint A = point()\npoint B = point()\nrel vertical(A, B)\n");
+            parse("locus 0 beta 5\npoint A = point()\npoint B = point()\nrel vertical(A, B)\n");
         let prepared = PreparedEvaluation::new(&parsed.file).expect("valid program");
         let error = solve_prepared_with_attempt_limit(&prepared, 0).expect_err("cap is zero");
         assert_eq!(error.code, "E403");
@@ -1132,7 +1132,7 @@ mod tests {
     #[test]
     fn direction_angles_match_kernel_normalization_in_relations() {
         let solved = solve_source(
-            "locus 0 beta 4\npoint A = point()\npoint B = offset(A, 0, -1)\nnum theta = dir_angle(A, B)\nrel theta == 270deg\nrel dir_angle(A, B) == 270deg\n",
+            "locus 0 beta 5\npoint A = point()\npoint B = offset(A, 0, -1)\nnum theta = dir_angle(A, B)\nrel theta == 270deg\nrel dir_angle(A, B) == 270deg\n",
         );
         assert_eq!(
             scene_point(&solved, "B") - scene_point(&solved, "A"),
@@ -1144,7 +1144,7 @@ mod tests {
     #[test]
     fn inline_relation_constructors_use_current_domain_rules() {
         let angle = parse(
-            "locus 0 beta 4\npoint A = point()\npoint B = offset(A, 1, 0)\npoint C = offset(A, 1, 0)\nrel angle(A, B, C) == 180deg\n",
+            "locus 0 beta 5\npoint A = point()\npoint B = offset(A, 1, 0)\npoint C = offset(A, 1, 0)\nrel angle(A, B, C) == 180deg\n",
         );
         let error = solve(&angle.file).expect_err("collinear angle is degenerate");
         assert_eq!(error.code, "E404");
@@ -1152,7 +1152,7 @@ mod tests {
         assert!(!error.measured.is_empty());
 
         let foot = solve_source(
-            "locus 0 beta 4\npoint A = point()\npoint B = offset(A, 1, 0)\npoint P = offset(A, 2, 1)\nsegment ab = seg(A, B)\nrel coincident(foot(P, ab), B)\n",
+            "locus 0 beta 5\npoint A = point()\npoint B = offset(A, 1, 0)\npoint P = offset(A, 2, 1)\nsegment ab = seg(A, B)\nrel coincident(foot(P, ab), B)\n",
         );
         assert_eq!(
             scene_point(&foot, "B"),
@@ -1163,7 +1163,7 @@ mod tests {
     #[test]
     fn differentiated_primals_preserve_kernel_arithmetic_order() {
         let solved = solve_source(
-            "locus 0 beta 4\npoint P = point()\npoint C = offset(P, 1.1, 0)\npoint reflected = reflect(P, C)\npoint translated = translate(C, P, C)\nnum quotient_delta = (3 / 5 - 0.6) * 100000000\nnum reflect_delta = hdist(reflected, translated) * 100000000\nrel quotient_delta == 0\nrel (3 / 5 - 0.6) * 100000000 == 0\nrel reflect_delta == 0\n",
+            "locus 0 beta 5\npoint P = point()\npoint C = offset(P, 1.1, 0)\npoint reflected = reflect(P, C)\npoint translated = translate(C, P, C)\nnum quotient_delta = (3 / 5 - 0.6) * 100000000\nnum reflect_delta = hdist(reflected, translated) * 100000000\nrel quotient_delta == 0\nrel (3 / 5 - 0.6) * 100000000 == 0\nrel reflect_delta == 0\n",
         );
         assert_eq!(solved.summary.max_normalized_residual, 0.0);
     }
@@ -1190,7 +1190,7 @@ mod tests {
     #[test]
     fn conflicting_subset_is_isolated_and_all_residuals_are_reported() {
         let conflicting =
-            parse("locus 0 beta 4\nnum x = free ~0\nrel x == 0\nrel x == 1\nrel x == 2\n");
+            parse("locus 0 beta 5\nnum x = free 0\nrel x == 0\nrel x == 1\nrel x == 2\n");
         let error = solve(&conflicting.file).expect_err("three values conflict");
         assert_eq!(error.code, "E402");
         assert!(
@@ -1201,7 +1201,7 @@ mod tests {
             error.message
         );
 
-        let mut source = String::from("locus 0 beta 4\nnum x = free ~0\n");
+        let mut source = String::from("locus 0 beta 5\nnum x = free 0\n");
         for value in 0..10 {
             writeln!(source, "rel x == {value}").expect("write relation");
         }

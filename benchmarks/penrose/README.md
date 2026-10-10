@@ -1,6 +1,6 @@
 # Penrose feature-coverage benchmark
 
-This benchmark asks whether **Locus 0 beta 4 can express the defining feature of every
+This benchmark asks whether **Locus 0 beta 5 can express the defining feature of every
 figure in Penrose's public examples gallery**. It is a capability benchmark, not a speed
 test or a pixel-similarity contest.
 

@@ -1,10 +1,10 @@
-# Locus Specification 0 beta 4
+# Locus Specification 0 beta 5
 
 *A relational language and CLI toolchain for plane-geometry figures and technical diagrams with precise alignment and ratios.*
 
 This document is self-contained and normative. The project is under development and supports only this latest draft; earlier file formats are not accepted.
 
-This revision adopts object-owned placement and parameterless `point()` declarations. The `0 beta 4` format remains unfrozen pending the initialization rules in Part 12.
+This revision uses single-line metadata, scalar seeds directly after `free`, and optional alpha in HEX colors, alongside object-owned placement and parameterless `point()` declarations. The `0 beta 5` format remains unfrozen pending the initialization rules in Part 12.
 
 ---
 
@@ -33,7 +33,7 @@ This is the geometric-constraint paradigm proven by CAD sketchers (SolveSpace, F
 
 - Extension: `*.locus`; encoding UTF-8; newline-terminated statements.
 - Comments: `//` to end of line. Outside strings and TeX spans, a comment may occupy a whole line or follow any statement.
-- Header: `locus 0 beta 4`. This exact header is mandatory.
+- Header: `locus 0 beta 5`. This exact header is mandatory.
 - **Compatibility:** Earlier headers and file formats are rejected. Backward compatibility is not maintained while the project is under development.
 - The file stores the **relational program**, never resolved coordinates. Resolved geometry is always derived by solving + evaluation.
 - Machine interchange: `locus fmt --json` emits the parsed AST as JSON (§9.4). The DSL is the authoring format; JSON is derived, never authored.
@@ -41,11 +41,9 @@ This is the geometric-constraint paradigm proven by CAD sketchers (SolveSpace, F
 ### 1.2 File shape
 
 ```locus
-locus 0 beta 4                      // format version header, mandatory, first statement
+locus 0 beta 5                      // format version header, mandatory, first statement
 
-meta {
-  title "Externally tangent circles"
-}
+meta title = "Externally tangent circles"
 
 style textbook               // optional; defaults to textbook
 class faint { stroke: dash(5, 3), weight: 0.75, accent: #6B7280 }   // optional style classes (§8.3)
@@ -71,28 +69,28 @@ assert dist(O_1, O_2) == 5
 
 ```
 file          := header (statement | eol)*
-header        := "locus" "0" "beta" "4" eol
+header        := "locus" "0" "beta" "5" eol
 statement     := op | rel | assert | meta | style | class
 
 op            := free_num_op | object_op
-free_num_op   := "num" ident "=" "free" scalar_hint [where] [attr] [props] eol
+free_num_op   := "num" ident "=" "free" expr [where] [attr] [props] eol -- expr is the required numeric seed
 object_op     := kind ident "=" rhs [where] [attr] [props] eol
 rhs           := expr                              -- result type must match kind
 kind        := "point" | "num" | "line" | "ray" | "segment" | "circle" | "arc" | "ellipse" | "bspline"
              | "polygon" | "rect" | "diamond"
              | "label" | "arrow" | "tick" | "right_angle" | "text_block"
-scalar_hint := "~" expr
+
 where       := "where" "{" boolexpr ("," boolexpr)* "}"
 attr        := "[" ident "]"                       -- built-in or declared style class
 props       := "{" [prop ("," prop)*] "}"
 prop        := ident ":" propvalue
 propvalue   := expr | string | ident | headtok | hexcolor
 headtok     := "->" | "<->" | "-"                  -- dedicated tokens (arrow heads)
-hexcolor    := "#" hex_digit hex_digit hex_digit hex_digit hex_digit hex_digit
+hexcolor    := "#" hex_digit hex_digit hex_digit hex_digit hex_digit hex_digit [hex_digit hex_digit] -- #RRGGBB or #RRGGBBAA
 
 rel         := "rel" boolexpr eol
 assert      := "assert" boolexpr ["tol" number] eol
-meta        := "meta" "{" eol (ident string eol)* "}" eol
+meta        := "meta" ident "=" string eol        -- one metadata key/value pair per line
 style       := "style" ident eol
 class       := "class" ident props eol             -- declared style class (§8.3)
 
@@ -114,7 +112,7 @@ bool_and    := bool_not ("and" bool_not)*
 bool_not    := ["not"] bool_primary
 bool_primary := cmp | predicate | "(" boolexpr ")"
 cmp         := expr ("==" | "<" | ">" | "<=" | ">=") expr
-predicate   := ident "(" args ")"
+predicate   := ident "(" args ")"                 -- Boolean condition call, e.g. horizontal(A, B); requires at least one argument
 
 number      := (digits ["." [digits]] | "." digits) [exponent]
 exponent    := ("e" | "E") [("+" | "-")] digits
@@ -138,10 +136,10 @@ Note the `postfix` production: property access applies to any expression, so `se
 
 ### 1.4 Statement rules
 
-- **One logical statement per line.** No semicolons or continuation syntax. The `meta` block is the sole structural exception: its opening delimiter, each `key "value"` entry, and its closing delimiter occupy separate lines. Parse errors are recovered at the next line boundary, so one bad statement or metadata entry never invalidates the file's remaining diagnostics.
+- **One logical statement per line.** No semicolons, continuation syntax, or multi-line statements. Metadata uses `meta key = "value"`, with one key/value pair per statement; additional entries use additional `meta` statements. Parse errors are recovered at the next line boundary, so one bad statement never invalidates the file's remaining diagnostics.
 - **Comments are trivia.** The lexer removes `//` through the end of its physical line when it occurs outside a quoted string or TeX span; the terminating newline remains for recovery. This makes both comment-only lines and trailing comments valid without adding comment alternatives to every production.
 - **`kind id = rhs`** is deliberately redundant: the declared kind must match the result type. This cross-check catches agent mistakes early (`point M = seg(A,B)` → immediate type error) and makes files skimmable.
-- **`free` is reserved for numeric declarations.** `num` uses a scalar hint; a missing hint or a coordinate-pair hint is a local parse error. `point P = free ...` is invalid. There is no location type, absolute point constructor, coordinate-hint syntax, or `pin` relation.
+- **`free` is reserved for numeric declarations.** A free `num` requires a scalar seed expression directly after `free`, as in `num r = free 1.5`; a missing seed or a coordinate-pair seed is a local parse error. `point P = free ...` is invalid. There is no location type, absolute point constructor, coordinate-hint syntax, or `pin` relation.
 - **Points and object references are values.** `point O = c.center` names a derived anchor and introduces no unknowns. A reference such as `circle other = c` aliases the same geometry; it does not allocate another placement.
 - **`point()` takes no arguments.** `point P = point()` declares an independently placed point; `point(1)`, `point(1, 2)`, and `point(A)` are local arity errors. Use `point Q = P` to name the same point, or a derived constructor to construct another. Neither declaration syntax nor point props accept coordinates, seeds, or a location field.
 - **Placement-owning constructors occur only as the complete right-hand side of a matching declaration.** `circle c = circle(2)` is valid; `label(circle(2).center, "O")` is invalid. Declare the object first. This gives each placement a stable source id and prevents hidden unknowns in nested expressions (§2.2).
@@ -173,7 +171,7 @@ circle c = circle(2)            // 2 internal placement DOFs; radius is exactly 
 ellipse e = ellipse(3, 2)        // 2 internal placement DOFs; semiaxes 3 and 2
 rect box = rect(4, 2)           // 2 internal placement DOFs; width 4, height 2
 diamond decision = diamond(3, 2) // 2 internal placement DOFs; width 3, height 2
-num r = free ~1.5               // 1 DOF: a numeric parameter, with a scalar seed
+num r = free 1.5                // 1 DOF: a numeric parameter, with a scalar seed
 ```
 
 `circle(r)`, `ellipse(a, b [, theta])`, `rect(w, h)`, and `diamond(w, h)` each own a center that Locus solves internally. Rectangles and diamonds are axis-aligned; a circle has no orientation parameter. An ellipse's rotation is an angle expression, defaulting to `0deg`, and introduces no implicit orientation unknown. Dimensions are expressions of earlier values, not implicitly free parameters. `circle(r)` with a free numeric `r` therefore depends on three unknown components in total: its two placement components and the separately declared radius parameter.
@@ -196,7 +194,7 @@ num phi = (1 + sqrt(5)) / 2
 - **Locus initializes placement.** No source syntax or public CLI field accepts a point or center seed. The engine supplies a deterministic initial placement and settles unconstrained placement internally (§7). A standalone `point P = point()` or `circle c = circle(2)` is a complete valid figure after the required header.
 - **Relations express intent.** Use anchors, alignment, distances, and tangency to relate shapes. Relative measurements such as `hdist(a.center, b.center) == 5` remain part of the language; they express separation between objects, not absolute locations.
 - **Discrete choices are geometric.** `tangent(c1, c2)` means external tangency; `internally_tangent(outer, inner)` explicitly requests internal tangency. Multi-valued derived constructions use the documented branch selector (§5). Source choices must never be inferred from hidden center seeds.
-- **Numeric hints remain numeric.** `num r = free ~1.5` supplies a solver seed for a dimension, angle, ratio, or other numeric parameter. It is never a fixed value or an absolute coordinate. Relations determine the solved value; unresolved numeric freedom settles toward this seed. To fix a radius, write `circle(2)` or pass a constant `num`.
+- **Numeric seeds remain numeric.** `num r = free 1.5` supplies a solver seed for a dimension, angle, ratio, or other numeric parameter. It is never a fixed value or an absolute coordinate. Relations determine the solved value; unresolved numeric freedom settles toward this seed. To fix a radius, write `circle(2)` or pass a constant `num`.
 - **Remaining freedoms are reported in terms of objects.** The engine distinguishes harmless rigid movement of a whole figure from unresolved relationships or dimensions (§7.2). Feedback names the affected objects and suggests geometric relations; it never asks an author to move a coordinate hint.
 
 Assertions verify the chosen solution; they do not steer placement or select another solution. If a particular ordering or configuration matters, encode it with defining relations or an explicit construction rather than relying on engine placement.
@@ -261,7 +259,7 @@ There are **no vocabulary aliases**: exactly one name per concept. (A `touch` al
 
 ### 3.3 Assert-only predicates
 
-Inherently inequality-shaped conditions cannot be solved for in `0 beta 4` and are **assert-only**: `between(A, B, C)`, `inside(P, poly)`, `inside(P, c)`, and the comparisons `<  >  <=  >=`. Boolean `or` and `not` are also assert-only because they do not define a single smooth equation set. A `rel` or `where` clause may contain a solvable atomic equality/predicate or an `and` conjunction of them; using an assert-only form there is a semantic error. Ordering, containment, and other discrete choices are established by geometric relations or explicit constructions, then *verified* by asserts.
+Inherently inequality-shaped conditions cannot be solved for in `0 beta 5` and are **assert-only**: `between(A, B, C)`, `inside(P, poly)`, `inside(P, c)`, and the comparisons `<  >  <=  >=`. Boolean `or` and `not` are also assert-only because they do not define a single smooth equation set. A `rel` or `where` clause may contain a solvable atomic equality/predicate or an `and` conjunction of them; using an assert-only form there is a semantic error. Ordering, containment, and other discrete choices are established by geometric relations or explicit constructions, then *verified* by asserts.
 
 `between(A, B, C)` is strict: it requires `B` to be collinear with distinct `A` and `C`, and the projection parameter of `B` on directed segment `A→C` to lie inside the tolerance-shrunk interval `(ε, 1−ε)`. Endpoints are not between. `inside(P, c)` is also strict and requires `(radius(c) − dist(center(c), P)) / D > ε`; a boundary point is not inside. `inside(P, poly)` requires a valid simple polygon, first rejects points within tolerance of any closed edge, then uses the nonzero winding rule; boundary points are not inside. These definitions use the assert's `ε` from §7.4.
 
@@ -326,7 +324,7 @@ An independently declared point may instead be constrained by relations, for exa
 
 ```
 num fw = 4                      -- derived: any scalar expression of earlier ids
-num r  = free ~1.5              -- free: 1 DOF
+num r  = free 1.5               -- free: 1 DOF
 ```
 
 ### 5.3 `line`, `ray`, `segment`
@@ -524,7 +522,7 @@ Every numeric expression has one of four dimensions: **scalar**, **length**, **a
 - Geometry determines dimensions: `dist`, `hdist`, `vdist`, `radius`, `length`, rectangle dimensions, ellipse semiaxes, and relative point offsets are lengths; `area` is area; `angle`, `dir_angle`, ellipse rotation and ellipse `.at` arguments, and arrow `bend` are angles; B-spline `.at` arguments, counts, and ratios are scalars.
 - A numeric literal without `deg` or `rad` begins as a dimension variable and is unified from context. Thus the `6` in `dist(A, B) == 6` becomes a length, while the `2` in `2 * angle(A, B, C)` is scalar. An otherwise unconstrained literal defaults to scalar.
 - Each named `num`, including a free `num`, has one dimension inferred from all of its uses in the file. Conflicting uses are a type error. A free numeric hint has the inferred dimension of its declaration.
-- Addition, subtraction, comparison, `min`, and `max` require matching dimensions. Multiplication or division by a scalar preserves the other operand's dimension. `length * length` produces area; `area / length` produces length; equal-dimension division produces scalar. Other dimension products are errors in `0 beta 4`.
+- Addition, subtraction, comparison, `min`, and `max` require matching dimensions. Multiplication or division by a scalar preserves the other operand's dimension. `length * length` produces area; `area / length` produces length; equal-dimension division produces scalar. Other dimension products are errors in `0 beta 5`.
 - `abs` preserves dimension. `sqrt` accepts a scalar or an area and returns a scalar or length respectively. `ratio(a, b)` requires equal dimensions and returns scalar.
 - Constructor arguments and properties impose their documented dimensions. In particular, circle radii, rectangle/diamond sizes, label gaps, tick/right-angle sizes, and all point offsets are lengths. A bare number in an angle position remains an error; contextual inference never turns it into an angle without `deg` or `rad`.
 
@@ -568,7 +566,7 @@ The format-version-3 solve contract is defined below. The numerical iteration is
 
 All arithmetic is IEEE-754 binary64, round-to-nearest ties-to-even, with subnormals preserved. Transcendental functions come from the format-version-pinned `libm` implementation. No randomness, parallel reductions, locale-sensitive parsing/formatting, reassociation, or platform BLAS/LAPACK calls are permitted in the normative path.
 
-For the one-sided Jacobi SVD, start with `A = J` and `V = I`. A sweep visits every column pair `(p, q)` in lexicographic order. Let `α = dot(Ap, Ap)`, `β = dot(Aq, Aq)`, and `γ = dot(Ap, Aq)`, with dots summed by ascending row. Skip the pair if either norm is zero or `abs(γ) <= 2^-48 × sqrt(αβ)`. Otherwise set `ζ = (β−α)/(2γ)`, `t = 1` when `ζ = 0`, and otherwise `t = sign(ζ)/(abs(ζ)+sqrt(1+ζ²))`; then `c = 1/sqrt(1+t²)` and `s = c×t`. Replace the columns with `(c×Ap−s×Aq, s×Ap+c×Aq)` and apply the same rotation to `V`. Stop after the first sweep that performs no rotations, or fail with numerical non-convergence after 64 sweeps. Singular values are the final column norms; sort them descending with the original column index as the stable tie-break, and derive `U` by normalizing nonzero columns. This procedure, including its skip threshold and ordering, is part of `0 beta 4`.
+For the one-sided Jacobi SVD, start with `A = J` and `V = I`. A sweep visits every column pair `(p, q)` in lexicographic order. Let `α = dot(Ap, Ap)`, `β = dot(Aq, Aq)`, and `γ = dot(Ap, Aq)`, with dots summed by ascending row. Skip the pair if either norm is zero or `abs(γ) <= 2^-48 × sqrt(αβ)`. Otherwise set `ζ = (β−α)/(2γ)`, `t = 1` when `ζ = 0`, and otherwise `t = sign(ζ)/(abs(ζ)+sqrt(1+ζ²))`; then `c = 1/sqrt(1+t²)` and `s = c×t`. Replace the columns with `(c×Ap−s×Aq, s×Ap+c×Aq)` and apply the same rotation to `V`. Stop after the first sweep that performs no rotations, or fail with numerical non-convergence after 64 sweeps. Singular values are the final column norms; sort them descending with the original column index as the stable tie-break, and derive `U` by normalizing nonzero columns. This procedure, including its skip threshold and ordering, is part of `0 beta 5`.
 
 ### 7.2 DOF accounting
 
@@ -679,7 +677,7 @@ Styling is a two-layer system. Preset tokens provide concise semantic defaults, 
 | `cap` | `butt \| round \| square` | `butt` | open stroke ends |
 | `join` | `miter \| round \| bevel` | `miter` | stroke corners |
 
-A named color is one of `ink | gray | blue | orange | teal | green | red | purple` and is resolved by the preset. A HEX color is an unquoted six-digit sRGB literal such as `#2563EB`; `locus fmt` canonicalizes its digits to uppercase. `accent` colors strokes, point marks, and label/text glyphs. `fill: tint` remains the preset's light wash of the resolved accent, while an explicit fill color is used unchanged.
+A named color is one of `ink | gray | blue | orange | teal | green | red | purple` and is resolved by the preset. A HEX color is an unquoted sRGB literal in `#RRGGBB` or `#RRGGBBAA` form, such as `#2563EB` or `#2563EB80`. The optional final byte specifies alpha as `AA / 255`: `00` is fully transparent and `FF` is fully opaque; omitted alpha defaults to `FF`. Color alpha applies to the corresponding stroke, point mark, text, or fill and composes multiplicatively with the op's `opacity`. Three- and four-digit shorthand forms are not supported. `locus fmt` canonicalizes hex digits to uppercase while preserving the six- or eight-digit form. `accent` colors strokes, point marks, and label/text glyphs. `fill: tint` remains the preset's light wash of the resolved accent, while an explicit fill color is used unchanged.
 
 A numeric `weight` is a finite value greater than zero, measured in CSS pixels; it bypasses the preset's `thin | normal | bold` mapping. SVG emits that value directly, PNG inherits it from the SVG, and TikZ converts it using `1px = 0.75pt`. `dash(...)` accepts at least two finite positive CSS-pixel lengths. An odd-length sequence is repeated once, matching SVG dash-array semantics. `solid`, `dashed`, and `dotted` remain preset-defined patterns.
 
@@ -689,7 +687,7 @@ For example:
 
 ```locus
 class signal { accent: #2563EB, weight: 1.5, stroke: dash(6, 3), cap: round }
-class region { accent: #0F766E, fill: #CCFBF1, opacity: 0.85, join: round }
+class region { accent: #0F766E, fill: #CCFBF180, opacity: 0.85, join: round }
 ```
 
 The four built-ins are ordinary classes with reserved names:
@@ -782,14 +780,14 @@ Recommended agent policy: **never `render` until `check` exits 0.**
 
 ---
 
-## Part 10 — Out of scope for 0 beta 4 (reserved)
+## Part 10 — Out of scope for 0 beta 5 (reserved)
 
 - Inequality relations in `rel` (only asserts may compare with `< > <= >=`).
 - Content-driven box sizing (rect width from measured label extents) and arrow routing (elbows, box clipping) — the rest of "diagram mode."
 - Location values, the old hinted free-point syntax, absolute coordinate hints, and `pin` are excluded from the authoring model, not reserved for later addition. Independent placements beyond points, circles, ellipses, rectangles, and diamonds are out of scope for this version (§2.2). B-splines derive all controls from existing geometry.
 - General ellipse/B-spline intersections, curve tangency and projection; ellipse arcs and perimeter; variable-degree, custom-knot, rational, periodic, closed, or fitted B-splines (§5.10–§5.11).
 - User-defined presets or named palettes; per-op inline style declarations; whole-figure transforms; layers; animation; 3D. Exact values remain reusable through classes (§8.3).
-- Statement continuations or other multi-line statements beyond the structured `meta` block; includes/imports; user-defined functions.
+- Statement continuations or multi-line statements; includes/imports; user-defined functions.
 
 The file header identifies the language draft and will change when a future draft makes incompatible changes.
 
@@ -798,11 +796,9 @@ The file header identifies the language draft and will change when a future draf
 ## Part 11 — Complete example
 
 ```locus
-locus 0 beta 4
+locus 0 beta 5
 
-meta {
-  title "Externally tangent circles with a common external tangent"
-}
+meta title = "Externally tangent circles with a common external tangent"
 
 style textbook
 
@@ -848,9 +844,9 @@ The agent states radii and a tangency relation, then derives anchors, the contac
 
 ## Part 12 — Open questions before freezing
 
-1. **Deterministic placement initialization** — specify and validate the exact dimension-aware initial arrangements, construction-domain handling, bounded retry schedule, and tie-breaks between otherwise valid arrangements. Cover standalone points and shapes, points related into nondegenerate triangles and spline controls, tangent and concentric circles, relation-dependent intersections, and disconnected diagrams. Authors must never repair initialization by supplying coordinates. This algorithm is required before freezing `0 beta 4`; the iteration rules alone no longer define a complete reference solver.
+1. **Deterministic placement initialization** — specify and validate the exact dimension-aware initial arrangements, construction-domain handling, bounded retry schedule, and tie-breaks between otherwise valid arrangements. Cover standalone points and shapes, points related into nondegenerate triangles and spline controls, tangent and concentric circles, relation-dependent intersections, and disconnected diagrams. Authors must never repair initialization by supplying coordinates. This algorithm is required before freezing `0 beta 5`; the iteration rules alone no longer define a complete reference solver.
 2. **Rigid symmetry classification** — common translation is handled by §7.2. Define when common rotation is also presentation-only, accounting for horizontal/vertical relations, compass anchors, relative offsets, and angle-based constructions, before exempting it from strict checks.
-3. **Solver constants** — empirically validate the specified normalization, rank threshold, damping schedule, and `1e-12`/`1e-9` gap on extreme-scale figures before freezing `0 beta 4`; any change after freezing requires a new file header.
+3. **Solver constants** — empirically validate the specified normalization, rank threshold, damping schedule, and `1e-12`/`1e-9` gap on extreme-scale figures before freezing `0 beta 5`; any change after freezing requires a new file header.
 4. **Implementation migration** — update parser/AST, constructor typing, unknown ownership, solver initialization, CLI/JSON reports, and fixtures together. Existing coordinate hints are not silently discarded: translate their intended relative geometry into relations and explicit construction branches.
 5. **KaTeX subset boundary** — which TeX commands are guaranteed? Needs an explicit whitelist appendix before v1.
 6. **Curve implementation** — add ellipse/B-spline syntax and typed overloads, parameter domains, analytic evaluation and differentiation (including B-spline endpoint derivatives), rotated/conservative bounds, exact cubic span conversion, and curve-aware layout. Pin conversion operation order and collision tolerances; verify endpoint, interior-knot, repeated-control, and rotated-ellipse cases across renderers. The curve demonstrations are draft acceptance cases, not claims of existing runtime support.

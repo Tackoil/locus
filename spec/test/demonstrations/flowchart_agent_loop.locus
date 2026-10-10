@@ -1,9 +1,7 @@
-locus 0 beta 4
+locus 0 beta 5
 
-meta {
-  title "Agent workflow: never render until check passes"
-  note  "Nodes own their placement; anchor relations define the spine and fix branch"
-}
+meta title = "Agent workflow: never render until check passes"
+meta note = "Nodes own their placement; anchor relations define the spine and fix branch"
 
 style textbook
 

@@ -31,8 +31,9 @@ pub fn render(
     if let Some(background) = drawing.background {
         let _ = writeln!(
             result,
-            "  \\path[fill={},draw=none] (0,0) rectangle ({width},{height});",
-            color(background)
+            "  \\path[fill={}{},draw=none] (0,0) rectangle ({width},{height});",
+            color(background),
+            alpha_attribute("fill", background)
         );
     }
     for op in &drawing.ops {
@@ -147,7 +148,11 @@ fn color(c: Color) -> String {
 
 fn attributes(style: &Style, closed: bool, ink: bool) -> String {
     if ink {
-        return format!("draw=none,fill={}", color(style.accent));
+        return format!(
+            "draw=none,fill={}{}",
+            color(style.accent),
+            alpha_attribute("fill", style.accent)
+        );
     }
     let fill = if closed {
         style.fill.map_or_else(|| "none".into(), color)
@@ -165,6 +170,12 @@ fn attributes(style: &Style, closed: bool, ink: bool) -> String {
         number(style.weight * 0.75),
         style.join
     );
+    result.push_str(&alpha_attribute("draw", style.accent));
+    if closed {
+        if let Some(color) = style.fill {
+            result.push_str(&alpha_attribute("fill", color));
+        }
+    }
     if !style.dash.is_empty() {
         let dash = style
             .dash
@@ -182,4 +193,12 @@ fn attributes(style: &Style, closed: bool, ink: bool) -> String {
         let _ = write!(result, ",dash pattern={dash}");
     }
     result
+}
+
+fn alpha_attribute(channel: &str, color: Color) -> String {
+    if color.3 == 255 {
+        String::new()
+    } else {
+        format!(",{channel} opacity={}", number(color.opacity()))
+    }
 }

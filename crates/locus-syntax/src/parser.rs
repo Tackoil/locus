@@ -2,8 +2,8 @@
 
 use crate::ast::{
     AssertStmt, BinOp, ClassStmt, Constructor, Expr, File, HeadKind, HeadToken, HexColor, Ident,
-    Kind, MetaBlock, MetaEntry, NumberExpr, OpStmt, Prop, PropValue, Props, RelStmt, Statement,
-    StyleAttr, StyleStmt, TextSegment, TextSegmentKind, TextValue, UnaryOp,
+    Kind, MetaEntry, NumberExpr, OpStmt, Prop, PropValue, Props, RelStmt, Statement, StyleAttr,
+    StyleStmt, TextSegment, TextSegmentKind, TextValue, UnaryOp,
 };
 use crate::diag::did_you_mean;
 use crate::lexer::{LexTextSegment, Token, TokenKind, lex};
@@ -130,12 +130,6 @@ impl FileParser {
                 self.line_index += 1;
                 continue;
             }
-            if line_starts_with(&self.lines[self.line_index], "meta") {
-                if let Some(statement) = self.parse_meta_block() {
-                    statements.push(Statement::Meta(statement));
-                }
-                continue;
-            }
             let line = self.lines[self.line_index].clone();
             if line
                 .iter()
@@ -194,72 +188,6 @@ impl FileParser {
         let _ = parser.expect_end();
         self.diagnostics.extend(parser.diagnostics);
         self.line_index += 1;
-    }
-
-    fn parse_meta_block(&mut self) -> Option<MetaBlock> {
-        let opening = &self.lines[self.line_index];
-        let open_span = line_span(opening);
-        let mut opening_parser = LineParser::new(opening, self.line_ends[self.line_index]);
-        opening_parser.take_keyword("meta");
-        if opening_parser
-            .expect_simple(is_lbrace, "`{` after `meta`")
-            .is_err()
-            || opening_parser.expect_end().is_err()
-        {
-            self.diagnostics.extend(opening_parser.diagnostics);
-            self.line_index += 1;
-            return None;
-        }
-        self.line_index += 1;
-        let mut entries = Vec::new();
-        while self.line_index < self.lines.len() {
-            let line = &self.lines[self.line_index];
-            if line.is_empty() {
-                self.line_index += 1;
-                continue;
-            }
-            if matches!(
-                line.first().map(|token| &token.kind),
-                Some(TokenKind::RBrace)
-            ) {
-                if line.len() != 1 {
-                    self.diagnostics.push(Diagnostic::new(
-                        "E151",
-                        line_span(line),
-                        "metadata closing `}` must be the only token on its line",
-                    ));
-                }
-                let span = open_span.join(line[0].span);
-                self.line_index += 1;
-                return Some(MetaBlock { entries, span });
-            }
-            if looks_like_top_level_statement(line) && !looks_like_meta_entry(line) {
-                self.diagnostics.push(Diagnostic::new(
-                    "E151",
-                    open_span,
-                    "metadata block is missing its closing `}` line",
-                ));
-                return Some(MetaBlock {
-                    entries,
-                    span: open_span,
-                });
-            }
-            let mut parser = LineParser::new(line, self.line_ends[self.line_index]);
-            if let Some(entry) = parser.parse_meta_entry() {
-                entries.push(entry);
-            }
-            self.diagnostics.extend(parser.diagnostics);
-            self.line_index += 1;
-        }
-        self.diagnostics.push(Diagnostic::new(
-            "E151",
-            open_span,
-            "metadata block is missing its closing `}` line",
-        ));
-        Some(MetaBlock {
-            entries,
-            span: open_span,
-        })
     }
 
     fn skip_empty_lines(&mut self) {
@@ -427,14 +355,7 @@ impl<'a> LineParser<'a> {
             "assert" => self.parse_assert().map(Statement::Assert),
             "style" => self.parse_style().map(Statement::Style),
             "class" => self.parse_class().map(Statement::Class),
-            "meta" => {
-                self.error(
-                    "E150",
-                    self.current_span(),
-                    "`meta` must open a multi-line block",
-                );
-                None
-            }
+            "meta" => self.parse_meta_entry().map(Statement::Meta),
             _ => self.parse_op_or_unknown(),
         }
     }
@@ -452,7 +373,7 @@ impl<'a> LineParser<'a> {
         let revision = self.advance().cloned();
         let valid = matches!(major.kind, TokenKind::Number { ref raw, unit: None, .. } if raw == "0")
             && matches!(beta.as_ref().map(|token| &token.kind), Some(TokenKind::Ident(value)) if value == "beta")
-            && matches!(revision.as_ref().map(|token| &token.kind), Some(TokenKind::Number { raw, unit: None, .. }) if raw == "4");
+            && matches!(revision.as_ref().map(|token| &token.kind), Some(TokenKind::Number { raw, unit: None, .. }) if raw == "5");
         if !valid {
             let span = revision
                 .as_ref()
@@ -535,23 +456,27 @@ impl<'a> LineParser<'a> {
             self.error("E123", free, "only `num` declarations may use `free`");
             return None;
         }
-        if self
-            .expect_simple(is_tilde, "mandatory `~` free hint")
-            .is_err()
-        {
-            self.replace_last_code("E124");
-            return None;
-        }
         self.parse_free_num(free)
     }
 
     fn parse_free_num(&mut self, start: Span) -> Option<Constructor> {
+        if !self
+            .peek()
+            .is_some_and(|token| starts_expression(&token.kind))
+        {
+            self.error(
+                "E124",
+                self.current_span(),
+                "a free `num` requires a scalar seed expression after `free`",
+            );
+            return None;
+        }
         let starts_with_group = self.at_simple(is_lparen);
         let Some(hint) = self.parse_expr(0) else {
             if starts_with_group && self.at_simple(is_comma) {
                 self.replace_last_diagnostic(
                     "E124",
-                    "a free `num` requires a scalar hint, not a point-shaped hint",
+                    "a free `num` requires a scalar seed, not a coordinate pair",
                 );
             }
             return None;
@@ -778,7 +703,10 @@ impl<'a> LineParser<'a> {
     }
 
     fn parse_meta_entry(&mut self) -> Option<MetaEntry> {
+        let start = self.advance()?.span;
         let key = self.take_ident("metadata key")?;
+        self.expect_simple(is_equal, "`=` after metadata key")
+            .ok()?;
         let Some(token) = self.peek().cloned() else {
             self.error(
                 "E150",
@@ -795,7 +723,7 @@ impl<'a> LineParser<'a> {
         self.expect_end().ok()?;
         let value = text_value(segments, token.span);
         Some(MetaEntry {
-            span: key.span.join(value.span),
+            span: start.join(value.span),
             key,
             value,
         })
@@ -1146,73 +1074,6 @@ fn tex_value(source: String, span: Span) -> TextValue {
 
 fn line_starts_with(line: &[Token], keyword: &str) -> bool {
     matches!(line.first().map(|token| &token.kind), Some(TokenKind::Ident(name)) if name == keyword)
-}
-
-fn looks_like_meta_entry(line: &[Token]) -> bool {
-    matches!(
-        line,
-        [
-            Token {
-                kind: TokenKind::Ident(_),
-                ..
-            },
-            Token {
-                kind: TokenKind::String(_),
-                ..
-            },
-            ..
-        ]
-    )
-}
-
-fn looks_like_top_level_statement(line: &[Token]) -> bool {
-    let Some(Token {
-        kind: TokenKind::Ident(first),
-        ..
-    }) = line.first()
-    else {
-        return false;
-    };
-    match first.as_str() {
-        "locus" => matches!(
-            line.get(1).map(|token| &token.kind),
-            Some(TokenKind::Number { unit: None, .. })
-        ),
-        "meta" => line.get(1).is_some_and(|token| is_lbrace(&token.kind)),
-        "style" => matches!(
-            line.get(1).map(|token| &token.kind),
-            Some(TokenKind::Ident(_))
-        ),
-        "class" => matches!(
-            (line.get(1), line.get(2)),
-            (
-                Some(Token {
-                    kind: TokenKind::Ident(_),
-                    ..
-                }),
-                Some(Token {
-                    kind: TokenKind::LBrace,
-                    ..
-                })
-            )
-        ),
-        "rel" | "assert" => line
-            .get(1)
-            .is_some_and(|token| starts_expression(&token.kind)),
-        _ => matches!(
-            (line.get(1), line.get(2)),
-            (
-                Some(Token {
-                    kind: TokenKind::Ident(_),
-                    ..
-                }),
-                Some(Token {
-                    kind: TokenKind::Equal,
-                    ..
-                })
-            )
-        ),
-    }
 }
 
 fn starts_expression(kind: &TokenKind) -> bool {
@@ -1685,9 +1546,6 @@ fn is_dot(kind: &TokenKind) -> bool {
 fn is_equal(kind: &TokenKind) -> bool {
     matches!(kind, TokenKind::Equal)
 }
-fn is_tilde(kind: &TokenKind) -> bool {
-    matches!(kind, TokenKind::Tilde)
-}
 fn is_or(kind: &TokenKind) -> bool {
     matches!(kind, TokenKind::Ident(name) if name == "or")
 }
@@ -1729,7 +1587,7 @@ mod tests {
 
     #[test]
     fn parses_point_where_props_and_mixed_text() {
-        let source = r#"locus 0 beta 4
+        let source = r#"locus 0 beta 5
 point A = point()
 point B = point() where { horizontal(A, B) } { mark: cross }
 label text = label(B, "point $B$") { dir: NE }
@@ -1777,7 +1635,7 @@ assert dist(A, B) == 2
                 .any(|diagnostic| diagnostic.code == "E111")
         );
 
-        let current = parse("locus 0 beta 4\npoint P = point()\nassert pin(P, 0, 0)\n");
+        let current = parse("locus 0 beta 5\npoint P = point()\nassert pin(P, 0, 0)\n");
         assert!(
             current
                 .diagnostics
@@ -1788,8 +1646,8 @@ assert dist(A, B) == 2
 
     #[test]
     fn recovers_at_every_bad_physical_line() {
-        let source = r"locus 0 beta 4
-piont A = free ~(0, 0)
+        let source = r"locus 0 beta 5
+piont A = free (0, 0)
 point A =
 point A = point()
 circle c = incircel(A, 2)
@@ -1810,7 +1668,7 @@ assert horizontal(A, B)
     #[test]
     fn enforces_angle_units_at_known_angle_sites() {
         let output = parse(
-            "locus 0 beta 4\npoint A = point()\npoint O = point()\npoint B = rotate(A, O, 60)\nassert angle(A, O, B) == 90\n",
+            "locus 0 beta 5\npoint A = point()\npoint O = point()\npoint B = rotate(A, O, 60)\nassert angle(A, O, B) == 90\n",
         );
         assert_eq!(
             output
@@ -1824,7 +1682,7 @@ assert horizontal(A, B)
 
     #[test]
     fn diagnoses_bad_lines_and_missing_final_newline() {
-        let output = parse("locus 0 beta 4\n}\npoint A = point()");
+        let output = parse("locus 0 beta 5\n}\npoint A = point()");
         let codes: Vec<_> = output
             .diagnostics
             .iter()
@@ -1837,7 +1695,7 @@ assert horizontal(A, B)
     #[test]
     fn not_binds_to_a_complete_boolean_primary() {
         let output = parse(
-            "locus 0 beta 4\npoint A = point()\npoint B = point()\nassert not dist(A, B) == 1\n",
+            "locus 0 beta 5\npoint A = point()\npoint B = point()\nassert not dist(A, B) == 1\n",
         );
         assert!(output.diagnostics.is_empty(), "{:#?}", output.diagnostics);
         let Some(Statement::Assert(assertion)) = output.file.statements.last() else {
@@ -1859,7 +1717,7 @@ assert horizontal(A, B)
 
     #[test]
     fn rejects_chained_comparisons() {
-        let output = parse("locus 0 beta 4\nnum a = 1\nassert a == 1 == 1\n");
+        let output = parse("locus 0 beta 5\nnum a = 1\nassert a == 1 == 1\n");
         assert_eq!(
             output
                 .diagnostics
@@ -1872,18 +1730,18 @@ assert horizontal(A, B)
 
     #[test]
     fn accepts_grouped_scalar_hint_but_rejects_point_shape() {
-        let valid = parse("locus 0 beta 4\nnum r = free ~(1 + 2)\nnum s = free ~(1 + 2) * 3\n");
+        let valid = parse("locus 0 beta 5\nnum r = free (1 + 2)\nnum s = free (1 + 2) * 3\n");
         assert!(valid.diagnostics.is_empty(), "{:#?}", valid.diagnostics);
         assert_eq!(valid.file.statements.len(), 2);
 
-        let invalid = parse("locus 0 beta 4\nnum r = free ~(1, 2)\n");
+        let invalid = parse("locus 0 beta 5\nnum r = free (1, 2)\n");
         assert_eq!(invalid.diagnostics.len(), 1);
         assert_eq!(invalid.diagnostics[0].code, "E124");
     }
 
     #[test]
     fn diagnoses_a_tolerance_keyword_without_a_value() {
-        let output = parse("locus 0 beta 4\nassert true == true tol // missing value\n");
+        let output = parse("locus 0 beta 5\nassert true == true tol // missing value\n");
         assert_eq!(output.diagnostics.len(), 1);
         assert_eq!(output.diagnostics[0].code, "E147");
         assert_eq!(output.diagnostics[0].span.line, 2);
@@ -1891,76 +1749,45 @@ assert horizontal(A, B)
     }
 
     #[test]
-    fn meta_recovery_preserves_later_top_level_statements() {
-        let source = r#"locus 0 beta 4
-meta {
-title "missing close"
+    fn meta_recovery_preserves_later_statements() {
+        let source = r#"locus 0 beta 5
+meta title "missing equals"
 point A = point()
-meta {
-note "malformed close"
-} trailing
+meta note = 123
+meta title = "valid" trailing
+meta note = "still metadata"
 point B = point()
 assert dist(A, B) == 1
 "#;
         let output = parse(source);
-        assert_eq!(
-            output
-                .diagnostics
-                .iter()
-                .map(|diagnostic| diagnostic.code)
-                .collect::<Vec<_>>(),
-            ["E151", "E151"]
-        );
-        assert_eq!(output.file.statements.len(), 5);
-        assert!(matches!(output.file.statements[0], Statement::Meta(_)));
-        assert!(matches!(output.file.statements[1], Statement::Op(_)));
-        assert!(matches!(output.file.statements[2], Statement::Meta(_)));
-        assert!(matches!(output.file.statements[3], Statement::Op(_)));
-        assert!(matches!(output.file.statements[4], Statement::Assert(_)));
-    }
-
-    #[test]
-    fn malformed_meta_entry_with_trailing_tokens_stays_in_the_block() {
-        let source = r#"locus 0 beta 4
-meta {
-point "description" trailing
-point 123
-title "still metadata"
-}
-point A = point()
-"#;
-        let output = parse(source);
-        assert_eq!(
-            output
-                .diagnostics
-                .iter()
-                .map(|diagnostic| diagnostic.code)
-                .collect::<Vec<_>>(),
-            ["E114", "E150"]
-        );
-        assert_eq!(output.file.statements.len(), 2);
-        assert!(matches!(output.file.statements[0], Statement::Meta(_)));
-        if let Statement::Meta(meta) = &output.file.statements[0] {
-            assert_eq!(meta.entries.len(), 1);
-            assert_eq!(meta.entries[0].key.name, "title");
-        }
-        assert!(matches!(output.file.statements[1], Statement::Op(_)));
+        let codes: Vec<_> = output
+            .diagnostics
+            .iter()
+            .map(|diagnostic| diagnostic.code)
+            .collect();
+        assert_eq!(codes, ["E113", "E150", "E114"]);
+        assert_eq!(output.file.statements.len(), 4);
+        let Statement::Meta(meta) = &output.file.statements[1] else {
+            unreachable!()
+        };
+        assert_eq!(meta.key.name, "note");
+        assert!(matches!(output.file.statements[3], Statement::Assert(_)));
     }
 
     #[test]
     fn metadata_key_without_a_value_reports_at_logical_line_end() {
-        let output = parse("locus 0 beta 4\nmeta {\ntitle // missing value\n}\n");
+        let output = parse("locus 0 beta 5\nmeta title = // missing value\n");
         assert_eq!(output.diagnostics.len(), 1);
         assert_eq!(output.diagnostics[0].code, "E150");
-        assert_eq!(output.diagnostics[0].span.line, 3);
-        assert_eq!(output.diagnostics[0].span.col, 6);
+        assert_eq!(output.diagnostics[0].span.line, 2);
+        assert_eq!(output.diagnostics[0].span.col, 13);
     }
 
     #[test]
     fn rejects_empty_predicate_and_property_argument_lists() {
-        let source = r"locus 0 beta 4
+        let source = r"locus 0 beta 5
 point O = point()
-num r = free ~1
+num r = free 1
 circle c = circle(O, r)
 rel horizontal()
 num n = c.at()
@@ -1978,7 +1805,7 @@ num n = c.at()
 
     #[test]
     fn rejects_free_in_every_identifier_path() {
-        let source = r#"locus 0 beta 4
+        let source = r#"locus 0 beta 5
 point free = point()
 point A = point()
 point B = midpoint(free, A)
@@ -1988,9 +1815,7 @@ class free {}
 point C = midpoint(A, A) [free]
 point D = midpoint(A, A) { free: dot }
 num n = A.free
-meta {
-free "value"
-}
+meta free = "value"
 "#;
         let output = parse(source);
         assert_eq!(
@@ -2005,7 +1830,7 @@ free "value"
 
     #[test]
     fn synthesized_columns_count_unicode_scalars_after_text_literals() {
-        let output = parse("locus 0 beta 4\nlabel L = label(A, \"é\"\nlabel T = label(A, $α$\n");
+        let output = parse("locus 0 beta 5\nlabel L = label(A, \"é\"\nlabel T = label(A, $α$\n");
         assert_eq!(output.diagnostics.len(), 2);
         assert_eq!(output.diagnostics[0].code, "E113");
         assert_eq!(output.diagnostics[0].span.line, 2);

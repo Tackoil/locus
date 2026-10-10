@@ -23,7 +23,7 @@ expression: output_text(json.stdout)?
           },
           "message": "unsupported Locus file header",
           "notes": [],
-          "suggestion": "locus 0 beta 4"
+          "suggestion": "locus 0 beta 5"
         }
       ]
     }

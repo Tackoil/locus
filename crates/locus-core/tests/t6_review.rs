@@ -9,7 +9,7 @@ use locus_syntax::{File, Statement, parse};
 
 fn fixture(assertion: &str) -> (File, ResolvedScene) {
     let source = format!(
-        "locus 0 beta 4\npoint A = point()\npoint B = point()\ncircle c = circle(A, 1)\ncircle d = circle(A, 1)\nassert {assertion}\n"
+        "locus 0 beta 5\npoint A = point()\npoint B = point()\ncircle c = circle(A, 1)\ncircle d = circle(A, 1)\nassert {assertion}\n"
     );
     let parsed = parse(&source);
     assert!(parsed.diagnostics.is_empty(), "{:?}", parsed.diagnostics);

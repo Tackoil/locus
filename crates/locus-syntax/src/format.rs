@@ -1,8 +1,8 @@
 //! Canonical, comment-preserving source formatting.
 
 use crate::ast::{
-    AngleUnit, AssertStmt, BinOp, ClassStmt, Constructor, Expr, File, HeadKind, MetaBlock,
-    MetaEntry, OpStmt, PropValue, Props, Statement, TextSegmentKind, TextValue, UnaryOp,
+    AngleUnit, AssertStmt, BinOp, ClassStmt, Constructor, Expr, File, HeadKind, MetaEntry, OpStmt,
+    PropValue, Props, Statement, TextSegmentKind, TextValue, UnaryOp,
 };
 use crate::{Diagnostic, FILE_HEADER, parse};
 use std::collections::BTreeMap;
@@ -51,7 +51,7 @@ pub fn format_file(file: &File) -> String {
 #[must_use]
 pub fn format_parsed(file: &File, source: &str) -> String {
     let source_lines = physical_lines(source);
-    let mut replacements = statement_replacements(file, source, &source_lines);
+    let mut replacements = statement_replacements(file, &source_lines);
     align_source_ops(&source_lines, &mut replacements);
     let lines = source_lines
         .iter()
@@ -90,17 +90,13 @@ enum Replacement {
     Op { prefix: String, suffix: String },
 }
 
-fn statement_replacements(
-    file: &File,
-    source: &str,
-    lines: &[&str],
-) -> BTreeMap<usize, Replacement> {
+fn statement_replacements(file: &File, lines: &[&str]) -> BTreeMap<usize, Replacement> {
     let mut replacements = BTreeMap::new();
     if let Some(line) = header_line(lines) {
         replacements.insert(line, Replacement::Code(FILE_HEADER.to_owned()));
     }
     for statement in &file.statements {
-        add_statement_replacements(statement, source, &mut replacements);
+        add_statement_replacements(statement, &mut replacements);
     }
     replacements
 }
@@ -114,7 +110,6 @@ fn header_line(lines: &[&str]) -> Option<usize> {
 
 fn add_statement_replacements(
     statement: &Statement,
-    source: &str,
     replacements: &mut BTreeMap<usize, Replacement>,
 ) {
     match statement {
@@ -122,43 +117,12 @@ fn add_statement_replacements(
             let (prefix, suffix) = format_op_parts(op);
             replacements.insert(op.span.line, Replacement::Op { prefix, suffix });
         }
-        Statement::Meta(meta) => add_meta_replacements(meta, source, replacements),
         _ => {
             if let Some(line) = format_statement(statement, None).into_iter().next() {
                 replacements.insert(statement.span().line, Replacement::Code(line));
             }
         }
     }
-}
-
-fn add_meta_replacements(
-    meta: &MetaBlock,
-    source: &str,
-    replacements: &mut BTreeMap<usize, Replacement>,
-) {
-    replacements.insert(meta.span.line, Replacement::Code("meta {".to_owned()));
-    for entry in &meta.entries {
-        replacements.insert(entry.span.line, Replacement::Code(format_meta_entry(entry)));
-    }
-    let end_line = line_at_byte(source, meta.span.byte_end.saturating_sub(1));
-    replacements.insert(end_line, Replacement::Code("}".to_owned()));
-}
-
-fn line_at_byte(source: &str, byte: usize) -> usize {
-    let bytes = source.as_bytes();
-    let limit = byte.min(bytes.len());
-    let mut line = 1;
-    let mut cursor = 0;
-    while cursor < limit {
-        if bytes[cursor] == b'\r' {
-            line += 1;
-            cursor += usize::from(bytes.get(cursor + 1) == Some(&b'\n'));
-        } else if bytes[cursor] == b'\n' {
-            line += 1;
-        }
-        cursor += 1;
-    }
-    line
 }
 
 fn align_source_ops(lines: &[&str], replacements: &mut BTreeMap<usize, Replacement>) {
@@ -268,7 +232,7 @@ fn format_statement(statement: &Statement, alignment: Option<usize>) -> Vec<Stri
         Statement::Op(op) => vec![format_op(op, alignment)],
         Statement::Rel(rel) => vec![format!("rel {}", format_expr(&rel.expr))],
         Statement::Assert(value) => vec![format_assert(value)],
-        Statement::Meta(meta) => format_meta(meta),
+        Statement::Meta(entry) => vec![format_meta_entry(entry)],
         Statement::Style(style) => vec![format!("style {}", style.name.name)],
         Statement::Class(class) => vec![format_class(class)],
     }
@@ -305,7 +269,7 @@ fn format_constructor(constructor: &Constructor) -> String {
     match constructor {
         Constructor::Call { name, args, .. } => format_call(&name.name, args),
         Constructor::Expr { expr, .. } => format_expr(expr),
-        Constructor::FreeNum { hint, .. } => format!("free ~{}", format_expr(hint)),
+        Constructor::FreeNum { hint, .. } => format!("free {}", format_expr(hint)),
     }
 }
 
@@ -317,15 +281,12 @@ fn format_assert(assertion: &AssertStmt) -> String {
     output
 }
 
-fn format_meta(meta: &MetaBlock) -> Vec<String> {
-    let mut lines = vec!["meta {".to_owned()];
-    lines.extend(meta.entries.iter().map(format_meta_entry));
-    lines.push("}".to_owned());
-    lines
-}
-
 fn format_meta_entry(entry: &MetaEntry) -> String {
-    format!("  {} {}", entry.key.name, format_quoted_text(&entry.value))
+    format!(
+        "meta {} = {}",
+        entry.key.name,
+        format_quoted_text(&entry.value)
+    )
 }
 
 fn format_class(class: &ClassStmt) -> String {
@@ -516,18 +477,18 @@ mod tests {
 
     #[test]
     fn aligns_ops_and_preserves_comments() {
-        let source = "// lead\nlocus 0 beta 4\npoint A=point()// hint\nsegment long_name=seg(A,A)\n\nassert true == true\n";
+        let source = "// lead\nlocus 0 beta 5\npoint A=point()// hint\nsegment long_name=seg(A,A)\n\nassert true == true\n";
         let output = format(source);
         assert!(output.diagnostics.is_empty(), "{:#?}", output.diagnostics);
         assert_eq!(
             output.source,
-            "// lead\nlocus 0 beta 4\npoint A           = point()  // hint\nsegment long_name = seg(A, A)\n\nassert true == true\n"
+            "// lead\nlocus 0 beta 5\npoint A           = point()  // hint\nsegment long_name = seg(A, A)\n\nassert true == true\n"
         );
     }
 
     #[test]
     fn is_idempotent_with_tex_and_comment_markers() {
-        let source = "locus 0 beta 4\ntext_block t=text_block(\"https://x/$a$\")// keep\n";
+        let source = "locus 0 beta 5\ntext_block t=text_block(\"https://x/$a$\")// keep\n";
         let once = format(source).source;
         let twice = format(&once).source;
         assert_eq!(once, twice);
@@ -535,19 +496,19 @@ mod tests {
 
     #[test]
     fn header_lookup_requires_a_complete_keyword() {
-        assert_eq!(header_line(&["locusfoo 2", "locus 0 beta 4"]), Some(2));
+        assert_eq!(header_line(&["locusfoo 2", "locus 0 beta 5"]), Some(2));
     }
 
     #[test]
     fn preserves_statements_from_bare_carriage_return_lines() {
-        let source = "locus 0 beta 4\rpoint A = point()\r";
+        let source = "locus 0 beta 5\rpoint A = point()\r";
         let formatted = format(source);
         assert!(
             formatted.diagnostics.is_empty(),
             "{:#?}",
             formatted.diagnostics
         );
-        assert_eq!(formatted.source, "locus 0 beta 4\npoint A = point()\n");
+        assert_eq!(formatted.source, "locus 0 beta 5\npoint A = point()\n");
         let reparsed = parse(&formatted.source);
         assert!(
             reparsed.diagnostics.is_empty(),

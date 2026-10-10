@@ -1,9 +1,7 @@
-locus 0 beta 4
+locus 0 beta 5
 
-meta {
-  title "X-Y stress plot: reciprocal branches, fixed points, and tangent lines"
-  note "130 samples on [-4, -0.25] and [0.25, 4]; nonlinear fixed points and secant slopes are checked. No segment crosses x = 0."
-}
+meta title = "X-Y stress plot: reciprocal branches, fixed points, and tangent lines"
+meta note = "130 samples on [-4, -0.25] and [0.25, 4]; nonlinear fixed points and secant slopes are checked. No segment crosses x = 0."
 
 style textbook
 class curve { accent: teal, weight: 2, cap: round }
@@ -560,8 +558,8 @@ assert vdist(O, rp64) < vdist(O, rp63)
 assert vdist(rp63, rp64) / hdist(rp63, rp64) == -unit * unit / (hdist(O, rp63) * hdist(O, rp64))
 line diagonal = line(offset(O, -4 * unit, -4 * unit), offset(O, 4 * unit, 4 * unit)) [construction]
 // Positive radial magnitudes select the two branches on opposite rays.
-num positive_span = free ~1.1
-num negative_span = free ~0.9
+num positive_span = free 1.1
+num negative_span = free 0.9
 point fixed_positive = offset(O, sqrt(positive_span * positive_span) * unit, sqrt(positive_span * positive_span) * unit)
 point fixed_negative = offset(O, -sqrt(negative_span * negative_span) * unit, -sqrt(negative_span * negative_span) * unit)
 rel hdist(O, fixed_positive) * vdist(O, fixed_positive) == unit * unit

@@ -148,7 +148,7 @@ fn render_answer(source: &str, directory: &Path) -> Result<(), Box<dyn Error>> {
     )?;
     let styles = StyleSheet::from_file(&parsed.file)?;
     let options = RenderOptions {
-        background: Some(Color(255, 255, 255)),
+        background: Some(Color(255, 255, 255, 255)),
         ..RenderOptions::default()
     };
     let svg = render_svg(&solved.scene, &placed, &styles, options)?;

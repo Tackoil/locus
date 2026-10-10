@@ -1,1 +1,1 @@
-(meta_block "}" @end) @indent
+; All Locus statements occupy one line.

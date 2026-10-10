@@ -1,9 +1,7 @@
-locus 0 beta 4
+locus 0 beta 5
 
-meta {
-  title "Delivery board: three teams, five states, cross-team blockers"
-  note "Thirty-seven cards occupy fifteen cells; containment, WIP, stacking, and cross-lane dependencies are checked."
-}
+meta title = "Delivery board: three teams, five states, cross-team blockers"
+meta note = "Thirty-seven cards occupy fifteen cells; containment, WIP, stacking, and cross-lane dependencies are checked."
 
 style textbook
 

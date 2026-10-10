@@ -2,11 +2,9 @@
 source: crates/locus-syntax/tests/format_json.rs
 expression: formatted.source
 ---
-locus 0 beta 4
+locus 0 beta 5
 
-meta {
-  title "Angle bisector theorem: BD/DC = AB/AC"
-}
+meta title = "Angle bisector theorem: BD/DC = AB/AC"
 
 style textbook
 

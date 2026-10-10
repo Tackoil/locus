@@ -6,10 +6,10 @@
       "id": "e",
       "kind": "ellipse",
       "span": {
-        "line": 11,
+        "line": 9,
         "col": 1,
-        "byte_start": 243,
-        "byte_end": 275
+        "byte_start": 244,
+        "byte_end": 276
       },
       "definition": "ellipse(3, 2, 30deg)",
       "resolved": {
@@ -24,10 +24,10 @@
       "id": "inner",
       "kind": "ellipse",
       "span": {
-        "line": 12,
+        "line": 10,
         "col": 1,
-        "byte_start": 276,
-        "byte_end": 341
+        "byte_start": 277,
+        "byte_end": 342
       },
       "definition": "ellipse(e.center, 1.5, 1, 30deg)",
       "resolved": {
@@ -42,10 +42,10 @@
       "id": "O",
       "kind": "point",
       "span": {
-        "line": 13,
+        "line": 11,
         "col": 1,
-        "byte_start": 342,
-        "byte_end": 360
+        "byte_start": 343,
+        "byte_end": 361
       },
       "definition": "e.center",
       "resolved": {
@@ -57,10 +57,10 @@
       "id": "F1",
       "kind": "point",
       "span": {
-        "line": 14,
+        "line": 12,
         "col": 1,
-        "byte_start": 361,
-        "byte_end": 380
+        "byte_start": 362,
+        "byte_end": 381
       },
       "definition": "e.focus1",
       "resolved": {
@@ -72,10 +72,10 @@
       "id": "F2",
       "kind": "point",
       "span": {
-        "line": 15,
+        "line": 13,
         "col": 1,
-        "byte_start": 381,
-        "byte_end": 400
+        "byte_start": 382,
+        "byte_end": 401
       },
       "definition": "e.focus2",
       "resolved": {
@@ -87,10 +87,10 @@
       "id": "P",
       "kind": "point",
       "span": {
-        "line": 16,
+        "line": 14,
         "col": 1,
-        "byte_start": 401,
-        "byte_end": 422
+        "byte_start": 402,
+        "byte_end": 423
       },
       "definition": "e.at(60deg)",
       "resolved": {
@@ -102,10 +102,10 @@
       "id": "major",
       "kind": "segment",
       "span": {
-        "line": 18,
+        "line": 16,
         "col": 1,
-        "byte_start": 424,
-        "byte_end": 485
+        "byte_start": 425,
+        "byte_end": 486
       },
       "definition": "seg(e.major_start, e.major_end)",
       "resolved": {
@@ -117,10 +117,10 @@
       "id": "minor",
       "kind": "segment",
       "span": {
-        "line": 19,
+        "line": 17,
         "col": 1,
-        "byte_start": 486,
-        "byte_end": 547
+        "byte_start": 487,
+        "byte_end": 548
       },
       "definition": "seg(e.minor_start, e.minor_end)",
       "resolved": {
@@ -132,10 +132,10 @@
       "id": "focal1",
       "kind": "segment",
       "span": {
-        "line": 20,
+        "line": 18,
         "col": 1,
-        "byte_start": 548,
-        "byte_end": 589
+        "byte_start": 549,
+        "byte_end": 590
       },
       "definition": "seg(F1, P)",
       "resolved": {
@@ -147,10 +147,10 @@
       "id": "focal2",
       "kind": "segment",
       "span": {
-        "line": 21,
+        "line": 19,
         "col": 1,
-        "byte_start": 590,
-        "byte_end": 631
+        "byte_start": 591,
+        "byte_end": 632
       },
       "definition": "seg(F2, P)",
       "resolved": {
@@ -162,10 +162,10 @@
       "id": "lO",
       "kind": "label",
       "span": {
-        "line": 24,
+        "line": 22,
         "col": 1,
-        "byte_start": 696,
-        "byte_end": 733
+        "byte_start": 697,
+        "byte_end": 734
       },
       "definition": "label(O, $O$)",
       "resolved": {
@@ -176,10 +176,10 @@
       "id": "lF1",
       "kind": "label",
       "span": {
-        "line": 25,
+        "line": 23,
         "col": 1,
-        "byte_start": 734,
-        "byte_end": 775
+        "byte_start": 735,
+        "byte_end": 776
       },
       "definition": "label(F1, $F_1$)",
       "resolved": {
@@ -190,10 +190,10 @@
       "id": "lF2",
       "kind": "label",
       "span": {
-        "line": 26,
+        "line": 24,
         "col": 1,
-        "byte_start": 776,
-        "byte_end": 817
+        "byte_start": 777,
+        "byte_end": 818
       },
       "definition": "label(F2, $F_2$)",
       "resolved": {
@@ -204,10 +204,10 @@
       "id": "lP",
       "kind": "label",
       "span": {
-        "line": 27,
+        "line": 25,
         "col": 1,
-        "byte_start": 818,
-        "byte_end": 855
+        "byte_start": 819,
+        "byte_end": 856
       },
       "definition": "label(P, $P$)",
       "resolved": {
@@ -218,10 +218,10 @@
       "id": "identity",
       "kind": "text_block",
       "span": {
-        "line": 28,
+        "line": 26,
         "col": 1,
-        "byte_start": 856,
-        "byte_end": 927
+        "byte_start": 857,
+        "byte_end": 928
       },
       "definition": "text_block($PF_1 + PF_2 = 2a$)",
       "resolved": {
@@ -243,10 +243,10 @@
         {
           "id": "e",
           "span": {
-            "line": 11,
+            "line": 9,
             "col": 1,
-            "byte_start": 243,
-            "byte_end": 275
+            "byte_start": 244,
+            "byte_end": 276
           },
           "hint_settled_dofs": 2,
           "suggestion": "add a relation if unintended, e.g. on(e, …) or vdist(…) == …"

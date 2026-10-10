@@ -16,7 +16,7 @@ expression: stdout
       "kind": "unreferenced",
       "id": "t1",
       "span": {
-        "line": 18,
+        "line": 16,
         "col": 7,
         "byte_start": 527,
         "byte_end": 529
@@ -26,7 +26,7 @@ expression: stdout
       "kind": "unreferenced",
       "id": "t2",
       "span": {
-        "line": 21,
+        "line": 19,
         "col": 7,
         "byte_start": 689,
         "byte_end": 691
@@ -36,7 +36,7 @@ expression: stdout
       "kind": "unreferenced",
       "id": "t3",
       "span": {
-        "line": 24,
+        "line": 22,
         "col": 7,
         "byte_start": 862,
         "byte_end": 864
@@ -46,7 +46,7 @@ expression: stdout
       "kind": "unreferenced",
       "id": "t4",
       "span": {
-        "line": 27,
+        "line": 25,
         "col": 9,
         "byte_start": 1035,
         "byte_end": 1037
@@ -56,7 +56,7 @@ expression: stdout
       "kind": "unreferenced",
       "id": "t5",
       "span": {
-        "line": 30,
+        "line": 28,
         "col": 7,
         "byte_start": 1208,
         "byte_end": 1210
@@ -66,7 +66,7 @@ expression: stdout
       "kind": "unreferenced",
       "id": "tf",
       "span": {
-        "line": 34,
+        "line": 32,
         "col": 7,
         "byte_start": 1450,
         "byte_end": 1452
@@ -76,7 +76,7 @@ expression: stdout
       "kind": "unreferenced",
       "id": "a1",
       "span": {
-        "line": 37,
+        "line": 35,
         "col": 7,
         "byte_start": 1590,
         "byte_end": 1592
@@ -86,7 +86,7 @@ expression: stdout
       "kind": "unreferenced",
       "id": "a2",
       "span": {
-        "line": 38,
+        "line": 36,
         "col": 7,
         "byte_start": 1633,
         "byte_end": 1635
@@ -96,7 +96,7 @@ expression: stdout
       "kind": "unreferenced",
       "id": "a3",
       "span": {
-        "line": 39,
+        "line": 37,
         "col": 7,
         "byte_start": 1676,
         "byte_end": 1678
@@ -106,7 +106,7 @@ expression: stdout
       "kind": "unreferenced",
       "id": "a4",
       "span": {
-        "line": 40,
+        "line": 38,
         "col": 7,
         "byte_start": 1719,
         "byte_end": 1721
@@ -116,7 +116,7 @@ expression: stdout
       "kind": "unreferenced",
       "id": "ly",
       "span": {
-        "line": 41,
+        "line": 39,
         "col": 7,
         "byte_start": 1762,
         "byte_end": 1764
@@ -126,7 +126,7 @@ expression: stdout
       "kind": "unreferenced",
       "id": "a5",
       "span": {
-        "line": 42,
+        "line": 40,
         "col": 7,
         "byte_start": 1816,
         "byte_end": 1818
@@ -136,7 +136,7 @@ expression: stdout
       "kind": "unreferenced",
       "id": "ln",
       "span": {
-        "line": 43,
+        "line": 41,
         "col": 7,
         "byte_start": 1859,
         "byte_end": 1861
@@ -146,7 +146,7 @@ expression: stdout
       "kind": "unreferenced",
       "id": "a6",
       "span": {
-        "line": 44,
+        "line": 42,
         "col": 7,
         "byte_start": 1913,
         "byte_end": 1915

@@ -46,7 +46,7 @@ pub fn render_with_dpi(
     let mut pixmap = resvg::tiny_skia::Pixmap::new(width, height)
         .ok_or_else(|| raster("cannot allocate raster image"))?;
     // Raster dimensions round fractional CSS sizes; fill even the partial edge pixels.
-    if let Some(background) = options.background {
+    if let Some(background) = options.background.filter(|color| color.3 == 255) {
         pixmap.fill(resvg::tiny_skia::Color::from_rgba8(
             background.0,
             background.1,

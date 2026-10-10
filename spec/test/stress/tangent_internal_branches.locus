@@ -1,9 +1,7 @@
-locus 0 beta 4
+locus 0 beta 5
 
-meta {
-  title "Internal circle contact and both tangents from an exterior point"
-  note "Construct contact points directly; distance-only tangency residuals cannot guarantee angular accuracy."
-}
+meta title = "Internal circle contact and both tangents from an exterior point"
+meta note = "Construct contact points directly; distance-only tangency residuals cannot guarantee angular accuracy."
 
 style textbook
 
@@ -52,8 +50,8 @@ assert vdist(O, U) > 0 and vdist(O, L) < 0
 num ir0 = 0.3000
 point rim0 = on_circle(outer, 22.5deg) { mark: none }
 line spoke0 = line(O, rim0) [construction]
-num separation0 = free ~2.7250
-num bearing0 = free ~23.0deg
+num separation0 = free 2.7250
+num bearing0 = free 23.0deg
 point ic0 = rotate(offset(O, separation0, 0), O, bearing0) where { on(ic0, ray(O, rim0)) } { mark: none }
 circle inner0 = circle(ic0, ir0) [auxiliary]
 rel internally_tangent(outer, inner0)
@@ -70,8 +68,8 @@ assert coincident(reflect(ifu0, line(ic0, E)), ifl0)
 num ir1 = 0.3350
 point rim1 = on_circle(outer, 67.5deg) { mark: none }
 line spoke1 = line(O, rim1) [construction]
-num separation1 = free ~2.6900
-num bearing1 = free ~68.0deg
+num separation1 = free 2.6900
+num bearing1 = free 68.0deg
 point ic1 = rotate(offset(O, separation1, 0), O, bearing1) where { on(ic1, ray(O, rim1)) } { mark: none }
 circle inner1 = circle(ic1, ir1) [auxiliary]
 rel internally_tangent(outer, inner1)
@@ -88,8 +86,8 @@ assert coincident(reflect(ifu1, line(ic1, E)), ifl1)
 num ir2 = 0.3700
 point rim2 = on_circle(outer, 112.5deg) { mark: none }
 line spoke2 = line(O, rim2) [construction]
-num separation2 = free ~2.6550
-num bearing2 = free ~113.0deg
+num separation2 = free 2.6550
+num bearing2 = free 113.0deg
 point ic2 = rotate(offset(O, separation2, 0), O, bearing2) where { on(ic2, ray(O, rim2)) } { mark: none }
 circle inner2 = circle(ic2, ir2) [auxiliary]
 rel internally_tangent(outer, inner2)
@@ -106,8 +104,8 @@ assert coincident(reflect(ifu2, line(ic2, E)), ifl2)
 num ir3 = 0.4050
 point rim3 = on_circle(outer, 157.5deg) { mark: none }
 line spoke3 = line(O, rim3) [construction]
-num separation3 = free ~2.6200
-num bearing3 = free ~158.0deg
+num separation3 = free 2.6200
+num bearing3 = free 158.0deg
 point ic3 = rotate(offset(O, separation3, 0), O, bearing3) where { on(ic3, ray(O, rim3)) } { mark: none }
 circle inner3 = circle(ic3, ir3) [auxiliary]
 rel internally_tangent(outer, inner3)
@@ -124,8 +122,8 @@ assert coincident(reflect(ifu3, line(ic3, E)), ifl3)
 num ir4 = 0.4400
 point rim4 = on_circle(outer, 202.5deg) { mark: none }
 line spoke4 = line(O, rim4) [construction]
-num separation4 = free ~2.5850
-num bearing4 = free ~203.0deg
+num separation4 = free 2.5850
+num bearing4 = free 203.0deg
 point ic4 = rotate(offset(O, separation4, 0), O, bearing4) where { on(ic4, ray(O, rim4)) } { mark: none }
 circle inner4 = circle(ic4, ir4) [auxiliary]
 rel internally_tangent(outer, inner4)
@@ -142,8 +140,8 @@ assert coincident(reflect(ifu4, line(ic4, E)), ifl4)
 num ir5 = 0.4750
 point rim5 = on_circle(outer, 247.5deg) { mark: none }
 line spoke5 = line(O, rim5) [construction]
-num separation5 = free ~2.5500
-num bearing5 = free ~248.0deg
+num separation5 = free 2.5500
+num bearing5 = free 248.0deg
 point ic5 = rotate(offset(O, separation5, 0), O, bearing5) where { on(ic5, ray(O, rim5)) } { mark: none }
 circle inner5 = circle(ic5, ir5) [auxiliary]
 rel internally_tangent(outer, inner5)
@@ -160,8 +158,8 @@ assert coincident(reflect(ifu5, line(ic5, E)), ifl5)
 num ir6 = 0.5100
 point rim6 = on_circle(outer, 292.5deg) { mark: none }
 line spoke6 = line(O, rim6) [construction]
-num separation6 = free ~2.5150
-num bearing6 = free ~293.0deg
+num separation6 = free 2.5150
+num bearing6 = free 293.0deg
 point ic6 = rotate(offset(O, separation6, 0), O, bearing6) where { on(ic6, ray(O, rim6)) } { mark: none }
 circle inner6 = circle(ic6, ir6) [auxiliary]
 rel internally_tangent(outer, inner6)
@@ -178,8 +176,8 @@ assert coincident(reflect(ifu6, line(ic6, E)), ifl6)
 num ir7 = 0.5450
 point rim7 = on_circle(outer, 337.5deg) { mark: none }
 line spoke7 = line(O, rim7) [construction]
-num separation7 = free ~2.4800
-num bearing7 = free ~338.0deg
+num separation7 = free 2.4800
+num bearing7 = free 338.0deg
 point ic7 = rotate(offset(O, separation7, 0), O, bearing7) where { on(ic7, ray(O, rim7)) } { mark: none }
 circle inner7 = circle(ic7, ir7) [auxiliary]
 rel internally_tangent(outer, inner7)

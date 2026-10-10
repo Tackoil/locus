@@ -1,4 +1,4 @@
-//! Serializable source AST for Locus 0 beta 4.
+//! Serializable source AST for Locus 0 beta 5.
 #![allow(
     missing_docs,
     reason = "AST fields mirror the normative grammar directly"
@@ -26,8 +26,8 @@ pub enum Statement {
     Rel(RelStmt),
     /// Post-solve assertion.
     Assert(AssertStmt),
-    /// File metadata block.
-    Meta(MetaBlock),
+    /// One metadata statement.
+    Meta(MetaEntry),
     /// Rendering style selection.
     Style(StyleStmt),
     /// User-defined style class.
@@ -183,13 +183,6 @@ pub struct ClassStmt {
     pub span: Span,
 }
 
-/// A metadata block.
-#[derive(Clone, Debug, PartialEq, Eq, Serialize)]
-pub struct MetaBlock {
-    pub entries: Vec<MetaEntry>,
-    pub span: Span,
-}
-
 /// One line of metadata.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize)]
 pub struct MetaEntry {
@@ -258,7 +251,7 @@ pub enum HeadKind {
     None,
 }
 
-/// A validated six-digit source color.
+/// A validated six- or eight-digit source color.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize)]
 pub struct HexColor {
     pub value: String,

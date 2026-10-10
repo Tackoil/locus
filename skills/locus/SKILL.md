@@ -17,7 +17,7 @@ repository without an installed binary, run commands from its root with
 `cargo run -p locus-cli -- <command>`; add `--features png` before `--` for PNG.
 Do not assume a checkout-relative binary is current.
 
-This skill targets `locus 0 beta 4`. In a checkout, consult
+This skill targets `locus 0 beta 5`. In a checkout, consult
 `spec/specification.md` for the normative contract and `spec/test/README.md`
 for demonstration selection. Read only the relevant sections and examples.
 The draft is evolving: reconcile examples against the current specification
@@ -30,7 +30,7 @@ there, consult the matching version's specification instead of inventing APIs.
 
 ## Author the figure
 
-- Begin with `locus 0 beta 4`. Use one statement per line and a final newline.
+- Begin with `locus 0 beta 5`. Use one statement per line and a final newline.
   `style textbook` is optional. Define dependencies before use and give every
   declaration a unique identifier.
 - Prefer derived constructions such as `midpoint`, `foot`, and `incircle` when

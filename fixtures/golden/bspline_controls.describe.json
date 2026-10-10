@@ -6,10 +6,10 @@
       "id": "frame",
       "kind": "rect",
       "span": {
-        "line": 11,
+        "line": 9,
         "col": 1,
-        "byte_start": 262,
-        "byte_end": 302
+        "byte_start": 263,
+        "byte_end": 303
       },
       "definition": "rect(8, 4)",
       "resolved": {
@@ -22,10 +22,10 @@
       "id": "P0",
       "kind": "point",
       "span": {
-        "line": 12,
+        "line": 10,
         "col": 1,
-        "byte_start": 303,
-        "byte_end": 322
+        "byte_start": 304,
+        "byte_end": 323
       },
       "definition": "frame.sw",
       "resolved": {
@@ -37,10 +37,10 @@
       "id": "P1",
       "kind": "point",
       "span": {
-        "line": 13,
+        "line": 11,
         "col": 1,
-        "byte_start": 323,
-        "byte_end": 342
+        "byte_start": 324,
+        "byte_end": 343
       },
       "definition": "frame.nw",
       "resolved": {
@@ -52,10 +52,10 @@
       "id": "P2",
       "kind": "point",
       "span": {
-        "line": 14,
+        "line": 12,
         "col": 1,
-        "byte_start": 343,
-        "byte_end": 361
+        "byte_start": 344,
+        "byte_end": 362
       },
       "definition": "frame.n",
       "resolved": {
@@ -67,10 +67,10 @@
       "id": "P3",
       "kind": "point",
       "span": {
-        "line": 15,
+        "line": 13,
         "col": 1,
-        "byte_start": 362,
-        "byte_end": 381
+        "byte_start": 363,
+        "byte_end": 382
       },
       "definition": "frame.se",
       "resolved": {
@@ -82,10 +82,10 @@
       "id": "P4",
       "kind": "point",
       "span": {
-        "line": 16,
+        "line": 14,
         "col": 1,
-        "byte_start": 382,
-        "byte_end": 400
+        "byte_start": 383,
+        "byte_end": 401
       },
       "definition": "frame.e",
       "resolved": {
@@ -97,10 +97,10 @@
       "id": "curve",
       "kind": "bspline",
       "span": {
-        "line": 18,
+        "line": 16,
         "col": 1,
-        "byte_start": 402,
-        "byte_end": 459
+        "byte_start": 403,
+        "byte_end": 460
       },
       "definition": "bspline(P0, P1, P2, P3, P4)",
       "resolved": {
@@ -124,10 +124,10 @@
       "id": "control01",
       "kind": "segment",
       "span": {
-        "line": 19,
+        "line": 17,
         "col": 1,
-        "byte_start": 460,
-        "byte_end": 505
+        "byte_start": 461,
+        "byte_end": 506
       },
       "definition": "seg(P0, P1)",
       "resolved": {
@@ -139,10 +139,10 @@
       "id": "control12",
       "kind": "segment",
       "span": {
-        "line": 20,
+        "line": 18,
         "col": 1,
-        "byte_start": 506,
-        "byte_end": 551
+        "byte_start": 507,
+        "byte_end": 552
       },
       "definition": "seg(P1, P2)",
       "resolved": {
@@ -154,10 +154,10 @@
       "id": "control23",
       "kind": "segment",
       "span": {
-        "line": 21,
+        "line": 19,
         "col": 1,
-        "byte_start": 552,
-        "byte_end": 597
+        "byte_start": 553,
+        "byte_end": 598
       },
       "definition": "seg(P2, P3)",
       "resolved": {
@@ -169,10 +169,10 @@
       "id": "control34",
       "kind": "segment",
       "span": {
-        "line": 22,
+        "line": 20,
         "col": 1,
-        "byte_start": 598,
-        "byte_end": 643
+        "byte_start": 599,
+        "byte_end": 644
       },
       "definition": "seg(P3, P4)",
       "resolved": {
@@ -184,10 +184,10 @@
       "id": "M",
       "kind": "point",
       "span": {
-        "line": 25,
+        "line": 23,
         "col": 1,
-        "byte_start": 719,
-        "byte_end": 742
+        "byte_start": 720,
+        "byte_end": 743
       },
       "definition": "curve.at(0.5)",
       "resolved": {
@@ -199,10 +199,10 @@
       "id": "Q",
       "kind": "point",
       "span": {
-        "line": 26,
+        "line": 24,
         "col": 1,
-        "byte_start": 743,
-        "byte_end": 767
+        "byte_start": 744,
+        "byte_end": 768
       },
       "definition": "curve.at(0.25)",
       "resolved": {
@@ -214,10 +214,10 @@
       "id": "lP0",
       "kind": "label",
       "span": {
-        "line": 29,
+        "line": 27,
         "col": 1,
-        "byte_start": 832,
-        "byte_end": 874
+        "byte_start": 833,
+        "byte_end": 875
       },
       "definition": "label(P0, $P_0$)",
       "resolved": {
@@ -228,10 +228,10 @@
       "id": "lP1",
       "kind": "label",
       "span": {
-        "line": 30,
+        "line": 28,
         "col": 1,
-        "byte_start": 875,
-        "byte_end": 917
+        "byte_start": 876,
+        "byte_end": 918
       },
       "definition": "label(P1, $P_1$)",
       "resolved": {
@@ -242,10 +242,10 @@
       "id": "lP2",
       "kind": "label",
       "span": {
-        "line": 31,
+        "line": 29,
         "col": 1,
-        "byte_start": 918,
-        "byte_end": 959
+        "byte_start": 919,
+        "byte_end": 960
       },
       "definition": "label(P2, $P_2$)",
       "resolved": {
@@ -256,10 +256,10 @@
       "id": "lP3",
       "kind": "label",
       "span": {
-        "line": 32,
+        "line": 30,
         "col": 1,
-        "byte_start": 960,
-        "byte_end": 1002
+        "byte_start": 961,
+        "byte_end": 1003
       },
       "definition": "label(P3, $P_3$)",
       "resolved": {
@@ -270,10 +270,10 @@
       "id": "lP4",
       "kind": "label",
       "span": {
-        "line": 33,
+        "line": 31,
         "col": 1,
-        "byte_start": 1003,
-        "byte_end": 1044
+        "byte_start": 1004,
+        "byte_end": 1045
       },
       "definition": "label(P4, $P_4$)",
       "resolved": {
@@ -284,10 +284,10 @@
       "id": "lM",
       "kind": "label",
       "span": {
-        "line": 34,
+        "line": 32,
         "col": 1,
-        "byte_start": 1045,
-        "byte_end": 1090
+        "byte_start": 1046,
+        "byte_end": 1091
       },
       "definition": "label(M, \"$t = 0.5$\")",
       "resolved": {
@@ -298,10 +298,10 @@
       "id": "lQ",
       "kind": "label",
       "span": {
-        "line": 35,
+        "line": 33,
         "col": 1,
-        "byte_start": 1091,
-        "byte_end": 1137
+        "byte_start": 1092,
+        "byte_end": 1138
       },
       "definition": "label(Q, \"$t = 0.25$\")",
       "resolved": {
@@ -323,10 +323,10 @@
         {
           "id": "frame",
           "span": {
-            "line": 11,
+            "line": 9,
             "col": 1,
-            "byte_start": 262,
-            "byte_end": 302
+            "byte_start": 263,
+            "byte_end": 303
           },
           "hint_settled_dofs": 2,
           "suggestion": "add a relation if unintended, e.g. on(frame, …) or vdist(…) == …"

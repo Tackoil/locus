@@ -1,9 +1,7 @@
-locus 0 beta 4
+locus 0 beta 5
 
-meta {
-  title "Rotated ellipse: semiaxes and the focal-distance identity"
-  note "Dimensions are semiaxes; the center is owned by the ellipse"
-}
+meta title = "Rotated ellipse: semiaxes and the focal-distance identity"
+meta note = "Dimensions are semiaxes; the center is owned by the ellipse"
 
 style textbook
 

@@ -167,13 +167,13 @@ class GeometryContractTests(unittest.TestCase):
         self.source = Path(self.folder.name) / "figure.locus"
 
     def test_unrelated_valid_figure_cannot_pass(self):
-        self.source.write_text("locus 0 beta 4\npoint P = point()\n")
+        self.source.write_text("locus 0 beta 5\npoint P = point()\n")
         code, report = validate(self.binary, self.source, BENCHMARK / "tasks/triangle-contract.locus")
         self.assertNotEqual(code, 0)
         self.assertFalse(report["passed"])
 
     def test_independent_gate_rejects_wrong_dimensions(self):
-        source = """locus 0 beta 4
+        source = """locus 0 beta 5
 point A = point()
 point B = point() where { horizontal(A, B), hdist(A, B) == 4 }
 point C = point() where { vertical(A, C), vdist(A, C) == 3 }
@@ -236,7 +236,7 @@ class RatingTests(unittest.TestCase):
 
 
 def sequence_gate_fixture():
-    statements = ["locus 0 beta 4", "rect customer = rect(5, 1)"]
+    statements = ["locus 0 beta 5", "rect customer = rect(5, 1)"]
     previous = "customer"
     for name in ("web", "orders", "payment"):
         statements.append(f"rect {name} = rect(5, 1) where {{ horizontal({previous}.center, {name}.center), "

@@ -6,9 +6,9 @@ use locus_syntax::{File, Statement};
 mod values;
 use values::resolve;
 
-/// Concrete sRGB color, independent of backend color names.
+/// Concrete sRGB color with an alpha byte, independent of backend color names.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub struct Color(pub u8, pub u8, pub u8);
+pub struct Color(pub u8, pub u8, pub u8, pub u8);
 
 impl Color {
     /// Uppercase six-digit CSS color.
@@ -17,11 +17,17 @@ impl Color {
         format!("#{:02X}{:02X}{:02X}", self.0, self.1, self.2)
     }
 
+    /// Color alpha as an opacity in the range `[0, 1]`.
+    #[must_use]
+    pub fn opacity(self) -> f64 {
+        f64::from(self.3) / 255.0
+    }
+
     fn tint(self) -> Self {
         fn channel(value: u8) -> u8 {
             u8::try_from((u16::from(value) + 9 * 255) / 10).unwrap_or(255)
         }
-        Self(channel(self.0), channel(self.1), channel(self.2))
+        Self(channel(self.0), channel(self.1), channel(self.2), self.3)
     }
 }
 
@@ -47,7 +53,7 @@ pub struct Style {
 impl Default for Style {
     fn default() -> Self {
         Self {
-            accent: Color(17, 24, 39),
+            accent: Color(17, 24, 39, 255),
             fill: None,
             weight: 1.25,
             dash: Vec::new(),
@@ -81,7 +87,7 @@ impl Default for StyleSheet {
             (
                 "construction".into(),
                 Style {
-                    accent: Color(107, 114, 128),
+                    accent: Color(107, 114, 128, 255),
                     weight: 0.75,
                     dash: vec![1.0, 3.0],
                     ..main.clone()
@@ -90,8 +96,8 @@ impl Default for StyleSheet {
             (
                 "highlight".into(),
                 Style {
-                    accent: Color(37, 99, 235),
-                    fill: Some(Color(37, 99, 235).tint()),
+                    accent: Color(37, 99, 235, 255),
+                    fill: Some(Color(37, 99, 235, 255).tint()),
                     ..main
                 },
             ),

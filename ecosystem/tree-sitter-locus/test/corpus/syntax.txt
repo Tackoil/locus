@@ -1,7 +1,7 @@
 ==================
 Declarations, calls, anchors, and primed identifiers
 ==================
-locus 0 beta 4
+locus 0 beta 5
 point A' = point()
 point B = A'
 point C = seg(A', B).midpoint
@@ -45,7 +45,7 @@ num x = c.at(.5).width
 ==================
 Arithmetic and boolean precedence
 ==================
-locus 0 beta 4
+locus 0 beta 5
 num x = -1 + 2 * 3 / (4 - 5)
 rel not x < 2 and x >= 0 or x == 3
 assert x <= 1 and x > -2 tol 1e-6
@@ -96,14 +96,12 @@ assert x <= 1 and x > -2 tol 1e-6
 ==================
 Metadata, style classes, attributes and all property values
 ==================
-locus 0 beta 4
-meta {
+locus 0 beta 5
   // Preserve blank and comment-only lines.
 
-  title "A diagram"
-}
+meta title = "A diagram"
 style textbook
-class faint { stroke: dash(5, 3), accent: #Ab12EF, opacity: .5 }
+class faint { stroke: dash(5, 3), accent: #Ab12EF80, fill: #CCFBF100, opacity: .5 }
 circle c = circle(2) where { horizontal(A, c.center), dist(A, c.center) == 3 } [faint] {}
 arrow a = arrow(A, B) { head: <->, bend: -1 }
 arrow b = arrow(B, A) { head: -> }
@@ -113,12 +111,11 @@ arrow d = arrow(A, B) { head: - }
 
 (source_file
   (header)
-  (meta_block
-    (comment)
-    (meta_entry
-      (identifier)
-      (string
-        (string_content))))
+  (comment)
+  (meta_statement
+    (identifier)
+    (string
+      (string_content)))
   (style_statement
     (identifier))
   (class_declaration
@@ -131,6 +128,9 @@ arrow d = arrow(A, B) { head: - }
           (arguments
             (number)
             (number))))
+      (property
+        (identifier)
+        (hex_color))
       (property
         (identifier)
         (hex_color))
@@ -208,7 +208,7 @@ arrow d = arrow(A, B) { head: - }
 ==================
 Strings, escaped delimiters, Unicode, inline TeX, and comments
 ==================
-locus 0 beta 4
+locus 0 beta 5
 label a = label(A, "a // b \"quoted\" \\ \$ \n 中文 😀 $\alpha + \$5$")
 label b = label(B, $\frac{1}{2} // \$x$) // a real comment
 text_block c = text_block("")
@@ -274,11 +274,11 @@ label d = label(A, $$)
 ==================
 Free numeric hints and booleans
 ==================
-locus 0 beta 4
+locus 0 beta 5
 point A = point()
-num theta = free ~(90deg + 1.5rad)
+num theta = free (90deg + 1.5rad)
 rel coincident(A, A)
-num r = free ~2.
+num r = free 2.
 assert true and not false
 
 ---

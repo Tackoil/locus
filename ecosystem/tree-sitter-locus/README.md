@@ -1,6 +1,6 @@
 # Tree-sitter Locus
 
-An editor grammar for Locus formats 2 and 3. It covers declarations, metadata,
+An editor grammar for the current Locus `0 beta 5` format. It covers declarations, metadata,
 styles, `where` clauses, attributes, properties, expressions, references,
 primed identifiers, numeric units, strings, and bare/inline TeX. Comments and
 escape sequences inside text are distinguished from source-level comments.

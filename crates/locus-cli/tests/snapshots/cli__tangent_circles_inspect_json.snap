@@ -552,7 +552,7 @@ expression: stdout
       "kind": "unreferenced",
       "id": "s1",
       "span": {
-        "line": 38,
+        "line": 36,
         "col": 9,
         "byte_start": 1163,
         "byte_end": 1165
@@ -562,7 +562,7 @@ expression: stdout
       "kind": "unreferenced",
       "id": "s2",
       "span": {
-        "line": 39,
+        "line": 37,
         "col": 9,
         "byte_start": 1204,
         "byte_end": 1206
@@ -572,7 +572,7 @@ expression: stdout
       "kind": "unreferenced",
       "id": "q1",
       "span": {
-        "line": 41,
+        "line": 39,
         "col": 13,
         "byte_start": 1250,
         "byte_end": 1252
@@ -582,7 +582,7 @@ expression: stdout
       "kind": "unreferenced",
       "id": "q2",
       "span": {
-        "line": 42,
+        "line": 40,
         "col": 13,
         "byte_start": 1292,
         "byte_end": 1294
@@ -592,7 +592,7 @@ expression: stdout
       "kind": "unreferenced",
       "id": "lO1",
       "span": {
-        "line": 45,
+        "line": 43,
         "col": 7,
         "byte_start": 1391,
         "byte_end": 1394
@@ -602,7 +602,7 @@ expression: stdout
       "kind": "unreferenced",
       "id": "lO2",
       "span": {
-        "line": 46,
+        "line": 44,
         "col": 7,
         "byte_start": 1433,
         "byte_end": 1436
@@ -612,7 +612,7 @@ expression: stdout
       "kind": "unreferenced",
       "id": "lT",
       "span": {
-        "line": 47,
+        "line": 45,
         "col": 7,
         "byte_start": 1475,
         "byte_end": 1477
@@ -622,7 +622,7 @@ expression: stdout
       "kind": "unreferenced",
       "id": "lE",
       "span": {
-        "line": 48,
+        "line": 46,
         "col": 7,
         "byte_start": 1518,
         "byte_end": 1520
@@ -632,7 +632,7 @@ expression: stdout
       "kind": "unreferenced",
       "id": "lP1",
       "span": {
-        "line": 49,
+        "line": 47,
         "col": 7,
         "byte_start": 1560,
         "byte_end": 1563
@@ -642,7 +642,7 @@ expression: stdout
       "kind": "unreferenced",
       "id": "lP2",
       "span": {
-        "line": 50,
+        "line": 48,
         "col": 7,
         "byte_start": 1590,
         "byte_end": 1593
@@ -652,7 +652,7 @@ expression: stdout
       "kind": "unreferenced",
       "id": "homothety",
       "span": {
-        "line": 52,
+        "line": 50,
         "col": 7,
         "byte_start": 1621,
         "byte_end": 1630

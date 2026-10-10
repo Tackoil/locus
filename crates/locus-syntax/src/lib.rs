@@ -14,10 +14,10 @@ pub mod span;
 pub mod vocabulary;
 
 /// Mandatory first line of every Locus source file.
-pub const FILE_HEADER: &str = "locus 0 beta 4";
+pub const FILE_HEADER: &str = "locus 0 beta 5";
 
 /// Version value emitted by the JSON interchange format.
-pub const FORMAT_VERSION: &str = "0 beta 4";
+pub const FORMAT_VERSION: &str = "0 beta 5";
 
 pub use ast::*;
 pub use diag::Diagnostic;

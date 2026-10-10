@@ -1,9 +1,7 @@
-locus 0 beta 4
+locus 0 beta 5
 
-meta {
-  title "Parameterless points: a triangle defined by relationships"
-  note "Points have no coordinate arguments; relative distances define a 3-4-5 triangle"
-}
+meta title = "Parameterless points: a triangle defined by relationships"
+meta note = "Points have no coordinate arguments; relative distances define a 3-4-5 triangle"
 
 style textbook
 

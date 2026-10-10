@@ -73,14 +73,14 @@ pub(super) fn dash(prop: &Prop) -> Result<Vec<f64>, RenderError> {
 
 pub(super) fn color(prop: &Prop) -> Result<Color, RenderError> {
     const PALETTE: [(&str, Color); 8] = [
-        ("ink", Color(17, 24, 39)),
-        ("gray", Color(107, 114, 128)),
-        ("blue", Color(37, 99, 235)),
-        ("orange", Color(234, 88, 12)),
-        ("teal", Color(15, 118, 110)),
-        ("green", Color(22, 163, 74)),
-        ("red", Color(220, 38, 38)),
-        ("purple", Color(147, 51, 234)),
+        ("ink", Color(17, 24, 39, 255)),
+        ("gray", Color(107, 114, 128, 255)),
+        ("blue", Color(37, 99, 235, 255)),
+        ("orange", Color(234, 88, 12, 255)),
+        ("teal", Color(15, 118, 110, 255)),
+        ("green", Color(22, 163, 74, 255)),
+        ("red", Color(220, 38, 38, 255)),
+        ("purple", Color(147, 51, 234, 255)),
     ];
     if let PropValue::HexColor(hex) = &prop.value {
         return parse_hex(&hex.value, hex.span);
@@ -94,14 +94,18 @@ pub(super) fn color(prop: &Prop) -> Result<Color, RenderError> {
 
 fn parse_hex(value: &str, span: Span) -> Result<Color, RenderError> {
     let digits = value.strip_prefix('#').unwrap_or(value);
-    if digits.len() != 6 || !digits.bytes().all(|b| b.is_ascii_hexdigit()) {
+    if !matches!(digits.len(), 6 | 8) || !digits.bytes().all(|b| b.is_ascii_hexdigit()) {
         return Err(RenderError::invalid(
             span,
-            "expected a six-digit sRGB color",
+            "expected a six- or eight-digit sRGB color",
         ));
     }
     let number =
         u32::from_str_radix(digits, 16).map_err(|_| RenderError::invalid(span, "invalid color"))?;
     let bytes = number.to_be_bytes();
-    Ok(Color(bytes[1], bytes[2], bytes[3]))
+    if digits.len() == 8 {
+        Ok(Color(bytes[0], bytes[1], bytes[2], bytes[3]))
+    } else {
+        Ok(Color(bytes[1], bytes[2], bytes[3], 255))
+    }
 }

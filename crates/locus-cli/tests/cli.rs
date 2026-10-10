@@ -86,9 +86,9 @@ fn exit_codes_match_the_specification() -> Result<(), Box<dyn Error>> {
     let success = directory.path().join("success.locus");
     let assertion = directory.path().join("assertion.locus");
     let evaluation = directory.path().join("evaluation.locus");
-    fs::write(&success, "locus 0 beta 4\nnum n = 1\n")?;
-    fs::write(&assertion, "locus 0 beta 4\nnum n = 1\nassert n == 2\n")?;
-    fs::write(&evaluation, "locus 0 beta 4\nnum n = 1 / 0\n")?;
+    fs::write(&success, "locus 0 beta 5\nnum n = 1\n")?;
+    fs::write(&assertion, "locus 0 beta 5\nnum n = 1\nassert n == 2\n")?;
+    fs::write(&evaluation, "locus 0 beta 5\nnum n = 1 / 0\n")?;
 
     locus()?
         .args(["check", success.to_str().ok_or("non-UTF-8 path")?])
@@ -133,7 +133,7 @@ fn usage_errors_honor_json_output() -> Result<(), Box<dyn Error>> {
 fn human_warnings_use_warning_severity() -> Result<(), Box<dyn Error>> {
     let directory = tempfile::tempdir()?;
     let figure = directory.path().join("warning.locus");
-    fs::write(&figure, "locus 0 beta 4\npoint A = point()\n")?;
+    fs::write(&figure, "locus 0 beta 5\npoint A = point()\n")?;
     let output = locus()?.arg("inspect").arg(&figure).output()?;
     assert_eq!(output.status.code(), Some(0));
     let stderr = output_text(output.stderr)?;
@@ -148,7 +148,7 @@ fn update_and_remove_preserve_dependency_safety() -> Result<(), Box<dyn Error>> 
     let figure = directory.path().join("edits.locus");
     fs::write(
         &figure,
-        "locus 0 beta 4\npoint O = point()\npoint A = point()\npoint B = point()\nsegment AB = seg(A, B)\n",
+        "locus 0 beta 5\npoint O = point()\npoint A = point()\npoint B = point()\nsegment AB = seg(A, B)\n",
     )?;
 
     locus()?
@@ -211,14 +211,14 @@ fn update_rejects_fragments_that_escape_their_target() -> Result<(), Box<dyn Err
     let directory = tempfile::tempdir()?;
     let figure = directory.path().join("surgical-update.locus");
     let source = concat!(
-        "locus 0 beta 4\n",
+        "locus 0 beta 5\n",
         "point A = point() [main] { mark: dot } // keep\n",
     );
     fs::write(&figure, source)?;
 
     for (flag, fragment) in [
-        ("--def", "free ~(1, 1) //"),
-        ("--def", "free ~(1, 1)\nnum injected = 9"),
+        ("--def", "free (1, 1) //"),
+        ("--def", "free (1, 1)\nnum injected = 9"),
         ("--set", "mark=dot, dir: N"),
     ] {
         let output = locus()?
@@ -242,7 +242,7 @@ fn update_accepts_one_complex_fragment_and_preserves_surrounding_source()
     fs::write(
         &point,
         concat!(
-            "locus 0 beta 4\n",
+            "locus 0 beta 5\n",
             "point O = point()\n",
             "point A = offset(O, 3, 2) [main] { mark: dot } // keep\n",
         ),
@@ -256,7 +256,7 @@ fn update_accepts_one_complex_fragment_and_preserves_surrounding_source()
     assert_eq!(
         fs::read_to_string(&point)?,
         concat!(
-            "locus 0 beta 4\n",
+            "locus 0 beta 5\n",
             "point O = point()\n",
             "point A = offset(O, 1 + 2, 4 / 2) [main] { mark: dot } // keep\n",
         )
@@ -265,7 +265,7 @@ fn update_accepts_one_complex_fragment_and_preserves_surrounding_source()
     let text = directory.path().join("text.locus");
     fs::write(
         &text,
-        "locus 0 beta 4\npoint A = point()\ntext_block note = text_block(\"old\")\n",
+        "locus 0 beta 5\npoint A = point()\ntext_block note = text_block(\"old\")\n",
     )?;
     locus()?
         .arg("update")
@@ -292,7 +292,7 @@ fn update_accepts_one_complex_fragment_and_preserves_surrounding_source()
     fs::write(
         &referenced,
         concat!(
-            "locus 0 beta 4\n",
+            "locus 0 beta 5\n",
             "point A = point()\n",
             "point B = point()\n",
             "point M = point()\n",
@@ -312,7 +312,7 @@ fn update_accepts_one_complex_fragment_and_preserves_surrounding_source()
 fn update_accepts_hyphen_leading_definition_values() -> Result<(), Box<dyn Error>> {
     let directory = tempfile::tempdir()?;
     let figure = directory.path().join("negative.locus");
-    let source = "locus 0 beta 4\nnum a = 1\nnum b = 2\n";
+    let source = "locus 0 beta 5\nnum a = 1\nnum b = 2\n";
 
     for (definition, expected) in [("-1", -1.0), ("-a", -1.0), ("-(a + 1)", -2.0)] {
         fs::write(&figure, source)?;
@@ -345,7 +345,7 @@ fn remove_rejects_relation_and_assertion_dependents_as_dependency_errors()
     ] {
         let directory = tempfile::tempdir()?;
         let figure = directory.path().join(format!("{name}.locus"));
-        let source = format!("locus 0 beta 4\npoint A = point()\n{dependent}\n");
+        let source = format!("locus 0 beta 5\npoint A = point()\n{dependent}\n");
         fs::write(&figure, &source)?;
         let output = locus()?
             .arg("remove")
@@ -367,7 +367,7 @@ fn human_reports_include_relationships_measurements_and_incidences() -> Result<(
     fs::write(
         &figure,
         concat!(
-            "locus 0 beta 4\n",
+            "locus 0 beta 5\n",
             "point A = point()\n",
             "point B = offset(A, 3, 4)\n",
             "segment AB = seg(A, B)\n",
@@ -397,7 +397,7 @@ fn describe_keeps_annotation_placement_private() -> Result<(), Box<dyn Error>> {
     fs::write(
         &figure,
         concat!(
-            "locus 0 beta 4\n",
+            "locus 0 beta 5\n",
             "point A = point()\n",
             "text_block note = text_block(\"hello\") { anchor: A, dir: NE }\n",
         ),
@@ -432,10 +432,10 @@ fn check_reports_every_input_with_deterministic_exit_precedence() -> Result<(), 
     let evaluation = directory.path().join("evaluation-error.locus");
     let parse_error = directory.path().join("parse-error.locus");
     let good = directory.path().join("good.locus");
-    fs::write(&assertion, "locus 0 beta 4\nnum n = 1\nassert n == 2\n")?;
-    fs::write(&evaluation, "locus 0 beta 4\nnum broken = 1 / 0\n")?;
+    fs::write(&assertion, "locus 0 beta 5\nnum n = 1\nassert n == 2\n")?;
+    fs::write(&evaluation, "locus 0 beta 5\nnum broken = 1 / 0\n")?;
     fs::write(&parse_error, "num broken = 1\n")?;
-    fs::write(&good, "locus 0 beta 4\nnum ok = 1\n")?;
+    fs::write(&good, "locus 0 beta 5\nnum ok = 1\n")?;
 
     let json = locus()?
         .arg("check")

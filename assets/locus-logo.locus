@@ -1,9 +1,7 @@
-locus 0 beta 4
+locus 0 beta 5
 
-meta {
-  title "Locus logo"
-  note "An exact figure, its defining path, and the point selected by their relations"
-}
+meta title = "Locus logo"
+meta note = "An exact figure, its defining path, and the point selected by their relations"
 
 style textbook
 

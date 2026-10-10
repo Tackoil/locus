@@ -16,7 +16,7 @@ module.exports = grammar({
 
     _statement: $ => choice(
       $.header,
-      $.meta_block,
+      $.meta_statement,
       $.style_statement,
       $.class_declaration,
       $.object_declaration,
@@ -24,13 +24,8 @@ module.exports = grammar({
       $.assert_statement,
     ),
 
-    header: _ => seq("locus", "0", "beta", "4"),
-    meta_block: $ => seq(
-      "meta", "{", $._newline,
-      repeat(choice($._newline, seq($.meta_entry, $._newline))),
-      "}",
-    ),
-    meta_entry: $ => seq(field("key", $.identifier), field("value", $.string)),
+    header: _ => seq("locus", "0", "beta", "5"),
+    meta_statement: $ => seq("meta", field("key", $.identifier), "=", field("value", $.string)),
     style_statement: $ => seq("style", field("name", $.identifier)),
     class_declaration: $ => seq("class", field("name", $.identifier), $.properties),
 
@@ -44,7 +39,7 @@ module.exports = grammar({
       "bspline", "polygon", "rect", "diamond", "label", "arrow", "tick",
       "right_angle", "text_block",
     ),
-    free_expression: $ => seq("free", "~", $._expression),
+    free_expression: $ => seq("free", $._expression),
     where_clause: $ => seq("where", "{", commaSeparated1($._expression), "}"),
     attribute: $ => seq("[", field("name", $.identifier), "]"),
     properties: $ => seq("{", optional(commaSeparated1($.property)), "}"),
@@ -53,7 +48,7 @@ module.exports = grammar({
       field("value", choice($.arrow_head, $.hex_color, $._expression)),
     ),
     arrow_head: _ => choice("->", "<->", "-"),
-    hex_color: _ => /#[0-9a-fA-F]{6}/,
+    hex_color: _ => /#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?/,
 
     relation_statement: $ => seq("rel", $._expression),
     assert_statement: $ => seq("assert", $._expression, optional($.tolerance)),

@@ -50,7 +50,6 @@ pub enum TokenKind {
     Minus,
     Star,
     Slash,
-    Tilde,
     Arrow,
     DoubleArrow,
     Newline,
@@ -452,7 +451,7 @@ impl<'a> Lexer<'a> {
             self.advance();
         }
         let value = &self.source[start.2 + 1..self.cursor];
-        if value.len() == 6 && value.bytes().all(|byte| byte.is_ascii_hexdigit()) {
+        if matches!(value.len(), 6 | 8) && value.bytes().all(|byte| byte.is_ascii_hexdigit()) {
             self.tokens.push(Token {
                 kind: TokenKind::HexColor(value.to_ascii_uppercase()),
                 span: self.span_from(start),
@@ -462,7 +461,7 @@ impl<'a> Lexer<'a> {
             self.diagnostics.push(Diagnostic::new(
                 "E105",
                 span,
-                "hex color must contain exactly six hexadecimal digits",
+                "hex color must contain exactly six or eight hexadecimal digits",
             ));
             self.tokens.push(Token {
                 kind: TokenKind::Invalid,
@@ -521,7 +520,6 @@ impl<'a> Lexer<'a> {
             ('-', TokenKind::Minus),
             ('*', TokenKind::Star),
             ('/', TokenKind::Slash),
-            ('~', TokenKind::Tilde),
         ];
         let ch = self.peek()?;
         let kind = SINGLE

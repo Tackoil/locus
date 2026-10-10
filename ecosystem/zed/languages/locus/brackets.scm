@@ -3,7 +3,6 @@
 (attribute "[" @open "]" @close)
 (properties "{" @open "}" @close)
 (where_clause "{" @open "}" @close)
-(meta_block "{" @open "}" @close)
 (string "\"" @open "\"" @close)
 (tex "$" @open "$" @close)
 (inline_tex "$" @open "$" @close)

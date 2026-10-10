@@ -2625,7 +2625,7 @@ mod tests {
         let mut env = Environment::new();
         insert(&mut env, "P", resolved_point(Point::new(1.0, 0.0)));
         insert(&mut env, "O", resolved_point(Point::new(0.0, 0.0)));
-        let op = op_from("locus 0 beta 4\npoint R = rotate(P, O, 2 * 30deg)\n");
+        let op = op_from("locus 0 beta 5\npoint R = rotate(P, O, 2 * 30deg)\n");
         let mut evaluator = test_evaluator(&env);
         let object = evaluate_op_value(&mut evaluator, &op).expect("typed rotation");
         let ResolvedObject::Point(point) = object else {
@@ -2640,7 +2640,7 @@ mod tests {
         let mut env = Environment::new();
         insert(&mut env, "P", resolved_point(Point::new(1.0, 0.0)));
         insert(&mut env, "O", resolved_point(Point::new(0.0, 0.0)));
-        let op = op_from("locus 0 beta 4\npoint R = rotate(P, O, 60)\n");
+        let op = op_from("locus 0 beta 5\npoint R = rotate(P, O, 60)\n");
         let mut evaluator = test_evaluator(&env);
         let error = evaluate_op_value(&mut evaluator, &op).expect_err("unit is mandatory");
         assert_eq!(error.code, "E209");
@@ -2650,7 +2650,7 @@ mod tests {
     #[test]
     fn infers_named_length_from_a_later_constructor_use() {
         let parsed = parse(
-            "locus 0 beta 4\nnum radius = 3\npoint O = point()\ncircle c = circle(O, radius)\n",
+            "locus 0 beta 5\nnum radius = 3\npoint O = point()\ncircle c = circle(O, radius)\n",
         );
         let Evaluation::Solved { scene, .. } = evaluate(&parsed.file).expect("free scene solves")
         else {
@@ -2669,7 +2669,7 @@ mod tests {
     #[test]
     fn detects_conflicting_whole_file_numeric_dimensions() {
         let parsed = parse(
-            "locus 0 beta 4\nnum x = 2\npoint P = point()\ncircle c = circle(P, x)\npoint Q = rotate(P, P, x)\n",
+            "locus 0 beta 5\nnum x = 2\npoint P = point()\ncircle c = circle(P, x)\npoint Q = rotate(P, P, x)\n",
         );
         let error = evaluate(&parsed.file).expect_err("x cannot be both length and angle");
         assert_eq!(error.code, "E209");
@@ -2679,7 +2679,7 @@ mod tests {
     #[test]
     fn infers_area_and_sqrt_dimensions_across_named_values() {
         let parsed = parse(
-            "locus 0 beta 4\nnum w = 3\nnum h = 4\nnum a = w * h\nnum side = sqrt(a)\npoint P = point()\nrect r = rect(P, w, h)\nassert area(r) == a\n",
+            "locus 0 beta 5\nnum w = 3\nnum h = 4\nnum a = w * h\nnum side = sqrt(a)\npoint P = point()\nrect r = rect(P, w, h)\nassert area(r) == a\n",
         );
         let Evaluation::Solved { scene, .. } = evaluate(&parsed.file).expect("valid solve") else {
             unreachable!("free point is solved");
@@ -2706,7 +2706,7 @@ mod tests {
     #[test]
     fn infers_area_divided_by_length_as_length() {
         let parsed = parse(
-            "locus 0 beta 4\npoint A = point()\npoint B = point()\npoint C = point()\npolygon t = polygon(A, B, C)\nnum h = area(t) / dist(A, B)\n",
+            "locus 0 beta 5\npoint A = point()\npoint B = point()\npoint C = point()\npolygon t = polygon(A, B, C)\nnum h = area(t) / dist(A, B)\n",
         );
         let dimensions = infer_dimensions(&parsed.file).expect("spec-valid quotient");
         assert_eq!(
@@ -2719,7 +2719,7 @@ mod tests {
     fn contextual_literals_propagate_through_groups_sums_and_either_comparison_side() {
         for expression in ["(3)", "2 + 1", "sqrt(9)", "min(3, 4)", "abs(-3)"] {
             let source = format!(
-                "locus 0 beta 4\nnum w = {expression}\npoint P = point()\ncircle c = circle(P, w)\n"
+                "locus 0 beta 5\nnum w = {expression}\npoint P = point()\ncircle c = circle(P, w)\n"
             );
             let parsed = parse(&source);
             let Evaluation::Solved { scene, .. } =
@@ -2737,7 +2737,7 @@ mod tests {
         let mut env = Environment::new();
         insert(&mut env, "A", resolved_point(Point::new(0.0, 0.0)));
         insert(&mut env, "B", resolved_point(Point::new(6.0, 0.0)));
-        let parsed = parse("locus 0 beta 4\nassert 6 == dist(A, B)\nassert dist(A, B) == 6\n");
+        let parsed = parse("locus 0 beta 5\nassert 6 == dist(A, B)\nassert dist(A, B) == 6\n");
         let mut evaluator = test_evaluator(&env);
         for statement in &parsed.file.statements {
             let Statement::Assert(assertion) = statement else {
@@ -2756,7 +2756,7 @@ mod tests {
         insert(&mut env, "O", resolved_point(Point::new(0.0, 0.0)));
         for expression in ["2 * 3", "12 / 2"] {
             let op = op_from(&format!(
-                "locus 0 beta 4\ncircle c = circle(O, {expression})\n"
+                "locus 0 beta 5\ncircle c = circle(O, {expression})\n"
             ));
             let mut evaluator = test_evaluator(&env);
             let ResolvedObject::Circle(circle) =
@@ -2770,7 +2770,7 @@ mod tests {
 
     #[test]
     fn unconstrained_products_resolve_after_scalar_operand_defaults() {
-        let angle_file = parse("locus 0 beta 4\nnum t = 2 * 30deg\n").file;
+        let angle_file = parse("locus 0 beta 5\nnum t = 2 * 30deg\n").file;
         let dimensions = infer_dimensions(&angle_file).expect("unconstrained angle product");
         assert_eq!(dimensions.get("t"), Some(&InferredDimension::Angle));
         let Evaluation::Resolved(scene) = evaluate(&angle_file).expect("angle product evaluates")
@@ -2783,7 +2783,7 @@ mod tests {
         assert!((*angle - core::f64::consts::PI / 3.0).abs() < 1.0e-12);
 
         let length_file = parse(
-            "locus 0 beta 4\npoint O = point()\ncircle c = circle(O, 6)\nnum divisor = 2\nnum d = radius(c) / divisor\n",
+            "locus 0 beta 5\npoint O = point()\ncircle c = circle(O, 6)\nnum divisor = 2\nnum d = radius(c) / divisor\n",
         )
         .file;
         let dimensions = infer_dimensions(&length_file).expect("unconstrained length quotient");
@@ -2798,7 +2798,7 @@ mod tests {
     fn deferred_completion_preserves_context_in_sums_and_extrema() {
         for expression in ["d + 1", "min(d, 1)"] {
             let parsed = parse(&format!(
-                "locus 0 beta 4\npoint O = point()\ncircle c = circle(O, 4)\nnum d = radius(c) / 2\nnum e = {expression}\n"
+                "locus 0 beta 5\npoint O = point()\ncircle c = circle(O, 4)\nnum d = radius(c) / 2\nnum e = {expression}\n"
             ));
             let dimensions = infer_dimensions(&parsed.file).expect("deferred length expression");
             for name in ["d", "e"] {
@@ -2815,7 +2815,7 @@ mod tests {
     fn contextual_dimensions_propagate_through_compound_expressions() {
         for expression in ["radius(c) / 2 + (1 + 1)", "min(radius(c) / 2, abs(1))"] {
             let parsed = parse(&format!(
-                "locus 0 beta 4\npoint O = point()\ncircle c = circle(O, 4)\nnum d = {expression}\n"
+                "locus 0 beta 5\npoint O = point()\ncircle c = circle(O, 4)\nnum d = {expression}\n"
             ));
             let dimensions = infer_dimensions(&parsed.file).expect("compound length expression");
             assert_eq!(
@@ -2829,7 +2829,7 @@ mod tests {
     #[test]
     fn repeated_product_operand_uses_later_area_constraint() {
         let parsed = parse(
-            "locus 0 beta 4\npoint O = point()\nrect r = rect(O, 3, 3)\nnum side = 3\nnum a = side * side\nassert a == area(r)\n",
+            "locus 0 beta 5\npoint O = point()\nrect r = rect(O, 3, 3)\nnum side = 3\nnum a = side * side\nassert a == area(r)\n",
         );
         let dimensions = infer_dimensions(&parsed.file).expect("later area constraint");
         assert_eq!(
@@ -2847,7 +2847,7 @@ mod tests {
     fn dimension_inference_scales_to_many_independent_numbers() {
         use std::fmt::Write as _;
 
-        let mut source = String::from("locus 0 beta 4\n");
+        let mut source = String::from("locus 0 beta 5\n");
         for index in 0..640 {
             writeln!(source, "num n{index} = {index}").expect("write to string");
         }
@@ -2864,7 +2864,7 @@ mod tests {
     #[test]
     fn ambiguous_product_waits_for_later_operand_constraint() {
         let parsed = parse(
-            "locus 0 beta 4\nnum scale = 2\nnum width = 3\npoint O = point()\ncircle c = circle(O, scale * width)\npoint P = lerp(O, O, scale)\n",
+            "locus 0 beta 5\nnum scale = 2\nnum width = 3\npoint O = point()\ncircle c = circle(O, scale * width)\npoint P = lerp(O, O, scale)\n",
         );
         let dimensions = infer_dimensions(&parsed.file).expect("later constraint disambiguates");
         assert_eq!(
@@ -2881,7 +2881,7 @@ mod tests {
     #[test]
     fn contextual_multiplication_uses_the_known_scalar_operand() {
         let parsed = parse(
-            "locus 0 beta 4\nnum scale = ratio(2, 1)\npoint O = point()\ncircle lhs = circle(O, scale * 3)\ncircle rhs = circle(O, 3 * scale)\n",
+            "locus 0 beta 5\nnum scale = ratio(2, 1)\npoint O = point()\ncircle lhs = circle(O, scale * 3)\ncircle rhs = circle(O, 3 * scale)\n",
         );
         let Evaluation::Solved { scene, .. } =
             evaluate(&parsed.file).expect("both operand orders evaluate")
@@ -2902,7 +2902,7 @@ mod tests {
     #[test]
     fn scalar_quotients_accept_equal_length_and_area_dimensions() {
         let parsed = parse(
-            "locus 0 beta 4\npoint O = point()\ncircle c = circle(O, 6)\nrect r = rect(O, 2, 3)\nnum length_scale = radius(c) / 3\nnum area_scale = area(r) / 3\npoint P = lerp(O, O, length_scale)\npoint Q = lerp(O, O, area_scale)\n",
+            "locus 0 beta 5\npoint O = point()\ncircle c = circle(O, 6)\nrect r = rect(O, 2, 3)\nnum length_scale = radius(c) / 3\nnum area_scale = area(r) / 3\npoint P = lerp(O, O, length_scale)\npoint Q = lerp(O, O, area_scale)\n",
         );
         let dimensions = infer_dimensions(&parsed.file).expect("equal-dimension quotients");
         for name in ["length_scale", "area_scale"] {
@@ -2922,7 +2922,7 @@ mod tests {
             "c",
             ResolvedObject::Circle(Circle::new(Point::new(0.0, 0.0), 6.0).expect("circle")),
         );
-        let op = op_from("locus 0 beta 4\nnum q = (30deg * (radius(c) / 3)) / 60deg\n");
+        let op = op_from("locus 0 beta 5\nnum q = (30deg * (radius(c) / 3)) / 60deg\n");
         let mut evaluator = test_evaluator(&env);
         let ResolvedObject::Num(value) =
             evaluate_op_value(&mut evaluator, &op).expect("angle quotient evaluates as scalar")
@@ -2936,7 +2936,7 @@ mod tests {
     #[test]
     fn inline_angle_relations_use_contextual_solver_evaluation() {
         let parsed = parse(
-            "locus 0 beta 4\npoint O = point()\ncircle c = circle(O, 6)\nrel 30deg * (radius(c) / 3) == 60deg\nrel 30deg / (radius(c) / 3) == 15deg\n",
+            "locus 0 beta 5\npoint O = point()\ncircle c = circle(O, 6)\nrel 30deg * (radius(c) / 3) == 60deg\nrel 30deg / (radius(c) / 3) == 15deg\n",
         );
         let Evaluation::Solved { summary, .. } =
             evaluate(&parsed.file).expect("inline angle relations solve")
@@ -2950,7 +2950,7 @@ mod tests {
     #[test]
     fn solver_relations_prefer_inferred_length_over_scalar_tolerance() {
         let parsed = parse(
-            "locus 0 beta 4\npoint O = point()\npoint Far = offset(O, 1000000, 0)\ncircle c = circle(O, 6)\nrel radius(c) / 2 == 3.000001\n",
+            "locus 0 beta 5\npoint O = point()\npoint Far = offset(O, 1000000, 0)\ncircle c = circle(O, 6)\nrel radius(c) / 2 == 3.000001\n",
         );
         let Evaluation::Solved { summary, .. } =
             evaluate(&parsed.file).expect("length-scaled relation is within tolerance")
@@ -2963,7 +2963,7 @@ mod tests {
     #[test]
     fn assertions_and_ratio_arguments_contextually_evaluate_nested_angles() {
         let parsed = parse(
-            "locus 0 beta 4\npoint O = point()\ncircle c = circle(O, 6)\nnum q = ratio(30deg * (radius(c) / 3), 60deg)\nassert 30deg * (radius(c) / 3) == 60deg\n",
+            "locus 0 beta 5\npoint O = point()\ncircle c = circle(O, 6)\nnum q = ratio(30deg * (radius(c) / 3), 60deg)\nassert 30deg * (radius(c) / 3) == 60deg\n",
         );
         let Evaluation::Solved { scene, .. } =
             evaluate(&parsed.file).expect("ratio arguments evaluate")
@@ -2990,7 +2990,7 @@ mod tests {
     #[test]
     fn inferred_dimensions_contextualize_both_numeric_operands() {
         let parsed = parse(
-            "locus 0 beta 4\npoint O = point()\ncircle c = circle(O, 6)\nnum q = ratio(30deg * (radius(c) / 3), 15deg * (radius(c) / 1.5))\nassert 30deg * (radius(c) / 3) == 15deg * (radius(c) / 1.5)\n",
+            "locus 0 beta 5\npoint O = point()\ncircle c = circle(O, 6)\nnum q = ratio(30deg * (radius(c) / 3), 15deg * (radius(c) / 1.5))\nassert 30deg * (radius(c) / 3) == 15deg * (radius(c) / 1.5)\n",
         );
         let Evaluation::Solved { scene, .. } =
             evaluate(&parsed.file).expect("both ratio operands use inferred angle context")
@@ -3017,7 +3017,7 @@ mod tests {
     #[test]
     fn solver_relations_use_inferred_dimensions_for_both_sqrt_operands() {
         let parsed = parse(
-            "locus 0 beta 4\npoint O = point()\ncircle c = circle(O, 6)\nrel sqrt(radius(c) * 3) == sqrt(18)\n",
+            "locus 0 beta 5\npoint O = point()\ncircle c = circle(O, 6)\nrel sqrt(radius(c) * 3) == sqrt(18)\n",
         );
         let Evaluation::Solved { summary, .. } =
             evaluate(&parsed.file).expect("both square roots use inferred length context")
@@ -3030,7 +3030,7 @@ mod tests {
     #[test]
     fn offset_coordinates_use_contextual_length_evaluation() {
         let parsed = parse(
-            "locus 0 beta 4\npoint O = point()\ncircle c = circle(O, 6)\npoint P = offset(O, sqrt(radius(c) * 3), 0)\n",
+            "locus 0 beta 5\npoint O = point()\ncircle c = circle(O, 6)\npoint P = offset(O, sqrt(radius(c) * 3), 0)\n",
         );
         let Evaluation::Solved { scene, summary } =
             evaluate(&parsed.file).expect("compound offset coordinate solves")
@@ -3053,7 +3053,7 @@ mod tests {
     #[test]
     fn product_inference_waits_for_both_operand_dimensions() {
         let parsed = parse(
-            "locus 0 beta 4\nnum w = 2\npoint O = point()\ncircle c = circle(O, w)\nnum h = 3\nnum a = w * h\nrect r = rect(O, w, h)\n",
+            "locus 0 beta 5\nnum w = 2\npoint O = point()\ncircle c = circle(O, w)\nnum h = 3\nnum a = w * h\nrect r = rect(O, w, h)\n",
         );
         let dimensions = infer_dimensions(&parsed.file).expect("order-independent inference");
         assert_eq!(
@@ -3079,7 +3079,7 @@ mod tests {
     #[test]
     fn text_block_anchor_constrains_nested_constructor_arguments() {
         let parsed = parse(
-            "locus 0 beta 4\nnum r = 2\npoint O = point()\ntext_block note = text_block(\"test\") { anchor: circle(O, r).center }\n",
+            "locus 0 beta 5\nnum r = 2\npoint O = point()\ntext_block note = text_block(\"test\") { anchor: circle(O, r).center }\n",
         );
         let dimensions = infer_dimensions(&parsed.file).expect("text-block anchor inference");
         assert_eq!(
@@ -3101,14 +3101,14 @@ mod tests {
         );
         for expression in ["2 * t", "t * 2"] {
             let source = format!(
-                "locus 0 beta 4\nnum t = 30deg\npoint P = point()\npoint O = point()\npoint R = rotate(P, O, {expression})\n"
+                "locus 0 beta 5\nnum t = 30deg\npoint P = point()\npoint O = point()\npoint R = rotate(P, O, {expression})\n"
             );
             let parsed = parse(&source);
             let dimensions = infer_dimensions(&parsed.file).expect("angle product inference");
             assert_eq!(dimensions.get("t"), Some(&InferredDimension::Angle));
 
             let op = op_from(&format!(
-                "locus 0 beta 4\npoint R = rotate(P, O, {expression})\n"
+                "locus 0 beta 5\npoint R = rotate(P, O, {expression})\n"
             ));
             let mut evaluator = test_evaluator(&env);
             let ResolvedObject::Point(point) =
@@ -3135,7 +3135,7 @@ mod tests {
             ("(2 * 3) * (30deg * 2)", 2.0 * core::f64::consts::PI),
             ("(30deg * 2) * (2 * 3)", 2.0 * core::f64::consts::PI),
         ] {
-            let parsed = parse(&format!("locus 0 beta 4\nnum t = {expression}\n"));
+            let parsed = parse(&format!("locus 0 beta 5\nnum t = {expression}\n"));
             let dimensions = infer_dimensions(&parsed.file).expect("nested angle inference");
             assert_eq!(dimensions.get("t"), Some(&InferredDimension::Angle));
 
@@ -3157,7 +3157,7 @@ mod tests {
             ("/", core::f64::consts::PI / 12.0),
         ] {
             let parsed = parse(&format!(
-                "locus 0 beta 4\npoint O = point()\ncircle c = circle(O, 6)\nnum t = 30deg {operator} (radius(c) / 3)\n"
+                "locus 0 beta 5\npoint O = point()\ncircle c = circle(O, 6)\nnum t = 30deg {operator} (radius(c) / 3)\n"
             ));
             let Evaluation::Solved { scene, .. } =
                 evaluate(&parsed.file).expect("complete scene evaluates through solver")
@@ -3179,7 +3179,7 @@ mod tests {
     #[test]
     fn nested_constructor_calls_impose_argument_dimensions() {
         let parsed = parse(
-            "locus 0 beta 4\nnum r = 2\npoint P = point()\npoint O = point()\nrel on(P, circle(O, r))\n",
+            "locus 0 beta 5\nnum r = 2\npoint P = point()\npoint O = point()\nrel on(P, circle(O, r))\n",
         );
         let dimensions = infer_dimensions(&parsed.file).expect("nested circle inference");
         assert_eq!(
@@ -3194,8 +3194,8 @@ mod tests {
         insert(&mut env, "A", resolved_point(Point::new(1.0, 0.0)));
         insert(&mut env, "B", resolved_point(Point::new(0.0, 0.0)));
         insert(&mut env, "C", resolved_point(Point::new(0.0, 1.0)));
-        let point = op_from("locus 0 beta 4\npoint M = midpoint(A, B) { mark: cross }\n");
-        let arc = op_from("locus 0 beta 4\narc a = angle_arc(A, B, C, 0.5) { n: 3 }\n");
+        let point = op_from("locus 0 beta 5\npoint M = midpoint(A, B) { mark: cross }\n");
+        let arc = op_from("locus 0 beta 5\narc a = angle_arc(A, B, C, 0.5) { n: 3 }\n");
         let mut evaluator = test_evaluator(&env);
         let ResolvedObject::Point(point) =
             evaluate_op_value(&mut evaluator, &point).expect("marked point")
@@ -3210,7 +3210,7 @@ mod tests {
         };
         assert_eq!(arc.angle_mark_count, Some(3));
 
-        let invalid = op_from("locus 0 beta 4\narc a = angle_arc(A, B, C, 0.5) { n: 5 }\n");
+        let invalid = op_from("locus 0 beta 5\narc a = angle_arc(A, B, C, 0.5) { n: 5 }\n");
         let error = evaluate_op_value(&mut evaluator, &invalid).expect_err("count range");
         assert_eq!(error.code, "E204");
         assert!(error.message.contains("1..=4"));
@@ -3218,7 +3218,7 @@ mod tests {
 
     #[test]
     fn num_only_file_resolves_and_scene_recomputes() {
-        let parsed = parse("locus 0 beta 4\nnum phi = (1 + sqrt(5)) / 2\n");
+        let parsed = parse("locus 0 beta 5\nnum phi = (1 + sqrt(5)) / 2\n");
         let mut scene = crate::Scene::new(parsed.file).expect("derived scene");
         let resolved = scene.resolved().expect("complete scene");
         let (_, ResolvedObject::Num(phi)) = resolved.objects.first().expect("phi") else {
@@ -3236,7 +3236,7 @@ mod tests {
         let mut env = Environment::new();
         insert(&mut env, "P", resolved_point(Point::new(2.0, 3.0)));
         let op =
-            op_from("locus 0 beta 4\nlabel note = label(P, \"hello\") { dir: NE, gap: 0.25 }\n");
+            op_from("locus 0 beta 5\nlabel note = label(P, \"hello\") { dir: NE, gap: 0.25 }\n");
         let mut evaluator = test_evaluator(&env);
         let object = evaluate_op_value(&mut evaluator, &op).expect("annotation spec");
         let ResolvedObject::Annotation(AnnotationSpec::Label {
@@ -3269,7 +3269,7 @@ mod tests {
             "c2",
             ResolvedObject::Circle(Circle::new(Point::new(4.0, 0.0), 0.9).expect("circle")),
         );
-        let op = op_from("locus 0 beta 4\npoint X = intersect(c1, c2)\n");
+        let op = op_from("locus 0 beta 5\npoint X = intersect(c1, c2)\n");
         let mut evaluator = test_evaluator(&env);
         let error = evaluate_op_value(&mut evaluator, &op)
             .map_err(|error| attach_object(error, "X"))
@@ -3300,7 +3300,7 @@ mod tests {
 
     #[test]
     fn snapshots_measured_division_domain_error() {
-        let parsed = parse("locus 0 beta 4\nnum bad = 3 / 0\n");
+        let parsed = parse("locus 0 beta 5\nnum bad = 3 / 0\n");
         let error = evaluate(&parsed.file).expect_err("zero denominator");
         insta::assert_debug_snapshot!(
             (
@@ -3359,7 +3359,7 @@ mod tests {
     #[test]
     fn current_format_resolves_derived_ellipse_overload_and_object_aliases() {
         let parsed = parse(
-            "locus 0 beta 4\npoint O = point()\nellipse e = ellipse(O, 3, 2)\nellipse alias = e\npoint P = e.at(0deg)\n",
+            "locus 0 beta 5\npoint O = point()\nellipse e = ellipse(O, 3, 2)\nellipse alias = e\npoint P = e.at(0deg)\n",
         );
         assert!(parsed.diagnostics.is_empty(), "{:#?}", parsed.diagnostics);
         let evaluation = evaluate(&parsed.file).expect("format-three curves");

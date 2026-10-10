@@ -1,9 +1,7 @@
-locus 0 beta 4
+locus 0 beta 5
 
-meta {
-  title "X-Y stress plot: parabola, linear intersections, and composite area"
-  note "129 samples and 32 integration cells. Intersections solve the analytic equations; segments approximate the curve. One scene unit represents one axis unit."
-}
+meta title = "X-Y stress plot: parabola, linear intersections, and composite area"
+meta note = "129 samples and 32 integration cells. Intersections solve the analytic equations; segments approximate the curve. One scene unit represents one axis unit."
 
 style textbook
 class curve { accent: blue, weight: 2, cap: round, join: round }
@@ -434,8 +432,8 @@ segment dense_seg128 = seg(dense127, dense128) [curve]
 assert vdist(O, dense128) / unit == 4.500000000000
 line linear_function = line(offset(O, -3 * unit, -2 * unit), offset(O, 3 * unit, 4 * unit)) [auxiliary]
 // Positive distances from the symmetry axis select the two root branches.
-num left_span = free ~1.8
-num right_span = free ~1.6
+num left_span = free 1.8
+num right_span = free 1.6
 point cross_left = offset(O, (1 - sqrt(left_span * left_span)) * unit, (2 - sqrt(left_span * left_span)) * unit)
 point cross_right = offset(O, (1 + sqrt(right_span * right_span)) * unit, (2 + sqrt(right_span * right_span)) * unit)
 rel vdist(O, cross_left) / unit == (hdist(O, cross_left) / unit) * (hdist(O, cross_left) / unit) / 2

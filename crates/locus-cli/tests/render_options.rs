@@ -8,7 +8,7 @@ use assert_cmd::Command;
 fn background_is_available_for_vector_formats() -> Result<(), Box<dyn Error>> {
     let directory = tempfile::tempdir()?;
     let source = directory.path().join("empty.locus");
-    fs::write(&source, "locus 0 beta 4\nnum n = 1\n")?;
+    fs::write(&source, "locus 0 beta 5\nnum n = 1\n")?;
     for (flags, expected) in [
         (vec![], "fill=\"#FFFFFF\""),
         (vec!["--tikz"], "fill={rgb,255:red,255;green,255;blue,255}"),
@@ -31,7 +31,7 @@ fn png_background_dpi_and_stdout_match_the_saved_artifact() -> Result<(), Box<dy
     let directory = tempfile::tempdir()?;
     let source = directory.path().join("empty.locus");
     let destination = directory.path().join("empty.png");
-    fs::write(&source, "locus 0 beta 4\nnum n = 1\n")?;
+    fs::write(&source, "locus 0 beta 5\nnum n = 1\n")?;
     for (flags, size, density, pixel) in [
         (vec![], 64, 3780, [0, 0, 0, 0]),
         (vec!["--background", "transparent"], 64, 3780, [0, 0, 0, 0]),
