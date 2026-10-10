@@ -3,6 +3,8 @@
 mod commands;
 mod exit;
 mod output;
+#[cfg(debug_assertions)]
+mod rejected_requests;
 
 use std::path::PathBuf;
 
@@ -158,7 +160,11 @@ fn main() -> std::process::ExitCode {
         Ok(cli) => cli,
         Err(error) => return clap_exit(&error),
     };
+    #[cfg(debug_assertions)]
+    rejected_requests::begin(&cli.command);
     let execution = execute(cli.command);
+    #[cfg(debug_assertions)]
+    rejected_requests::save(&execution);
     output::emit(&execution, cli.json).into()
 }
 
@@ -170,6 +176,8 @@ fn clap_exit(error: &clap::Error) -> std::process::ExitCode {
         let _ = error.print();
         return Exit::Success.into();
     }
+    #[cfg(debug_assertions)]
+    rejected_requests::save_usage(&error.to_string());
     if json_requested() {
         let execution = output::usage_error(&error.to_string());
         output::emit(&execution, true);

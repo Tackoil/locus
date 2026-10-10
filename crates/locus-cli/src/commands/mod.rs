@@ -87,7 +87,10 @@ fn add(path: &Path) -> Execution {
         Err(execution) => return *execution,
     };
     let mut appended = String::new();
-    if let Err(error) = io::stdin().read_to_string(&mut appended) {
+    let read_result = io::stdin().read_to_string(&mut appended);
+    #[cfg(debug_assertions)]
+    crate::rejected_requests::stdin(&appended);
+    if let Err(error) = read_result {
         return io_failure("add", path, &error);
     }
     let candidate = append_source(&loaded.source, &appended);
@@ -423,6 +426,8 @@ fn validate_and_write(
     id: Option<&str>,
     action: &str,
 ) -> Execution {
+    #[cfg(debug_assertions)]
+    crate::rejected_requests::candidate(path, &candidate);
     let loaded = LoadedSource {
         path: path.to_owned(),
         source: candidate.clone(),

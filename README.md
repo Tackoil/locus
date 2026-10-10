@@ -27,6 +27,25 @@ cargo run -p locus-cli -- check spec/test/stress/*.locus
 
 See [`spec/README.md`](spec/README.md) for the normative contract and [`documents/structure.md`](documents/structure.md) for the implementation roadmap.
 
+### Rejected requests in development
+
+Debug/dev CLI builds automatically save each failed invocation as a separate JSON
+record in `.locus/rejected-requests/` relative to the working directory. Set
+`LOCUS_REJECTED_REQUESTS_DIR` to choose another directory. Release builds compile
+out this feature, even when that environment variable is set.
+
+Records include error codes/names, messages, spans, notes and suggestions, the
+complete command result, arguments, working directory, timestamp, CLI version,
+original file contents, submitted `add` stdin, and candidate/evaluated source.
+This preserves rejected edits without changing the original file, for reviewing
+possible syntax improvements. Batch checks retain every input and its outcome,
+including failed assertions and strict-mode warnings. Unreadable files retain the
+read error; non-UTF-8 files retain their original bytes. Argument parsing failures
+also snapshot available `.locus` file arguments. Successful commands, help, and
+version requests produce no records. Archive write failures warn on stderr and
+preserve the command's normal output and exit code. Records are local files;
+remove the directory when you no longer need them.
+
 ## Editor integration
 
 The [Zed extension](ecosystem/zed/README.md) adds syntax highlighting with the

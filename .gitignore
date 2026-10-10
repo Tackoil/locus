@@ -5,3 +5,4 @@
 *.pending-snap
 .env
 .env.local
+**/.locus/rejected-requests/

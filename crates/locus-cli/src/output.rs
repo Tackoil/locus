@@ -743,7 +743,7 @@ fn emit_check_diagnostics(result: &CheckResult, sources: &[SourceDocument]) {
     }
 }
 
-fn assertion_diagnostics(file: &CheckFileResult) -> Vec<CliDiagnostic> {
+pub(crate) fn assertion_diagnostics(file: &CheckFileResult) -> Vec<CliDiagnostic> {
     file.assertions
         .iter()
         .flat_map(|report| &report.assertions)
