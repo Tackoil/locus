@@ -1,0 +1,12 @@
+{
+  "name": "locus-benchmark-tools",
+  "version": "1.0.0",
+  "private": true,
+  "engines": {"node": ">=22.19.0"},
+  "dependencies": {
+    "@deepseek-ai/dsh": "0.1.5-rc.2",
+    "@earendil-works/pi-coding-agent": "0.84.4",
+    "opencode-ai": "1.18.35",
+    "sharp": "0.35.4"
+  }
+}

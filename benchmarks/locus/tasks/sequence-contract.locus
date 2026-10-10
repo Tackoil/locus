@@ -1,0 +1,8 @@
+// Arrangement gate only; message semantics and visual layout require image review.
+assert horizontal(customer.center, web.center) and hdist(customer.center, web.center) > 0
+assert horizontal(web.center, orders.center) and hdist(web.center, orders.center) > 0
+assert horizontal(orders.center, payment.center) and hdist(orders.center, payment.center) > 0
+assert coincident(life_customer.start, customer.s) and vertical(life_customer.start, life_customer.end) and vdist(life_customer.start, life_customer.end) < 0
+assert coincident(life_web.start, web.s) and vertical(life_web.start, life_web.end) and vdist(life_web.start, life_web.end) < 0
+assert coincident(life_orders.start, orders.s) and vertical(life_orders.start, life_orders.end) and vdist(life_orders.start, life_orders.end) < 0
+assert coincident(life_payment.start, payment.s) and vertical(life_payment.start, life_payment.end) and vdist(life_payment.start, life_payment.end) < 0
