@@ -852,6 +852,8 @@ dependencies = [
  "ryu",
  "thiserror",
  "ttf-parser",
+ "unicode-properties",
+ "unicode-script",
 ]
 
 [[package]]

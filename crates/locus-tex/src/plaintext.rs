@@ -7,6 +7,9 @@ use rustybuzz::{Face as ShapingFace, UnicodeBuffer};
 use ttf_parser::{Face as OutlineFace, GlyphId, OutlineBuilder, name_id};
 
 use crate::engine::{BoxMetrics, FontSize, TexBox, TexEngine, TexError, escape_xml, format_number};
+use crate::segments::compose_inline;
+
+mod runs;
 
 /// Family name of the bundled deterministic default font.
 pub const DEFAULT_FONT_FAMILY: &str = "Noto Sans";
@@ -16,6 +19,15 @@ pub const DEFAULT_FONT_FAMILY: &str = "Noto Sans";
 /// The font is distributed under the SIL Open Font License 1.1; its license
 /// and provenance are in `assets/OFL.txt` and `assets/README.md`.
 pub const DEFAULT_FONT_BYTES: &[u8] = include_bytes!("../assets/NotoSans-Regular.ttf");
+
+/// Family name of the bundled Chinese, Japanese, and Korean fallback font.
+pub const CJK_FONT_FAMILY: &str = "Noto Sans CJK SC";
+
+/// The bundled Noto Sans CJK Simplified Chinese Regular font bytes.
+///
+/// This full face also covers Japanese, Korean, and Traditional Chinese.
+/// Its license and provenance are in `assets/CJK-OFL.txt` and `assets/README.md`.
+pub const CJK_FONT_BYTES: &[u8] = include_bytes!("../assets/NotoSansCJKsc-Regular.otf");
 
 /// A deterministic plain-text engine backed by `rustybuzz` and `ttf-parser`.
 ///
@@ -29,7 +41,10 @@ pub struct PlaintextEngine {
 }
 
 impl PlaintextEngine {
-    /// Uses the bundled Noto Sans Regular face.
+    /// Uses bundled Noto Sans Regular, with Noto Sans CJK SC for CJK text.
+    ///
+    /// Font and script runs retain combining sequences, with all runs sharing
+    /// a baseline. Text covered entirely by Noto Sans keeps its original output.
     #[must_use]
     pub const fn new() -> Self {
         Self {
@@ -69,33 +84,22 @@ impl Default for PlaintextEngine {
 impl TexEngine for PlaintextEngine {
     fn render(&self, text: &str, size: FontSize) -> Result<TexBox, TexError> {
         let size = size.validate()?;
-        let font = self.parsed_font()?;
-        let shaping_face = &font.shaping_face;
-        let outline_face = shaping_face.as_ref();
-        let units_per_em = f64::from(outline_face.units_per_em());
-        let scale = size / units_per_em;
-
-        let mut buffer = UnicodeBuffer::new();
-        buffer.push_str(text);
-        buffer.guess_segment_properties();
-        let shaped = rustybuzz::shape(shaping_face, &[], buffer);
-        let glyphs = glyph_layout(outline_face, &shaped)?;
-        let measured = glyphs.measured_box(outline_face, scale)?;
-        let mut rendered = TexBox::with_horizontal_metrics(
-            String::new(),
-            measured.metrics,
-            measured.advance,
-            measured.baseline_x,
-        );
-        rendered.validate()?;
-        rendered.svg_body = render_svg_group(
-            text,
-            &font.family_name,
-            scale,
-            measured.shift_x,
-            &glyphs.paths,
-        )?;
-        Ok(rendered)
+        let primary = self.parsed_font()?;
+        if matches!(self.source, FontSource::Custom(_)) || primary.covers(text) {
+            return primary.render(text, size);
+        }
+        let fallback = bundled_cjk_font()?;
+        if !text
+            .chars()
+            .any(|character| !primary.has_glyph(character) && fallback.has_glyph(character))
+        {
+            return primary.render(text, size);
+        }
+        let pieces = runs::split(text, primary, fallback)
+            .iter()
+            .map(|run| run.font.render(run.text, size))
+            .collect::<Result<Vec<_>, _>>()?;
+        compose_inline(pieces)
     }
 }
 
@@ -117,7 +121,7 @@ enum FontSource {
 impl FontSource {
     const fn description(&self) -> &'static str {
         match self {
-            Self::Bundled => "bundled Noto Sans",
+            Self::Bundled => "bundled Noto Sans with Noto Sans CJK SC fallback",
             Self::Custom(_) => "custom static font",
         }
     }
@@ -129,7 +133,51 @@ struct ParsedFont {
     family_name: String,
 }
 
+impl ParsedFont {
+    fn render(&self, text: &str, size: f64) -> Result<TexBox, TexError> {
+        let outline_face = self.shaping_face.as_ref();
+        let scale = size / f64::from(outline_face.units_per_em());
+        let mut buffer = UnicodeBuffer::new();
+        buffer.push_str(text);
+        buffer.guess_segment_properties();
+        let shaped = rustybuzz::shape(&self.shaping_face, &[], buffer);
+        let glyphs = glyph_layout(outline_face, &shaped)?;
+        let measured = glyphs.measured_box(outline_face, scale)?;
+        let mut rendered = TexBox::with_horizontal_metrics(
+            String::new(),
+            measured.metrics,
+            measured.advance,
+            measured.baseline_x,
+        );
+        rendered.validate()?;
+        rendered.svg_body = render_svg_group(
+            text,
+            &self.family_name,
+            scale,
+            measured.shift_x,
+            &glyphs.paths,
+        )?;
+        Ok(rendered)
+    }
+
+    fn has_glyph(&self, character: char) -> bool {
+        self.shaping_face.as_ref().glyph_index(character).is_some()
+    }
+
+    fn covers(&self, text: &str) -> bool {
+        text.chars().all(|character| self.has_glyph(character))
+    }
+}
+
 static BUNDLED_FONT: OnceLock<Result<ParsedFont, TexError>> = OnceLock::new();
+static BUNDLED_CJK_FONT: OnceLock<Result<ParsedFont, TexError>> = OnceLock::new();
+
+fn bundled_cjk_font() -> Result<&'static ParsedFont, TexError> {
+    match BUNDLED_CJK_FONT.get_or_init(|| parse_font(CJK_FONT_BYTES, 0)) {
+        Ok(font) => Ok(font),
+        Err(error) => Err(error.clone()),
+    }
+}
 
 fn bundled_font() -> Result<&'static ParsedFont, TexError> {
     match BUNDLED_FONT.get_or_init(|| parse_font(DEFAULT_FONT_BYTES, 0)) {
@@ -369,6 +417,97 @@ mod tests {
         let rendered = first?;
         assert!(rendered.metrics.width > 0.0);
         assert!(rendered.svg_body.contains("<path"));
+        Ok(())
+    }
+
+    #[test]
+    fn cjk_text_has_real_glyphs_and_measured_outlines() -> Result<(), TexError> {
+        let engine = PlaintextEngine::default();
+        let cjk_engine = PlaintextEngine::from_static_font(CJK_FONT_BYTES, 0)?;
+        let primary = bundled_font()?;
+        let fallback = bundled_cjk_font()?;
+        assert_eq!(fallback.family_name, CJK_FONT_FAMILY);
+        for text in [
+            "简体中文",
+            "繁體中文",
+            "日本語かなカナ",
+            "한국어한글",
+            "A 中文 123，。",
+        ] {
+            for run in runs::split(text, primary, fallback) {
+                assert!(run.font.covers(run.text));
+                let mut buffer = UnicodeBuffer::new();
+                buffer.push_str(run.text);
+                buffer.guess_segment_properties();
+                let shaped = rustybuzz::shape(&run.font.shaping_face, &[], buffer);
+                assert!(shaped.glyph_infos().iter().all(|glyph| glyph.glyph_id != 0));
+            }
+            assert_glyphs_fit(&cjk_engine, fallback.shaping_face.as_ref(), text)?;
+            let rendered = engine.render(text, FontSize::DEFAULT)?;
+            assert_eq!(rendered, engine.render(text, FontSize::DEFAULT)?);
+            assert!(rendered.svg_body.contains("data-font=\"Noto Sans CJK SC\""));
+        }
+        Ok(())
+    }
+
+    #[test]
+    fn cjk_combining_sequences_shape_like_precomposed_text() -> Result<(), TexError> {
+        let engine = PlaintextEngine::default();
+        for (decomposed, composed) in [
+            ("か\u{3099}", "が"),
+            ("\u{1112}\u{1161}\u{11ab}", "한"),
+            ("A か\u{3099}", "A が"),
+            ("A \u{1112}\u{1161}\u{11ab}", "A 한"),
+            ("中\u{1112}\u{1161}\u{11ab}", "中한"),
+            ("かな\u{1112}\u{1161}\u{11ab}", "かな한"),
+        ] {
+            let decomposed_box = engine.render(decomposed, FontSize::DEFAULT)?;
+            let composed_box = engine.render(composed, FontSize::DEFAULT)?;
+            assert_eq!(decomposed_box.metrics, composed_box.metrics);
+            assert_eq!(
+                decomposed_box.advance.to_bits(),
+                composed_box.advance.to_bits()
+            );
+            assert_eq!(
+                decomposed_box
+                    .svg_body
+                    .replace("か\u{3099}", "が")
+                    .replace("\u{1112}\u{1161}\u{11ab}", "한"),
+                composed_box.svg_body,
+                "{decomposed} should shape like {composed}",
+            );
+        }
+        Ok(())
+    }
+
+    #[test]
+    fn latin_text_keeps_its_original_font_and_custom_fonts_remain_exclusive() -> Result<(), TexError>
+    {
+        let engine = PlaintextEngine::default();
+        let custom = PlaintextEngine::from_static_font(DEFAULT_FONT_BYTES, 0)?;
+        for text in ["filter offset", "AV ffi", "f", "j", "A\u{030d}\u{030d}", ""] {
+            assert_eq!(
+                engine.render(text, FontSize::DEFAULT)?,
+                custom.render(text, FontSize::DEFAULT)?
+            );
+        }
+        let custom_cjk = custom.render("中文", FontSize::DEFAULT)?;
+        assert!(custom_cjk.svg_body.contains("data-font=\"Noto Sans\""));
+        assert!(!custom_cjk.svg_body.contains(CJK_FONT_FAMILY));
+        Ok(())
+    }
+
+    #[test]
+    fn cjk_fallback_preserves_latin_marks_and_rare_latin_glyphs() -> Result<(), TexError> {
+        let engine = PlaintextEngine::default();
+        for latin in ["A\u{030d}\u{030d}", "Ḁ"] {
+            let mixed = engine.render(&format!("{latin}中"), FontSize::DEFAULT)?;
+            let expected = compose_inline(vec![
+                bundled_font()?.render(latin, 1.0)?,
+                bundled_cjk_font()?.render("中", 1.0)?,
+            ])?;
+            assert_eq!(mixed, expected);
+        }
         Ok(())
     }
 

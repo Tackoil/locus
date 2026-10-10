@@ -19,6 +19,8 @@ rustybuzz = "=0.20.1"
 ryu.workspace = true
 thiserror.workspace = true
 ttf-parser = "=0.25.1"
+unicode-properties = "=0.1.4"
+unicode-script = "=0.5.8"
 
 [lints]
 workspace = true

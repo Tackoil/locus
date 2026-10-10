@@ -61,11 +61,17 @@ integer (default: 96), increases or decreases the pixel dimensions relative to
 3.125 times as many pixels on each side at the same physical size. PNG exports
 are limited to 64M pixels after scaling; `--dpi` requires `--png`.
 
-Plain text uses the bundled font and actual glyph measurements. The default
-TeX engine is ReX, using bundled STIX Two Math outlines for fractions, roots,
-scripts, operators, delimiters, and matrices. SVG, TikZ, and PNG output needs no
-installed math font or external TeX process. Invalid or unsupported TeX returns
-source-anchored E414 and exit 2; there is no silent fallback. ReX supports a
+Plain text uses bundled Noto Sans and Noto Sans CJK SC fonts with actual glyph
+measurements. Chinese (Simplified and Traditional), Japanese, and Korean labels
+render as outlines in SVG, TikZ, and PNG without installed fonts. Mixed Latin
+and CJK text shares a baseline; shared Han glyphs use Simplified Chinese forms
+for now. For example, `label name = label(c.center, "中文 日本語 한국어")`.
+
+The default TeX engine is ReX, using bundled STIX Two Math outlines for
+fractions, roots, scripts, operators, delimiters, and matrices. SVG, TikZ, and PNG
+output needs no installed math font or external TeX process. Invalid or
+unsupported TeX returns source-anchored E414 and exit 2; there is no silent
+fallback. ReX supports a
 subset of TeX, not a full LaTeX installation; see the
 [integration notes](crates/locus-tex/REX-VIABILITY.md).
 For deterministic pipeline testing only, the hidden `--tex-engine=mock` flag

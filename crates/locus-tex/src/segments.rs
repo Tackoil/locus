@@ -4,6 +4,14 @@ use crate::engine::{BoxMetrics, FontSize, TexBox, TexEngine, TexError, format_nu
 
 const LINE_GAP_EM: f64 = 0.2;
 
+pub(crate) fn compose_inline(pieces: Vec<TexBox>) -> Result<TexBox, TexError> {
+    let mut line = Line::default();
+    for piece in pieces {
+        line.push(piece)?;
+    }
+    compose_lines(&[line], 1.0)
+}
+
 /// A borrowed segment from a parsed label value.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum TextSegment<'a> {

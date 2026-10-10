@@ -1,5 +1,6 @@
 //! CLI rendering destinations, feature selection, and source-aware failures.
 
+use std::collections::BTreeSet;
 use std::error::Error;
 use std::fs;
 use std::path::Path;
@@ -48,6 +49,99 @@ fn destination_case(source_text: &str, options: &[&str], signature: &[u8]) -> Re
     assert_eq!(json["command"], "render");
     assert_eq!(json["output"], target.to_string_lossy().as_ref());
     assert!(json["diagnostics"].is_array());
+    Ok(())
+}
+
+fn render_label(text: &str, options: &[&str]) -> Result<Vec<u8>> {
+    let directory = tempfile::tempdir()?;
+    let source = directory.path().join("label.locus");
+    fs::write(
+        &source,
+        format!(
+            "locus 0 beta 4\npoint anchor = point() {{ mark: none }}\nlabel name = label(anchor, \"{text}\") {{ dir: center }}\n"
+        ),
+    )?;
+    let output = render(&source)?.args(options).arg("--stdout").output()?;
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    Ok(output.stdout)
+}
+
+fn svg_attribute<'a>(element: &'a str, name: &str) -> Result<&'a str> {
+    element
+        .split_once(&format!("{name}=\""))
+        .and_then(|(_, tail)| tail.split_once('"'))
+        .map(|(value, _)| value)
+        .ok_or_else(|| format!("missing SVG attribute {name}").into())
+}
+
+fn svg_paths(svg: &str) -> Result<Vec<&str>> {
+    svg.split("<path ")
+        .skip(1)
+        .map(|element| svg_attribute(element, "d"))
+        .collect()
+}
+
+#[test]
+fn cjk_scripts_render_distinct_glyph_outlines() -> Result {
+    let mut outlines = BTreeSet::new();
+    for text in ["中", "文", "あ", "カ", "한", "글"] {
+        let svg = String::from_utf8(render_label(text, &[])?)?;
+        assert!(!svg.contains("<text"));
+        assert!(!svg.contains("<circle"));
+        let paths = svg_paths(&svg)?;
+        assert_eq!(paths.len(), 1, "{text} must have a glyph outline");
+        // Compare outline topology independent of viewport translation. Missing
+        // glyph boxes have identical commands even when their positions differ.
+        let commands: String = paths[0].chars().filter(char::is_ascii_uppercase).collect();
+        assert!(!commands.is_empty());
+        assert!(
+            outlines.insert(commands),
+            "{text} reused another glyph's outline"
+        );
+    }
+    Ok(())
+}
+
+#[test]
+fn mixed_cjk_ascii_math_and_multiline_labels_render() -> Result {
+    let text = r"中文 CJK $x^2$\nかな 한글 123";
+    let svg = String::from_utf8(render_label(text, &[])?)?;
+    assert_eq!(svg_paths(&svg)?.len(), 14);
+    assert!(!svg.contains("<text"));
+    let single_line = String::from_utf8(render_label(&text.replace(r"\n", " "), &[])?)?;
+    let height: f64 = svg_attribute(&svg, "height")?.parse()?;
+    let single_height: f64 = svg_attribute(&single_line, "height")?.parse()?;
+    assert!(
+        height > single_height,
+        "a second line must expand the viewport"
+    );
+    let tikz = String::from_utf8(render_label(text, &["--tikz"])?)?;
+    assert!(tikz.contains(".. controls "));
+    assert!(!tikz.contains("\\node"));
+    Ok(())
+}
+
+#[cfg(feature = "png")]
+#[test]
+fn cjk_png_labels_contain_visible_ink() -> Result {
+    for text in ["中文", "かな", "한글", r"中文 CJK $x^2$\nかな 한글 123"] {
+        let bytes = render_label(text, &["--png"])?;
+        let mut reader = png::Decoder::new(bytes.as_slice()).read_info()?;
+        assert_eq!(reader.info().color_type, png::ColorType::Rgba);
+        let mut pixels = vec![0; reader.output_buffer_size()];
+        let frame = reader.next_frame(&mut pixels)?;
+        let rgba = &pixels[..frame.buffer_size()];
+        // The anchor has no mark, so all visible pixels belong to the label.
+        assert!(
+            rgba.chunks_exact(4).any(|pixel| pixel[3] > 0),
+            "{text} is blank"
+        );
+        assert!(rgba.chunks_exact(4).any(|pixel| pixel[3] == 0));
+    }
     Ok(())
 }
 
