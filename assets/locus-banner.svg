@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="359.650000" height="142.050000" viewBox="0 0 359.650000 142.050000">
+  <rect width="359.650000" height="142.050000" fill="#FFFFFF"/>
+  <g id="canvas" data-source-start="3661" data-source-end="3667" opacity="1.000000">
+    <path d="M 16.625000 125.425000 L 343.025000 125.425000 L 343.025000 16.625000 L 16.625000 16.625000 Z" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="1.250000" stroke-linecap="butt" stroke-linejoin="miter" stroke-opacity="0.000000"/>
+  </g>
+  <g id="mark.orbit" data-source-start="704" data-source-end="709" opacity="1.000000">
+    <path d="M 96.478574 34.940803 A 38.400000 38.400000 0 1 0 119.429197 57.891426" fill="none" stroke="#4338CA" stroke-width="8.000000" stroke-linecap="round" stroke-linejoin="miter"/>
+  </g>
+  <g id="mark.stem" data-source-start="1115" data-source-end="1119" opacity="1.000000">
+    <path d="M 69.585000 56.465000 L 69.585000 78.545000" fill="none" stroke="#4338CA" stroke-width="8.000000" stroke-linecap="round" stroke-linejoin="miter"/>
+  </g>
+  <g id="mark.corner" data-source-start="1165" data-source-end="1171" opacity="1.000000">
+    <path d="M 69.585000 78.545000 A 7.040000 7.040000 0 0 0 76.625000 85.585000" fill="none" stroke="#4338CA" stroke-width="8.000000" stroke-linecap="round" stroke-linejoin="miter"/>
+  </g>
+  <g id="mark.baseline" data-source-start="1229" data-source-end="1237" opacity="1.000000">
+    <path d="M 76.625000 85.585000 L 97.105000 85.585000" fill="none" stroke="#4338CA" stroke-width="8.000000" stroke-linecap="round" stroke-linejoin="miter"/>
+  </g>
+  <g id="mark.selected_point" data-source-start="1347" data-source-end="1361" opacity="1.000000">
+    <circle cx="110.497900" cy="43.872100" r="4.640000" fill="#14B8A6" stroke="#14B8A6" stroke-width="1.250000" stroke-linecap="butt" stroke-linejoin="miter" stroke-opacity="0.000000"/>
+  </g>
+  <g id="wordmark.l.stem" data-source-start="1910" data-source-end="1914" opacity="1.000000">
+    <path d="M 145.745000 45.745000 L 145.745000 88.305000" fill="none" stroke="#20213A" stroke-width="6.400000" stroke-linecap="round" stroke-linejoin="miter"/>
+  </g>
+  <g id="wordmark.l.corner" data-source-start="1955" data-source-end="1961" opacity="1.000000">
+    <path d="M 145.745000 88.305000 A 8.000000 8.000000 0 0 0 153.745000 96.305000" fill="none" stroke="#20213A" stroke-width="6.400000" stroke-linecap="round" stroke-linejoin="miter"/>
+  </g>
+  <g id="wordmark.l.foot" data-source-start="2020" data-source-end="2024" opacity="1.000000">
+    <path d="M 153.745000 96.305000 L 161.745000 96.305000" fill="none" stroke="#20213A" stroke-width="6.400000" stroke-linecap="round" stroke-linejoin="miter"/>
+  </g>
+  <g id="wordmark.o" data-source-start="3365" data-source-end="3366" opacity="1.000000">
+    <circle cx="187.665000" cy="78.385000" r="17.920000" fill="none" stroke="#20213A" stroke-width="6.400000" stroke-linecap="round" stroke-linejoin="miter"/>
+  </g>
+  <g id="wordmark.c.curve" data-source-start="2236" data-source-end="2241" opacity="1.000000">
+    <path d="M 244.176354 65.713646 A 17.920000 17.920000 0 1 0 244.176354 91.056354" fill="none" stroke="#20213A" stroke-width="6.400000" stroke-linecap="round" stroke-linejoin="miter"/>
+  </g>
+  <g id="wordmark.u.left_stem" data-source-start="2593" data-source-end="2602" opacity="1.000000">
+    <path d="M 257.425000 60.465000 L 257.425000 80.945000" fill="none" stroke="#20213A" stroke-width="6.400000" stroke-linecap="round" stroke-linejoin="miter"/>
+  </g>
+  <g id="wordmark.u.bowl" data-source-start="2640" data-source-end="2644" opacity="1.000000">
+    <path d="M 257.425000 80.945000 A 15.360000 15.360000 0 0 0 288.145000 80.945000" fill="none" stroke="#20213A" stroke-width="6.400000" stroke-linecap="round" stroke-linejoin="miter"/>
+  </g>
+  <g id="wordmark.u.right_stem" data-source-start="2698" data-source-end="2708" opacity="1.000000">
+    <path d="M 288.145000 80.945000 L 288.145000 60.465000" fill="none" stroke="#20213A" stroke-width="6.400000" stroke-linecap="round" stroke-linejoin="miter"/>
+  </g>
+  <g id="wordmark.s.upper_curve" data-source-start="3154" data-source-end="3165" opacity="1.000000">
+    <path d="M 312.533892 62.499931 A 9.280000 9.280000 0 1 0 305.425000 77.745000" fill="none" stroke="#20213A" stroke-width="6.400000" stroke-linecap="round" stroke-linejoin="miter"/>
+  </g>
+  <g id="wordmark.s.lower_curve" data-source-start="3218" data-source-end="3229" opacity="1.000000">
+    <path d="M 305.425000 77.745000 A 9.280000 9.280000 0 1 1 298.316108 92.990069" fill="none" stroke="#20213A" stroke-width="6.400000" stroke-linecap="round" stroke-linejoin="miter"/>
+  </g>
+</svg>

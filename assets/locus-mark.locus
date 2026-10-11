@@ -1,0 +1,41 @@
+locus 0 beta 6
+
+meta title = "Locus — Orbit L / standalone mark"
+meta note = "An open geometric locus, a rounded L, and a selected point. Placement is solved from anchors and relations. Transparent background."
+
+style textbook
+
+class guide { opacity: 0 }
+class orbit_ink { accent: #4338CA, weight: 8, cap: round }
+class selected { accent: #14B8A600, fill: #14B8A6 }
+
+// Identical construction in the banner. Dimensions define the design;
+// centering and shared boundaries determine placement.
+fn locus_mark() {
+    circle carrier(1.2) [guide]
+    point entry = on_circle(carrier, 70deg) { mark: none }
+    point exit = on_circle(carrier, 20deg) { mark: none }
+    arc orbit(carrier, entry, exit, true) [orbit_ink]
+
+    rect glyph_frame(0.86, 0.91) [guide]
+    rel center(glyph_frame, carrier)
+    circle fillet(0.22) [guide]
+    rel inset_left(fillet, glyph_frame) { padding: none }
+    rel inset_bottom(fillet, glyph_frame) { padding: none }
+
+    point turn_in = on_circle(fillet, 180deg) { mark: none }
+    point turn_out = on_circle(fillet, 270deg) { mark: none }
+    segment stem(glyph_frame.nw, turn_in) [orbit_ink]
+    arc corner(fillet, turn_in, turn_out, true) [orbit_ink]
+    segment baseline(turn_out, glyph_frame.se) [orbit_ink]
+
+    point focus = on_circle(carrier, 45deg) { mark: none }
+    circle selected_point(focus, 0.145) [selected]
+
+    assert on(focus, carrier)
+    assert center(glyph_frame, carrier)
+    assert perpendicular(stem, seg(fillet.center, turn_in))
+    assert perpendicular(baseline, seg(fillet.center, turn_out))
+}
+
+locus_mark mark()

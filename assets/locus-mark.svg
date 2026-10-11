@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="116.800000" height="116.800000" viewBox="0 0 116.800000 116.800000">
+  <g id="mark.orbit" data-source-start="671" data-source-end="676" opacity="1.000000">
+    <path d="M 71.533574 22.315803 A 38.400000 38.400000 0 1 0 94.484197 45.266426" fill="none" stroke="#4338CA" stroke-width="8.000000" stroke-linecap="round" stroke-linejoin="miter"/>
+  </g>
+  <g id="mark.stem" data-source-start="1082" data-source-end="1086" opacity="1.000000">
+    <path d="M 44.640000 43.840000 L 44.640000 65.920000" fill="none" stroke="#4338CA" stroke-width="8.000000" stroke-linecap="round" stroke-linejoin="miter"/>
+  </g>
+  <g id="mark.corner" data-source-start="1132" data-source-end="1138" opacity="1.000000">
+    <path d="M 44.640000 65.920000 A 7.040000 7.040000 0 0 0 51.680000 72.960000" fill="none" stroke="#4338CA" stroke-width="8.000000" stroke-linecap="round" stroke-linejoin="miter"/>
+  </g>
+  <g id="mark.baseline" data-source-start="1196" data-source-end="1204" opacity="1.000000">
+    <path d="M 51.680000 72.960000 L 72.160000 72.960000" fill="none" stroke="#4338CA" stroke-width="8.000000" stroke-linecap="round" stroke-linejoin="miter"/>
+  </g>
+  <g id="mark.selected_point" data-source-start="1314" data-source-end="1328" opacity="1.000000">
+    <circle cx="85.552900" cy="31.247100" r="4.640000" fill="#14B8A6" stroke="#14B8A6" stroke-width="1.250000" stroke-linecap="butt" stroke-linejoin="miter" stroke-opacity="0.000000"/>
+  </g>
+</svg>

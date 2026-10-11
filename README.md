@@ -1,6 +1,6 @@
 <p align="center">
-  <a href="assets/locus-logo.locus">
-    <img src="assets/locus-logo.svg" alt="Locus: deterministic geometry diagrams as code" width="420">
+  <a href="assets/locus-banner.locus">
+    <img src="assets/locus-banner.svg" alt="Locus: deterministic geometry diagrams as code" width="420">
   </a>
 </p>
 

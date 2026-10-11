@@ -1,0 +1,121 @@
+locus 0 beta 6
+
+meta title = "Locus — Orbit L / banner"
+meta note = "Native geometric lettering. Locus solves letter spacing, baseline alignment, logo placement and canvas sizing. Render with --background white."
+
+style textbook
+
+class guide { opacity: 0 }
+class paper { accent: #FFFFFF00, fill: #FFFFFF }
+class orbit_ink { accent: #4338CA, weight: 8, cap: round }
+class selected { accent: #14B8A600, fill: #14B8A6 }
+class letter_ink { accent: #20213A, weight: 6.4, cap: round }
+
+// Identical construction in locus-mark.locus.
+fn locus_mark() {
+    circle carrier(1.2) [guide]
+    point entry = on_circle(carrier, 70deg) { mark: none }
+    point exit = on_circle(carrier, 20deg) { mark: none }
+    arc orbit(carrier, entry, exit, true) [orbit_ink]
+
+    rect glyph_frame(0.86, 0.91) [guide]
+    rel center(glyph_frame, carrier)
+    circle fillet(0.22) [guide]
+    rel inset_left(fillet, glyph_frame) { padding: none }
+    rel inset_bottom(fillet, glyph_frame) { padding: none }
+
+    point turn_in = on_circle(fillet, 180deg) { mark: none }
+    point turn_out = on_circle(fillet, 270deg) { mark: none }
+    segment stem(glyph_frame.nw, turn_in) [orbit_ink]
+    arc corner(fillet, turn_in, turn_out, true) [orbit_ink]
+    segment baseline(turn_out, glyph_frame.se) [orbit_ink]
+
+    point focus = on_circle(carrier, 45deg) { mark: none }
+    circle selected_point(focus, 0.145) [selected]
+
+    assert on(focus, carrier)
+    assert center(glyph_frame, carrier)
+    assert perpendicular(stem, seg(fillet.center, turn_in))
+    assert perpendicular(baseline, seg(fillet.center, turn_out))
+}
+
+fn letter_l() {
+    rect frame(0.50, 1.58) [guide]
+    circle fillet(0.25) [guide]
+    rel inset_left(fillet, frame) { padding: none }
+    rel inset_bottom(fillet, frame) { padding: none }
+    point turn_in = on_circle(fillet, 180deg) { mark: none }
+    point turn_out = on_circle(fillet, 270deg) { mark: none }
+    segment stem(frame.nw, turn_in) [letter_ink]
+    arc corner(fillet, turn_in, turn_out, true) [letter_ink]
+    segment foot(turn_out, frame.se) [letter_ink]
+}
+
+fn letter_c() {
+    circle carrier(0.56) [guide]
+    point top = on_circle(carrier, 45deg) { mark: none }
+    point bottom = on_circle(carrier, 315deg) { mark: none }
+    arc curve(carrier, top, bottom, true) [letter_ink]
+}
+
+fn letter_u() {
+    rect frame(0.96, 1.12) [guide]
+    circle carrier(0.48) [guide]
+    rel align_center_x(carrier, frame)
+    rel inset_bottom(carrier, frame) { padding: none }
+    point left = on_circle(carrier, 180deg) { mark: none }
+    point right = on_circle(carrier, 0deg) { mark: none }
+    segment left_stem(frame.nw, left) [letter_ink]
+    arc bowl(carrier, left, right, true) [letter_ink]
+    segment right_stem(right, frame.ne) [letter_ink]
+
+    assert parallel(left_stem, right_stem)
+}
+
+fn letter_s() {
+    circle upper(0.29) [guide]
+    circle lower(0.29) [guide]
+    point upper_joint = on_circle(upper, 270deg) { mark: none }
+    point lower_joint = on_circle(lower, 90deg) { mark: none }
+    rel center(upper_joint, lower_joint)
+    point top = on_circle(upper, 40deg) { mark: none }
+    point bottom = on_circle(lower, 220deg) { mark: none }
+    arc upper_curve(upper, top, upper_joint, true) [letter_ink]
+    arc lower_curve(lower, lower_joint, bottom, false) [letter_ink]
+
+    assert tangent(upper, lower)
+}
+
+fn locus_wordmark() {
+    letter_l l()
+    circle o(0.56) [letter_ink]
+    letter_c c()
+    letter_u u()
+    letter_s s()
+    rel gap_x(l, o, c, u, s)
+    rel align_bottom(l, o, c, u, s)
+
+    assert gap_x(l, o, c, u, s)
+    assert align_bottom(l, o, c, u, s)
+}
+
+// Automatic envelopes supply padding without authored positions or distances.
+rect canvas() [paper]
+locus_mark mark()
+locus_wordmark wordmark()
+rect mark_box() [guide]
+rect wordmark_box() [guide]
+rel center(mark, mark_box)
+rel contain(mark_box, mark)
+rel center(wordmark, wordmark_box)
+rel contain(wordmark_box, wordmark)
+rel row(mark_box, wordmark_box)
+
+group identity(mark, wordmark)
+rel center(identity, canvas)
+rel contain(canvas, mark_box, wordmark_box)
+rel canvas.width == 3 * canvas.height
+
+assert row(mark_box, wordmark_box)
+assert center(identity, canvas)
+assert contain(canvas, mark_box, wordmark_box)
