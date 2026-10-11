@@ -35,6 +35,8 @@ pub(crate) struct CliDiagnostic {
     pub span: Span,
     pub message: String,
     pub notes: Vec<String>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub collision_details: Vec<locus_core::LayoutCollision>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub suggestion: Option<String>,
 }
@@ -325,6 +327,7 @@ pub(crate) fn usage_error(message: &str) -> Execution {
         path: "<arguments>".to_owned(),
         span: Span::default(),
         message: message.to_owned(),
+        collision_details: Vec::new(),
         notes: Vec::new(),
         suggestion: None,
     };
@@ -758,6 +761,7 @@ pub(crate) fn assertion_diagnostics(file: &CheckFileResult) -> Vec<CliDiagnostic
             path: file.path.clone(),
             span: assertion.span,
             message: format!("assertion {} failed", assertion.index + 1),
+            collision_details: Vec::new(),
             notes: assertion
                 .actuals
                 .iter()

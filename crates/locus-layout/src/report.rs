@@ -1,7 +1,7 @@
 //! Residual collisions in core's inspection vocabulary.
 //!
 //! Label pairs are reported once in declaration order, including both spans.
-//! Stroke/margin collisions are singleton `label_collision` diagnostics. This
+//! Stroke/margin collisions retain obstacle ids, causes, and bounds. This
 //! final pass also catches strokes added after a label (for example an arrow
 //! that depends on that label's center). Pinned labels are reported as well.
 //! Each text connector is excluded only from its own label's collision check;
@@ -10,7 +10,7 @@
 use crate::score::{Scorer, boxes_overlap};
 use crate::{LayoutScene, PlacedAnnotation};
 use indexmap::IndexMap;
-use locus_core::{InspectDiagnostic, Tolerance};
+use locus_core::{InspectDiagnostic, LayoutCollision, Tolerance};
 
 /// Appends layout diagnostics to an existing geometry inspection report.
 pub fn extend_inspection(report: &mut locus_core::InspectionReport, layout: &LayoutScene) {
@@ -27,24 +27,30 @@ pub(crate) fn collisions(
     let labels: Vec<_> = annotations.values().filter(|a| a.text.is_some()).collect();
     let mut diagnostics = Vec::new();
     for (index, label) in labels.iter().enumerate() {
-        if scorer.stroke_penalty(label.bounds, Some(&label.id.name))
-            + scorer.margin_penalty(label.bounds)
-            > 0.0
-        {
-            diagnostics.push(diagnostic(&[label]));
+        let details = scorer.collision_details(label.bounds, &label.id.name);
+        if !details.is_empty() {
+            diagnostics.push(diagnostic(&[label], details));
         }
         for other in &labels[index + 1..] {
             if boxes_overlap(label.bounds, other.bounds, tolerance) {
-                diagnostics.push(diagnostic(&[label, other]));
+                diagnostics.push(diagnostic(
+                    &[label, other],
+                    vec![LayoutCollision::LabelOverlap {
+                        labels: [label.id.name.clone(), other.id.name.clone()],
+                        spans: [label.id.span, other.id.span],
+                        bounds: [label.bounds.into(), other.bounds.into()],
+                    }],
+                ));
             }
         }
     }
     diagnostics
 }
 
-fn diagnostic(labels: &[&PlacedAnnotation]) -> InspectDiagnostic {
+fn diagnostic(labels: &[&PlacedAnnotation], details: Vec<LayoutCollision>) -> InspectDiagnostic {
     InspectDiagnostic::LabelCollision {
         labels: labels.iter().map(|a| a.id.name.clone()).collect(),
         spans: labels.iter().map(|a| a.id.span).collect(),
+        details,
     }
 }

@@ -8,7 +8,8 @@
 use crate::boxes::expand;
 use crate::{LayoutOptions, Leader, PlacedAnnotation};
 use locus_core::{
-    Arc, BBox, Circle, Point, PointMark, ResolvedObject, ResolvedScene, Tolerance, Vec2,
+    Arc, BBox, Circle, LayoutCollision, Point, PointMark, ResolvedObject, ResolvedScene, Tolerance,
+    Vec2,
 };
 
 /// Components of a candidate's penalty. Zero means collision-free.
@@ -46,11 +47,27 @@ pub(crate) enum Stroke {
     },
 }
 
+struct Obstacle {
+    id: locus_syntax::Ident,
+    bounds: Option<BBox>,
+    stroke: Stroke,
+}
+
+impl Obstacle {
+    fn new(id: &locus_syntax::Ident, bounds: Option<BBox>, stroke: Stroke) -> Self {
+        Self {
+            id: id.clone(),
+            bounds,
+            stroke,
+        }
+    }
+}
+
 pub(crate) struct Scorer {
-    strokes: Vec<Stroke>,
+    strokes: Vec<Obstacle>,
     // Only connectors carry an owner: attachment to their own text box is
     // intentional, but intersections with every other label must be scored.
-    connectors: Vec<(String, Stroke)>,
+    connectors: Vec<Obstacle>,
     viewport: BBox,
     options: LayoutOptions,
     tolerance: Tolerance,
@@ -59,8 +76,18 @@ pub(crate) struct Scorer {
 impl Scorer {
     pub(crate) fn new(scene: &ResolvedScene, options: LayoutOptions) -> Self {
         let mut strokes = Vec::new();
-        for object in scene.objects.values() {
-            object_strokes(object, &mut strokes);
+        for (id, object) in &scene.objects {
+            let mut paths = Vec::new();
+            object_strokes(object, &mut paths);
+            let bounds = match object {
+                ResolvedObject::Line(_) | ResolvedObject::Ray(_) => None,
+                _ => object.bbox(),
+            };
+            strokes.extend(
+                paths
+                    .into_iter()
+                    .map(|stroke| Obstacle::new(id, bounds, stroke)),
+            );
         }
         Self {
             strokes,
@@ -91,17 +118,46 @@ impl Scorer {
 
     pub(crate) fn stroke_penalty(&self, bounds: BBox, own_label: Option<&str>) -> f64 {
         let padded = expand(bounds, self.options.stroke_width / 2.0);
-        let other_connectors = self
-            .connectors
-            .iter()
-            .filter(|(owner, _)| Some(owner.as_str()) != own_label)
-            .map(|(_, stroke)| stroke);
-        self.strokes
-            .iter()
-            .chain(other_connectors)
-            .filter(|s| stroke_hits(s, padded))
+        self.obstacles(own_label)
+            .filter(|obstacle| stroke_hits(&obstacle.stroke, padded))
             .map(|_| 1.0)
             .sum()
+    }
+
+    fn obstacles<'a>(&'a self, own_label: Option<&'a str>) -> impl Iterator<Item = &'a Obstacle> {
+        self.strokes.iter().chain(
+            self.connectors
+                .iter()
+                .filter(move |obstacle| Some(obstacle.id.name.as_str()) != own_label),
+        )
+    }
+
+    pub(crate) fn collision_details(&self, bounds: BBox, own_label: &str) -> Vec<LayoutCollision> {
+        let padded = expand(bounds, self.options.stroke_width / 2.0);
+        let mut hits = indexmap::IndexMap::new();
+        for obstacle in self.obstacles(Some(own_label)) {
+            if stroke_hits(&obstacle.stroke, padded) {
+                hits.entry(&obstacle.id.name).or_insert_with(|| {
+                    LayoutCollision::StrokeIntersection {
+                        label: own_label.to_owned(),
+                        object: obstacle.id.name.clone(),
+                        span: obstacle.id.span,
+                        label_bounds: bounds.into(),
+                        tested_bounds: padded.into(),
+                        object_bounds: obstacle.bounds.map(Into::into),
+                    }
+                });
+            }
+        }
+        let mut details: Vec<_> = hits.into_values().collect();
+        if self.margin_penalty(bounds) > 0.0 {
+            details.push(LayoutCollision::MarginViolation {
+                label: own_label.to_owned(),
+                label_bounds: bounds.into(),
+                allowed_bounds: self.viewport.into(),
+            });
+        }
+        details
     }
 
     pub(crate) fn margin_penalty(&self, bounds: BBox) -> f64 {
@@ -116,14 +172,17 @@ impl Scorer {
     }
 
     pub(crate) fn add_annotation(&mut self, mark: &PlacedAnnotation) {
-        self.strokes.extend(
-            mark.strokes
-                .iter()
-                .map(|s| linear(s.start, s.end - s.start, 0.0, 1.0)),
-        );
+        self.strokes.extend(mark.strokes.iter().map(|s| {
+            Obstacle::new(
+                &mark.id,
+                Some(mark.bounds),
+                linear(s.start, s.end - s.start, 0.0, 1.0),
+            )
+        }));
         if let Leader::Segment(segment) = mark.leader {
-            self.connectors.push((
-                mark.id.name.clone(),
+            self.connectors.push(Obstacle::new(
+                &mark.id,
+                Some(locus_core::BBox::for_segment(segment)),
                 linear(segment.start, segment.direction(), 0.0, 1.0),
             ));
         }
@@ -131,9 +190,13 @@ impl Scorer {
             from, to, control, ..
         } = mark.leader
         {
-            self.strokes.push(control.map_or_else(
-                || linear(from, to - from, 0.0, 1.0),
-                |control| Stroke::Quadratic { from, control, to },
+            self.strokes.push(Obstacle::new(
+                &mark.id,
+                Some(mark.bounds),
+                control.map_or_else(
+                    || linear(from, to - from, 0.0, 1.0),
+                    |control| Stroke::Quadratic { from, control, to },
+                ),
             ));
         }
     }

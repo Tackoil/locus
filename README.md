@@ -55,6 +55,19 @@ See its README for local installation and server configuration.
 
 ## Focused feedback
 
+Use `locus check figure.locus --layout --strict --json --compact` to include
+annotation placement in validation without exporting an image. `--layout` uses
+the same text measurement and placement as rendering. Layout warnings fail the
+check with `--strict`; without it they remain non-fatal. Ordinary checks continue
+to validate geometry and assertions without measuring text.
+
+Collision diagnostics name the labels and intersecting geometry or annotation,
+include source locations, and distinguish text-box overlap, stroke intersection,
+and margin violation. Their `collision_details` contain bounds in scene units,
+including the stroke-width padding used for intersection tests and the permitted
+viewport for margin checks. Unbounded lines and rays omit `object_bounds`.
+The same details and placement suggestions appear in render diagnostics.
+
 Start with `locus check figure.locus --json --compact`. Compact JSON uses one
 line, summarizes solver rank, remaining DOF and residual, counts assertions,
 and retains every failed assertion's actual values and every diagnostic.

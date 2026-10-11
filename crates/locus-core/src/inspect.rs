@@ -238,6 +238,8 @@ pub enum InspectDiagnostic {
         labels: Vec<String>,
         /// Corresponding source spans.
         spans: Vec<Span>,
+        /// Collision causes and scene-space bounds in deterministic order.
+        details: Vec<LayoutCollision>,
     },
     /// An object's geometry bounds lie outside the resolved geometry viewport bounds.
     OutOfView {
@@ -256,6 +258,46 @@ pub enum InspectDiagnostic {
         second: String,
         /// Point distance in scene units.
         distance: f64,
+    },
+}
+
+/// A residual layout collision, with enough context to revise placement.
+#[derive(Clone, Debug, PartialEq, Serialize)]
+#[serde(tag = "type", rename_all = "snake_case")]
+pub enum LayoutCollision {
+    /// Two text boxes overlap with positive area.
+    LabelOverlap {
+        /// Both label ids in declaration order.
+        labels: [String; 2],
+        /// Corresponding declaration spans.
+        spans: [Span; 2],
+        /// Text bounds corresponding to the diagnostic's label ids.
+        bounds: [GeometryBounds; 2],
+    },
+    /// Text intersects a geometry or annotation stroke.
+    StrokeIntersection {
+        /// Label intersecting the stroke.
+        label: String,
+        /// Declaration owning the intersecting stroke.
+        object: String,
+        /// Stroke owner's source span.
+        span: Span,
+        /// Unpadded text bounds.
+        label_bounds: GeometryBounds,
+        /// Text bounds expanded by half the stroke width for intersection tests.
+        tested_bounds: GeometryBounds,
+        /// Finite bounds of the stroke owner, when bounded.
+        #[serde(skip_serializing_if = "Option::is_none")]
+        object_bounds: Option<GeometryBounds>,
+    },
+    /// Text exceeds the permitted geometry margin.
+    MarginViolation {
+        /// Label exceeding the permitted margin.
+        label: String,
+        /// Text bounds.
+        label_bounds: GeometryBounds,
+        /// Geometry viewport expanded by the permitted margin.
+        allowed_bounds: GeometryBounds,
     },
 }
 
@@ -862,6 +904,7 @@ mod tests {
         let diagnostic = InspectDiagnostic::LabelCollision {
             labels: vec!["a".to_owned(), "b".to_owned()],
             spans: vec![Span::default(), Span::default()],
+            details: Vec::new(),
         };
         let json = serde_json::to_string(&diagnostic).expect("serialize diagnostic");
         assert!(json.contains("label_collision"));

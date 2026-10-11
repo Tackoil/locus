@@ -1,6 +1,7 @@
 //! Thin command orchestration over `locus-syntax` and `locus-core`.
 #![allow(missing_docs, reason = "command report plumbing is crate-internal")]
 
+mod layout;
 mod render;
 
 use std::fs::{self, OpenOptions};
@@ -21,7 +22,7 @@ use crate::output::{
     ObjectAnchorReport, ObjectDofReport, ObjectReport, PointReport, RelationReport, ResolvedValue,
     Severity, SolveReport, SourceDocument,
 };
-use crate::{Command, InspectArgs, Style};
+use crate::{CheckArgs, Command, InspectArgs, Style};
 
 pub(crate) fn execute(command: Command) -> Execution {
     match command {
@@ -30,7 +31,7 @@ pub(crate) fn execute(command: Command) -> Execution {
             execute_mutation(command)
         }
         command @ (Command::Describe(_) | Command::Inspect(_)) => execute_analysis(command),
-        Command::Check(args) => check(&args.files, args.strict),
+        Command::Check(args) => check(&args),
         Command::Fmt(args) => fmt(&args.file),
         Command::Render(args) => render::execute(&args),
     }
@@ -240,6 +241,7 @@ fn inspection_query_failure(loaded: &LoadedScene, message: String) -> Execution 
             path: path_string(&loaded.path),
             span: Span::default(),
             message,
+            collision_details: Vec::new(),
             notes: Vec::new(),
             suggestion: None,
         }],
@@ -248,25 +250,25 @@ fn inspection_query_failure(loaded: &LoadedScene, message: String) -> Execution 
     )
 }
 
-fn check(paths: &[PathBuf], strict: bool) -> Execution {
+fn check(args: &CheckArgs) -> Execution {
     let mut files = Vec::new();
     let mut sources = Vec::new();
     let mut exit = Exit::Success;
-    for path in paths {
-        let checked = load_checked(path, strict);
+    for path in &args.files {
+        let checked = load_checked(path, args);
         exit = dominant_exit(exit, checked.exit);
         files.push(checked.file);
         sources.extend(checked.sources);
     }
-    check_result(files, sources, strict, exit)
+    check_result(files, sources, args.strict, exit)
 }
 
-fn load_checked(path: &Path, strict: bool) -> CheckedOutcome {
+fn load_checked(path: &Path, args: &CheckArgs) -> CheckedOutcome {
     let loaded = match load_scene("check", path) {
         Ok(loaded) => loaded,
         Err(execution) => return failed_check(path, *execution),
     };
-    let file = match check_file(&loaded, strict) {
+    let file = match check_file(&loaded, args) {
         Ok(file) => file,
         Err(execution) => return failed_check(path, *execution),
     };
@@ -282,12 +284,17 @@ fn load_checked(path: &Path, strict: bool) -> CheckedOutcome {
     }
 }
 
-fn check_file(loaded: &LoadedScene, strict: bool) -> Result<CheckFileResult, Box<Execution>> {
-    let inspection = inspect_scene_with_options(&loaded.scene, false, false);
+fn check_file(loaded: &LoadedScene, args: &CheckArgs) -> Result<CheckFileResult, Box<Execution>> {
+    let mut inspection = inspect_scene_with_options(&loaded.scene, false, false);
+    if args.layout {
+        let placed = layout::place(loaded, args.tex_engine)
+            .map_err(|error| Box::new(layout::failure("check", loaded, &error)))?;
+        locus_layout::report::extend_inspection(&mut inspection, &placed);
+    }
     let diagnostics = inspection_diagnostics(&loaded.path, &inspection.diagnostics);
     let assertions = evaluate_assertions(&loaded.file, resolved_scene(&loaded.scene))
         .map_err(|error| Box::new(eval_failure("check", &loaded.as_file(), error)))?;
-    let passed = assertions.passed && (!strict || diagnostics.is_empty());
+    let passed = assertions.passed && (!args.strict || diagnostics.is_empty());
     Ok(CheckFileResult {
         path: path_string(&loaded.path),
         passed,
@@ -547,6 +554,7 @@ fn eval_failure(command: &'static str, loaded: &LoadedFile, error: EvalError) ->
         span: error.span,
         message: error.message,
         notes,
+        collision_details: Vec::new(),
         suggestion: None,
     };
     failure(
@@ -570,6 +578,7 @@ fn dependency_failure(
         path: path_string(&loaded.path),
         span,
         message,
+        collision_details: Vec::new(),
         notes: Vec::new(),
         suggestion: None,
     };
@@ -598,6 +607,7 @@ fn edit_usage_failure(command: &'static str, loaded: &LoadedFile, message: &str)
         path: path_string(&loaded.path),
         span: Span::empty(1, 1, 0),
         message: message.to_owned(),
+        collision_details: Vec::new(),
         notes: Vec::new(),
         suggestion: Some(
             "pass exactly one --def expression/constructor or one --set key=value pair".to_owned(),
@@ -613,6 +623,7 @@ fn io_failure(command: &'static str, path: &Path, error: &io::Error) -> Executio
         path: path_string(path),
         span: Span::empty(1, 1, 0),
         message: error.to_string(),
+        collision_details: Vec::new(),
         notes: Vec::new(),
         suggestion: None,
     };
@@ -649,6 +660,7 @@ fn syntax_diagnostic(path: &str, diagnostic: Diagnostic) -> CliDiagnostic {
         path: path.to_owned(),
         span: diagnostic.span,
         message: diagnostic.message,
+        collision_details: Vec::new(),
         notes: diagnostic.notes,
         suggestion: diagnostic.suggestion,
     }
@@ -1073,8 +1085,9 @@ fn inspect_diagnostic(path: &Path, diagnostic: &InspectDiagnostic) -> CliDiagnos
         path: path_string(path),
         span,
         message,
-        notes: Vec::new(),
-        suggestion: None,
+        collision_details: layout::details(diagnostic),
+        notes: layout::notes(diagnostic),
+        suggestion: layout::suggestion(diagnostic),
     }
 }
 
@@ -1095,10 +1108,10 @@ fn inspect_diagnostic_parts(diagnostic: &InspectDiagnostic) -> (&'static str, Sp
             *span,
             format!("`{id}` moved {actual:.6} from its hint (threshold {threshold:.6})"),
         ),
-        InspectDiagnostic::LabelCollision { labels, spans } => (
+        InspectDiagnostic::LabelCollision { labels, spans, .. } => (
             "label_collision",
             spans.first().copied().unwrap_or_default(),
-            format!("labels collide: {}", labels.join(", ")),
+            layout::message(diagnostic, labels),
         ),
         InspectDiagnostic::OutOfView { id, span, .. } => (
             "out_of_view",

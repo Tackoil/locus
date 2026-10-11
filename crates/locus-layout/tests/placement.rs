@@ -61,6 +61,19 @@ fn manually_supplied_unsafe_arrow_bends_fail_layout() {
     }
 }
 
+fn collision_labels(output: &LayoutScene) -> Vec<(Vec<String>, Vec<Span>)> {
+    output
+        .diagnostics
+        .iter()
+        .map(|diagnostic| match diagnostic {
+            InspectDiagnostic::LabelCollision { labels, spans, .. } => {
+                (labels.clone(), spans.clone())
+            }
+            _ => unreachable!("expected label collision"),
+        })
+        .collect()
+}
+
 fn triangle() -> ResolvedScene {
     resolved(
         "locus 0 beta 5\npoint A = point()\npoint B = offset(A, 6, 0)\npoint C = offset(A, 0, 6)\nsegment AB = seg(A, B)\nsegment BC = seg(B, C)\nsegment CA = seg(C, A)\nlabel a = label(A, \"A\")\nlabel b = label(B, \"B\")\nlabel c = label(C, \"C\")\n",
@@ -165,14 +178,14 @@ fn unavoidable_crowding_reports_both_labels_and_source_spans() {
         Point::new(0.0, 0.0)
     );
     assert_eq!(
-        output.diagnostics,
-        vec![InspectDiagnostic::LabelCollision {
-            labels: vec!["first".into(), "second".into()],
-            spans: vec![
+        collision_labels(&output),
+        vec![(
+            vec!["first".into(), "second".into()],
+            vec![
                 output.annotations["first"].id.span,
-                output.annotations["second"].id.span
-            ],
-        }]
+                output.annotations["second"].id.span,
+            ]
+        )]
     );
     assert_eq!(output, placed(&scene));
 }
@@ -492,12 +505,13 @@ fn pinned_connector_collisions_are_reported_in_any_placement_or_declaration_orde
                 };
                 let output = layout(&scene, &measured(&scene), options).expect("layout");
                 assert_eq!(
-                    output.diagnostics,
-                    vec![InspectDiagnostic::LabelCollision {
-                        labels: vec!["b".into()],
-                        spans: vec![output.annotations["b"].id.span],
-                    }]
+                    collision_labels(&output),
+                    vec![(vec!["b".into()], vec![output.annotations["b"].id.span])]
                 );
+                assert!(matches!(&output.diagnostics[0],
+                    InspectDiagnostic::LabelCollision { details, .. }
+                    if matches!(details.as_slice(), [locus_core::LayoutCollision::StrokeIntersection { object, .. }] if object == connector_id)
+                ));
                 assert_eq!(
                     output,
                     layout(&scene, &measured(&scene), options).expect("repeat")
@@ -574,15 +588,13 @@ fn nearly_straight_arrows_report_crossings_and_leave_nearby_boxes_clear() {
                 )
                 .expect("layout");
                 let expected = if offset == 0.0 {
-                    vec![InspectDiagnostic::LabelCollision {
-                        labels: vec!["b".into()],
-                        spans: vec![output.annotations["b"].id.span],
-                    }]
+                    vec![(vec!["b".into()], vec![output.annotations["b"].id.span])]
                 } else {
                     Vec::new()
                 };
                 assert_eq!(
-                    output.diagnostics, expected,
+                    collision_labels(&output),
+                    expected,
                     "bend={bend}, position={position}, offset={offset}"
                 );
             }

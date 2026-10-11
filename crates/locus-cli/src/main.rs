@@ -133,9 +133,15 @@ struct CheckArgs {
     /// One or more Locus source files.
     #[arg(required = true)]
     files: Vec<PathBuf>,
-    /// Treat inspection warnings as failures.
+    /// Treat inspection warnings as failures, including layout warnings with --layout.
     #[arg(long)]
     strict: bool,
+    /// Measure and place annotations, reporting text overlaps, stroke hits, and margin violations.
+    #[arg(long)]
+    layout: bool,
+    /// Select the TeX engine; mock is reserved for deterministic tests.
+    #[arg(long, value_enum, default_value_t, hide = true, requires = "layout")]
+    tex_engine: TextEngine,
 }
 
 #[derive(Debug, Args)]

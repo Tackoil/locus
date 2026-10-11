@@ -26,7 +26,7 @@ pub use eval::{
 pub use geom::{Arc, BBox, Circle, ConstructError, Line, Point, Polygon, Ray, Segment, Vec2};
 pub use inspect::{
     DistanceMeasurement, GeometryBounds, Incidence, InspectDiagnostic, InspectionReport,
-    IntegerRatio, LineRatioMeasurement, MeasurementQuery, MeasurementTables,
+    IntegerRatio, LayoutCollision, LineRatioMeasurement, MeasurementQuery, MeasurementTables,
     TriangleAngleMeasurement, inspect, inspect_scene, inspect_scene_with_options,
     query_measurements,
 };

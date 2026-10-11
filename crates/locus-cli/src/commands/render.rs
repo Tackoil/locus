@@ -1,16 +1,15 @@
 //! Parse and solve once, then measure, place, render, and deliver the result.
 
-use locus_layout::{LayoutError, LayoutOptions, LayoutScene, boxes::measure_scene, layout};
+use locus_layout::LayoutScene;
 use locus_render::{RenderError, RenderOptions, render_svg, render_tikz, style::StyleSheet};
 use locus_syntax::Span;
-use locus_tex::{FontSize, MockEngine, PlaintextEngine, RexEngine, TexEngine};
 
 use super::{
     LoadedScene, dependency_failure, inspection_diagnostics, io_failure, load_scene, path_string,
     resolved_scene, success,
 };
 use crate::output::{CommandOutput, Execution, RenderResult};
-use crate::{Background, RenderArgs, TextEngine};
+use crate::{Background, RenderArgs};
 
 pub(super) fn execute(args: &RenderArgs) -> Execution {
     match run(args) {
@@ -21,8 +20,8 @@ pub(super) fn execute(args: &RenderArgs) -> Execution {
 
 fn run(args: &RenderArgs) -> Result<Execution, Box<Execution>> {
     let loaded = load_scene("render", &args.file)?;
-    let placed = place(&loaded, args.tex_engine)
-        .map_err(|error| Box::new(layout_failure(&loaded, &error)))?;
+    let placed = super::layout::place(&loaded, args.tex_engine)
+        .map_err(|error| Box::new(super::layout::failure("render", &loaded, &error)))?;
     let bytes = render(&loaded, &placed, args)
         .map_err(|error| Box::new(render_failure(&loaded, &error)))?;
     if let Some(path) = &args.output {
@@ -38,23 +37,6 @@ fn run(args: &RenderArgs) -> Result<Execution, Box<Execution>> {
         stdout: args.stdout.then_some(bytes),
     };
     Ok(success(CommandOutput::Render(result), loaded.document()))
-}
-
-fn place(loaded: &LoadedScene, engine: TextEngine) -> Result<LayoutScene, LayoutError> {
-    let tex: &dyn TexEngine = match engine {
-        TextEngine::Rex => &RexEngine,
-        TextEngine::Mock => &MockEngine,
-    };
-    let scene = resolved_scene(&loaded.scene);
-    let measured = measure_scene(scene, &PlaintextEngine::new(), tex, FontSize::DEFAULT)?;
-    layout(
-        scene,
-        &measured,
-        LayoutOptions {
-            em_size: 0.28,
-            ..LayoutOptions::default()
-        },
-    )
 }
 
 fn render(
@@ -95,23 +77,6 @@ fn format_name(args: &RenderArgs) -> &'static str {
         return "png";
     }
     if args.tikz { "tikz" } else { "svg" }
-}
-
-fn layout_failure(loaded: &LoadedScene, error: &LayoutError) -> Execution {
-    let span = match error {
-        LayoutError::MissingMeasurement { span, .. }
-        | LayoutError::Anchor { span, .. }
-        | LayoutError::Invalid { span, .. }
-        | LayoutError::Measurement { span, .. } => *span,
-        LayoutError::Options => Span::empty(1, 1, 0),
-    };
-    dependency_failure(
-        "render",
-        &loaded.as_file(),
-        error.code(),
-        span,
-        error.to_string(),
-    )
 }
 
 fn render_failure(loaded: &LoadedScene, error: &RenderError) -> Execution {
