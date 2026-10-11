@@ -165,7 +165,7 @@ fn eligible(
         }
         let size = dimensions(item.id, measured, options.em_size)?;
         (
-            generate(scene, anchor, size, direction, gap),
+            text_candidates(item.spec, scene, anchor, size, direction, gap),
             direction == LabelDirection::Auto,
         )
     } else {
@@ -182,6 +182,24 @@ fn eligible(
         free: 0,
         automatic,
     }))
+}
+
+fn text_candidates(
+    spec: &AnnotationSpec,
+    scene: &ResolvedScene,
+    anchor: Point,
+    size: locus_core::Vec2,
+    direction: LabelDirection,
+    gap: f64,
+) -> Vec<crate::candidates::Candidate> {
+    if let AnnotationSpec::Label {
+        bounds: Some(bounds),
+        ..
+    } = spec
+    {
+        return vec![crate::candidates::Candidate { bounds: *bounds }];
+    }
+    generate(scene, anchor, size, direction, gap)
 }
 
 fn text_request(
@@ -304,6 +322,7 @@ fn finish(
         locus_core::Tolerance::from_bbox(&scene.bbox),
     );
     Ok(LayoutScene {
+        visible_paths: std::collections::BTreeMap::default(),
         annotations,
         geometry_bbox: scene.bbox,
         bbox,

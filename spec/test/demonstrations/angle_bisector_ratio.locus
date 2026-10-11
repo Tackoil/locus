@@ -1,4 +1,4 @@
-locus 0 beta 5
+locus 0 beta 6
 
 meta title = "Angle bisector theorem: BD/DC = AB/AC"
 
@@ -6,34 +6,34 @@ style textbook
 
 // ---- objects ----------------------------------------------
 // A scalene triangle inscribed in a circle; Locus owns the circle's placement.
-circle circum = circle(3.5)   [construction]
+circle circum(3.5)   [construction]
 point A = circum.at(80deg)
 point B = circum.at(210deg)
 point C = circum.at(330deg)
 
-polygon tri = polygon(A, B, C)
+polygon tri(A, B, C)
 
 line bis = angle_bisector(B, A, C)   [construction]
 
 // The bisector meets the opposite side at a unique derived point.
 point D = intersect(bis, seg(B, C))
 
-segment ad = seg(A, D)               [auxiliary]
+segment ad(A, D)               [auxiliary]
 
 // equal-angle marks at vertex A (n: multiplicity — finding F2 resolved)
 arc m1 = angle_arc(B, A, D, 0.5)  { n: 1 }
 arc m2 = angle_arc(D, A, C, 0.5)  { n: 1 }
 
 // ---- annotation ------------------------------------------
-label lA = label(A, $A$)
-label lB = label(B, $B$)
-label lC = label(C, $C$)
-label lD = label(D, $D$)  { dir: S }
+label lA(A, $A$)
+label lB(B, $B$)
+label lC(C, $C$)
+label lD(D, $D$)  { dir: S }
 
-label lbd = label(seg(B, D).midpoint, $m$)  { dir: S, gap: 0.35 }
-label ldc = label(seg(D, C).midpoint, $n$)  { dir: S, gap: 0.35 }
+label lbd(seg(B, D).midpoint, $m$)  { dir: S, gap: 0.35 }
+label ldc(seg(D, C).midpoint, $n$)  { dir: S, gap: 0.35 }
 
-text_block eq = text_block($\dfrac{m}{n} = \dfrac{AB}{AC}$)  { place: below }
+text_block eq($\dfrac{m}{n} = \dfrac{AB}{AC}$)  { place: below }
 
 // ---- intent ----------------------------------------------
 assert on(D, bis) and on(D, seg(B, C))

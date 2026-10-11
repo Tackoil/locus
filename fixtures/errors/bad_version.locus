@@ -1,2 +1,2 @@
 locus 3
-point A = point()
+point A()

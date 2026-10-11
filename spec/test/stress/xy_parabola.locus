@@ -1,4 +1,4 @@
-locus 0 beta 5
+locus 0 beta 6
 
 meta title = "X-Y stress plot: parabola, linear intersections, and composite area"
 meta note = "129 samples and 32 integration cells. Intersections solve the analytic equations; segments approximate the curve. One scene unit represents one axis unit."
@@ -6,13 +6,13 @@ meta note = "129 samples and 32 integration cells. Intersections solve the analy
 style textbook
 class curve { accent: blue, weight: 2, cap: round, join: round }
 
-point O = point() { mark: none }
+point O() { mark: none }
 num unit = 1
-arrow x_axis = arrow(offset(O, -3.5 * unit, 0), offset(O, 3.5 * unit, 0))
-arrow y_axis = arrow(offset(O, 0, -0.5 * unit), offset(O, 0, 5 * unit))
-label lx = label(offset(O, 3.5 * unit, 0), "x") { dir: E }
-label ly = label(offset(O, 0, 5 * unit), "y") { dir: N }
-label zero = label(O, "0") { dir: SW }
+arrow x_axis(offset(O, -3.5 * unit, 0), offset(O, 3.5 * unit, 0))
+arrow y_axis(offset(O, 0, -0.5 * unit), offset(O, 0, 5 * unit))
+label lx(offset(O, 3.5 * unit, 0), "x") { dir: E }
+label ly(offset(O, 0, 5 * unit), "y") { dir: N }
+label zero(O, "0") { dir: SW }
 
 // Normalize coordinates before squaring: a plotted y coordinate is a length, not an area.
 num x3 = 3
@@ -23,14 +23,14 @@ point P3 = offset(O, x3 * unit, x3 * x3 * unit / 2) { mark: none }
 point P2 = offset(O, x2 * unit, x2 * x2 * unit / 2) { mark: none }
 point P1 = offset(O, x1 * unit, x1 * x1 * unit / 2) { mark: none }
 point Phalf = offset(O, xhalf * unit, xhalf * xhalf * unit / 2) { mark: none }
-line symmetry = line(O, offset(O, 0, unit)) [construction]
+line symmetry(O, offset(O, 0, unit)) [construction]
 point N3 = reflect(P3, symmetry) { mark: none }
 point N2 = reflect(P2, symmetry) { mark: none }
 point N1 = reflect(P1, symmetry) { mark: none }
 point Nhalf = reflect(Phalf, symmetry) { mark: none }
-segment guide = seg(P2, offset(O, 2 * unit, 0)) [auxiliary]
-label sample = label(P2, "(2, 2)") { dir: E }
-text_block caption = text_block("y = x^2 / 2 (sampled); domain: -3 to 3") { place: below }
+segment guide(P2, offset(O, 2 * unit, 0)) [auxiliary]
+label sample(P2, "(2, 2)") { dir: E }
+text_block caption("y = x^2 / 2 (sampled); domain: -3 to 3") { place: below }
 
 assert perpendicular(seg(O, offset(O, unit, 0)), symmetry)
 assert vdist(O, P3) / unit == 4.5
@@ -38,7 +38,7 @@ assert vdist(O, P2) / unit == 2
 assert vdist(O, P1) / unit == 0.5
 assert vdist(O, Phalf) / unit == 0.125
 assert hdist(N3, O) == hdist(O, P3)
-assert horizontal(N2, P2) and horizontal(N1, P1)
+assert align_center_y(N2, P2) and align_center_y(N1, P1)
 assert vdist(O, N3) / unit == (hdist(O, N3) / unit) * (hdist(O, N3) / unit) / 2
 assert vdist(O, Phalf) < vdist(O, P1) and vdist(O, P1) < vdist(O, P2)
 
@@ -47,390 +47,390 @@ assert vdist(O, Phalf) < vdist(O, P1) and vdist(O, P1) < vdist(O, P2)
 point dense0 = offset(O, -3.00000000 * unit, (-3.00000000) * (-3.00000000) * unit / 2) { mark: none }
 assert vdist(O, dense0) / unit == 4.500000000000
 point dense1 = offset(O, -2.95312500 * unit, (-2.95312500) * (-2.95312500) * unit / 2) { mark: none }
-segment dense_seg1 = seg(dense0, dense1) [curve]
+segment dense_seg1(dense0, dense1) [curve]
 assert vdist(O, dense1) / unit == 4.360473632812
 point dense2 = offset(O, -2.90625000 * unit, (-2.90625000) * (-2.90625000) * unit / 2) { mark: none }
-segment dense_seg2 = seg(dense1, dense2) [curve]
+segment dense_seg2(dense1, dense2) [curve]
 assert vdist(O, dense2) / unit == 4.223144531250
 point dense3 = offset(O, -2.85937500 * unit, (-2.85937500) * (-2.85937500) * unit / 2) { mark: none }
-segment dense_seg3 = seg(dense2, dense3) [curve]
+segment dense_seg3(dense2, dense3) [curve]
 assert vdist(O, dense3) / unit == 4.088012695312
 point dense4 = offset(O, -2.81250000 * unit, (-2.81250000) * (-2.81250000) * unit / 2) { mark: none }
-segment dense_seg4 = seg(dense3, dense4) [curve]
+segment dense_seg4(dense3, dense4) [curve]
 assert vdist(O, dense4) / unit == 3.955078125000
 point dense5 = offset(O, -2.76562500 * unit, (-2.76562500) * (-2.76562500) * unit / 2) { mark: none }
-segment dense_seg5 = seg(dense4, dense5) [curve]
+segment dense_seg5(dense4, dense5) [curve]
 assert vdist(O, dense5) / unit == 3.824340820312
 point dense6 = offset(O, -2.71875000 * unit, (-2.71875000) * (-2.71875000) * unit / 2) { mark: none }
-segment dense_seg6 = seg(dense5, dense6) [curve]
+segment dense_seg6(dense5, dense6) [curve]
 assert vdist(O, dense6) / unit == 3.695800781250
 point dense7 = offset(O, -2.67187500 * unit, (-2.67187500) * (-2.67187500) * unit / 2) { mark: none }
-segment dense_seg7 = seg(dense6, dense7) [curve]
+segment dense_seg7(dense6, dense7) [curve]
 assert vdist(O, dense7) / unit == 3.569458007812
 point dense8 = offset(O, -2.62500000 * unit, (-2.62500000) * (-2.62500000) * unit / 2) { mark: none }
-segment dense_seg8 = seg(dense7, dense8) [curve]
+segment dense_seg8(dense7, dense8) [curve]
 assert vdist(O, dense8) / unit == 3.445312500000
 point dense9 = offset(O, -2.57812500 * unit, (-2.57812500) * (-2.57812500) * unit / 2) { mark: none }
-segment dense_seg9 = seg(dense8, dense9) [curve]
+segment dense_seg9(dense8, dense9) [curve]
 assert vdist(O, dense9) / unit == 3.323364257812
 point dense10 = offset(O, -2.53125000 * unit, (-2.53125000) * (-2.53125000) * unit / 2) { mark: none }
-segment dense_seg10 = seg(dense9, dense10) [curve]
+segment dense_seg10(dense9, dense10) [curve]
 assert vdist(O, dense10) / unit == 3.203613281250
 point dense11 = offset(O, -2.48437500 * unit, (-2.48437500) * (-2.48437500) * unit / 2) { mark: none }
-segment dense_seg11 = seg(dense10, dense11) [curve]
+segment dense_seg11(dense10, dense11) [curve]
 assert vdist(O, dense11) / unit == 3.086059570312
 point dense12 = offset(O, -2.43750000 * unit, (-2.43750000) * (-2.43750000) * unit / 2) { mark: none }
-segment dense_seg12 = seg(dense11, dense12) [curve]
+segment dense_seg12(dense11, dense12) [curve]
 assert vdist(O, dense12) / unit == 2.970703125000
 point dense13 = offset(O, -2.39062500 * unit, (-2.39062500) * (-2.39062500) * unit / 2) { mark: none }
-segment dense_seg13 = seg(dense12, dense13) [curve]
+segment dense_seg13(dense12, dense13) [curve]
 assert vdist(O, dense13) / unit == 2.857543945312
 point dense14 = offset(O, -2.34375000 * unit, (-2.34375000) * (-2.34375000) * unit / 2) { mark: none }
-segment dense_seg14 = seg(dense13, dense14) [curve]
+segment dense_seg14(dense13, dense14) [curve]
 assert vdist(O, dense14) / unit == 2.746582031250
 point dense15 = offset(O, -2.29687500 * unit, (-2.29687500) * (-2.29687500) * unit / 2) { mark: none }
-segment dense_seg15 = seg(dense14, dense15) [curve]
+segment dense_seg15(dense14, dense15) [curve]
 assert vdist(O, dense15) / unit == 2.637817382812
 point dense16 = offset(O, -2.25000000 * unit, (-2.25000000) * (-2.25000000) * unit / 2) { mark: none }
-segment dense_seg16 = seg(dense15, dense16) [curve]
+segment dense_seg16(dense15, dense16) [curve]
 assert vdist(O, dense16) / unit == 2.531250000000
 point dense17 = offset(O, -2.20312500 * unit, (-2.20312500) * (-2.20312500) * unit / 2) { mark: none }
-segment dense_seg17 = seg(dense16, dense17) [curve]
+segment dense_seg17(dense16, dense17) [curve]
 assert vdist(O, dense17) / unit == 2.426879882812
 point dense18 = offset(O, -2.15625000 * unit, (-2.15625000) * (-2.15625000) * unit / 2) { mark: none }
-segment dense_seg18 = seg(dense17, dense18) [curve]
+segment dense_seg18(dense17, dense18) [curve]
 assert vdist(O, dense18) / unit == 2.324707031250
 point dense19 = offset(O, -2.10937500 * unit, (-2.10937500) * (-2.10937500) * unit / 2) { mark: none }
-segment dense_seg19 = seg(dense18, dense19) [curve]
+segment dense_seg19(dense18, dense19) [curve]
 assert vdist(O, dense19) / unit == 2.224731445312
 point dense20 = offset(O, -2.06250000 * unit, (-2.06250000) * (-2.06250000) * unit / 2) { mark: none }
-segment dense_seg20 = seg(dense19, dense20) [curve]
+segment dense_seg20(dense19, dense20) [curve]
 assert vdist(O, dense20) / unit == 2.126953125000
 point dense21 = offset(O, -2.01562500 * unit, (-2.01562500) * (-2.01562500) * unit / 2) { mark: none }
-segment dense_seg21 = seg(dense20, dense21) [curve]
+segment dense_seg21(dense20, dense21) [curve]
 assert vdist(O, dense21) / unit == 2.031372070312
 point dense22 = offset(O, -1.96875000 * unit, (-1.96875000) * (-1.96875000) * unit / 2) { mark: none }
-segment dense_seg22 = seg(dense21, dense22) [curve]
+segment dense_seg22(dense21, dense22) [curve]
 assert vdist(O, dense22) / unit == 1.937988281250
 point dense23 = offset(O, -1.92187500 * unit, (-1.92187500) * (-1.92187500) * unit / 2) { mark: none }
-segment dense_seg23 = seg(dense22, dense23) [curve]
+segment dense_seg23(dense22, dense23) [curve]
 assert vdist(O, dense23) / unit == 1.846801757812
 point dense24 = offset(O, -1.87500000 * unit, (-1.87500000) * (-1.87500000) * unit / 2) { mark: none }
-segment dense_seg24 = seg(dense23, dense24) [curve]
+segment dense_seg24(dense23, dense24) [curve]
 assert vdist(O, dense24) / unit == 1.757812500000
 point dense25 = offset(O, -1.82812500 * unit, (-1.82812500) * (-1.82812500) * unit / 2) { mark: none }
-segment dense_seg25 = seg(dense24, dense25) [curve]
+segment dense_seg25(dense24, dense25) [curve]
 assert vdist(O, dense25) / unit == 1.671020507812
 point dense26 = offset(O, -1.78125000 * unit, (-1.78125000) * (-1.78125000) * unit / 2) { mark: none }
-segment dense_seg26 = seg(dense25, dense26) [curve]
+segment dense_seg26(dense25, dense26) [curve]
 assert vdist(O, dense26) / unit == 1.586425781250
 point dense27 = offset(O, -1.73437500 * unit, (-1.73437500) * (-1.73437500) * unit / 2) { mark: none }
-segment dense_seg27 = seg(dense26, dense27) [curve]
+segment dense_seg27(dense26, dense27) [curve]
 assert vdist(O, dense27) / unit == 1.504028320312
 point dense28 = offset(O, -1.68750000 * unit, (-1.68750000) * (-1.68750000) * unit / 2) { mark: none }
-segment dense_seg28 = seg(dense27, dense28) [curve]
+segment dense_seg28(dense27, dense28) [curve]
 assert vdist(O, dense28) / unit == 1.423828125000
 point dense29 = offset(O, -1.64062500 * unit, (-1.64062500) * (-1.64062500) * unit / 2) { mark: none }
-segment dense_seg29 = seg(dense28, dense29) [curve]
+segment dense_seg29(dense28, dense29) [curve]
 assert vdist(O, dense29) / unit == 1.345825195312
 point dense30 = offset(O, -1.59375000 * unit, (-1.59375000) * (-1.59375000) * unit / 2) { mark: none }
-segment dense_seg30 = seg(dense29, dense30) [curve]
+segment dense_seg30(dense29, dense30) [curve]
 assert vdist(O, dense30) / unit == 1.270019531250
 point dense31 = offset(O, -1.54687500 * unit, (-1.54687500) * (-1.54687500) * unit / 2) { mark: none }
-segment dense_seg31 = seg(dense30, dense31) [curve]
+segment dense_seg31(dense30, dense31) [curve]
 assert vdist(O, dense31) / unit == 1.196411132812
 point dense32 = offset(O, -1.50000000 * unit, (-1.50000000) * (-1.50000000) * unit / 2) { mark: none }
-segment dense_seg32 = seg(dense31, dense32) [curve]
+segment dense_seg32(dense31, dense32) [curve]
 assert vdist(O, dense32) / unit == 1.125000000000
 point dense33 = offset(O, -1.45312500 * unit, (-1.45312500) * (-1.45312500) * unit / 2) { mark: none }
-segment dense_seg33 = seg(dense32, dense33) [curve]
+segment dense_seg33(dense32, dense33) [curve]
 assert vdist(O, dense33) / unit == 1.055786132812
 point dense34 = offset(O, -1.40625000 * unit, (-1.40625000) * (-1.40625000) * unit / 2) { mark: none }
-segment dense_seg34 = seg(dense33, dense34) [curve]
+segment dense_seg34(dense33, dense34) [curve]
 assert vdist(O, dense34) / unit == 0.988769531250
 point dense35 = offset(O, -1.35937500 * unit, (-1.35937500) * (-1.35937500) * unit / 2) { mark: none }
-segment dense_seg35 = seg(dense34, dense35) [curve]
+segment dense_seg35(dense34, dense35) [curve]
 assert vdist(O, dense35) / unit == 0.923950195312
 point dense36 = offset(O, -1.31250000 * unit, (-1.31250000) * (-1.31250000) * unit / 2) { mark: none }
-segment dense_seg36 = seg(dense35, dense36) [curve]
+segment dense_seg36(dense35, dense36) [curve]
 assert vdist(O, dense36) / unit == 0.861328125000
 point dense37 = offset(O, -1.26562500 * unit, (-1.26562500) * (-1.26562500) * unit / 2) { mark: none }
-segment dense_seg37 = seg(dense36, dense37) [curve]
+segment dense_seg37(dense36, dense37) [curve]
 assert vdist(O, dense37) / unit == 0.800903320312
 point dense38 = offset(O, -1.21875000 * unit, (-1.21875000) * (-1.21875000) * unit / 2) { mark: none }
-segment dense_seg38 = seg(dense37, dense38) [curve]
+segment dense_seg38(dense37, dense38) [curve]
 assert vdist(O, dense38) / unit == 0.742675781250
 point dense39 = offset(O, -1.17187500 * unit, (-1.17187500) * (-1.17187500) * unit / 2) { mark: none }
-segment dense_seg39 = seg(dense38, dense39) [curve]
+segment dense_seg39(dense38, dense39) [curve]
 assert vdist(O, dense39) / unit == 0.686645507812
 point dense40 = offset(O, -1.12500000 * unit, (-1.12500000) * (-1.12500000) * unit / 2) { mark: none }
-segment dense_seg40 = seg(dense39, dense40) [curve]
+segment dense_seg40(dense39, dense40) [curve]
 assert vdist(O, dense40) / unit == 0.632812500000
 point dense41 = offset(O, -1.07812500 * unit, (-1.07812500) * (-1.07812500) * unit / 2) { mark: none }
-segment dense_seg41 = seg(dense40, dense41) [curve]
+segment dense_seg41(dense40, dense41) [curve]
 assert vdist(O, dense41) / unit == 0.581176757812
 point dense42 = offset(O, -1.03125000 * unit, (-1.03125000) * (-1.03125000) * unit / 2) { mark: none }
-segment dense_seg42 = seg(dense41, dense42) [curve]
+segment dense_seg42(dense41, dense42) [curve]
 assert vdist(O, dense42) / unit == 0.531738281250
 point dense43 = offset(O, -0.98437500 * unit, (-0.98437500) * (-0.98437500) * unit / 2) { mark: none }
-segment dense_seg43 = seg(dense42, dense43) [curve]
+segment dense_seg43(dense42, dense43) [curve]
 assert vdist(O, dense43) / unit == 0.484497070312
 point dense44 = offset(O, -0.93750000 * unit, (-0.93750000) * (-0.93750000) * unit / 2) { mark: none }
-segment dense_seg44 = seg(dense43, dense44) [curve]
+segment dense_seg44(dense43, dense44) [curve]
 assert vdist(O, dense44) / unit == 0.439453125000
 point dense45 = offset(O, -0.89062500 * unit, (-0.89062500) * (-0.89062500) * unit / 2) { mark: none }
-segment dense_seg45 = seg(dense44, dense45) [curve]
+segment dense_seg45(dense44, dense45) [curve]
 assert vdist(O, dense45) / unit == 0.396606445312
 point dense46 = offset(O, -0.84375000 * unit, (-0.84375000) * (-0.84375000) * unit / 2) { mark: none }
-segment dense_seg46 = seg(dense45, dense46) [curve]
+segment dense_seg46(dense45, dense46) [curve]
 assert vdist(O, dense46) / unit == 0.355957031250
 point dense47 = offset(O, -0.79687500 * unit, (-0.79687500) * (-0.79687500) * unit / 2) { mark: none }
-segment dense_seg47 = seg(dense46, dense47) [curve]
+segment dense_seg47(dense46, dense47) [curve]
 assert vdist(O, dense47) / unit == 0.317504882812
 point dense48 = offset(O, -0.75000000 * unit, (-0.75000000) * (-0.75000000) * unit / 2) { mark: none }
-segment dense_seg48 = seg(dense47, dense48) [curve]
+segment dense_seg48(dense47, dense48) [curve]
 assert vdist(O, dense48) / unit == 0.281250000000
 point dense49 = offset(O, -0.70312500 * unit, (-0.70312500) * (-0.70312500) * unit / 2) { mark: none }
-segment dense_seg49 = seg(dense48, dense49) [curve]
+segment dense_seg49(dense48, dense49) [curve]
 assert vdist(O, dense49) / unit == 0.247192382812
 point dense50 = offset(O, -0.65625000 * unit, (-0.65625000) * (-0.65625000) * unit / 2) { mark: none }
-segment dense_seg50 = seg(dense49, dense50) [curve]
+segment dense_seg50(dense49, dense50) [curve]
 assert vdist(O, dense50) / unit == 0.215332031250
 point dense51 = offset(O, -0.60937500 * unit, (-0.60937500) * (-0.60937500) * unit / 2) { mark: none }
-segment dense_seg51 = seg(dense50, dense51) [curve]
+segment dense_seg51(dense50, dense51) [curve]
 assert vdist(O, dense51) / unit == 0.185668945312
 point dense52 = offset(O, -0.56250000 * unit, (-0.56250000) * (-0.56250000) * unit / 2) { mark: none }
-segment dense_seg52 = seg(dense51, dense52) [curve]
+segment dense_seg52(dense51, dense52) [curve]
 assert vdist(O, dense52) / unit == 0.158203125000
 point dense53 = offset(O, -0.51562500 * unit, (-0.51562500) * (-0.51562500) * unit / 2) { mark: none }
-segment dense_seg53 = seg(dense52, dense53) [curve]
+segment dense_seg53(dense52, dense53) [curve]
 assert vdist(O, dense53) / unit == 0.132934570312
 point dense54 = offset(O, -0.46875000 * unit, (-0.46875000) * (-0.46875000) * unit / 2) { mark: none }
-segment dense_seg54 = seg(dense53, dense54) [curve]
+segment dense_seg54(dense53, dense54) [curve]
 assert vdist(O, dense54) / unit == 0.109863281250
 point dense55 = offset(O, -0.42187500 * unit, (-0.42187500) * (-0.42187500) * unit / 2) { mark: none }
-segment dense_seg55 = seg(dense54, dense55) [curve]
+segment dense_seg55(dense54, dense55) [curve]
 assert vdist(O, dense55) / unit == 0.088989257812
 point dense56 = offset(O, -0.37500000 * unit, (-0.37500000) * (-0.37500000) * unit / 2) { mark: none }
-segment dense_seg56 = seg(dense55, dense56) [curve]
+segment dense_seg56(dense55, dense56) [curve]
 assert vdist(O, dense56) / unit == 0.070312500000
 point dense57 = offset(O, -0.32812500 * unit, (-0.32812500) * (-0.32812500) * unit / 2) { mark: none }
-segment dense_seg57 = seg(dense56, dense57) [curve]
+segment dense_seg57(dense56, dense57) [curve]
 assert vdist(O, dense57) / unit == 0.053833007812
 point dense58 = offset(O, -0.28125000 * unit, (-0.28125000) * (-0.28125000) * unit / 2) { mark: none }
-segment dense_seg58 = seg(dense57, dense58) [curve]
+segment dense_seg58(dense57, dense58) [curve]
 assert vdist(O, dense58) / unit == 0.039550781250
 point dense59 = offset(O, -0.23437500 * unit, (-0.23437500) * (-0.23437500) * unit / 2) { mark: none }
-segment dense_seg59 = seg(dense58, dense59) [curve]
+segment dense_seg59(dense58, dense59) [curve]
 assert vdist(O, dense59) / unit == 0.027465820312
 point dense60 = offset(O, -0.18750000 * unit, (-0.18750000) * (-0.18750000) * unit / 2) { mark: none }
-segment dense_seg60 = seg(dense59, dense60) [curve]
+segment dense_seg60(dense59, dense60) [curve]
 assert vdist(O, dense60) / unit == 0.017578125000
 point dense61 = offset(O, -0.14062500 * unit, (-0.14062500) * (-0.14062500) * unit / 2) { mark: none }
-segment dense_seg61 = seg(dense60, dense61) [curve]
+segment dense_seg61(dense60, dense61) [curve]
 assert vdist(O, dense61) / unit == 0.009887695312
 point dense62 = offset(O, -0.09375000 * unit, (-0.09375000) * (-0.09375000) * unit / 2) { mark: none }
-segment dense_seg62 = seg(dense61, dense62) [curve]
+segment dense_seg62(dense61, dense62) [curve]
 assert vdist(O, dense62) / unit == 0.004394531250
 point dense63 = offset(O, -0.04687500 * unit, (-0.04687500) * (-0.04687500) * unit / 2) { mark: none }
-segment dense_seg63 = seg(dense62, dense63) [curve]
+segment dense_seg63(dense62, dense63) [curve]
 assert vdist(O, dense63) / unit == 0.001098632812
 point dense64 = offset(O, 0.00000000 * unit, (0.00000000) * (0.00000000) * unit / 2) { mark: none }
-segment dense_seg64 = seg(dense63, dense64) [curve]
+segment dense_seg64(dense63, dense64) [curve]
 assert vdist(O, dense64) / unit == 0.000000000000
 point dense65 = offset(O, 0.04687500 * unit, (0.04687500) * (0.04687500) * unit / 2) { mark: none }
-segment dense_seg65 = seg(dense64, dense65) [curve]
+segment dense_seg65(dense64, dense65) [curve]
 assert vdist(O, dense65) / unit == 0.001098632812
 point dense66 = offset(O, 0.09375000 * unit, (0.09375000) * (0.09375000) * unit / 2) { mark: none }
-segment dense_seg66 = seg(dense65, dense66) [curve]
+segment dense_seg66(dense65, dense66) [curve]
 assert vdist(O, dense66) / unit == 0.004394531250
 point dense67 = offset(O, 0.14062500 * unit, (0.14062500) * (0.14062500) * unit / 2) { mark: none }
-segment dense_seg67 = seg(dense66, dense67) [curve]
+segment dense_seg67(dense66, dense67) [curve]
 assert vdist(O, dense67) / unit == 0.009887695312
 point dense68 = offset(O, 0.18750000 * unit, (0.18750000) * (0.18750000) * unit / 2) { mark: none }
-segment dense_seg68 = seg(dense67, dense68) [curve]
+segment dense_seg68(dense67, dense68) [curve]
 assert vdist(O, dense68) / unit == 0.017578125000
 point dense69 = offset(O, 0.23437500 * unit, (0.23437500) * (0.23437500) * unit / 2) { mark: none }
-segment dense_seg69 = seg(dense68, dense69) [curve]
+segment dense_seg69(dense68, dense69) [curve]
 assert vdist(O, dense69) / unit == 0.027465820312
 point dense70 = offset(O, 0.28125000 * unit, (0.28125000) * (0.28125000) * unit / 2) { mark: none }
-segment dense_seg70 = seg(dense69, dense70) [curve]
+segment dense_seg70(dense69, dense70) [curve]
 assert vdist(O, dense70) / unit == 0.039550781250
 point dense71 = offset(O, 0.32812500 * unit, (0.32812500) * (0.32812500) * unit / 2) { mark: none }
-segment dense_seg71 = seg(dense70, dense71) [curve]
+segment dense_seg71(dense70, dense71) [curve]
 assert vdist(O, dense71) / unit == 0.053833007812
 point dense72 = offset(O, 0.37500000 * unit, (0.37500000) * (0.37500000) * unit / 2) { mark: none }
-segment dense_seg72 = seg(dense71, dense72) [curve]
+segment dense_seg72(dense71, dense72) [curve]
 assert vdist(O, dense72) / unit == 0.070312500000
 point dense73 = offset(O, 0.42187500 * unit, (0.42187500) * (0.42187500) * unit / 2) { mark: none }
-segment dense_seg73 = seg(dense72, dense73) [curve]
+segment dense_seg73(dense72, dense73) [curve]
 assert vdist(O, dense73) / unit == 0.088989257812
 point dense74 = offset(O, 0.46875000 * unit, (0.46875000) * (0.46875000) * unit / 2) { mark: none }
-segment dense_seg74 = seg(dense73, dense74) [curve]
+segment dense_seg74(dense73, dense74) [curve]
 assert vdist(O, dense74) / unit == 0.109863281250
 point dense75 = offset(O, 0.51562500 * unit, (0.51562500) * (0.51562500) * unit / 2) { mark: none }
-segment dense_seg75 = seg(dense74, dense75) [curve]
+segment dense_seg75(dense74, dense75) [curve]
 assert vdist(O, dense75) / unit == 0.132934570312
 point dense76 = offset(O, 0.56250000 * unit, (0.56250000) * (0.56250000) * unit / 2) { mark: none }
-segment dense_seg76 = seg(dense75, dense76) [curve]
+segment dense_seg76(dense75, dense76) [curve]
 assert vdist(O, dense76) / unit == 0.158203125000
 point dense77 = offset(O, 0.60937500 * unit, (0.60937500) * (0.60937500) * unit / 2) { mark: none }
-segment dense_seg77 = seg(dense76, dense77) [curve]
+segment dense_seg77(dense76, dense77) [curve]
 assert vdist(O, dense77) / unit == 0.185668945312
 point dense78 = offset(O, 0.65625000 * unit, (0.65625000) * (0.65625000) * unit / 2) { mark: none }
-segment dense_seg78 = seg(dense77, dense78) [curve]
+segment dense_seg78(dense77, dense78) [curve]
 assert vdist(O, dense78) / unit == 0.215332031250
 point dense79 = offset(O, 0.70312500 * unit, (0.70312500) * (0.70312500) * unit / 2) { mark: none }
-segment dense_seg79 = seg(dense78, dense79) [curve]
+segment dense_seg79(dense78, dense79) [curve]
 assert vdist(O, dense79) / unit == 0.247192382812
 point dense80 = offset(O, 0.75000000 * unit, (0.75000000) * (0.75000000) * unit / 2) { mark: none }
-segment dense_seg80 = seg(dense79, dense80) [curve]
+segment dense_seg80(dense79, dense80) [curve]
 assert vdist(O, dense80) / unit == 0.281250000000
 point dense81 = offset(O, 0.79687500 * unit, (0.79687500) * (0.79687500) * unit / 2) { mark: none }
-segment dense_seg81 = seg(dense80, dense81) [curve]
+segment dense_seg81(dense80, dense81) [curve]
 assert vdist(O, dense81) / unit == 0.317504882812
 point dense82 = offset(O, 0.84375000 * unit, (0.84375000) * (0.84375000) * unit / 2) { mark: none }
-segment dense_seg82 = seg(dense81, dense82) [curve]
+segment dense_seg82(dense81, dense82) [curve]
 assert vdist(O, dense82) / unit == 0.355957031250
 point dense83 = offset(O, 0.89062500 * unit, (0.89062500) * (0.89062500) * unit / 2) { mark: none }
-segment dense_seg83 = seg(dense82, dense83) [curve]
+segment dense_seg83(dense82, dense83) [curve]
 assert vdist(O, dense83) / unit == 0.396606445312
 point dense84 = offset(O, 0.93750000 * unit, (0.93750000) * (0.93750000) * unit / 2) { mark: none }
-segment dense_seg84 = seg(dense83, dense84) [curve]
+segment dense_seg84(dense83, dense84) [curve]
 assert vdist(O, dense84) / unit == 0.439453125000
 point dense85 = offset(O, 0.98437500 * unit, (0.98437500) * (0.98437500) * unit / 2) { mark: none }
-segment dense_seg85 = seg(dense84, dense85) [curve]
+segment dense_seg85(dense84, dense85) [curve]
 assert vdist(O, dense85) / unit == 0.484497070312
 point dense86 = offset(O, 1.03125000 * unit, (1.03125000) * (1.03125000) * unit / 2) { mark: none }
-segment dense_seg86 = seg(dense85, dense86) [curve]
+segment dense_seg86(dense85, dense86) [curve]
 assert vdist(O, dense86) / unit == 0.531738281250
 point dense87 = offset(O, 1.07812500 * unit, (1.07812500) * (1.07812500) * unit / 2) { mark: none }
-segment dense_seg87 = seg(dense86, dense87) [curve]
+segment dense_seg87(dense86, dense87) [curve]
 assert vdist(O, dense87) / unit == 0.581176757812
 point dense88 = offset(O, 1.12500000 * unit, (1.12500000) * (1.12500000) * unit / 2) { mark: none }
-segment dense_seg88 = seg(dense87, dense88) [curve]
+segment dense_seg88(dense87, dense88) [curve]
 assert vdist(O, dense88) / unit == 0.632812500000
 point dense89 = offset(O, 1.17187500 * unit, (1.17187500) * (1.17187500) * unit / 2) { mark: none }
-segment dense_seg89 = seg(dense88, dense89) [curve]
+segment dense_seg89(dense88, dense89) [curve]
 assert vdist(O, dense89) / unit == 0.686645507812
 point dense90 = offset(O, 1.21875000 * unit, (1.21875000) * (1.21875000) * unit / 2) { mark: none }
-segment dense_seg90 = seg(dense89, dense90) [curve]
+segment dense_seg90(dense89, dense90) [curve]
 assert vdist(O, dense90) / unit == 0.742675781250
 point dense91 = offset(O, 1.26562500 * unit, (1.26562500) * (1.26562500) * unit / 2) { mark: none }
-segment dense_seg91 = seg(dense90, dense91) [curve]
+segment dense_seg91(dense90, dense91) [curve]
 assert vdist(O, dense91) / unit == 0.800903320312
 point dense92 = offset(O, 1.31250000 * unit, (1.31250000) * (1.31250000) * unit / 2) { mark: none }
-segment dense_seg92 = seg(dense91, dense92) [curve]
+segment dense_seg92(dense91, dense92) [curve]
 assert vdist(O, dense92) / unit == 0.861328125000
 point dense93 = offset(O, 1.35937500 * unit, (1.35937500) * (1.35937500) * unit / 2) { mark: none }
-segment dense_seg93 = seg(dense92, dense93) [curve]
+segment dense_seg93(dense92, dense93) [curve]
 assert vdist(O, dense93) / unit == 0.923950195312
 point dense94 = offset(O, 1.40625000 * unit, (1.40625000) * (1.40625000) * unit / 2) { mark: none }
-segment dense_seg94 = seg(dense93, dense94) [curve]
+segment dense_seg94(dense93, dense94) [curve]
 assert vdist(O, dense94) / unit == 0.988769531250
 point dense95 = offset(O, 1.45312500 * unit, (1.45312500) * (1.45312500) * unit / 2) { mark: none }
-segment dense_seg95 = seg(dense94, dense95) [curve]
+segment dense_seg95(dense94, dense95) [curve]
 assert vdist(O, dense95) / unit == 1.055786132812
 point dense96 = offset(O, 1.50000000 * unit, (1.50000000) * (1.50000000) * unit / 2) { mark: none }
-segment dense_seg96 = seg(dense95, dense96) [curve]
+segment dense_seg96(dense95, dense96) [curve]
 assert vdist(O, dense96) / unit == 1.125000000000
 point dense97 = offset(O, 1.54687500 * unit, (1.54687500) * (1.54687500) * unit / 2) { mark: none }
-segment dense_seg97 = seg(dense96, dense97) [curve]
+segment dense_seg97(dense96, dense97) [curve]
 assert vdist(O, dense97) / unit == 1.196411132812
 point dense98 = offset(O, 1.59375000 * unit, (1.59375000) * (1.59375000) * unit / 2) { mark: none }
-segment dense_seg98 = seg(dense97, dense98) [curve]
+segment dense_seg98(dense97, dense98) [curve]
 assert vdist(O, dense98) / unit == 1.270019531250
 point dense99 = offset(O, 1.64062500 * unit, (1.64062500) * (1.64062500) * unit / 2) { mark: none }
-segment dense_seg99 = seg(dense98, dense99) [curve]
+segment dense_seg99(dense98, dense99) [curve]
 assert vdist(O, dense99) / unit == 1.345825195312
 point dense100 = offset(O, 1.68750000 * unit, (1.68750000) * (1.68750000) * unit / 2) { mark: none }
-segment dense_seg100 = seg(dense99, dense100) [curve]
+segment dense_seg100(dense99, dense100) [curve]
 assert vdist(O, dense100) / unit == 1.423828125000
 point dense101 = offset(O, 1.73437500 * unit, (1.73437500) * (1.73437500) * unit / 2) { mark: none }
-segment dense_seg101 = seg(dense100, dense101) [curve]
+segment dense_seg101(dense100, dense101) [curve]
 assert vdist(O, dense101) / unit == 1.504028320312
 point dense102 = offset(O, 1.78125000 * unit, (1.78125000) * (1.78125000) * unit / 2) { mark: none }
-segment dense_seg102 = seg(dense101, dense102) [curve]
+segment dense_seg102(dense101, dense102) [curve]
 assert vdist(O, dense102) / unit == 1.586425781250
 point dense103 = offset(O, 1.82812500 * unit, (1.82812500) * (1.82812500) * unit / 2) { mark: none }
-segment dense_seg103 = seg(dense102, dense103) [curve]
+segment dense_seg103(dense102, dense103) [curve]
 assert vdist(O, dense103) / unit == 1.671020507812
 point dense104 = offset(O, 1.87500000 * unit, (1.87500000) * (1.87500000) * unit / 2) { mark: none }
-segment dense_seg104 = seg(dense103, dense104) [curve]
+segment dense_seg104(dense103, dense104) [curve]
 assert vdist(O, dense104) / unit == 1.757812500000
 point dense105 = offset(O, 1.92187500 * unit, (1.92187500) * (1.92187500) * unit / 2) { mark: none }
-segment dense_seg105 = seg(dense104, dense105) [curve]
+segment dense_seg105(dense104, dense105) [curve]
 assert vdist(O, dense105) / unit == 1.846801757812
 point dense106 = offset(O, 1.96875000 * unit, (1.96875000) * (1.96875000) * unit / 2) { mark: none }
-segment dense_seg106 = seg(dense105, dense106) [curve]
+segment dense_seg106(dense105, dense106) [curve]
 assert vdist(O, dense106) / unit == 1.937988281250
 point dense107 = offset(O, 2.01562500 * unit, (2.01562500) * (2.01562500) * unit / 2) { mark: none }
-segment dense_seg107 = seg(dense106, dense107) [curve]
+segment dense_seg107(dense106, dense107) [curve]
 assert vdist(O, dense107) / unit == 2.031372070312
 point dense108 = offset(O, 2.06250000 * unit, (2.06250000) * (2.06250000) * unit / 2) { mark: none }
-segment dense_seg108 = seg(dense107, dense108) [curve]
+segment dense_seg108(dense107, dense108) [curve]
 assert vdist(O, dense108) / unit == 2.126953125000
 point dense109 = offset(O, 2.10937500 * unit, (2.10937500) * (2.10937500) * unit / 2) { mark: none }
-segment dense_seg109 = seg(dense108, dense109) [curve]
+segment dense_seg109(dense108, dense109) [curve]
 assert vdist(O, dense109) / unit == 2.224731445312
 point dense110 = offset(O, 2.15625000 * unit, (2.15625000) * (2.15625000) * unit / 2) { mark: none }
-segment dense_seg110 = seg(dense109, dense110) [curve]
+segment dense_seg110(dense109, dense110) [curve]
 assert vdist(O, dense110) / unit == 2.324707031250
 point dense111 = offset(O, 2.20312500 * unit, (2.20312500) * (2.20312500) * unit / 2) { mark: none }
-segment dense_seg111 = seg(dense110, dense111) [curve]
+segment dense_seg111(dense110, dense111) [curve]
 assert vdist(O, dense111) / unit == 2.426879882812
 point dense112 = offset(O, 2.25000000 * unit, (2.25000000) * (2.25000000) * unit / 2) { mark: none }
-segment dense_seg112 = seg(dense111, dense112) [curve]
+segment dense_seg112(dense111, dense112) [curve]
 assert vdist(O, dense112) / unit == 2.531250000000
 point dense113 = offset(O, 2.29687500 * unit, (2.29687500) * (2.29687500) * unit / 2) { mark: none }
-segment dense_seg113 = seg(dense112, dense113) [curve]
+segment dense_seg113(dense112, dense113) [curve]
 assert vdist(O, dense113) / unit == 2.637817382812
 point dense114 = offset(O, 2.34375000 * unit, (2.34375000) * (2.34375000) * unit / 2) { mark: none }
-segment dense_seg114 = seg(dense113, dense114) [curve]
+segment dense_seg114(dense113, dense114) [curve]
 assert vdist(O, dense114) / unit == 2.746582031250
 point dense115 = offset(O, 2.39062500 * unit, (2.39062500) * (2.39062500) * unit / 2) { mark: none }
-segment dense_seg115 = seg(dense114, dense115) [curve]
+segment dense_seg115(dense114, dense115) [curve]
 assert vdist(O, dense115) / unit == 2.857543945312
 point dense116 = offset(O, 2.43750000 * unit, (2.43750000) * (2.43750000) * unit / 2) { mark: none }
-segment dense_seg116 = seg(dense115, dense116) [curve]
+segment dense_seg116(dense115, dense116) [curve]
 assert vdist(O, dense116) / unit == 2.970703125000
 point dense117 = offset(O, 2.48437500 * unit, (2.48437500) * (2.48437500) * unit / 2) { mark: none }
-segment dense_seg117 = seg(dense116, dense117) [curve]
+segment dense_seg117(dense116, dense117) [curve]
 assert vdist(O, dense117) / unit == 3.086059570312
 point dense118 = offset(O, 2.53125000 * unit, (2.53125000) * (2.53125000) * unit / 2) { mark: none }
-segment dense_seg118 = seg(dense117, dense118) [curve]
+segment dense_seg118(dense117, dense118) [curve]
 assert vdist(O, dense118) / unit == 3.203613281250
 point dense119 = offset(O, 2.57812500 * unit, (2.57812500) * (2.57812500) * unit / 2) { mark: none }
-segment dense_seg119 = seg(dense118, dense119) [curve]
+segment dense_seg119(dense118, dense119) [curve]
 assert vdist(O, dense119) / unit == 3.323364257812
 point dense120 = offset(O, 2.62500000 * unit, (2.62500000) * (2.62500000) * unit / 2) { mark: none }
-segment dense_seg120 = seg(dense119, dense120) [curve]
+segment dense_seg120(dense119, dense120) [curve]
 assert vdist(O, dense120) / unit == 3.445312500000
 point dense121 = offset(O, 2.67187500 * unit, (2.67187500) * (2.67187500) * unit / 2) { mark: none }
-segment dense_seg121 = seg(dense120, dense121) [curve]
+segment dense_seg121(dense120, dense121) [curve]
 assert vdist(O, dense121) / unit == 3.569458007812
 point dense122 = offset(O, 2.71875000 * unit, (2.71875000) * (2.71875000) * unit / 2) { mark: none }
-segment dense_seg122 = seg(dense121, dense122) [curve]
+segment dense_seg122(dense121, dense122) [curve]
 assert vdist(O, dense122) / unit == 3.695800781250
 point dense123 = offset(O, 2.76562500 * unit, (2.76562500) * (2.76562500) * unit / 2) { mark: none }
-segment dense_seg123 = seg(dense122, dense123) [curve]
+segment dense_seg123(dense122, dense123) [curve]
 assert vdist(O, dense123) / unit == 3.824340820312
 point dense124 = offset(O, 2.81250000 * unit, (2.81250000) * (2.81250000) * unit / 2) { mark: none }
-segment dense_seg124 = seg(dense123, dense124) [curve]
+segment dense_seg124(dense123, dense124) [curve]
 assert vdist(O, dense124) / unit == 3.955078125000
 point dense125 = offset(O, 2.85937500 * unit, (2.85937500) * (2.85937500) * unit / 2) { mark: none }
-segment dense_seg125 = seg(dense124, dense125) [curve]
+segment dense_seg125(dense124, dense125) [curve]
 assert vdist(O, dense125) / unit == 4.088012695312
 point dense126 = offset(O, 2.90625000 * unit, (2.90625000) * (2.90625000) * unit / 2) { mark: none }
-segment dense_seg126 = seg(dense125, dense126) [curve]
+segment dense_seg126(dense125, dense126) [curve]
 assert vdist(O, dense126) / unit == 4.223144531250
 point dense127 = offset(O, 2.95312500 * unit, (2.95312500) * (2.95312500) * unit / 2) { mark: none }
-segment dense_seg127 = seg(dense126, dense127) [curve]
+segment dense_seg127(dense126, dense127) [curve]
 assert vdist(O, dense127) / unit == 4.360473632812
 point dense128 = offset(O, 3.00000000 * unit, (3.00000000) * (3.00000000) * unit / 2) { mark: none }
-segment dense_seg128 = seg(dense127, dense128) [curve]
+segment dense_seg128(dense127, dense128) [curve]
 assert vdist(O, dense128) / unit == 4.500000000000
-line linear_function = line(offset(O, -3 * unit, -2 * unit), offset(O, 3 * unit, 4 * unit)) [auxiliary]
+line linear_function(offset(O, -3 * unit, -2 * unit), offset(O, 3 * unit, 4 * unit)) [auxiliary]
 // Positive distances from the symmetry axis select the two root branches.
 num left_span = free 1.8
 num right_span = free 1.6
@@ -443,38 +443,38 @@ assert vdist(O, cross_right) / unit == hdist(O, cross_right) / unit + 1
 assert hdist(O, cross_left) / unit == 1 - sqrt(3)
 assert hdist(O, cross_right) / unit == 1 + sqrt(3)
 assert hdist(cross_left, cross_right) / unit == 2 * sqrt(3)
-polygon trap0 = polygon(offset(O, -3.0 * unit, 0), dense0, dense4, offset(O, -2.8125 * unit, 0)) [construction]
-polygon trap1 = polygon(offset(O, -2.8125 * unit, 0), dense4, dense8, offset(O, -2.625 * unit, 0)) [construction]
-polygon trap2 = polygon(offset(O, -2.625 * unit, 0), dense8, dense12, offset(O, -2.4375 * unit, 0)) [construction]
-polygon trap3 = polygon(offset(O, -2.4375 * unit, 0), dense12, dense16, offset(O, -2.25 * unit, 0)) [construction]
-polygon trap4 = polygon(offset(O, -2.25 * unit, 0), dense16, dense20, offset(O, -2.0625 * unit, 0)) [construction]
-polygon trap5 = polygon(offset(O, -2.0625 * unit, 0), dense20, dense24, offset(O, -1.875 * unit, 0)) [construction]
-polygon trap6 = polygon(offset(O, -1.875 * unit, 0), dense24, dense28, offset(O, -1.6875 * unit, 0)) [construction]
-polygon trap7 = polygon(offset(O, -1.6875 * unit, 0), dense28, dense32, offset(O, -1.5 * unit, 0)) [construction]
-polygon trap8 = polygon(offset(O, -1.5 * unit, 0), dense32, dense36, offset(O, -1.3125 * unit, 0)) [construction]
-polygon trap9 = polygon(offset(O, -1.3125 * unit, 0), dense36, dense40, offset(O, -1.125 * unit, 0)) [construction]
-polygon trap10 = polygon(offset(O, -1.125 * unit, 0), dense40, dense44, offset(O, -0.9375 * unit, 0)) [construction]
-polygon trap11 = polygon(offset(O, -0.9375 * unit, 0), dense44, dense48, offset(O, -0.75 * unit, 0)) [construction]
-polygon trap12 = polygon(offset(O, -0.75 * unit, 0), dense48, dense52, offset(O, -0.5625 * unit, 0)) [construction]
-polygon trap13 = polygon(offset(O, -0.5625 * unit, 0), dense52, dense56, offset(O, -0.375 * unit, 0)) [construction]
-polygon trap14 = polygon(offset(O, -0.375 * unit, 0), dense56, dense60, offset(O, -0.1875 * unit, 0)) [construction]
-polygon trap15 = polygon(offset(O, -0.1875 * unit, 0), dense60, dense64) [construction]
-polygon trap16 = polygon(dense64, dense68, offset(O, 0.1875 * unit, 0)) [construction]
-polygon trap17 = polygon(offset(O, 0.1875 * unit, 0), dense68, dense72, offset(O, 0.375 * unit, 0)) [construction]
-polygon trap18 = polygon(offset(O, 0.375 * unit, 0), dense72, dense76, offset(O, 0.5625 * unit, 0)) [construction]
-polygon trap19 = polygon(offset(O, 0.5625 * unit, 0), dense76, dense80, offset(O, 0.75 * unit, 0)) [construction]
-polygon trap20 = polygon(offset(O, 0.75 * unit, 0), dense80, dense84, offset(O, 0.9375 * unit, 0)) [construction]
-polygon trap21 = polygon(offset(O, 0.9375 * unit, 0), dense84, dense88, offset(O, 1.125 * unit, 0)) [construction]
-polygon trap22 = polygon(offset(O, 1.125 * unit, 0), dense88, dense92, offset(O, 1.3125 * unit, 0)) [construction]
-polygon trap23 = polygon(offset(O, 1.3125 * unit, 0), dense92, dense96, offset(O, 1.5 * unit, 0)) [construction]
-polygon trap24 = polygon(offset(O, 1.5 * unit, 0), dense96, dense100, offset(O, 1.6875 * unit, 0)) [construction]
-polygon trap25 = polygon(offset(O, 1.6875 * unit, 0), dense100, dense104, offset(O, 1.875 * unit, 0)) [construction]
-polygon trap26 = polygon(offset(O, 1.875 * unit, 0), dense104, dense108, offset(O, 2.0625 * unit, 0)) [construction]
-polygon trap27 = polygon(offset(O, 2.0625 * unit, 0), dense108, dense112, offset(O, 2.25 * unit, 0)) [construction]
-polygon trap28 = polygon(offset(O, 2.25 * unit, 0), dense112, dense116, offset(O, 2.4375 * unit, 0)) [construction]
-polygon trap29 = polygon(offset(O, 2.4375 * unit, 0), dense116, dense120, offset(O, 2.625 * unit, 0)) [construction]
-polygon trap30 = polygon(offset(O, 2.625 * unit, 0), dense120, dense124, offset(O, 2.8125 * unit, 0)) [construction]
-polygon trap31 = polygon(offset(O, 2.8125 * unit, 0), dense124, dense128, offset(O, 3.0 * unit, 0)) [construction]
+polygon trap0(offset(O, -3.0 * unit, 0), dense0, dense4, offset(O, -2.8125 * unit, 0)) [construction]
+polygon trap1(offset(O, -2.8125 * unit, 0), dense4, dense8, offset(O, -2.625 * unit, 0)) [construction]
+polygon trap2(offset(O, -2.625 * unit, 0), dense8, dense12, offset(O, -2.4375 * unit, 0)) [construction]
+polygon trap3(offset(O, -2.4375 * unit, 0), dense12, dense16, offset(O, -2.25 * unit, 0)) [construction]
+polygon trap4(offset(O, -2.25 * unit, 0), dense16, dense20, offset(O, -2.0625 * unit, 0)) [construction]
+polygon trap5(offset(O, -2.0625 * unit, 0), dense20, dense24, offset(O, -1.875 * unit, 0)) [construction]
+polygon trap6(offset(O, -1.875 * unit, 0), dense24, dense28, offset(O, -1.6875 * unit, 0)) [construction]
+polygon trap7(offset(O, -1.6875 * unit, 0), dense28, dense32, offset(O, -1.5 * unit, 0)) [construction]
+polygon trap8(offset(O, -1.5 * unit, 0), dense32, dense36, offset(O, -1.3125 * unit, 0)) [construction]
+polygon trap9(offset(O, -1.3125 * unit, 0), dense36, dense40, offset(O, -1.125 * unit, 0)) [construction]
+polygon trap10(offset(O, -1.125 * unit, 0), dense40, dense44, offset(O, -0.9375 * unit, 0)) [construction]
+polygon trap11(offset(O, -0.9375 * unit, 0), dense44, dense48, offset(O, -0.75 * unit, 0)) [construction]
+polygon trap12(offset(O, -0.75 * unit, 0), dense48, dense52, offset(O, -0.5625 * unit, 0)) [construction]
+polygon trap13(offset(O, -0.5625 * unit, 0), dense52, dense56, offset(O, -0.375 * unit, 0)) [construction]
+polygon trap14(offset(O, -0.375 * unit, 0), dense56, dense60, offset(O, -0.1875 * unit, 0)) [construction]
+polygon trap15(offset(O, -0.1875 * unit, 0), dense60, dense64) [construction]
+polygon trap16(dense64, dense68, offset(O, 0.1875 * unit, 0)) [construction]
+polygon trap17(offset(O, 0.1875 * unit, 0), dense68, dense72, offset(O, 0.375 * unit, 0)) [construction]
+polygon trap18(offset(O, 0.375 * unit, 0), dense72, dense76, offset(O, 0.5625 * unit, 0)) [construction]
+polygon trap19(offset(O, 0.5625 * unit, 0), dense76, dense80, offset(O, 0.75 * unit, 0)) [construction]
+polygon trap20(offset(O, 0.75 * unit, 0), dense80, dense84, offset(O, 0.9375 * unit, 0)) [construction]
+polygon trap21(offset(O, 0.9375 * unit, 0), dense84, dense88, offset(O, 1.125 * unit, 0)) [construction]
+polygon trap22(offset(O, 1.125 * unit, 0), dense88, dense92, offset(O, 1.3125 * unit, 0)) [construction]
+polygon trap23(offset(O, 1.3125 * unit, 0), dense92, dense96, offset(O, 1.5 * unit, 0)) [construction]
+polygon trap24(offset(O, 1.5 * unit, 0), dense96, dense100, offset(O, 1.6875 * unit, 0)) [construction]
+polygon trap25(offset(O, 1.6875 * unit, 0), dense100, dense104, offset(O, 1.875 * unit, 0)) [construction]
+polygon trap26(offset(O, 1.875 * unit, 0), dense104, dense108, offset(O, 2.0625 * unit, 0)) [construction]
+polygon trap27(offset(O, 2.0625 * unit, 0), dense108, dense112, offset(O, 2.25 * unit, 0)) [construction]
+polygon trap28(offset(O, 2.25 * unit, 0), dense112, dense116, offset(O, 2.4375 * unit, 0)) [construction]
+polygon trap29(offset(O, 2.4375 * unit, 0), dense116, dense120, offset(O, 2.625 * unit, 0)) [construction]
+polygon trap30(offset(O, 2.625 * unit, 0), dense120, dense124, offset(O, 2.8125 * unit, 0)) [construction]
+polygon trap31(offset(O, 2.8125 * unit, 0), dense124, dense128, offset(O, 3.0 * unit, 0)) [construction]
 num trapezoidal_area = area(trap0) + area(trap1) + area(trap2) + area(trap3) + area(trap4) + area(trap5) + area(trap6) + area(trap7) + area(trap8) + area(trap9) + area(trap10) + area(trap11) + area(trap12) + area(trap13) + area(trap14) + area(trap15) + area(trap16) + area(trap17) + area(trap18) + area(trap19) + area(trap20) + area(trap21) + area(trap22) + area(trap23) + area(trap24) + area(trap25) + area(trap26) + area(trap27) + area(trap28) + area(trap29) + area(trap30) + area(trap31)
 assert trapezoidal_area / (unit * unit) == 9.017578125
 assert trapezoidal_area > 9 * unit * unit

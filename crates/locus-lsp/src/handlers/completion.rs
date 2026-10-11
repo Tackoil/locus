@@ -14,8 +14,9 @@ use lsp_types::{
     TextEdit,
 };
 
+use super::scope;
 use crate::document::Document;
-use crate::state::{Analysis, State, defined_ops};
+use crate::state::{Analysis, State};
 
 pub(crate) fn handle(state: &State, params: &CompletionParams) -> Option<CompletionResponse> {
     let position = params.text_document_position.position;
@@ -25,6 +26,9 @@ pub(crate) fn handle(state: &State, params: &CompletionParams) -> Option<Complet
     let cursor = document.position_to_byte(position)?;
     let site = completion_site(document, analysis, cursor);
     let mut items = CompletionItems::new(document, site.prefix_start, cursor, site.replace_end);
+    if matches!(site.context, Context::Statement) {
+        extend_functions(&mut items, analysis, cursor);
+    }
     if !extend_basic_context(&mut items, &site.context)
         && !extend_structural_context(&mut items, analysis, cursor, &site.context)
     {
@@ -52,11 +56,7 @@ fn extend_structural_context(
 ) -> bool {
     match context {
         Context::Attribute => extend_attributes(items, analysis, cursor),
-        Context::PropertyAccess => items.extend(
-            PROPERTY_NAMES,
-            CompletionItemKind::PROPERTY,
-            "geometry property",
-        ),
+        Context::PropertyAccess(base) => extend_members(items, analysis, cursor, base),
         Context::StylePreset => items.extend(
             STYLE_PRESET_NAMES,
             CompletionItemKind::ENUM_MEMBER,
@@ -118,7 +118,7 @@ fn extend_semantic_context(
         | Context::Statement
         | Context::AngleUnit
         | Context::Attribute
-        | Context::PropertyAccess
+        | Context::PropertyAccess(_)
         | Context::StylePreset
         | Context::PropertyName { .. } => {}
     }
@@ -132,7 +132,7 @@ enum Context {
     Statement,
     AngleUnit,
     Attribute,
-    PropertyAccess,
+    PropertyAccess(String),
     StylePreset,
     PropertyName {
         style: bool,
@@ -178,7 +178,15 @@ fn completion_site(document: &Document, analysis: &Analysis, cursor: usize) -> C
         return site(Context::Attribute, prefix_start, identifier_end);
     }
     if text[..prefix_start].ends_with('.') {
-        return site(Context::PropertyAccess, prefix_start, identifier_end);
+        let base_end = prefix_start - 1;
+        let base_start = text[..base_end]
+            .rfind(|ch: char| !is_identifier_continue(ch) && ch != '.')
+            .map_or(0, |byte| byte + 1);
+        return site(
+            Context::PropertyAccess(text[base_start..base_end].to_owned()),
+            prefix_start,
+            identifier_end,
+        );
     }
     if head.trim().is_empty() {
         return site(Context::Statement, prefix_start, identifier_end);
@@ -215,6 +223,12 @@ fn classify_line(
             prefix_start,
             replace_end,
         );
+    }
+    if keyword == "group"
+        || tokens.iter().any(|token| token.kind == TokenKind::LParen)
+            && Kind::from_name(keyword).is_none()
+    {
+        return site(Context::Expression, prefix_start, replace_end);
     }
     let Some(kind) = Kind::from_name(keyword) else {
         return site(Context::None, prefix_start, replace_end);
@@ -266,7 +280,12 @@ fn classify_operation(
     replace_end: usize,
 ) -> CompletionSite {
     let Some(equal) = tokens.iter().find(|token| token.kind == TokenKind::Equal) else {
-        return site(Context::None, prefix_start, replace_end);
+        let context = if last_unmatched(tokens, &TokenKind::LParen, &TokenKind::RParen).is_some() {
+            Context::Expression
+        } else {
+            Context::None
+        };
+        return site(context, prefix_start, replace_end);
     };
     let rhs = head[equal.span.byte_end..].trim();
     if rhs.is_empty() {
@@ -299,7 +318,27 @@ fn extend_statements(items: &mut CompletionItems<'_>) {
     items.extend(KIND_NAMES, CompletionItemKind::CLASS, "object kind");
 }
 
+fn extend_functions(items: &mut CompletionItems<'_>, analysis: &Analysis, cursor: usize) {
+    for statement in &analysis.file.statements {
+        if let Statement::Fn(function) = statement {
+            if function.span.byte_end <= cursor {
+                items.push(
+                    &function.name.name,
+                    CompletionItemKind::FUNCTION,
+                    "local function",
+                );
+            }
+        }
+    }
+}
+
 fn extend_attributes(items: &mut CompletionItems<'_>, analysis: &Analysis, cursor: usize) {
+    for value in scope::visible(&analysis.file, cursor)
+        .into_iter()
+        .filter(|value| matches!(value, scope::Binding::Parameter(_)))
+    {
+        items.push(&value.id().name, CompletionItemKind::VARIABLE, "parameter");
+    }
     items.extend(
         BUILTIN_ATTR_NAMES,
         CompletionItemKind::CLASS,
@@ -402,17 +441,34 @@ fn extend_constructors(items: &mut CompletionItems<'_>, result_kind: Option<Kind
 }
 
 fn extend_references(items: &mut CompletionItems<'_>, analysis: &Analysis, cursor: usize) {
-    for op in defined_ops(&analysis.file).filter(|op| operation_available(op, cursor)) {
-        items.push(&op.id.name, CompletionItemKind::VARIABLE, op.kind.as_str());
+    for value in scope::visible(&analysis.file, cursor) {
+        items.push(
+            &value.id().name,
+            CompletionItemKind::VARIABLE,
+            value.detail(),
+        );
     }
 }
 
-fn operation_available(op: &locus_syntax::OpStmt, cursor: usize) -> bool {
-    op.span.byte_end <= cursor
-        || op
-            .where_clauses
-            .iter()
-            .any(|clause| clause.span().byte_start <= cursor && cursor <= clause.span().byte_end)
+fn extend_members(items: &mut CompletionItems<'_>, analysis: &Analysis, cursor: usize, base: &str) {
+    let value = scope::resolve(&analysis.file, base, cursor);
+    match value {
+        Some(value @ scope::Binding::Instance(_)) => {
+            for member in scope::members(&analysis.file, value) {
+                items.push(
+                    &member.id().name,
+                    CompletionItemKind::FIELD,
+                    member.detail(),
+                );
+            }
+        }
+        Some(scope::Binding::Group(_)) => {}
+        _ => items.extend(
+            PROPERTY_NAMES,
+            CompletionItemKind::PROPERTY,
+            "geometry property",
+        ),
+    }
 }
 
 struct CompletionItems<'a> {
@@ -507,9 +563,12 @@ fn operation_identity(tokens: &[Token]) -> Option<(String, Kind)> {
 }
 
 fn operation_constructor(tokens: &[Token]) -> Option<&str> {
-    let equal = tokens
+    let Some(equal) = tokens
         .iter()
-        .position(|token| token.kind == TokenKind::Equal)?;
+        .position(|token| token.kind == TokenKind::Equal)
+    else {
+        return first_identifier(tokens);
+    };
     tokens[equal + 1..]
         .iter()
         .find_map(|token| match &token.kind {

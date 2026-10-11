@@ -47,7 +47,7 @@ pub(crate) enum InferredDimension {
 #[derive(Clone, Debug, Default)]
 pub(crate) struct DimensionMap {
     named: BTreeMap<String, InferredDimension>,
-    expressions: BTreeMap<(usize, usize), InferredDimension>,
+    expressions: BTreeMap<usize, InferredDimension>,
 }
 
 impl DimensionMap {
@@ -62,32 +62,17 @@ impl DimensionMap {
         self.named.get(name)
     }
 
-    #[cfg(test)]
-    pub(crate) fn len(&self) -> usize {
-        self.named.len()
-    }
-
-    #[cfg(test)]
-    pub(crate) fn values(&self) -> impl Iterator<Item = &InferredDimension> {
-        self.named.values()
-    }
-
     pub(crate) fn insert(&mut self, name: String, dimension: InferredDimension) {
         self.named.insert(name, dimension);
     }
 
-    pub(crate) fn insert_expression_range(
-        &mut self,
-        range: (usize, usize),
-        dimension: InferredDimension,
-    ) {
-        self.expressions.insert(range, dimension);
+    pub(crate) fn insert_expression_node(&mut self, node: usize, dimension: InferredDimension) {
+        self.expressions.insert(node, dimension);
     }
 
     pub(crate) fn expression_dimension(&self, expression: &Expr) -> Option<InferredDimension> {
-        let span = expression.span();
         self.expressions
-            .get(&(span.byte_start, span.byte_end))
+            .get(&(std::ptr::from_ref(expression) as usize))
             .copied()
     }
 }
@@ -105,10 +90,11 @@ pub(crate) struct ExpressionEvaluator<'a> {
     env: &'a Environment,
     pub(super) tolerance: Tolerance,
     dimensions: &'a DimensionMap,
+    metrics: crate::preset::LayoutMetrics,
 }
 
 impl<'a> ExpressionEvaluator<'a> {
-    pub(crate) const fn new(
+    pub(crate) fn new(
         env: &'a Environment,
         tolerance: Tolerance,
         dimensions: &'a DimensionMap,
@@ -117,7 +103,13 @@ impl<'a> ExpressionEvaluator<'a> {
             env,
             tolerance,
             dimensions,
+            metrics: crate::preset::LayoutMetrics::default(),
         }
+    }
+
+    pub(crate) const fn with_metrics(mut self, metrics: crate::preset::LayoutMetrics) -> Self {
+        self.metrics = metrics;
+        self
     }
 
     pub(crate) fn dimension_of(&self, name: &str) -> Option<InferredDimension> {
@@ -371,6 +363,9 @@ impl<'a> ExpressionEvaluator<'a> {
     }
 
     fn eval_call(&mut self, name: &str, args: &[Expr], span: Span) -> Result<Value, EvalError> {
+        if name == "edge" {
+            return self.eval_edge(args, span);
+        }
         if is_numeric_function(name) {
             self.eval_numeric_call(name, args, span)
         } else {
@@ -586,6 +581,15 @@ impl<'a> ExpressionEvaluator<'a> {
         span: Span,
     ) -> Result<Value, EvalError> {
         match name {
+            "style_metric" => {
+                expect_arity(name, args, 1, span)?;
+                let metric = plain_metric_name(&args[0])?;
+                let value = self
+                    .metrics
+                    .metric(&metric)
+                    .ok_or_else(|| type_error(span, format!("unknown style metric `{metric}`")))?;
+                finite_scalar(value, Dimension::Length, span)
+            }
             "ratio" => self.eval_ratio(args, span),
             "sqrt" | "abs" => self.eval_unary_function(name, args, span),
             "min" | "max" => self.eval_extremum(name, args, span),
@@ -751,7 +755,69 @@ impl<'a> ExpressionEvaluator<'a> {
             return Ok(Value::ObjectRef(ObjectRef::Anchor(anchor)));
         }
         let object = self.resolve_object(&reference, span)?;
+        if name != "length" && super::path_label::is_route(&object) {
+            let bounds = self.attached_route_bounds(&reference, &object, span)?;
+            expect_arity(name, args, 0, span)?;
+            return box_property(bounds, name, span);
+        }
         self.eval_geometry_property(&object, name, args, span)
+    }
+
+    fn attached_route_bounds(
+        &self,
+        reference: &ObjectRef,
+        object: &ResolvedObject,
+        span: Span,
+    ) -> Result<BBox, EvalError> {
+        let mut bounds = object
+            .bbox()
+            .ok_or_else(|| type_error(span, "route has no logical bounds"))?;
+        let ObjectRef::Named(id) = reference else {
+            return Ok(bounds);
+        };
+        for object in self.env.objects().values() {
+            if let ResolvedObject::Annotation(crate::AnnotationSpec::Label {
+                path: Some(path),
+                bounds: Some(label),
+                ..
+            }) = object
+                && self.env.identity(&path.path) == self.env.identity(id)
+            {
+                bounds.include_bbox(*label);
+            }
+        }
+        Ok(bounds)
+    }
+
+    fn eval_edge(&mut self, args: &[Expr], span: Span) -> Result<Value, EvalError> {
+        let object = self.eval_edge_object(args, span)?;
+        Ok(Value::ObjectRef(ObjectRef::Temporary(Box::new(object))))
+    }
+
+    pub(super) fn eval_edge_object(
+        &mut self,
+        args: &[Expr],
+        span: Span,
+    ) -> Result<ResolvedObject, EvalError> {
+        expect_arity("edge", args, 2, span)?;
+        let ResolvedObject::Rect(rect) = self.eval_resolved_object(&args[0])? else {
+            return Err(type_error(
+                args[0].span(),
+                "edge requires an axis-aligned rect",
+            ));
+        };
+        let direction = edge_direction(&args[1])?;
+        let bounds = BBox::for_polygon(&rect);
+        let (from, to) = match direction {
+            "N" => (bounds.northwest(), bounds.northeast()),
+            "E" => (bounds.northeast(), bounds.southeast()),
+            "S" => (bounds.southeast(), bounds.southwest()),
+            _ => (bounds.southwest(), bounds.northwest()),
+        };
+        Ok(ResolvedObject::Segment(Segment {
+            start: from,
+            end: to,
+        }))
     }
 
     fn annotation_center(
@@ -765,6 +831,9 @@ impl<'a> ExpressionEvaluator<'a> {
             return Ok(None);
         };
         if !matches!(self.env.get(id), Some(ResolvedObject::Annotation(_))) || name != "center" {
+            return Ok(None);
+        }
+        if self.env.get(id).and_then(ResolvedObject::bbox).is_some() {
             return Ok(None);
         }
         expect_arity("annotation.center", args, 0, span)?;
@@ -781,6 +850,9 @@ impl<'a> ExpressionEvaluator<'a> {
         args: &[Expr],
         span: Span,
     ) -> Result<Value, EvalError> {
+        if let Some(value) = annotation_property(object, name, args, span) {
+            return value;
+        }
         if matches!(
             object,
             ResolvedObject::Ellipse(_)
@@ -1041,6 +1113,101 @@ impl<'a> ExpressionEvaluator<'a> {
             ObjectRef::Temporary(object) => Ok((**object).clone()),
             ObjectRef::Anchor(_) => Err(type_error(span, "expected an object, found an anchor")),
         }
+    }
+}
+
+pub(crate) fn plain_metric_name(expr: &Expr) -> Result<String, EvalError> {
+    let Expr::String(text) = expr else {
+        return Err(type_error(
+            expr.span(),
+            "style_metric requires a plain string",
+        ));
+    };
+    if text
+        .segments
+        .iter()
+        .any(|part| part.kind != locus_syntax::TextSegmentKind::Plain)
+    {
+        return Err(type_error(
+            expr.span(),
+            "style_metric requires a plain string",
+        ));
+    }
+    Ok(text
+        .segments
+        .iter()
+        .map(|part| part.source.as_str())
+        .collect())
+}
+
+pub(crate) fn edge_direction(expr: &Expr) -> Result<&str, EvalError> {
+    match expr {
+        Expr::Ref(id) if matches!(id.name.as_str(), "N" | "E" | "S" | "W") => Ok(&id.name),
+        _ => Err(type_error(
+            expr.span(),
+            "edge direction must be N, E, S, or W",
+        )),
+    }
+}
+
+fn resolved_route(
+    object: &ResolvedObject,
+    span: Span,
+) -> Result<Option<crate::geom::route::Route>, EvalError> {
+    if let ResolvedObject::Annotation(crate::scene::AnnotationSpec::Arrow {
+        route: Some(route),
+        ..
+    }) = object
+    {
+        return Ok(Some(route.clone()));
+    }
+    let ResolvedObject::Annotation(crate::scene::AnnotationSpec::Arrow {
+        from: AnchorSpec::Point(from),
+        to: AnchorSpec::Point(to),
+        bend,
+        ..
+    }) = object
+    else {
+        return Ok(None);
+    };
+    crate::geom::route::Route::direct(*from, *to, *bend)
+        .map(Some)
+        .map_err(|error| EvalError::construction(span, error))
+}
+
+fn route_property(
+    route: &crate::geom::route::Route,
+    name: &str,
+    args: &[Expr],
+    span: Span,
+) -> Result<Value, EvalError> {
+    expect_arity(name, args, 0, span)?;
+    if name == "length" {
+        finite_scalar(route.length(), Dimension::Length, span)
+    } else {
+        box_property(route.bbox(), name, span)
+    }
+}
+
+fn annotation_property(
+    object: &ResolvedObject,
+    name: &str,
+    args: &[Expr],
+    span: Span,
+) -> Option<Result<Value, EvalError>> {
+    if let ResolvedObject::Annotation(crate::scene::AnnotationSpec::Label {
+        bounds: Some(bounds),
+        ..
+    }) = object
+    {
+        return Some(
+            expect_arity(name, args, 0, span).and_then(|()| box_property(*bounds, name, span)),
+        );
+    }
+    match resolved_route(object, span) {
+        Ok(Some(route)) => Some(route_property(&route, name, args, span)),
+        Err(error) => Some(Err(error)),
+        Ok(None) => None,
     }
 }
 
@@ -1488,6 +1655,10 @@ fn segment_property(
     args: &[Expr],
     span: Span,
 ) -> Result<Value, EvalError> {
+    if name == "length" {
+        expect_arity(name, args, 0, span)?;
+        return finite_scalar(measure::length(segment), Dimension::Length, span);
+    }
     let point = match name {
         "start" => segment.start,
         "end" => segment.end,

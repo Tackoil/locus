@@ -13,9 +13,9 @@ expression: stdout
         "line": 10,
         "col": 1,
         "byte_start": 304,
-        "byte_end": 343
+        "byte_end": 334
       },
-      "definition": "circle(3.5)",
+      "definition": "circle circ(3.5)",
       "resolved": {
         "kind": "circle",
         "radius": 3.5
@@ -27,8 +27,8 @@ expression: stdout
       "span": {
         "line": 11,
         "col": 1,
-        "byte_start": 344,
-        "byte_end": 368
+        "byte_start": 335,
+        "byte_end": 359
       },
       "definition": "circ.at(90deg)",
       "resolved": {
@@ -42,8 +42,8 @@ expression: stdout
       "span": {
         "line": 12,
         "col": 1,
-        "byte_start": 369,
-        "byte_end": 394
+        "byte_start": 360,
+        "byte_end": 385
       },
       "definition": "circ.at(210deg)",
       "resolved": {
@@ -57,8 +57,8 @@ expression: stdout
       "span": {
         "line": 13,
         "col": 1,
-        "byte_start": 395,
-        "byte_end": 420
+        "byte_start": 386,
+        "byte_end": 411
       },
       "definition": "circ.at(340deg)",
       "resolved": {
@@ -72,10 +72,10 @@ expression: stdout
       "span": {
         "line": 15,
         "col": 1,
-        "byte_start": 422,
-        "byte_end": 452
+        "byte_start": 413,
+        "byte_end": 433
       },
-      "definition": "polygon(A, B, C)",
+      "definition": "polygon tri(A, B, C)",
       "resolved": {
         "kind": "polygon",
         "area": 15.752045114597117,
@@ -88,8 +88,8 @@ expression: stdout
       "span": {
         "line": 17,
         "col": 1,
-        "byte_start": 454,
-        "byte_end": 475
+        "byte_start": 435,
+        "byte_end": 456
       },
       "definition": "circ.center",
       "resolved": {
@@ -103,8 +103,8 @@ expression: stdout
       "span": {
         "line": 18,
         "col": 1,
-        "byte_start": 476,
-        "byte_end": 503
+        "byte_start": 457,
+        "byte_end": 484
       },
       "definition": "centroid(A, B, C)",
       "resolved": {
@@ -118,8 +118,8 @@ expression: stdout
       "span": {
         "line": 19,
         "col": 1,
-        "byte_start": 504,
-        "byte_end": 534
+        "byte_start": 485,
+        "byte_end": 515
       },
       "definition": "orthocenter(A, B, C)",
       "resolved": {
@@ -133,10 +133,10 @@ expression: stdout
       "span": {
         "line": 21,
         "col": 1,
-        "byte_start": 536,
-        "byte_end": 588
+        "byte_start": 517,
+        "byte_end": 560
       },
-      "definition": "line(O, H)",
+      "definition": "line euler(O, H)",
       "resolved": {
         "kind": "line"
       }
@@ -147,8 +147,8 @@ expression: stdout
       "span": {
         "line": 24,
         "col": 1,
-        "byte_start": 608,
-        "byte_end": 634
+        "byte_start": 580,
+        "byte_end": 606
       },
       "definition": "midpoint(B, C)",
       "resolved": {
@@ -162,8 +162,8 @@ expression: stdout
       "span": {
         "line": 25,
         "col": 1,
-        "byte_start": 635,
-        "byte_end": 661
+        "byte_start": 607,
+        "byte_end": 633
       },
       "definition": "midpoint(A, C)",
       "resolved": {
@@ -177,8 +177,8 @@ expression: stdout
       "span": {
         "line": 26,
         "col": 1,
-        "byte_start": 662,
-        "byte_end": 688
+        "byte_start": 634,
+        "byte_end": 660
       },
       "definition": "midpoint(A, B)",
       "resolved": {
@@ -192,8 +192,8 @@ expression: stdout
       "span": {
         "line": 29,
         "col": 1,
-        "byte_start": 707,
-        "byte_end": 738
+        "byte_start": 679,
+        "byte_end": 710
       },
       "definition": "foot(A, line(B, C))",
       "resolved": {
@@ -207,8 +207,8 @@ expression: stdout
       "span": {
         "line": 30,
         "col": 1,
-        "byte_start": 739,
-        "byte_end": 770
+        "byte_start": 711,
+        "byte_end": 742
       },
       "definition": "foot(B, line(A, C))",
       "resolved": {
@@ -222,8 +222,8 @@ expression: stdout
       "span": {
         "line": 31,
         "col": 1,
-        "byte_start": 771,
-        "byte_end": 802
+        "byte_start": 743,
+        "byte_end": 774
       },
       "definition": "foot(C, line(A, B))",
       "resolved": {
@@ -237,8 +237,8 @@ expression: stdout
       "span": {
         "line": 34,
         "col": 1,
-        "byte_start": 857,
-        "byte_end": 883
+        "byte_start": 829,
+        "byte_end": 855
       },
       "definition": "midpoint(A, H)",
       "resolved": {
@@ -252,8 +252,8 @@ expression: stdout
       "span": {
         "line": 35,
         "col": 1,
-        "byte_start": 884,
-        "byte_end": 910
+        "byte_start": 856,
+        "byte_end": 882
       },
       "definition": "midpoint(B, H)",
       "resolved": {
@@ -267,8 +267,8 @@ expression: stdout
       "span": {
         "line": 36,
         "col": 1,
-        "byte_start": 911,
-        "byte_end": 937
+        "byte_start": 883,
+        "byte_end": 909
       },
       "definition": "midpoint(C, H)",
       "resolved": {
@@ -282,8 +282,8 @@ expression: stdout
       "span": {
         "line": 38,
         "col": 1,
-        "byte_start": 939,
-        "byte_end": 994
+        "byte_start": 911,
+        "byte_end": 966
       },
       "definition": "circumcircle(M_a, M_b, M_c)",
       "resolved": {
@@ -297,8 +297,8 @@ expression: stdout
       "span": {
         "line": 39,
         "col": 1,
-        "byte_start": 995,
-        "byte_end": 1021
+        "byte_start": 967,
+        "byte_end": 993
       },
       "definition": "center(nine)",
       "resolved": {
@@ -312,8 +312,8 @@ expression: stdout
       "span": {
         "line": 42,
         "col": 1,
-        "byte_start": 1082,
-        "byte_end": 1140
+        "byte_start": 1054,
+        "byte_end": 1112
       },
       "definition": "reflect(H, line(B, C))",
       "resolved": {
@@ -327,10 +327,10 @@ expression: stdout
       "span": {
         "line": 45,
         "col": 1,
-        "byte_start": 1204,
-        "byte_end": 1228
+        "byte_start": 1176,
+        "byte_end": 1192
       },
-      "definition": "label(O, $O$)",
+      "definition": "label lO(O, $O$)",
       "resolved": {
         "kind": "annotation"
       }
@@ -341,10 +341,10 @@ expression: stdout
       "span": {
         "line": 46,
         "col": 1,
-        "byte_start": 1229,
-        "byte_end": 1253
+        "byte_start": 1193,
+        "byte_end": 1209
       },
-      "definition": "label(G, $G$)",
+      "definition": "label lG(G, $G$)",
       "resolved": {
         "kind": "annotation"
       }
@@ -355,10 +355,10 @@ expression: stdout
       "span": {
         "line": 47,
         "col": 1,
-        "byte_start": 1254,
-        "byte_end": 1278
+        "byte_start": 1210,
+        "byte_end": 1226
       },
-      "definition": "label(H, $H$)",
+      "definition": "label lH(H, $H$)",
       "resolved": {
         "kind": "annotation"
       }
@@ -369,10 +369,10 @@ expression: stdout
       "span": {
         "line": 48,
         "col": 1,
-        "byte_start": 1279,
-        "byte_end": 1316
+        "byte_start": 1227,
+        "byte_end": 1256
       },
-      "definition": "label(N, $N$)",
+      "definition": "label lN(N, $N$)",
       "resolved": {
         "kind": "annotation"
       }
@@ -383,10 +383,10 @@ expression: stdout
       "span": {
         "line": 49,
         "col": 1,
-        "byte_start": 1317,
-        "byte_end": 1341
+        "byte_start": 1257,
+        "byte_end": 1273
       },
-      "definition": "label(A, $A$)",
+      "definition": "label lA(A, $A$)",
       "resolved": {
         "kind": "annotation"
       }
@@ -397,10 +397,10 @@ expression: stdout
       "span": {
         "line": 50,
         "col": 1,
-        "byte_start": 1342,
-        "byte_end": 1366
+        "byte_start": 1274,
+        "byte_end": 1290
       },
-      "definition": "label(B, $B$)",
+      "definition": "label lB(B, $B$)",
       "resolved": {
         "kind": "annotation"
       }
@@ -411,13 +411,243 @@ expression: stdout
       "span": {
         "line": 51,
         "col": 1,
-        "byte_start": 1367,
-        "byte_end": 1391
+        "byte_start": 1291,
+        "byte_end": 1307
       },
-      "definition": "label(C, $C$)",
+      "definition": "label lC(C, $C$)",
       "resolved": {
         "kind": "annotation"
       }
+    }
+  ],
+  "diagram": [
+    {
+      "accepted": {
+        "height": 0.19068000000000004,
+        "role": "normal",
+        "width": 0.19628000000000004
+      },
+      "definition": {
+        "source": "label(O, $O$)",
+        "tree": {
+          "args": [
+            {
+              "id": "O",
+              "kind": "ref"
+            },
+            {
+              "kind": "text",
+              "segments": [
+                {
+                  "kind": "tex",
+                  "source": "O"
+                }
+              ]
+            }
+          ],
+          "kind": "call",
+          "name": "label"
+        }
+      },
+      "id": "lO",
+      "properties": []
+    },
+    {
+      "accepted": {
+        "height": 0.19068000000000004,
+        "role": "normal",
+        "width": 0.18928000000000003
+      },
+      "definition": {
+        "source": "label(G, $G$)",
+        "tree": {
+          "args": [
+            {
+              "id": "G",
+              "kind": "ref"
+            },
+            {
+              "kind": "text",
+              "segments": [
+                {
+                  "kind": "tex",
+                  "source": "G"
+                }
+              ]
+            }
+          ],
+          "kind": "call",
+          "name": "label"
+        }
+      },
+      "id": "lG",
+      "properties": []
+    },
+    {
+      "accepted": {
+        "height": 0.18396,
+        "role": "normal",
+        "width": 0.22904000000000005
+      },
+      "definition": {
+        "source": "label(H, $H$)",
+        "tree": {
+          "args": [
+            {
+              "id": "H",
+              "kind": "ref"
+            },
+            {
+              "kind": "text",
+              "segments": [
+                {
+                  "kind": "tex",
+                  "source": "H"
+                }
+              ]
+            }
+          ],
+          "kind": "call",
+          "name": "label"
+        }
+      },
+      "id": "lH",
+      "properties": []
+    },
+    {
+      "accepted": {
+        "height": 0.18620000000000003,
+        "role": "normal",
+        "width": 0.22512000000000004
+      },
+      "definition": {
+        "source": "label(N, $N$)",
+        "tree": {
+          "args": [
+            {
+              "id": "N",
+              "kind": "ref"
+            },
+            {
+              "kind": "text",
+              "segments": [
+                {
+                  "kind": "tex",
+                  "source": "N"
+                }
+              ]
+            }
+          ],
+          "kind": "call",
+          "name": "label"
+        }
+      },
+      "id": "lN",
+      "properties": [
+        {
+          "name": "dir",
+          "value": {
+            "expr": {
+              "id": "NE",
+              "kind": "ref"
+            },
+            "kind": "expr"
+          }
+        }
+      ]
+    },
+    {
+      "accepted": {
+        "height": 0.18508000000000002,
+        "role": "normal",
+        "width": 0.20636000000000002
+      },
+      "definition": {
+        "source": "label(A, $A$)",
+        "tree": {
+          "args": [
+            {
+              "id": "A",
+              "kind": "ref"
+            },
+            {
+              "kind": "text",
+              "segments": [
+                {
+                  "kind": "tex",
+                  "source": "A"
+                }
+              ]
+            }
+          ],
+          "kind": "call",
+          "name": "label"
+        }
+      },
+      "id": "lA",
+      "properties": []
+    },
+    {
+      "accepted": {
+        "height": 0.18396,
+        "role": "normal",
+        "width": 0.17612000000000003
+      },
+      "definition": {
+        "source": "label(B, $B$)",
+        "tree": {
+          "args": [
+            {
+              "id": "B",
+              "kind": "ref"
+            },
+            {
+              "kind": "text",
+              "segments": [
+                {
+                  "kind": "tex",
+                  "source": "B"
+                }
+              ]
+            }
+          ],
+          "kind": "call",
+          "name": "label"
+        }
+      },
+      "id": "lB",
+      "properties": []
+    },
+    {
+      "accepted": {
+        "height": 0.19068000000000004,
+        "role": "normal",
+        "width": 0.18256000000000003
+      },
+      "definition": {
+        "source": "label(C, $C$)",
+        "tree": {
+          "args": [
+            {
+              "id": "C",
+              "kind": "ref"
+            },
+            {
+              "kind": "text",
+              "segments": [
+                {
+                  "kind": "tex",
+                  "source": "C"
+                }
+              ]
+            }
+          ],
+          "kind": "call",
+          "name": "label"
+        }
+      },
+      "id": "lC",
+      "properties": []
     }
   ],
   "solve": {
@@ -425,6 +655,9 @@ expression: stdout
     "equations": 0,
     "rank": 0,
     "attempts": 0,
+    "outer_search_attempts": 1,
+    "measurement_passes": 1,
+    "routing_attempts": 0,
     "accepted_steps": 0,
     "max_normalized_residual": 0.0,
     "final_damping": 0.001,
@@ -432,12 +665,13 @@ expression: stdout
       "global_remaining": 2,
       "objects": [
         {
+          "class": "geometric",
           "id": "circ",
           "span": {
             "line": 10,
             "col": 1,
             "byte_start": 304,
-            "byte_end": 343
+            "byte_end": 334
           },
           "hint_settled_dofs": 2,
           "suggestion": "add a relation if unintended, e.g. on(circ, …) or vdist(…) == …"

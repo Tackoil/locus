@@ -1,0 +1,27 @@
+locus 0 beta 6
+rect first(2,1)
+rect second(2,1)
+label first_title("Left")
+label second_title("Right")
+rel center(first_title,first)
+rel center(second_title,second)
+rel row(first,second)
+point left_finish() { mark: none }
+point right_finish() { mark: none }
+rel align_center_x(first.s,left_finish)
+rel align_center_x(second.s,right_finish)
+rel gap_y(first.s,left_finish)
+rel gap_y(second.s,right_finish)
+segment left_guide(first.s,left_finish)
+segment right_guide(second.s,right_finish)
+point tail() { mark: none }
+point tip() { mark: none }
+rel on(tail,left_guide)
+rel on(tip,right_guide)
+rel align_center_y(tail,tip)
+arrow path(tail,tip)
+label caption(path,"A long request caption determines the guide spacing") { near: middle, side: above }
+rel avoid(caption,left_guide,right_guide)
+rel align_center_y(left_finish,right_finish)
+rel gap_y(first,caption,left_finish)
+assert avoid(caption,left_guide,right_guide)

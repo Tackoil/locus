@@ -1,0 +1,14 @@
+locus 0 beta 6
+
+fn pair(length) {
+    point A()
+    point B()
+    rel align_center_y(A, B)
+    rel dist(A, B) == length
+    segment path(A, B)
+    assert dist(A, B) == length
+}
+
+pair first(3)
+pair second(5)
+group paths(first.path, second.path)

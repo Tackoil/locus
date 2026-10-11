@@ -1,0 +1,8 @@
+locus 0 beta 6
+
+circle a(1)
+circle b(1)
+rel dist(a.center, b.center) == 1
+point P = intersect(a, b, 0)
+assert on(P, a)
+assert on(P, b)

@@ -2,13 +2,12 @@
 source: crates/locus-cli/tests/cli.rs
 expression: output_text(human.stderr)?
 ---
-E120
+E113
 
-  × unknown statement or object kind `pont`
-   ╭─[fixtures/errors/unknown_kind.locus:2:1]
- 1 │ locus 0 beta 5
+  × expected `(` after instance name
+   ╭─[fixtures/errors/unknown_kind.locus:2:8]
+ 1 │ locus 0 beta 6
  2 │ pont A = free (0, 0)
-   · ──┬─
-   ·   ╰── unknown statement or object kind `pont`
+   ·        ┬
+   ·        ╰── expected `(` after instance name
    ╰────
-  help: point

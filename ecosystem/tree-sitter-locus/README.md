@@ -1,6 +1,7 @@
 # Tree-sitter Locus
 
-An editor grammar for the current Locus `0 beta 5` format. It covers declarations, metadata,
+An editor grammar for the current Locus `0 beta 6` format.
+It covers constructor declarations, functions, named instances, ordered groups, metadata,
 styles, `where` clauses, attributes, properties, expressions, references,
 primed identifiers, numeric units, strings, and bare/inline TeX. Comments and
 escape sequences inside text are distinguished from source-level comments.
@@ -22,7 +23,7 @@ npm test
 Commit `grammar.js`, the generated `src/` files, and the lockfile together. The
 CLI is pinned to 0.25.10 and the generated parser uses ABI 14 for compatibility.
 `npm test` checks parse-tree fixtures, highlighting assertions, every source in
-`spec/test` and `assets`, all four Zed query files, newline variants, and recovery
+`spec/test`, `fixtures/beta6`, and `assets`, all four Zed query files, newline variants, and recovery
 after malformed input. The query files live in `../zed/languages/locus` so the
 tests exercise exactly the rules shipped to Zed.
 

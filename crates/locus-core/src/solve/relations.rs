@@ -1,6 +1,6 @@
 //! Source-ordered relation expansion and normalized residual semantics.
 
-use locus_syntax::{BinOp, Expr, File, Span, Statement};
+use locus_syntax::{BinOp, Expr, File, Ident, Span, Statement};
 
 use crate::eval::EvalError;
 
@@ -19,6 +19,7 @@ pub(crate) enum CircleBranch {
 pub(crate) struct SourceRelation<'a> {
     pub(crate) expression: &'a Expr,
     pub(crate) span: Span,
+    pub(crate) padding_none: bool,
 }
 
 #[derive(Clone, Debug)]
@@ -42,12 +43,30 @@ fn collect_statement<'a>(statement: &'a Statement, result: &mut Vec<SourceRelati
                 flatten(expression, result);
             }
         }
-        Statement::Rel(relation) => flatten(&relation.expr, result),
-        Statement::Assert(_) | Statement::Meta(_) | Statement::Style(_) | Statement::Class(_) => {}
+        Statement::Rel(relation) => collect_relation(relation, result),
+        Statement::Assert(_)
+        | Statement::Meta(_)
+        | Statement::Style(_)
+        | Statement::Class(_)
+        | Statement::Fn(_)
+        | Statement::Group(_)
+        | Statement::Call(_) => {}
+    }
+}
+
+fn collect_relation<'a>(relation: &'a locus_syntax::RelStmt, result: &mut Vec<SourceRelation<'a>>) {
+    let start = result.len();
+    flatten(&relation.expr, result);
+    for source in &mut result[start..] {
+        source.padding_none = !relation.props.items.is_empty();
     }
 }
 
 fn flatten<'a>(expression: &'a Expr, result: &mut Vec<SourceRelation<'a>>) {
+    if let Expr::Group { expr, .. } = expression {
+        flatten(expr, result);
+        return;
+    }
     if let Expr::Binary {
         op: BinOp::And,
         lhs,
@@ -61,6 +80,7 @@ fn flatten<'a>(expression: &'a Expr, result: &mut Vec<SourceRelation<'a>>) {
         result.push(SourceRelation {
             expression,
             span: expression.span(),
+            padding_none: false,
         });
     }
 }
@@ -95,6 +115,24 @@ pub(crate) fn evaluate(
 ) -> Result<Vec<Equation>, EvalError> {
     let mut equations = Vec::new();
     for (index, relation) in relations.iter().enumerate() {
+        if super::layout::is_layout(relation.expression) {
+            continue;
+        }
+        if let Expr::Call { name, args, span } = relation.expression
+            && is_inset(&name.name)
+        {
+            inset_relation(
+                differentiated,
+                &name.name,
+                args,
+                relation.padding_none,
+                index,
+                *span,
+                diameter,
+                &mut equations,
+            )?;
+            continue;
+        }
         evaluate_atomic(
             differentiated,
             relation.expression,
@@ -247,6 +285,17 @@ fn evaluate_point_predicate(
         );
     }
     match name {
+        "center" => center_relation(differentiated, args, relation, span, diameter, equations),
+        "align_center_x" | "align_center_y" | "align_left" | "align_right" | "align_top"
+        | "align_bottom" => alignment_relation(
+            differentiated,
+            name,
+            args,
+            relation,
+            span,
+            diameter,
+            equations,
+        ),
         "coincident" => {
             coincident_relation(differentiated, args, relation, span, diameter, equations)
         }
@@ -601,6 +650,431 @@ fn axis_relation(
     push(equations, residual.scale(1.0 / diameter), relation, span)
 }
 
+fn center_relation(
+    differentiated: &DifferentiatedFile,
+    args: &[Expr],
+    relation: usize,
+    span: Span,
+    diameter: f64,
+    equations: &mut Vec<Equation>,
+) -> Result<(), EvalError> {
+    require_arity("center", args, 2, span)?;
+    let lhs = measured_center(differentiated, &args[0])?;
+    let rhs = measured_center(differentiated, &args[1])?;
+    push(
+        equations,
+        lhs.x.sub(&rhs.x).scale(1.0 / diameter),
+        relation,
+        span,
+    )?;
+    push(
+        equations,
+        lhs.y.sub(&rhs.y).scale(1.0 / diameter),
+        relation,
+        span,
+    )
+}
+
+#[allow(
+    clippy::too_many_arguments,
+    reason = "source-ordered residual sink remains explicit"
+)]
+fn inset_relation(
+    differentiated: &DifferentiatedFile,
+    name: &str,
+    args: &[Expr],
+    padding_none: bool,
+    relation: usize,
+    span: Span,
+    diameter: f64,
+    equations: &mut Vec<Equation>,
+) -> Result<(), EvalError> {
+    require_arity(name, args, 2, span)?;
+    let alignment = inset_alignment(name);
+    let content = alignment_component(differentiated, &args[0], alignment)?;
+    let container = alignment_component(differentiated, &args[1], alignment)?;
+    let padding = if padding_none {
+        0.0
+    } else {
+        differentiated.metrics.padding
+    };
+    let direction = if matches!(name, "inset_left" | "inset_bottom") {
+        1.0
+    } else {
+        -1.0
+    };
+    let residual = content
+        .sub(&container)
+        .sub(&Jet::constant(direction * padding, content.gradient.len()));
+    push(equations, residual.scale(1.0 / diameter), relation, span)
+}
+
+fn is_inset(name: &str) -> bool {
+    matches!(
+        name,
+        "inset_left" | "inset_right" | "inset_top" | "inset_bottom"
+    )
+}
+
+fn inset_alignment(name: &str) -> &str {
+    match name {
+        "inset_left" => "align_left",
+        "inset_right" => "align_right",
+        "inset_bottom" => "align_bottom",
+        _ => "align_top",
+    }
+}
+
+fn alignment_relation(
+    differentiated: &DifferentiatedFile,
+    name: &str,
+    args: &[Expr],
+    relation: usize,
+    span: Span,
+    diameter: f64,
+    equations: &mut Vec<Equation>,
+) -> Result<(), EvalError> {
+    if args.len() < 2 {
+        return Err(relation_error(
+            span,
+            format!("`{name}` requires at least two objects"),
+        ));
+    }
+    let reference = alignment_component(differentiated, &args[0], name)?;
+    for argument in &args[1..] {
+        let component = alignment_component(differentiated, argument, name)?;
+        push(
+            equations,
+            component.sub(&reference).scale(1.0 / diameter),
+            relation,
+            span,
+        )?;
+    }
+    Ok(())
+}
+
+fn alignment_component(
+    differentiated: &DifferentiatedFile,
+    expression: &Expr,
+    name: &str,
+) -> Result<Jet, EvalError> {
+    if matches!(name, "align_center_x" | "align_center_y") {
+        let center = measured_center(differentiated, expression)?;
+        return Ok(if name == "align_center_x" {
+            center.x
+        } else {
+            center.y
+        });
+    }
+    let bounds = measured_bounds(differentiated, expression)?;
+    Ok(match name {
+        "align_left" => bounds.minimum.x,
+        "align_right" => bounds.maximum.x,
+        "align_bottom" => bounds.minimum.y,
+        _ => bounds.maximum.y,
+    })
+}
+
+#[derive(Clone)]
+pub(super) struct MeasuredBounds {
+    pub(super) minimum: DPoint,
+    pub(super) maximum: DPoint,
+}
+
+impl MeasuredBounds {
+    fn from_point(point: DPoint) -> Self {
+        Self {
+            minimum: point.clone(),
+            maximum: point,
+        }
+    }
+
+    fn include(&mut self, point: &DPoint) {
+        self.minimum.x = live_min(&self.minimum.x, &point.x);
+        self.minimum.y = live_min(&self.minimum.y, &point.y);
+        self.maximum.x = live_max(&self.maximum.x, &point.x);
+        self.maximum.y = live_max(&self.maximum.y, &point.y);
+    }
+
+    pub(super) fn center(self) -> DPoint {
+        DPoint {
+            x: self.minimum.x.add(&self.maximum.x).scale(0.5),
+            y: self.minimum.y.add(&self.maximum.y).scale(0.5),
+        }
+    }
+}
+
+fn measured_center(
+    differentiated: &DifferentiatedFile,
+    expression: &Expr,
+) -> Result<DPoint, EvalError> {
+    if collection_members(differentiated, expression).is_some() {
+        return measured_bounds(differentiated, expression).map(MeasuredBounds::center);
+    }
+    match differentiated.object(expression)? {
+        DObject::Point(point) => Ok(point),
+        DObject::Circle(circle) => Ok(circle.center),
+        DObject::Ellipse(ellipse) => Ok(ellipse.center),
+        DObject::RoundedRect(_) => measured_anchor(differentiated, expression, "center"),
+        _ => measured_bounds(differentiated, expression).map(MeasuredBounds::center),
+    }
+}
+
+pub(super) fn measured_bounds(
+    differentiated: &DifferentiatedFile,
+    expression: &Expr,
+) -> Result<MeasuredBounds, EvalError> {
+    if let Some(members) = collection_members(differentiated, expression) {
+        return collection_bounds(differentiated, members, expression.span());
+    }
+    match differentiated.object(expression)? {
+        DObject::Point(point) => Ok(MeasuredBounds::from_point(point)),
+        DObject::Linear(linear) => {
+            bounds_of_points(&[linear.start, linear.through], expression.span())
+        }
+        DObject::Polygon(vertices, _, _) => bounds_of_points(&vertices, expression.span()),
+        DObject::Bspline(spline) => bounds_of_points(&spline.controls, expression.span()),
+        DObject::Route(route) => {
+            let (minimum, maximum) = differentiated.route_bounds(expression, &route);
+            Ok(MeasuredBounds { minimum, maximum })
+        }
+        object => curved_bounds(differentiated, expression, object),
+    }
+}
+
+/// Stable member/route/caption identities, independent of the current extreme.
+/// Aggregate measurements remain available through `measured_bounds`.
+pub(super) fn measured_contributors(
+    differentiated: &DifferentiatedFile,
+    arguments: &[Expr],
+) -> Result<Vec<MeasuredBounds>, EvalError> {
+    let members = crate::program::avoidance_operands(
+        &differentiated.collections,
+        &differentiated.aliases,
+        arguments,
+    );
+    let mut seen = std::collections::BTreeSet::new();
+    let mut result = Vec::new();
+    for member in members {
+        if let DObject::Route(route) = differentiated.object(&member)? {
+            append_route_contributors(differentiated, &member, &route, &mut seen, &mut result);
+        } else if contributor_identity(&member).is_none_or(|id| seen.insert(id.to_owned())) {
+            result.extend(primitive_contributors(differentiated, &member)?);
+        }
+    }
+    Ok(result)
+}
+
+fn primitive_contributors(
+    d: &DifferentiatedFile,
+    member: &Expr,
+) -> Result<Vec<MeasuredBounds>, EvalError> {
+    let points = match d.object(member)? {
+        DObject::Linear(linear) => vec![linear.start, linear.through],
+        DObject::Polygon(vertices, false, _) => vertices,
+        DObject::Bspline(spline) => spline.controls,
+        _ => return Ok(vec![measured_bounds(d, member)?]),
+    };
+    Ok(points.into_iter().map(MeasuredBounds::from_point).collect())
+}
+
+fn contributor_identity(expression: &Expr) -> Option<&str> {
+    match expression {
+        Expr::Ref(id) => Some(&id.name),
+        Expr::Group { expr, .. } => contributor_identity(expr),
+        _ => None,
+    }
+}
+
+fn append_route_contributors(
+    d: &DifferentiatedFile,
+    member: &Expr,
+    route: &crate::geom::route::Route<Jet>,
+    seen: &mut std::collections::BTreeSet<String>,
+    result: &mut Vec<MeasuredBounds>,
+) {
+    for (identity, minimum, maximum) in d.route_bound_contributors(member, route) {
+        let identity = if identity.is_empty() {
+            contributor_identity(member).map(str::to_owned)
+        } else {
+            Some(identity)
+        };
+        if identity.is_none_or(|id| seen.insert(id)) {
+            result.push(MeasuredBounds { minimum, maximum });
+        }
+    }
+}
+
+pub(super) fn collection_members<'a>(
+    differentiated: &'a DifferentiatedFile,
+    expression: &Expr,
+) -> Option<&'a [String]> {
+    match expression {
+        Expr::Ref(id) => differentiated
+            .collections
+            .get(&id.name)
+            .map(|collection| collection.members.as_slice()),
+        Expr::Group { expr, .. } => collection_members(differentiated, expr),
+        _ => None,
+    }
+}
+
+fn collection_bounds(
+    differentiated: &DifferentiatedFile,
+    members: &[String],
+    span: Span,
+) -> Result<MeasuredBounds, EvalError> {
+    let mut result: Option<MeasuredBounds> = None;
+    for member in members {
+        let expression = Expr::Ref(Ident {
+            name: member.clone(),
+            span,
+        });
+        let bounds = measured_bounds(differentiated, &expression)?;
+        if let Some(current) = &mut result {
+            current.include(&bounds.minimum);
+            current.include(&bounds.maximum);
+        } else {
+            result = Some(bounds);
+        }
+    }
+    result.ok_or_else(|| relation_error(span, "collection has no measured members"))
+}
+
+fn curved_bounds(
+    differentiated: &DifferentiatedFile,
+    expression: &Expr,
+    object: DObject,
+) -> Result<MeasuredBounds, EvalError> {
+    match object {
+        DObject::Circle(circle) => Ok(bounds_with_extents(
+            &circle.center,
+            &circle.radius,
+            &circle.radius,
+        )),
+        DObject::Ellipse(ellipse) => ellipse_bounds(&ellipse, expression.span()),
+        DObject::Arc(arc) => Ok(arc_bounds(&arc)),
+        DObject::RoundedRect(_) => Ok(MeasuredBounds {
+            minimum: measured_anchor(differentiated, expression, "sw")?,
+            maximum: measured_anchor(differentiated, expression, "ne")?,
+        }),
+        _ => Err(relation_error(
+            expression.span(),
+            "expected an object with measured bounds",
+        )),
+    }
+}
+
+fn measured_anchor(
+    differentiated: &DifferentiatedFile,
+    expression: &Expr,
+    name: &str,
+) -> Result<DPoint, EvalError> {
+    let span = expression.span();
+    let property = Expr::Property {
+        base: Box::new(expression.clone()),
+        name: Ident {
+            name: name.to_owned(),
+            span,
+        },
+        args: Vec::new(),
+        span,
+    };
+    expect_point(differentiated.object(&property)?, span)
+}
+
+fn bounds_of_points(points: &[DPoint], span: Span) -> Result<MeasuredBounds, EvalError> {
+    let first = points
+        .first()
+        .ok_or_else(|| relation_error(span, "object has no measured points"))?;
+    let mut bounds = MeasuredBounds::from_point(first.clone());
+    for point in &points[1..] {
+        bounds.include(point);
+    }
+    Ok(bounds)
+}
+
+fn bounds_with_extents(center: &DPoint, horizontal: &Jet, vertical: &Jet) -> MeasuredBounds {
+    MeasuredBounds {
+        minimum: DPoint {
+            x: center.x.sub(horizontal),
+            y: center.y.sub(vertical),
+        },
+        maximum: DPoint {
+            x: center.x.add(horizontal),
+            y: center.y.add(vertical),
+        },
+    }
+}
+
+fn ellipse_bounds(ellipse: &DEllipse, span: Span) -> Result<MeasuredBounds, EvalError> {
+    let cosine = ellipse.rotation.cos();
+    let sine = ellipse.rotation.sin();
+    let horizontal = squared_sum_root(
+        &ellipse.semimajor.mul(&cosine),
+        &ellipse.semiminor.mul(&sine),
+        span,
+    )?;
+    let vertical = squared_sum_root(
+        &ellipse.semimajor.mul(&sine),
+        &ellipse.semiminor.mul(&cosine),
+        span,
+    )?;
+    Ok(bounds_with_extents(&ellipse.center, &horizontal, &vertical))
+}
+
+fn squared_sum_root(first: &Jet, second: &Jet, span: Span) -> Result<Jet, EvalError> {
+    first
+        .mul(first)
+        .add(&second.mul(second))
+        .sqrt()
+        .map_err(|()| relation_error(span, "ellipse extent is undefined"))
+}
+
+fn arc_bounds(arc: &DArc) -> MeasuredBounds {
+    let mut bounds = MeasuredBounds::from_point(arc.start.clone());
+    bounds.include(&arc.end);
+    for angle in [
+        0.0,
+        core::f64::consts::FRAC_PI_2,
+        core::f64::consts::PI,
+        3.0 * core::f64::consts::FRAC_PI_2,
+    ] {
+        let point = DPoint {
+            x: arc
+                .circle
+                .center
+                .x
+                .add(&arc.circle.radius.scale(libm::cos(angle))),
+            y: arc
+                .circle
+                .center
+                .y
+                .add(&arc.circle.radius.scale(libm::sin(angle))),
+        };
+        if point_angle_in_arc(&point, arc, false) {
+            bounds.include(&point);
+        }
+    }
+    bounds
+}
+
+fn live_min(lhs: &Jet, rhs: &Jet) -> Jet {
+    if lhs.value <= rhs.value {
+        lhs.clone()
+    } else {
+        rhs.clone()
+    }
+}
+
+fn live_max(lhs: &Jet, rhs: &Jet) -> Jet {
+    if lhs.value >= rhs.value {
+        lhs.clone()
+    } else {
+        rhs.clone()
+    }
+}
+
 fn point_circle_residual(point: &DPoint, circle: &DCircle, span: Span) -> Result<Jet, EvalError> {
     point
         .sub(&circle.center)
@@ -622,7 +1096,15 @@ fn point_linear_residual(point: &DPoint, linear: &DLinear, span: Span) -> Result
     if linear.domain == LinearDomain::Line {
         return Ok(signed);
     }
-    let carrier = signed.abs();
+    let carrier = if linear.layout_live {
+        if signed.value < 0.0 {
+            signed.scale(-1.0)
+        } else {
+            signed
+        }
+    } else {
+        signed.abs()
+    };
     let start = point
         .sub(&linear.start)
         .norm()
@@ -632,6 +1114,9 @@ fn point_linear_residual(point: &DPoint, linear: &DLinear, span: Span) -> Result
         .norm()
         .map_err(|()| relation_error(span, "distance to linear end is not finite"))?;
     let live = select_linear_piece(parameter.value, linear.domain, &carrier, &start, &end);
+    if linear.layout_live {
+        return Ok(live.clone());
+    }
     let seed = select_linear_piece(parameter.seed_value, linear.domain, &carrier, &start, &end);
     Ok(seed.clone().with_live_value(live))
 }
@@ -790,4 +1275,109 @@ fn assert_only_relation_error(span: Span) -> EvalError {
         span,
         "this assert-only boolean form cannot be used in `rel` or `where`",
     )
+}
+
+#[cfg(test)]
+#[allow(clippy::expect_used, clippy::float_cmp, clippy::panic)]
+mod tests {
+    use super::*;
+    use crate::solve::{Solved, solve};
+
+    fn solve_source(source: &str) -> Solved {
+        let parsed = locus_syntax::parse(source);
+        assert!(parsed.diagnostics.is_empty(), "{:?}", parsed.diagnostics);
+        solve(&parsed.file).expect("alignment system solves")
+    }
+
+    #[test]
+    fn measured_equalities_solve_shape_bounds_without_matching_dimensions() {
+        let source = "locus 0 beta 6\n\
+            rect reference(4, 2)\nrect left(2, 4)\nrounded_rect right(2, 4, 0.25)\n\
+            circle c(1)\npoint P()\npoint Q()\n\
+            rel align_left(reference, left)\nrel align_bottom(reference, left)\n\
+            rel align_right(reference, right)\nrel align_top(reference, right)\n\
+            rel center(c, reference)\nrel align_center_x(reference, c, P, Q)\n\
+            rel align_center_y(reference, c, P, Q)\n\
+            assert align_left(reference, left)\nassert align_bottom(reference, left)\n\
+            assert align_right(reference, right)\nassert align_top(reference, right)\n\
+            assert center(c, reference)\nassert align_center_x(reference, c, P, Q)\n\
+            assert align_center_y(reference, c, P, Q)\n\
+            assert reference.width == 4\nassert left.width == 2\n";
+        let solved = solve_source(source);
+        let parsed = locus_syntax::parse(source);
+        assert!(
+            crate::assert::evaluate_assertions(&parsed.file, &solved.scene)
+                .expect("solved assertions")
+                .passed
+        );
+        assert_eq!(solved.summary.rank, 10);
+    }
+
+    #[test]
+    fn measured_bound_derivatives_follow_the_current_extreme() {
+        let first = DPoint {
+            x: Jet {
+                value: 2.0,
+                seed_value: -2.0,
+                gradient: vec![1.0],
+            },
+            y: Jet::constant(0.0, 1),
+        };
+        let second = DPoint {
+            x: Jet {
+                value: -1.0,
+                seed_value: 1.0,
+                gradient: vec![0.0],
+            },
+            y: Jet::constant(0.0, 1),
+        };
+        let bounds = bounds_of_points(&[first, second], Span::default()).expect("segment bounds");
+        assert_eq!(bounds.minimum.x.value, -1.0);
+        assert_eq!(bounds.minimum.x.gradient, vec![0.0]);
+        assert_eq!(bounds.maximum.x.gradient, vec![1.0]);
+    }
+
+    #[test]
+    fn finite_layout_incidence_switches_endpoint_and_interior_gradients_live() {
+        let mut linear = DLinear {
+            start: DPoint {
+                x: Jet::constant(0.0, 1),
+                y: Jet::constant(0.0, 1),
+            },
+            through: DPoint {
+                x: Jet::constant(1.0, 1),
+                y: Jet::constant(0.0, 1),
+            },
+            domain: LinearDomain::Segment,
+            layout_live: true,
+        };
+        let point = DPoint {
+            x: Jet {
+                value: 3.0,
+                seed_value: 0.5,
+                gradient: vec![1.0],
+            },
+            y: Jet::constant(1.0, 1),
+        };
+        let live = point_linear_residual(&point, &linear, Span::default()).expect("live endpoint");
+        assert!((live.gradient[0] - 2.0 / libm::sqrt(5.0)).abs() < 1e-12);
+        linear.layout_live = false;
+        let geometric =
+            point_linear_residual(&point, &linear, Span::default()).expect("frozen geometry");
+        assert_eq!(geometric.value, live.value);
+        assert_eq!(geometric.gradient, vec![0.0]);
+        linear.layout_live = true;
+        let point = DPoint {
+            x: Jet {
+                value: 0.5,
+                seed_value: 3.0,
+                gradient: vec![1.0],
+            },
+            y: Jet::constant(1.0, 1),
+        };
+        let interior =
+            point_linear_residual(&point, &linear, Span::default()).expect("live interior");
+        assert_eq!(interior.gradient, vec![0.0]);
+        assert_eq!(interior.value, 1.0);
+    }
 }

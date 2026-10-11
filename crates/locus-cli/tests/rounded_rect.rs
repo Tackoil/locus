@@ -25,7 +25,26 @@ fn rounded_rect_check_describe_and_vector_exports() -> Result<(), Box<dyn Error>
     let dir = tempfile::tempdir()?;
     let file = dir.path().join("rounded.locus");
     std::fs::write(&file, SOURCE)?;
-    output(&file, "check", &["--strict", "--layout"])?;
+    let checked: Value = serde_json::from_slice(&output(&file, "check", &["--layout", "--json"])?)?;
+    assert_eq!(checked["passed"], true);
+    let diagnostics = checked["files"][0]["diagnostics"]
+        .as_array()
+        .ok_or("diagnostics")?;
+    assert!(
+        diagnostics
+            .iter()
+            .all(|d| d["code"] != "settling_incomplete")
+    );
+    assert_eq!(
+        checked["files"][0]["solve"]["settling"]["settling_complete"],
+        true
+    );
+    Command::cargo_bin("locus")?
+        .arg("check")
+        .arg(&file)
+        .args(["--strict", "--layout", "--json"])
+        .assert()
+        .code(0);
     let report: Value = serde_json::from_slice(&output(&file, "describe", &["--json"])?)?;
     let objects = report["objects"].as_array().ok_or("missing objects")?;
     let start = objects

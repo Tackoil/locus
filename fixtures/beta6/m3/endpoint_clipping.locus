@@ -1,0 +1,10 @@
+locus 0 beta 6
+point start()
+point finish = offset(start, 4, 0)
+circle source(start, 1)
+circle target(finish, 1)
+arrow path(start, finish)
+label caption(path, "go") { near: end, side: above }
+rel trim_endpoints(path, source)
+rel trim_endpoints(path, target)
+assert path.length == 4

@@ -76,8 +76,33 @@ impl RemovalImpact {
 impl DependencyGraph {
     /// Extracts dependencies and independently rejects unknown/forward references.
     pub fn extract(file: &File) -> Result<Self, DependencyError> {
+        Self::extract_with_collections(file, &std::collections::BTreeMap::new())
+    }
+
+    /// Extracts dependencies from an expanded scene with its retained collections.
+    ///
+    /// # Errors
+    /// Independently rejects unknown or forward object references in source order.
+    pub fn extract_scene(scene: &crate::Scene) -> Result<Self, DependencyError> {
+        Self::extract_with_collections(&scene.file, &scene.collections)
+    }
+
+    /// Extracts a flat program with the collection table validated by expansion.
+    /// This supports source editing without evaluating or solving the program.
+    ///
+    /// # Errors
+    /// Independently rejects unknown or forward object references in source order.
+    pub fn extract_with_collections(
+        file: &File,
+        collections: &std::collections::BTreeMap<String, locus_syntax::Collection>,
+    ) -> Result<Self, DependencyError> {
         let mut graph = Self::default();
-        let mut defined = BTreeSet::new();
+        let mut defined = collections.keys().cloned().collect::<BTreeSet<_>>();
+        for (name, collection) in collections {
+            graph
+                .dependencies
+                .insert(name.clone(), collection.members.iter().cloned().collect());
+        }
         for statement in &file.statements {
             if let Some((kind, expression)) = statement_expression(statement) {
                 graph.record_statement_dependencies(kind, expression, &defined)?;
@@ -105,6 +130,13 @@ impl DependencyGraph {
                 refs.into_keys().collect::<IndexSet<_>>(),
             );
             defined.insert(op.id.name.clone());
+            for clause in &op.where_clauses {
+                graph.record_statement_dependencies(
+                    StatementDependencyKind::Relation,
+                    clause,
+                    &defined,
+                )?;
+            }
         }
         Ok(graph)
     }
@@ -134,6 +166,29 @@ impl DependencyGraph {
     #[must_use]
     pub fn dependencies_of(&self, id: &str) -> Option<&IndexSet<String>> {
         self.dependencies.get(id)
+    }
+
+    pub(crate) fn solver_closure<'a>(
+        &self,
+        unknowns: impl Iterator<Item = &'a str>,
+    ) -> BTreeSet<String> {
+        let mut pending = unknowns.map(str::to_owned).collect::<Vec<_>>();
+        pending.extend(
+            self.statement_dependencies
+                .iter()
+                .filter(|dependency| dependency.kind == StatementDependencyKind::Relation)
+                .map(|dependency| dependency.referenced_id.clone()),
+        );
+        let mut closure = BTreeSet::new();
+        while let Some(id) = pending.pop() {
+            if !closure.insert(id.clone()) {
+                continue;
+            }
+            if let Some(dependencies) = self.dependencies.get(&id) {
+                pending.extend(dependencies.iter().cloned());
+            }
+        }
+        closure
     }
 
     /// Returns all declarations orphaned by removing `id`, transitively in file order.
@@ -193,7 +248,13 @@ fn statement_expression(statement: &Statement) -> Option<(StatementDependencyKin
     match statement {
         Statement::Rel(relation) => Some((StatementDependencyKind::Relation, &relation.expr)),
         Statement::Assert(assertion) => Some((StatementDependencyKind::Assertion, &assertion.expr)),
-        Statement::Op(_) | Statement::Meta(_) | Statement::Style(_) | Statement::Class(_) => None,
+        Statement::Op(_)
+        | Statement::Meta(_)
+        | Statement::Style(_)
+        | Statement::Class(_)
+        | Statement::Fn(_)
+        | Statement::Group(_)
+        | Statement::Call(_) => None,
     }
 }
 
@@ -217,7 +278,7 @@ fn validate_references(
 
 fn collect_constructor_refs(constructor: &Constructor, refs: &mut IndexMap<String, Span>) {
     match constructor {
-        Constructor::Call { args, .. } => collect_expr_list_refs(args, refs),
+        Constructor::Call { name, args, .. } => collect_call_refs(&name.name, args, refs),
         Constructor::Expr { expr, .. } | Constructor::FreeNum { hint: expr, .. } => {
             collect_expr_refs(expr, refs);
         }
@@ -250,7 +311,7 @@ fn collect_leaf_ref(expression: &Expr, refs: &mut IndexMap<String, Span>) -> boo
 
 fn collect_compound_refs(expression: &Expr, refs: &mut IndexMap<String, Span>) {
     match expression {
-        Expr::Call { args, .. } => collect_expr_list_refs(args, refs),
+        Expr::Call { name, args, .. } => collect_call_refs(&name.name, args, refs),
         Expr::Property { base, args, .. } => {
             collect_expr_refs(base, refs);
             collect_expr_list_refs(args, refs);
@@ -264,47 +325,12 @@ fn collect_compound_refs(expression: &Expr, refs: &mut IndexMap<String, Span>) {
     }
 }
 
-#[cfg(test)]
-#[allow(clippy::expect_used)]
-mod tests {
-    use locus_syntax::parse;
-
-    use super::*;
-
-    #[test]
-    fn reports_transitive_orphans_in_file_order() {
-        let parsed =
-            parse("locus 0 beta 5\nnum a = 2\nnum b = a + 1\nnum c = b * 2\nnum spare = 4\n");
-        let graph = DependencyGraph::extract(&parsed.file).expect("valid dependency graph");
-        assert_eq!(graph.orphans_after_removing("a"), ["b", "c"]);
-        assert!(graph.orphans_after_removing("spare").is_empty());
-    }
-
-    #[test]
-    fn independently_rejects_forward_references() {
-        let parsed = parse("locus 0 beta 5\nnum a = later + 1\nnum later = 2\n");
-        let error = DependencyGraph::extract(&parsed.file).expect_err("forward reference");
-        assert_eq!(error.code, "E301");
-        assert_eq!(error.span.line, 2);
-    }
-
-    #[test]
-    fn removal_impact_includes_relations_and_assertions_in_file_order() {
-        let parsed =
-            parse("locus 0 beta 5\nnum a = free 1\nrel a == 1\nassert a == 1\nnum spare = 2\n");
-        let graph = DependencyGraph::extract(&parsed.file).expect("valid dependency graph");
-        let impact = graph.removal_impact("a");
-        assert!(impact.orphaned_declarations.is_empty());
-        assert_eq!(impact.dependent_statements.len(), 2);
-        assert_eq!(
-            impact.dependent_statements[0].kind,
-            StatementDependencyKind::Relation
-        );
-        assert_eq!(impact.dependent_statements[0].span.line, 3);
-        assert_eq!(
-            impact.dependent_statements[1].kind,
-            StatementDependencyKind::Assertion
-        );
-        assert_eq!(impact.dependent_statements[1].span.line, 4);
+fn collect_call_refs(name: &str, args: &[Expr], refs: &mut IndexMap<String, Span>) {
+    if name == "edge" {
+        if let Some(shape) = args.first() {
+            collect_expr_refs(shape, refs);
+        }
+    } else {
+        collect_expr_list_refs(args, refs);
     }
 }

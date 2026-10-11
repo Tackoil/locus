@@ -10,6 +10,7 @@ pub mod arrow;
 pub mod construct;
 mod curve;
 mod rounded_rect;
+pub mod route;
 pub use rounded_rect::RoundedRect;
 pub mod intersect;
 pub mod measure;
@@ -381,6 +382,12 @@ pub struct BBox {
 }
 
 impl BBox {
+    /// Returns the smallest box containing both finite bounding boxes.
+    #[must_use]
+    pub fn union(mut self, other: Self) -> Self {
+        self.include_bbox(other);
+        self
+    }
     /// Constructs the smallest box containing all supplied finite points.
     pub fn from_points(points: impl IntoIterator<Item = Point>) -> Result<Self, ConstructError> {
         let mut iter = points.into_iter();
@@ -640,3 +647,5 @@ pub(crate) fn validate_finite_result(
         Err(ConstructError::NonFinite { operation })
     }
 }
+
+pub mod sdf;

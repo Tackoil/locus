@@ -1,4 +1,4 @@
-locus 0 beta 5
+locus 0 beta 6
 
 meta title = "Cubic B-spline from a frame's derived anchors"
 meta note = "Five controls produce two spans; only the endpoint controls are interpolated by definition"
@@ -6,35 +6,35 @@ meta note = "Five controls produce two spans; only the endpoint controls are int
 style textbook
 
 // ---- frame, controls, and curve ----------------------------
-rect frame = rect(8, 4)   [construction]
+rect frame(8, 4)   [construction]
 point P0 = frame.sw
 point P1 = frame.nw
 point P2 = frame.n
 point P3 = frame.se
 point P4 = frame.e
 
-bspline curve = bspline(P0, P1, P2, P3, P4)   [highlight]
-segment control01 = seg(P0, P1)   [auxiliary]
-segment control12 = seg(P1, P2)   [auxiliary]
-segment control23 = seg(P2, P3)   [auxiliary]
-segment control34 = seg(P3, P4)   [auxiliary]
+bspline curve(P0, P1, P2, P3, P4)   [highlight]
+segment control01(P0, P1)   [auxiliary]
+segment control12(P1, P2)   [auxiliary]
+segment control23(P2, P3)   [auxiliary]
+segment control34(P3, P4)   [auxiliary]
 
 // This sample is at the interior knot, not halfway along the arc length.
 point M = curve.at(0.5)
 point Q = curve.at(0.25)
 
 // ---- annotation -------------------------------------------
-label lP0 = label(P0, $P_0$)   { dir: SW }
-label lP1 = label(P1, $P_1$)   { dir: NW }
-label lP2 = label(P2, $P_2$)   { dir: N }
-label lP3 = label(P3, $P_3$)   { dir: SE }
-label lP4 = label(P4, $P_4$)   { dir: E }
-label lM = label(M, "$t = 0.5$")   { dir: N }
-label lQ = label(Q, "$t = 0.25$")   { dir: E }
+label lP0(P0, $P_0$)   { dir: SW }
+label lP1(P1, $P_1$)   { dir: NW }
+label lP2(P2, $P_2$)   { dir: N }
+label lP3(P3, $P_3$)   { dir: SE }
+label lP4(P4, $P_4$)   { dir: E }
+label lM(M, "$t = 0.5$")   { dir: N }
+label lQ(Q, "$t = 0.25$")   { dir: E }
 
 // ---- intent -----------------------------------------------
-assert coincident(curve.start, P0) and coincident(curve.end, P4)
-assert coincident(curve.at(0), P0) and coincident(curve.at(1), P4)
-assert coincident(M, midpoint(midpoint(P1, P2), midpoint(P2, P3)))
+assert center(curve.start, P0) and center(curve.end, P4)
+assert center(curve.at(0), P0) and center(curve.at(1), P4)
+assert center(M, midpoint(midpoint(P1, P2), midpoint(P2, P3)))
 assert dist(Q, P1) > 0
 assert hdist(P0, P4) == frame.width

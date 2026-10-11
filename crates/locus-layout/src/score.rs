@@ -172,6 +172,21 @@ impl Scorer {
     }
 
     pub(crate) fn add_annotation(&mut self, mark: &PlacedAnnotation) {
+        if let Leader::Routed { route, .. } = &mark.leader {
+            let points: Vec<Point> = core::iter::once(&route.from)
+                .chain(route.via.iter())
+                .chain(core::iter::once(&route.to))
+                .cloned()
+                .map(Into::into)
+                .collect();
+            self.strokes.extend(points.windows(2).map(|pair| {
+                Obstacle::new(
+                    &mark.id,
+                    Some(mark.bounds),
+                    linear(pair[0], pair[1] - pair[0], 0.0, 1.0),
+                )
+            }));
+        }
         self.strokes.extend(mark.strokes.iter().map(|s| {
             Obstacle::new(
                 &mark.id,

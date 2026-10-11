@@ -1,0 +1,6 @@
+locus 0 beta 6
+diamond panel()
+label caption("A long measured decision caption")
+rel center(panel, caption)
+rel contain(panel, caption)
+assert contain(panel, caption)

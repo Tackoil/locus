@@ -28,11 +28,29 @@ pub struct EvalError {
     /// Most specific failing expression or constructor span.
     pub span: Span,
     /// Declared object being evaluated, when applicable.
-    pub object_id: Option<String>,
+    pub object_id: Option<Box<str>>,
     /// Human-readable failure summary.
     pub message: String,
     /// Offending measured values in deterministic display order.
-    pub measured: Vec<MeasuredValue>,
+    #[allow(
+        clippy::box_collection,
+        reason = "rare measured diagnostics are boxed to keep evaluator Result errors compact"
+    )]
+    pub measured: Box<Vec<MeasuredValue>>,
+    /// Function calls that produced this declaration, from outermost to innermost.
+    #[allow(
+        clippy::box_collection,
+        reason = "the rare invocation trace is boxed to keep Result error values compact"
+    )]
+    pub invocation_chain: Box<Vec<locus_syntax::InvocationOrigin>>,
+    /// Rare outer-search details are boxed to keep common errors compact.
+    search_failure: Option<Box<SearchFailureMetadata>>,
+}
+
+#[derive(Clone, Debug, Default, PartialEq)]
+struct SearchFailureMetadata {
+    inequalities: Vec<usize>,
+    attempts: usize,
 }
 
 impl EvalError {
@@ -44,14 +62,42 @@ impl EvalError {
             span,
             object_id: None,
             message: message.into(),
-            measured: Vec::new(),
+            measured: Box::default(),
+            invocation_chain: Box::default(),
+            search_failure: None,
         }
+    }
+
+    /// Continuous candidates visited by a failed bounded outer search.
+    #[must_use]
+    pub fn outer_search_attempts(&self) -> usize {
+        self.search_failure
+            .as_ref()
+            .map_or(0, |failure| failure.attempts)
+    }
+
+    pub(crate) fn failed_inequalities(&self) -> &[usize] {
+        self.search_failure
+            .as_ref()
+            .map_or(&[], |failure| failure.inequalities.as_slice())
+    }
+
+    pub(crate) fn set_failed_inequalities(&mut self, inequalities: Vec<usize>) {
+        self.search_failure
+            .get_or_insert_with(Box::default)
+            .inequalities = inequalities;
+    }
+
+    pub(crate) fn set_failed_search_attempts(&mut self, attempts: usize) {
+        self.search_failure
+            .get_or_insert_with(Box::default)
+            .attempts = attempts;
     }
 
     /// Associates the failing declaration id.
     #[must_use]
     pub fn for_object(mut self, id: impl Into<String>) -> Self {
-        self.object_id = Some(id.into());
+        self.object_id = Some(id.into().into_boxed_str());
         self
     }
 

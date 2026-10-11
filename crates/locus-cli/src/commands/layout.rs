@@ -1,50 +1,37 @@
 //! Shared layout preparation and actionable collision feedback.
 
 use locus_core::{GeometryBounds, InspectDiagnostic, LayoutCollision};
-use locus_layout::{LayoutError, LayoutOptions, LayoutScene, boxes::measure_scene, layout};
+use locus_layout::{LayoutError, LayoutOptions};
 use locus_syntax::Span;
-use locus_tex::{FontSize, MockEngine, PlaintextEngine, RexEngine, TexEngine};
 
-use super::{LoadedScene, dependency_failure, resolved_scene};
-use crate::TextEngine;
+use super::{LoadedFile, dependency_failure};
 use crate::output::Execution;
 
-pub(super) fn place(loaded: &LoadedScene, engine: TextEngine) -> Result<LayoutScene, LayoutError> {
-    let tex: &dyn TexEngine = match engine {
-        TextEngine::Rex => &RexEngine,
-        TextEngine::Mock => &MockEngine,
-    };
-    let scene = resolved_scene(&loaded.scene);
-    let measured = measure_scene(scene, &PlaintextEngine::new(), tex, FontSize::DEFAULT)?;
-    layout(
-        scene,
-        &measured,
-        LayoutOptions {
-            em_size: 0.28,
-            ..LayoutOptions::default()
-        },
-    )
+pub(super) fn options(metrics: locus_core::preset::LayoutMetrics) -> LayoutOptions {
+    LayoutOptions {
+        em_size: metrics.em_size,
+        gap: metrics.gap,
+        margin: metrics.margin,
+        stroke_width: metrics.stroke_width,
+        mark_size: metrics.mark_size,
+        label_connectors: false,
+    }
 }
 
-pub(super) fn failure(
+pub(super) fn file_failure(
     command: &'static str,
-    loaded: &LoadedScene,
+    loaded: &LoadedFile,
     error: &LayoutError,
 ) -> Execution {
     let span = match error {
         LayoutError::MissingMeasurement { span, .. }
         | LayoutError::Anchor { span, .. }
         | LayoutError::Invalid { span, .. }
+        | LayoutError::Conflict { span, .. }
         | LayoutError::Measurement { span, .. } => *span,
         LayoutError::Options => Span::empty(1, 1, 0),
     };
-    dependency_failure(
-        command,
-        &loaded.as_file(),
-        error.code(),
-        span,
-        error.to_string(),
-    )
+    dependency_failure(command, loaded, error.code(), span, error.to_string())
 }
 
 pub(super) fn details(diagnostic: &InspectDiagnostic) -> Vec<LayoutCollision> {

@@ -12,7 +12,7 @@ Locus is an agent-friendly relational language and CLI toolchain for determinist
 
 The core goal of Locus is to let AI agents create, inspect, verify, and revise precise geometry without relying on visual feedback. Agents declare geometric relationships instead of guessing coordinates, use structured diagnostics and stable JSON output to understand failures, and verify intent through persistent assertions. Deterministic output and diffable `.locus` source files make every change reproducible and auditable.
 
-The project is under active development and supports only the latest draft: `locus 0 beta 5`. Backward compatibility is not a goal yet. This draft uses single-line `meta key = "value"` metadata, scalar seeds directly after `free`, optional alpha in `#RRGGBBAA` colors, parameterless points, shape-owned placement, explicit circle-tangency branches, ellipses, and B-splines. See the [specification](spec/specification.md) and [demonstrations](spec/test/README.md).
+The project is under active development. The `locus 0 beta 6` frontend supports constructor declarations, reusable functions, ordered groups, and named instances. The beta 6 solver supports measured layout, hard separation/containment/avoidance requirements, continuous routes and path labels, endpoint clipping, bounded solve/layout feedback, and reports and safe edits for instances and groups. The confirmed rules and presets are pinned in the [specification](spec/specification.md); feasible preference settling can remain incomplete and is reported as a strict-check warning. Only `locus 0 beta 6` files are accepted. See the [specification](spec/specification.md) and [demonstrations](spec/test/README.md).
 
 ## Development checks
 
@@ -25,7 +25,41 @@ cargo run -p locus-cli -- check spec/test/demonstrations/*.locus
 cargo run -p locus-cli -- check spec/test/stress/*.locus
 ```
 
-See [`spec/README.md`](spec/README.md) for the normative contract and [`documents/structure.md`](documents/structure.md) for the implementation roadmap.
+See the [specification](spec/specification.md) for the normative contract and the [test corpus](spec/test/README.md) for runnable examples.
+
+### Pipeline timing metrics
+
+Add `--timings` to any CLI command for an indented timing report on stderr:
+
+```sh
+cargo run --release -p locus-cli -- render figure.locus -o figure.svg --timings
+cargo run --release -p locus-cli -- check figure.locus --json --timings=json 2> timings.json
+```
+
+Timings cover file reads, parsing, expansion, text measurement (including each
+label), evaluation preparation, solver initialization, continuous candidates,
+Levenberg–Marquardt solving, preference settling, solution finalization, repeated
+measurement/layout passes, annotation placement, clipping, routing, collision
+reports, inspection/assertions, rendering, file writes, and command output as
+applicable. Batch checks retain a separate scope for each file. Failed stages
+are recorded too, and timing collection preserves command results and exit codes.
+Argument parsing and process startup are outside the measured operation.
+
+`--timings=json` writes one JSON report to stderr after the command finishes.
+It contains `total_ms` and a `steps` array in start order; each step has `name`,
+`parent` (an index into `steps`, or null), `start_ms`, and `duration_ms`.
+Command diagnostics may precede the report on stderr; use `--json` for command
+output to stdout when capturing a standalone timing JSON file. Each duration is
+inclusive wall-clock time in milliseconds, so parent and child durations must
+not be added together. Repeated passes and candidates have separate entries.
+Use release builds for representative measurements; debug builds also time
+rejected-request archiving. Timing reports themselves are outside `total_ms`.
+
+Collection is disabled by default, with no clock reads or timing allocations
+at instrumented library stages. Library consumers can wrap a synchronous
+operation with `locus_core::metrics::collect(|| ...)` to receive its result and
+a serializable timing report, and use `span` or `measure` for custom stages.
+Collections are local to the current thread; child threads collect separately.
 
 ### Rejected requests in development
 
@@ -58,8 +92,23 @@ See its README for local installation and server configuration.
 Use `locus check figure.locus --layout --strict --json --compact` to include
 annotation placement in validation without exporting an image. `--layout` uses
 the same text measurement and placement as rendering. Layout warnings fail the
-check with `--strict`; without it they remain non-fatal. Ordinary checks continue
-to validate geometry and assertions without measuring text.
+check with `--strict`; without it they remain non-fatal. Every check measures
+declared text with the bundled fonts before solving, so label dimensions and
+typography roles participate in layout relations even without `--layout`.
+Required routing, path-label placement, and endpoint clipping run in every check,
+describe, inspect, render, and edit validation. The engine repeats solving and
+layout up to three times to agree on accepted routes and measured label boxes.
+Clipping changes visible ends while preserving logical length and bounds. A
+required routing or feedback conflict returns E413 and exit 2; ordinary collision
+warnings are included in checks with `--layout`.
+
+Reusable instances and groups support top-level `update --id` and dependency-checked `remove --id`. `describe --json` includes normalized collection membership, invocation chains, expanded relations and accepted dimensions, typography and route metadata. Qualified member edits identify the function body and call so you can edit the source deliberately. `fmt --json` preserves source definitions/calls/groups alongside expanded records.
+
+Library consumers can use `locus_layout::measurement::measure_file` before
+`locus_layout::solve_layout` for the same measured solve and layout cycle. The
+core accepts renderer-independent `EvaluationInputs` and has no font dependency.
+Build rendering styles with `StyleSheet::from_file(&scene.file)` after solving;
+the accepted scene contains expanded function calls and substituted style classes.
 
 Collision diagnostics name the labels and intersecting geometry or annotation,
 include source locations, and distinguish text-box overlap, stroke intersection,

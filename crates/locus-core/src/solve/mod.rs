@@ -2,7 +2,14 @@
 
 mod ad;
 mod conflict;
+mod init;
+mod layout;
 mod linear;
+mod model;
+mod model_phase1;
+mod search;
+mod settling;
+use model::{append_domains, equality_analysis, settle, unknown_preferences};
 mod relations;
 
 use std::collections::BTreeMap;
@@ -42,6 +49,12 @@ pub struct SolveSummary {
     pub rank: usize,
     /// LM attempts, including rejected trials.
     pub attempts: usize,
+    /// Continuous candidates visited by bounded outer discrete search.
+    pub outer_search_attempts: usize,
+    /// Continuous solve/layout passes used to reach measurement agreement.
+    pub measurement_passes: usize,
+    /// Discrete route candidates validated by the layout passes.
+    pub routing_attempts: usize,
     /// Accepted LM steps.
     pub accepted_steps: usize,
     /// Largest absolute normalized final residual.
@@ -54,10 +67,41 @@ pub struct SolveSummary {
     pub branch_resolutions: Vec<BranchResolution>,
     /// Source and normalized displacements from hints.
     pub hint_displacements: Vec<HintDisplacement>,
+    /// Preference settling statistics for layout systems.
+    pub settling: Option<Box<SettlingSummary>>,
     /// Relations found redundant at the final Jacobian.
     pub redundant_relations: Vec<RelationReport>,
     /// Per-relation final residuals in source order.
     pub relation_residuals: Vec<RelationReport>,
+}
+
+/// Completion and rollback statistics for preference settling.
+#[derive(Clone, Debug, PartialEq)]
+pub struct SettlingSummary {
+    /// True only after projected-gradient convergence.
+    pub settling_complete: bool,
+    /// Stable termination reason.
+    pub exit_reason: String,
+    /// Remaining normalized projected-gradient infinity norm.
+    pub projected_gradient: f64,
+    /// Preference iterations.
+    pub steps: usize,
+    /// Accepted feasible preference moves, excluding working-set pivots.
+    pub accepted_moves: usize,
+    /// Boundary releases and zero-distance blocking iterations.
+    pub working_set_pivots: usize,
+    /// Bounded local curvature-model rebuild attempts.
+    pub model_rebuilds: usize,
+    /// Total live state evaluations, including curvature probes and restoration.
+    pub evaluations: usize,
+    /// Trial evaluations during backtracking.
+    pub line_search_evaluations: usize,
+    /// Feasibility restoration attempts.
+    pub restoration_steps: usize,
+    /// Source spans of active one-sided layout requirements.
+    pub active_layout_requirements: Vec<Span>,
+    /// Null-space rank with active requirements included.
+    pub active_remaining: usize,
 }
 
 /// Global and local hint-settled degrees of freedom.
@@ -72,6 +116,8 @@ pub struct DofReport {
 /// Local null-space rank for one free declaration.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct ObjectDof {
+    /// Semantic ownership of these unknown components.
+    pub class: UnknownClass,
     /// Free declaration identifier.
     pub id: String,
     /// Declaration source span.
@@ -80,6 +126,32 @@ pub struct ObjectDof {
     pub hint_settled_dofs: usize,
     /// Stable suggestion suitable for an under-constraint diagnostic.
     pub suggestion: String,
+}
+
+/// Ownership classes for authored geometry and internal layout unknowns.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum UnknownClass {
+    /// Authored placement or free numeric value.
+    Geometric,
+    /// Engine-sized box dimensions.
+    AutomaticDimension,
+    /// Independently placed measured text.
+    LabelPlacement,
+    /// Internal route or attached-label parameters.
+    RouteLabelParameter,
+}
+
+impl UnknownClass {
+    /// Stable report spelling.
+    #[must_use]
+    pub const fn as_str(self) -> &'static str {
+        match self {
+            Self::Geometric => "geometric",
+            Self::AutomaticDimension => "automatic_dimension",
+            Self::LabelPlacement => "label_placement",
+            Self::RouteLabelParameter => "route_label_parameter",
+        }
+    }
 }
 
 /// One hint-to-solution displacement report.
@@ -123,6 +195,7 @@ pub struct RelationReport {
 
 #[derive(Clone, Debug)]
 struct UnknownObject {
+    class: UnknownClass,
     id: String,
     span: Span,
     start: usize,
@@ -139,10 +212,14 @@ struct UnknownSystem {
     normalized_hints: Vec<f64>,
     dimensions: BTreeMap<String, NumericDimension>,
     diameter: f64,
+    avoidance_axes: BTreeMap<usize, usize>,
 }
 
 struct SolveState {
     equations: Vec<Equation>,
+    equalities: Vec<Equation>,
+    inequalities: Vec<Equation>,
+    preferences: Vec<ad::Jet>,
     residuals: Vec<f64>,
     jacobian: Vec<Vec<f64>>,
     analysis: Analysis,
@@ -150,11 +227,22 @@ struct SolveState {
 
 /// Solves every free declaration and relation in a parsed file.
 pub fn solve(file: &File) -> Result<Solved, EvalError> {
-    let prepared = PreparedEvaluation::new(file)?;
-    solve_prepared(&prepared)
+    solve_with_inputs(file, &crate::inputs::EvaluationInputs::default())
+}
+
+/// Solves a source program with renderer-supplied measurements.
+pub fn solve_with_inputs(
+    file: &File,
+    inputs: &crate::inputs::EvaluationInputs,
+) -> Result<Solved, EvalError> {
+    let expanded = crate::program::expand_program(file)?;
+    let result = PreparedEvaluation::with_inputs(&expanded.file, inputs, &expanded.collections)
+        .and_then(|prepared| solve_prepared(&prepared));
+    result.map_err(|error| crate::program::annotate_error(error, &expanded))
 }
 
 pub(crate) fn solve_prepared(prepared: &PreparedEvaluation<'_>) -> Result<Solved, EvalError> {
+    let _solve = crate::metrics::span("solve");
     solve_prepared_with_attempt_limit(prepared, MAX_ATTEMPTS)
 }
 
@@ -163,29 +251,68 @@ fn solve_prepared_with_attempt_limit(
     max_attempts: usize,
 ) -> Result<Solved, EvalError> {
     let file = prepared.file();
-    let seed_trial = prepared
-        .evaluate_trial(None)
-        .map_err(|error| degenerate_seed(file, error))?;
-    let system = UnknownSystem::from_seed(file, prepared.dimensions(), &seed_trial)?;
     let sources = relations::collect(file);
-    validate_relation_primals(&seed_trial, prepared, &sources)
-        .map_err(|error| degenerate_seed(file, error))?;
+    let system = initialize(prepared, &sources)?;
+    let branches = relations::select_circle_branches(&sources);
+    search::solve(prepared, &system, &sources, &branches, max_attempts)
+}
+
+pub(crate) fn layout_seed(prepared: &PreparedEvaluation<'_>) -> Result<ResolvedScene, EvalError> {
+    let sources = relations::collect(prepared.file());
+    let system = initialize(prepared, &sources)?;
+    prepared
+        .evaluate_final(&system.hints)
+        .map(crate::eval::TrialEvaluation::into_scene)
+}
+
+fn initialize(
+    prepared: &PreparedEvaluation<'_>,
+    sources: &[SourceRelation<'_>],
+) -> Result<UnknownSystem, EvalError> {
+    let _initialize = crate::metrics::span("initialize");
+    let mut result = initialize_at_scale(prepared, sources, 1.0);
+    for scale in [0.25, 0.5, 2.0, 4.0, 0.125, 8.0, 16.0] {
+        let Err(error) = &result else {
+            break;
+        };
+        if !retryable_initialization(prepared.file(), error) {
+            break;
+        }
+        result = initialize_at_scale(prepared, sources, scale);
+    }
+    result.map_err(|error| degenerate_seed(prepared.file(), error))
+}
+
+fn initialize_at_scale(
+    prepared: &PreparedEvaluation<'_>,
+    sources: &[SourceRelation<'_>],
+    scale: f64,
+) -> Result<UnknownSystem, EvalError> {
+    let seed_trial = prepared.evaluate_seed(scale)?;
+    let mut system = UnknownSystem::from_seed(prepared, &seed_trial)?;
+    init::initialize(prepared, &mut system)?;
+    let seed_trial = prepared.evaluate_trial(Some(&system.hints))?;
+    if sources.iter().any(|s| layout::is_layout(s.expression)) {
+        system.diameter = seed_trial.tolerance().diameter();
+        system.scales = unknown_scales(&system.objects, &system.hints, system.diameter);
+        system.normalized_hints = system
+            .hints
+            .iter()
+            .zip(&system.scales)
+            .map(|(value, scale)| value / scale)
+            .collect();
+    }
+    validate_relation_primals(&seed_trial, prepared, sources)?;
     let seed_ad = DifferentiatedFile::evaluate(
-        file,
+        prepared,
         &system.normalized_hints,
         &system.normalized_hints,
         &system.scales,
         &system.dimensions,
-        prepared.dimensions(),
         seed_trial.tolerance(),
-    )
-    .map_err(|error| degenerate_seed(file, error))?;
-    seed_ad
-        .validate_branch_sensitive_primal(file, seed_trial.objects())
-        .map_err(|error| degenerate_seed(file, error))?;
-    let branches = relations::select_circle_branches(&sources);
-    let outcome = run_lm(prepared, &system, &sources, &branches, max_attempts, true)?;
-    finish_solve(prepared, &system, &sources, &branches, &outcome)
+    )?;
+    seed_ad.validate_branch_sensitive_primal(prepared.file(), seed_trial.objects())?;
+    Ok(system)
 }
 
 struct LmOutcome {
@@ -194,6 +321,7 @@ struct LmOutcome {
     attempts: usize,
     accepted: usize,
     damping: f64,
+    settling: Option<Box<SettlingSummary>>,
 }
 
 fn run_lm(
@@ -204,6 +332,7 @@ fn run_lm(
     max_attempts: usize,
     diagnose_failure: bool,
 ) -> Result<LmOutcome, EvalError> {
+    let _solve = crate::metrics::span("levenberg_marquardt");
     let mut normalized = system.normalized_hints.clone();
     let mut state = evaluate_state(prepared, system, sources, branches, &normalized)?;
     let mut damping = INITIAL_DAMPING;
@@ -222,10 +351,15 @@ fn run_lm(
                     diagnose_failure,
                 )
             })?;
+        let hint_null = if geometric_hint_projection(system, sources) {
+            model_phase1::null(system, &state)?
+        } else {
+            state.analysis.null.clone()
+        };
         let trial_vector = trial_step(
             &normalized,
             &primary,
-            &state.analysis.null,
+            &hint_null,
             &system.normalized_hints,
             damping,
         );
@@ -271,7 +405,18 @@ fn run_lm(
         attempts,
         accepted,
         damping,
+        settling: None,
     })
+}
+
+fn geometric_hint_projection(system: &UnknownSystem, sources: &[SourceRelation<'_>]) -> bool {
+    sources
+        .iter()
+        .any(|source| layout::is_layout(source.expression))
+        || system
+            .objects
+            .iter()
+            .any(|object| object.class == UnknownClass::RouteLabelParameter)
 }
 
 fn evaluate_state(
@@ -281,21 +426,53 @@ fn evaluate_state(
     branches: &[Option<CircleBranch>],
     normalized: &[f64],
 ) -> Result<SolveState, EvalError> {
+    evaluate_state_for(prepared, system, sources, branches, normalized, false)
+}
+
+fn evaluate_state_for(
+    prepared: &PreparedEvaluation<'_>,
+    system: &UnknownSystem,
+    sources: &[SourceRelation<'_>],
+    branches: &[Option<CircleBranch>],
+    normalized: &[f64],
+    settling_faces: bool,
+) -> Result<SolveState, EvalError> {
     let file = prepared.file();
     let actual = denormalize(normalized, &system.scales);
     let trial = prepared.evaluate_trial(Some(&actual))?;
     validate_relation_primals(&trial, prepared, sources)?;
     let differentiated = DifferentiatedFile::evaluate(
-        file,
+        prepared,
         normalized,
         &system.normalized_hints,
         &system.scales,
         &system.dimensions,
-        prepared.dimensions(),
         trial.tolerance(),
     )?;
     differentiated.validate_branch_sensitive_primal(file, trial.objects())?;
-    let equations = relations::evaluate(&differentiated, sources, branches, system.diameter)?;
+    let mut equalities = relations::evaluate(&differentiated, sources, branches, system.diameter)?;
+    let lower = if settling_faces {
+        layout::lower_settling
+    } else {
+        layout::lower
+    };
+    let rows = lower(
+        &differentiated,
+        sources,
+        system.diameter,
+        &system.avoidance_axes,
+    )?;
+    equalities.extend(rows.equalities);
+    let mut inequalities = rows.inequalities;
+    append_domains(prepared, system, normalized, &mut inequalities)?;
+    let mut preferences = rows.preferences;
+    preferences.extend(unknown_preferences(prepared, system, normalized, sources));
+    model::validate_rows(&equalities, &inequalities, &preferences, file.span)?;
+    let mut equations = equalities.clone();
+    equations.extend(inequalities.iter().map(|row| Equation {
+        residual: row.residual.hinge(),
+        relation: row.relation,
+    }));
     let residuals = equations
         .iter()
         .map(|equation| equation.residual.value)
@@ -304,7 +481,10 @@ fn evaluate_state(
         .iter()
         .map(|equation| equation.residual.gradient.clone())
         .collect::<Vec<_>>();
-    let analysis = if jacobian.is_empty() {
+    // Layout Phase 1 computes its geometric null space separately. Computing a
+    // second full projector here is unused; equality/working-set ranks are still
+    // computed by the normative Jacobi procedure for settling and final reports.
+    let analysis = if jacobian.is_empty() || geometric_hint_projection(system, sources) {
         linear::unconstrained(system.hints.len())
     } else {
         linear::analyze(&jacobian).map_err(|()| {
@@ -317,6 +497,9 @@ fn evaluate_state(
     };
     Ok(SolveState {
         equations,
+        equalities,
+        inequalities,
+        preferences,
         residuals,
         jacobian,
         analysis,
@@ -392,19 +575,25 @@ fn finish_solve(
     branches: &[Option<CircleBranch>],
     outcome: &LmOutcome,
 ) -> Result<Solved, EvalError> {
+    let _finish = crate::metrics::span("finalize_solution");
     let actual = denormalize(&outcome.normalized, &system.scales);
-    let scene = prepared.evaluate_trial(Some(&actual))?.into_scene();
+    let scene = prepared.evaluate_final(&actual)?.into_scene();
     let relation_residuals = relation_reports(sources, &outcome.state, &system.objects);
     let redundant_relations = redundant_reports(sources, &outcome.state, &system.objects)?;
-    let dof = dof_report(&system.objects, &outcome.state.analysis)?;
+    let equality_analysis = equality_analysis(&outcome.state.equalities, system.hints.len())?;
+    let dof = dof_report(&system.objects, &equality_analysis)?;
     let summary = SolveSummary {
         unknowns: system.hints.len(),
         equations: outcome.state.equations.len(),
-        rank: outcome.state.analysis.rank,
+        rank: equality_analysis.rank,
         attempts: outcome.attempts,
+        outer_search_attempts: 1,
+        measurement_passes: 1,
+        routing_attempts: 0,
         accepted_steps: outcome.accepted,
         max_normalized_residual: max_residual(&outcome.state.residuals),
         final_damping: outcome.damping,
+        settling: outcome.settling.clone(),
         dof,
         branch_resolutions: branch_reports(sources, branches),
         hint_displacements: hint_reports(system, &actual, &outcome.normalized),
@@ -416,23 +605,15 @@ fn finish_solve(
 
 impl UnknownSystem {
     fn from_seed(
-        file: &File,
-        inferred_dimensions: &crate::eval::expr::DimensionMap,
+        prepared: &PreparedEvaluation<'_>,
         seed: &crate::eval::TrialEvaluation,
     ) -> Result<Self, EvalError> {
         let dimensions = dimensions_from_scene(seed.objects());
         let diameter = seed.tolerance().diameter();
         let mut objects = Vec::new();
         let mut hints = Vec::new();
-        for statement in &file.statements {
-            let Statement::Op(op) = statement else {
-                continue;
-            };
-            if matches!(op.ctor, Constructor::FreeNum { .. })
-                || crate::eval::is_placed_op(op, inferred_dimensions)
-            {
-                add_unknown(op, seed.objects(), &dimensions, &mut objects, &mut hints)?;
-            }
+        for op in prepared.registry() {
+            add_unknown(op, seed.objects(), &dimensions, &mut objects, &mut hints)?;
         }
         let scales = unknown_scales(&objects, &hints, diameter);
         let normalized_hints = hints
@@ -447,6 +628,7 @@ impl UnknownSystem {
             normalized_hints,
             dimensions,
             diameter,
+            avoidance_axes: BTreeMap::new(),
         })
     }
 }
@@ -466,6 +648,26 @@ fn add_unknown(
             EvalError::new("E404", op.span, "free object missing from seed evaluation")
         })?;
     let start = hints.len();
+    if let ResolvedObject::Annotation(crate::AnnotationSpec::Label {
+        path: Some(path), ..
+    }) = object
+    {
+        add_label_parameters(op, path, objects, hints);
+        return Ok(());
+    }
+    if let Some(parameter) = crate::eval::routing::route_parameter(object) {
+        hints.push(parameter);
+        objects.push(UnknownObject {
+            class: UnknownClass::RouteLabelParameter,
+            id: op.id.name.clone(),
+            span: op.span,
+            start,
+            count: 1,
+            dimension: NumericDimension::Length,
+            report_hint: false,
+        });
+        return Ok(());
+    }
     let (count, dimension) = match object {
         ResolvedObject::Point(point) => {
             hints.extend([point.geometry.x, point.geometry.y]);
@@ -492,6 +694,11 @@ fn add_unknown(
         }
     };
     objects.push(UnknownObject {
+        class: if crate::eval::automatic::is_standalone_label(op) {
+            UnknownClass::LabelPlacement
+        } else {
+            UnknownClass::Geometric
+        },
         id: op.id.name.clone(),
         span: op.span,
         start,
@@ -499,7 +706,45 @@ fn add_unknown(
         dimension,
         report_hint: matches!(op.ctor, Constructor::FreeNum { .. }),
     });
+    if crate::eval::automatic::is_automatic_box(op) {
+        let bounds = object
+            .bbox()
+            .ok_or_else(|| EvalError::new("E404", op.span, "automatic box has no bounds"))?;
+        objects.push(UnknownObject {
+            id: op.id.name.clone(),
+            span: op.span,
+            start: hints.len(),
+            count: 2,
+            dimension: NumericDimension::Length,
+            report_hint: false,
+            class: UnknownClass::AutomaticDimension,
+        });
+        hints.extend([bounds.width(), bounds.height()]);
+    }
     Ok(())
+}
+
+fn add_label_parameters(
+    op: &locus_syntax::OpStmt,
+    path: &crate::scene::PathLabel,
+    objects: &mut Vec<UnknownObject>,
+    hints: &mut Vec<f64>,
+) {
+    for (value, dimension) in [
+        (path.parameter, NumericDimension::Scalar),
+        (path.offset, NumericDimension::Length),
+    ] {
+        objects.push(UnknownObject {
+            class: UnknownClass::RouteLabelParameter,
+            id: op.id.name.clone(),
+            span: op.span,
+            start: hints.len(),
+            count: 1,
+            dimension,
+            report_hint: false,
+        });
+        hints.push(value);
+    }
 }
 
 fn placed_shape_center(
@@ -507,6 +752,10 @@ fn placed_shape_center(
     span: locus_syntax::Span,
 ) -> Result<crate::Point, EvalError> {
     match object {
+        ResolvedObject::Annotation(crate::AnnotationSpec::Label {
+            bounds: Some(bounds),
+            ..
+        }) => Ok(bounds.center()),
         ResolvedObject::Circle(circle) => Ok(circle.center),
         ResolvedObject::Ellipse(ellipse) => Ok(ellipse.center),
         ResolvedObject::RoundedRect(rect) => Ok(rect.center),
@@ -556,6 +805,7 @@ fn dof_report(objects: &[UnknownObject], analysis: &Analysis) -> Result<DofRepor
         let local = linear::rank(&block)
             .map_err(|()| EvalError::new("E403", object.span, "local DOF SVD did not converge"))?;
         reports.push(ObjectDof {
+            class: object.class,
             id: object.id.clone(),
             span: object.span,
             hint_settled_dofs: local,
@@ -569,6 +819,9 @@ fn dof_report(objects: &[UnknownObject], analysis: &Analysis) -> Result<DofRepor
 }
 
 fn suggestion(object: &UnknownObject) -> String {
+    if object.class != UnknownClass::Geometric {
+        return String::new();
+    }
     if object.count == 2 {
         format!(
             "add a relation if unintended, e.g. on({}, …) or vdist(…) == …",
@@ -675,11 +928,14 @@ fn redundant_reports(
     let mut redundant = Vec::new();
     for (index, report) in all.into_iter().enumerate() {
         let additions = state
-            .equations
+            .equalities
             .iter()
             .filter(|equation| equation.relation == index)
             .map(|equation| equation.residual.gradient.clone())
             .collect::<Vec<_>>();
+        if additions.is_empty() {
+            continue;
+        }
         rows.extend(additions.iter().cloned());
         let rank = linear::rank(&rows)
             .map_err(|()| EvalError::new("E403", report.span, "redundancy SVD did not converge"))?;
@@ -692,6 +948,7 @@ fn redundant_reports(
 }
 
 fn implicated(rows: &[&Equation], objects: &[UnknownObject]) -> Vec<String> {
+    let mut seen = std::collections::BTreeSet::new();
     objects
         .iter()
         .filter(|object| {
@@ -702,6 +959,7 @@ fn implicated(rows: &[&Equation], objects: &[UnknownObject]) -> Vec<String> {
             })
         })
         .map(|object| object.id.clone())
+        .filter(|id| seen.insert(id.clone()))
         .collect()
 }
 
@@ -749,13 +1007,18 @@ fn failed_solve_error(
         conflicting,
         diagnose_failure,
     );
-    EvalError::new(
-        code,
-        ordered
-            .first()
-            .map_or(Span::default(), |report| report.span),
-        format!(
-            "{category} relational system: {reason}; best-fit residuals worst first: {details}{infeasible_subset}; spread or correct hints"
+    search::annotate_failure(
+        prepared,
+        state,
+        sources,
+        EvalError::new(
+            code,
+            ordered
+                .first()
+                .map_or(Span::default(), |report| report.span),
+            format!(
+                "{category} relational system: {reason}; best-fit residuals worst first: {details}{infeasible_subset}; spread or correct hints"
+            ),
         ),
     )
 }
@@ -866,12 +1129,7 @@ fn nonconvergence_error(
 fn degenerate_seed(file: &File, mut error: EvalError) -> EvalError {
     // Only geometric preconditions can describe a degenerate seed. Type,
     // property, dependency, and branch-selection errors need source repairs.
-    if is_property_error(file, error.span)
-        || !matches!(
-            error.code,
-            "E201" | "E202" | "E203" | "E204" | "E205" | "E206"
-        )
-    {
+    if !retryable_initialization(file, &error) {
         return error;
     }
     error.code = "E404";
@@ -880,6 +1138,14 @@ fn degenerate_seed(file: &File, mut error: EvalError) -> EvalError {
         error.message
     );
     error
+}
+
+fn retryable_initialization(file: &File, error: &EvalError) -> bool {
+    !is_property_error(file, error.span)
+        && matches!(
+            error.code,
+            "E201" | "E202" | "E203" | "E204" | "E205" | "E206"
+        )
 }
 
 fn is_property_error(file: &File, span: Span) -> bool {
@@ -898,344 +1164,5 @@ fn dimension_from_core(dimension: Dimension) -> NumericDimension {
         Dimension::Scalar => NumericDimension::Scalar,
         Dimension::Length => NumericDimension::Length,
         Dimension::Area => NumericDimension::Area,
-    }
-}
-
-#[cfg(test)]
-#[allow(clippy::expect_used, clippy::float_cmp, clippy::panic)]
-mod tests {
-    use std::fmt::Write as _;
-
-    use locus_syntax::parse;
-
-    use super::*;
-
-    fn solve_source(source: &str) -> Solved {
-        let parsed = parse(source);
-        assert!(parsed.diagnostics.is_empty(), "{:?}", parsed.diagnostics);
-        solve(&parsed.file).expect("system solves")
-    }
-
-    #[test]
-    fn alignment_has_known_relative_answer_and_dof_report() {
-        let solved = solve_source(
-            "locus 0 beta 5\npoint A = point()\npoint B = point()\nrel horizontal(A, B)\nrel hdist(A, B) == 5\n",
-        );
-        let delta = scene_point(&solved, "B") - scene_point(&solved, "A");
-        assert!((delta.x - 5.0).abs() < 1.0e-10);
-        assert!(delta.y.abs() < 1.0e-10);
-        assert_eq!(solved.summary.rank, 2);
-        assert_eq!(solved.summary.dof.global_remaining, 2);
-    }
-
-    #[test]
-    fn current_format_circle_tangency_is_explicit() {
-        let external = solve_source(
-            "locus 0 beta 5\ncircle outer = circle(3)\ncircle inner = circle(2)\nrel tangent(outer, inner)\n",
-        );
-        let internal = solve_source(
-            "locus 0 beta 5\ncircle outer = circle(3)\ncircle inner = circle(2)\nrel internally_tangent(outer, inner)\n",
-        );
-        assert!((circle_distance(&external, "outer", "inner") - 5.0).abs() < 1.0e-12);
-        assert!((circle_distance(&internal, "outer", "inner") - 1.0).abs() < 1.0e-12);
-    }
-
-    fn circle_distance(solved: &Solved, lhs: &str, rhs: &str) -> f64 {
-        let circle = |name: &str| {
-            let object = solved
-                .scene
-                .objects
-                .iter()
-                .find(|(id, _)| id.name == name)
-                .map(|(_, value)| value)
-                .expect("circle");
-            let ResolvedObject::Circle(circle) = object else {
-                panic!("circle")
-            };
-            *circle
-        };
-        crate::geom::measure::dist(circle(lhs).center, circle(rhs).center)
-    }
-
-    fn scene_point(solved: &Solved, name: &str) -> crate::geom::Point {
-        let object = solved
-            .scene
-            .objects
-            .iter()
-            .find(|(id, _)| id.name == name)
-            .map(|(_, object)| object);
-        let Some(ResolvedObject::Point(point)) = object else {
-            panic!("missing point {name}");
-        };
-        point.geometry
-    }
-
-    #[test]
-    fn every_relation_vocabulary_entry_expands_without_a_solver_panic() {
-        let solved = solve_source(
-            "locus 0 beta 5\npoint A = point()\npoint B = offset(A, 2, 0)\npoint C = offset(A, 1, 0)\npoint D = offset(A, 0, 2)\npoint E = offset(A, 2, 2)\npoint L = offset(A, -2, 1)\npoint R = offset(A, 2, 1)\npoint Q = offset(A, 0, 1)\nnum r = 1\nline ab = line(A, B)\nline de = line(D, E)\nline ad = line(A, D)\nline lr = line(L, R)\nsegment ac = seg(A, C)\nsegment de_seg = seg(D, E)\nray ar = ray(A, B)\ncircle c1 = circle(A, r)\ncircle c2 = circle(B, r)\narc quarter = arc(c1, C, Q, true)\nrel dist(A, B) == 2\nrel on(C, ab)\nrel on(C, ar)\nrel on(C, ac)\nrel on(C, c1)\nrel on(C, quarter)\nrel tangent(c1, lr)\nrel tangent(c1, c2)\nrel parallel(ab, de)\nrel perpendicular(ab, ad)\nrel collinear(A, C, B)\nrel concyclic(A, B, E, D)\nrel congruent(seg(A, B), de_seg)\nrel coincident(C, C)\nrel midpoint(C, A, B)\nrel horizontal(A, B)\nrel vertical(A, D)\n",
-        );
-        assert!(solved.summary.max_normalized_residual < SOLVE_EPSILON);
-        assert_eq!(solved.summary.relation_residuals.len(), 17);
-    }
-
-    #[test]
-    fn automatic_differentiation_covers_intersection_and_tangent_line_constructors() {
-        let solved = solve_source(
-            "locus 0 beta 5\npoint A = point()\npoint B = offset(A, 2, 0)\npoint C = offset(A, 1, -1)\npoint D = offset(A, 1, 1)\nline h = line(A, B)\nline v = line(C, D)\npoint X = intersect(h, v)\nnum r = 0.5\ncircle c = circle(A, r)\npoint P = offset(A, 2, 1)\nline t = tangent_line(P, c, 1)\nrel tangent(c, t)\n",
-        );
-        assert!(solved.summary.max_normalized_residual < SOLVE_EPSILON);
-    }
-
-    #[test]
-    fn near_tangent_intersection_uses_the_geometry_kernel_branch_count() {
-        let solved = solve_source(
-            "locus 0 beta 5\npoint O = point()\npoint A = offset(O, -2, 1.0000000001)\npoint B = offset(O, 2, 1.0000000001)\nline l = line(A, B)\nnum r = 1\ncircle c = circle(O, r)\npoint X = intersect(l, c, 0)\n",
-        );
-        assert!(solved.summary.max_normalized_residual < SOLVE_EPSILON);
-    }
-
-    #[test]
-    fn small_circle_second_branch_remains_available_during_solving() {
-        let solved = solve_source(
-            "locus 0 beta 5\npoint A = point()\npoint B = offset(A, 0.00001, 0)\nnum r = 0.00001\ncircle a = circle(A, r)\ncircle b = circle(B, r)\npoint X = intersect(a, b, 1)\n",
-        );
-        let intersection = scene_point(&solved, "X");
-        let relative = intersection - scene_point(&solved, "A");
-        assert!((relative.x - 5.0e-6).abs() < 1.0e-15);
-        assert!(relative.y < 0.0);
-        assert!(solved.summary.max_normalized_residual < SOLVE_EPSILON);
-    }
-
-    #[test]
-    fn touching_collinear_segments_intersect_during_solving() {
-        let solved = solve_source(
-            "locus 0 beta 5\npoint A = point()\npoint B = offset(A, 1, 0)\npoint C = offset(A, 2, 0)\nsegment ab = seg(A, B)\nsegment bc = seg(B, C)\npoint X = intersect(ab, bc)\n",
-        );
-        assert_eq!(scene_point(&solved, "X"), scene_point(&solved, "B"));
-        assert!(solved.summary.max_normalized_residual < SOLVE_EPSILON);
-    }
-
-    #[test]
-    fn translated_circumcenter_remains_accurate_during_solving() {
-        let solved = solve_source(
-            "locus 0 beta 5\npoint A = point()\npoint B = offset(A, 4, 0)\npoint C = offset(A, 0, 3)\npoint O = circumcenter(A, B, C)\n",
-        );
-        assert_eq!(
-            scene_point(&solved, "O") - scene_point(&solved, "A"),
-            crate::geom::Vec2::new(2.0, 1.5)
-        );
-        assert!(solved.summary.max_normalized_residual < SOLVE_EPSILON);
-    }
-
-    #[test]
-    fn large_angle_bisector_supports_projection_during_solving() {
-        let solved = solve_source(
-            "locus 0 beta 5\npoint B = point()\npoint A = offset(B, 10000000000000, 0)\npoint C = offset(B, 0, 10000000000000)\nline bisector = angle_bisector(A, B, C)\npoint F = foot(A, bisector)\n",
-        );
-        let tolerance = crate::Tolerance::from_bbox(&solved.scene.bbox);
-        let relative = scene_point(&solved, "F") - scene_point(&solved, "B");
-        assert!(tolerance.length_zero(relative.x - 5.0e12));
-        assert!(tolerance.length_zero(relative.y - 5.0e12));
-        assert!(solved.summary.max_normalized_residual < SOLVE_EPSILON);
-    }
-
-    #[test]
-    fn repeated_angle_bisectors_do_not_inflate_scene_tolerance() {
-        let mut source = String::from(
-            "locus 0 beta 5\npoint B = point()\npoint A = offset(B, 1, 0)\npoint C = offset(B, 0, 1)\n",
-        );
-        for index in 0..60 {
-            writeln!(source, "line bisector_{index} = angle_bisector(A, B, C)")
-                .expect("write source");
-        }
-        source.push_str("assert coincident(A, B)\n");
-        let parsed = parse(&source);
-        assert!(parsed.diagnostics.is_empty(), "{:?}", parsed.diagnostics);
-        let solved = solve(&parsed.file).expect("repeated bisectors solve");
-        assert!(solved.scene.bbox.diameter() < 2.0);
-        let assertions =
-            crate::evaluate_assertions(&parsed.file, &solved.scene).expect("assertion evaluates");
-        assert!(!assertions.passed);
-    }
-
-    #[test]
-    fn redundant_and_underconstrained_systems_are_reported() {
-        let solved = solve_source(
-            "locus 0 beta 5\npoint A = point()\npoint B = point()\nrel horizontal(A, B)\nrel horizontal(A, B)\n",
-        );
-        assert_eq!(solved.summary.dof.global_remaining, 3);
-        assert_eq!(solved.summary.redundant_relations.len(), 1);
-    }
-
-    #[test]
-    fn repeated_solves_are_bit_identical_in_process() {
-        let source = "locus 0 beta 5\npoint A = point()\npoint B = point()\nrel horizontal(A, B)\nrel dist(A, B) == 5\n";
-        let first = solve_source(source);
-        let second = solve_source(source);
-        assert_eq!(first, second);
-    }
-
-    #[test]
-    fn repeated_solves_are_bit_identical_across_processes() {
-        const CHILD_ENV: &str = "LOCUS_SOLVE_DETERMINISM_CHILD";
-        const MARKER: &str = "LOCUS_SOLVE_FINGERPRINT=";
-        if std::env::var_os(CHILD_ENV).is_some() {
-            let source = "locus 0 beta 5\npoint A = point()\npoint B = point()\nrel horizontal(A, B)\nrel dist(A, B) == 5\n";
-            println!("{MARKER}{:?}", solve_source(source));
-            return;
-        }
-
-        let run_child = || {
-            let executable = std::env::current_exe().expect("current test executable");
-            let output = std::process::Command::new(executable)
-                .args([
-                    "--exact",
-                    "solve::tests::repeated_solves_are_bit_identical_across_processes",
-                    "--nocapture",
-                ])
-                .env(CHILD_ENV, "1")
-                .output()
-                .expect("determinism child runs");
-            assert!(output.status.success(), "child failed: {output:?}");
-            let stdout = String::from_utf8(output.stdout).expect("test output is UTF-8");
-            stdout
-                .lines()
-                .find_map(|line| line.strip_prefix(MARKER))
-                .map(str::to_owned)
-                .expect("child emitted solve fingerprint")
-        };
-
-        assert_eq!(run_child(), run_child());
-    }
-
-    #[test]
-    fn conflicting_system_returns_report_instead_of_panicking() {
-        let parsed = parse("locus 0 beta 5\nnum a = free 0\nrel a == 0\nrel a == 1\n");
-        let error = solve(&parsed.file).expect_err("values conflict");
-        assert_eq!(error.code, "E402");
-        assert!(error.message.contains("best-fit residuals worst first"));
-    }
-
-    #[test]
-    fn derived_only_relations_are_solved_and_conflicts_are_reported() {
-        let satisfied = parse("locus 0 beta 5\nnum a = 1\nrel a == 1\n");
-        let evaluation = crate::eval::evaluate(&satisfied.file).expect("relation holds");
-        let crate::scene::Evaluation::Solved { summary, .. } = evaluation else {
-            panic!("relation-bearing file must enter the solver")
-        };
-        assert_eq!(summary.unknowns, 0);
-        assert_eq!(summary.equations, 1);
-
-        let conflicting = parse("locus 0 beta 5\nnum a = 1\nrel a == 2\n");
-        let error = crate::eval::evaluate(&conflicting.file).expect_err("relation conflicts");
-        assert_eq!(error.code, "E402");
-    }
-
-    #[test]
-    fn assert_only_relations_and_invalid_relation_domains_are_targeted() {
-        let assert_only = parse("locus 0 beta 5\nnum a = 1\nrel a < 2\n");
-        let error = solve(&assert_only.file).expect_err("comparison is assert-only");
-        assert_eq!(error.code, "E146");
-        assert!(error.message.contains("assert-only"));
-
-        let non_segment = parse(
-            "locus 0 beta 5\npoint A = point()\npoint B = point()\nline ab = line(A, B)\nrel congruent(ab, ab)\n",
-        );
-        let error = solve(&non_segment.file).expect_err("congruent requires segments");
-        assert!(error.message.contains("expected a segment"));
-    }
-
-    #[test]
-    fn iteration_cap_returns_nonconvergence_report() {
-        let parsed =
-            parse("locus 0 beta 5\npoint A = point()\npoint B = point()\nrel vertical(A, B)\n");
-        let prepared = PreparedEvaluation::new(&parsed.file).expect("valid program");
-        let error = solve_prepared_with_attempt_limit(&prepared, 0).expect_err("cap is zero");
-        assert_eq!(error.code, "E403");
-        assert!(error.message.contains("LM iteration cap reached"));
-        assert!(error.message.contains("best-fit residuals worst first"));
-    }
-
-    #[test]
-    fn direction_angles_match_kernel_normalization_in_relations() {
-        let solved = solve_source(
-            "locus 0 beta 5\npoint A = point()\npoint B = offset(A, 0, -1)\nnum theta = dir_angle(A, B)\nrel theta == 270deg\nrel dir_angle(A, B) == 270deg\n",
-        );
-        assert_eq!(
-            scene_point(&solved, "B") - scene_point(&solved, "A"),
-            crate::geom::Vec2::new(0.0, -1.0)
-        );
-        assert_eq!(solved.summary.max_normalized_residual, 0.0);
-    }
-
-    #[test]
-    fn inline_relation_constructors_use_current_domain_rules() {
-        let angle = parse(
-            "locus 0 beta 5\npoint A = point()\npoint B = offset(A, 1, 0)\npoint C = offset(A, 1, 0)\nrel angle(A, B, C) == 180deg\n",
-        );
-        let error = solve(&angle.file).expect_err("collinear angle is degenerate");
-        assert_eq!(error.code, "E404");
-        assert!(error.message.contains("angle"));
-        assert!(!error.measured.is_empty());
-
-        let foot = solve_source(
-            "locus 0 beta 5\npoint A = point()\npoint B = offset(A, 1, 0)\npoint P = offset(A, 2, 1)\nsegment ab = seg(A, B)\nrel coincident(foot(P, ab), B)\n",
-        );
-        assert_eq!(
-            scene_point(&foot, "B"),
-            scene_point(&foot, "A") + crate::geom::Vec2::new(1.0, 0.0)
-        );
-    }
-
-    #[test]
-    fn differentiated_primals_preserve_kernel_arithmetic_order() {
-        let solved = solve_source(
-            "locus 0 beta 5\npoint P = point()\npoint C = offset(P, 1.1, 0)\npoint reflected = reflect(P, C)\npoint translated = translate(C, P, C)\nnum quotient_delta = (3 / 5 - 0.6) * 100000000\nnum reflect_delta = hdist(reflected, translated) * 100000000\nrel quotient_delta == 0\nrel (3 / 5 - 0.6) * 100000000 == 0\nrel reflect_delta == 0\n",
-        );
-        assert_eq!(solved.summary.max_normalized_residual, 0.0);
-    }
-
-    #[test]
-    fn nonsmooth_derivatives_remain_seed_selected_after_crossing() {
-        let crossing = ad::Jet {
-            value: -2.0,
-            seed_value: 2.0,
-            gradient: vec![1.0],
-        };
-        let zero = ad::Jet::constant(0.0, 1);
-        let absolute = crossing.abs();
-        assert_eq!(absolute.value, 2.0);
-        assert_eq!(absolute.gradient, vec![1.0]);
-        let maximum = crossing.max(&zero);
-        assert_eq!(maximum.value, 0.0);
-        assert_eq!(maximum.gradient, vec![1.0]);
-        let minimum = crossing.min(&zero);
-        assert_eq!(minimum.value, -2.0);
-        assert_eq!(minimum.gradient, vec![0.0]);
-    }
-
-    #[test]
-    fn conflicting_subset_is_isolated_and_all_residuals_are_reported() {
-        let conflicting =
-            parse("locus 0 beta 5\nnum x = free 0\nrel x == 0\nrel x == 1\nrel x == 2\n");
-        let error = solve(&conflicting.file).expect_err("three values conflict");
-        assert_eq!(error.code, "E402");
-        assert!(
-            error
-                .message
-                .contains("minimal infeasible subset: lines 4, 5"),
-            "{}",
-            error.message
-        );
-
-        let mut source = String::from("locus 0 beta 5\nnum x = free 0\n");
-        for value in 0..10 {
-            writeln!(source, "rel x == {value}").expect("write relation");
-        }
-        let parsed = parse(&source);
-        let error = solve(&parsed.file).expect_err("ten values conflict");
-        assert_eq!(error.code, "E402");
-        assert!(error.message.matches(" residual ").count() >= 10);
     }
 }

@@ -54,3 +54,29 @@ fn diagnostic(labels: &[&PlacedAnnotation], details: Vec<LayoutCollision>) -> In
         details,
     }
 }
+
+/// Recomputes diagnostics from accepted visible routes and measured label boxes.
+pub(crate) fn refresh_collisions(
+    scene: &locus_core::ResolvedScene,
+    layout: &mut LayoutScene,
+    options: crate::LayoutOptions,
+) {
+    let mut visible = scene.clone();
+    for (id, object) in &mut visible.objects {
+        if let Some(route) = layout.visible_paths.get(&id.name) {
+            *object = locus_core::ResolvedObject::Segment(locus_core::Segment {
+                start: route.from.clone().into(),
+                end: route.to.clone().into(),
+            });
+        }
+    }
+    let mut scorer = Scorer::new(&visible, options);
+    for annotation in layout.annotations.values() {
+        scorer.add_annotation(annotation);
+    }
+    layout.diagnostics = collisions(
+        &layout.annotations,
+        &scorer,
+        Tolerance::from_bbox(&scene.bbox),
+    );
+}

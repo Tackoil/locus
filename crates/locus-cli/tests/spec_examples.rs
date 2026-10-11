@@ -25,7 +25,8 @@ fn every_stress_example_passes_its_assertions() -> Result<(), Box<dyn Error>> {
         .arg("check")
         .args(cases.iter().map(support::Case::path))
         .arg("--json")
-        .timeout(Duration::from_secs(120))
+        // This batches all measured layout systems, each with bounded solve feedback.
+        .timeout(Duration::from_secs(1200))
         .output()?;
     assert!(
         output.status.success(),

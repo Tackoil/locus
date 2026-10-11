@@ -1,43 +1,44 @@
 ---
 source: crates/locus-syntax/tests/format_json.rs
+assertion_line: 54
 expression: formatted.source
 ---
-locus 0 beta 5
+locus 0 beta 6
 
 meta title = "Inscribed angle theorem"
 
 style textbook
 
 // ---- objects ----------------------------------------------
-circle c = circle(3)
-point O  = c.center
+circle c(3)
+point O = c.center
 
 point P = on_circle(c, 110deg)
 point A = on_circle(c, 200deg)
 point B = on_circle(c, 340deg)
 
-segment pa = seg(P, A)
-segment pb = seg(P, B)
-segment oa = seg(O, A) [auxiliary]
-segment ob = seg(O, B) [auxiliary]
+segment pa(P, A)
+segment pb(P, B)
+segment oa(O, A) [auxiliary]
+segment ob(O, B) [auxiliary]
 
-arc sub = arc(c, A, B, false) [highlight]  // the subtended arc, CW side
+arc sub(c, A, B, false) [highlight]  // the subtended arc, CW side
 
 arc inscribed = angle_arc(A, P, B, 0.55)
 arc central   = angle_arc(A, O, B, 0.4)
 
 // ---- annotation ------------------------------------------
-label lP = label(P, $P$)
-label lA = label(A, $A$)
-label lB = label(B, $B$)
-label lO = label(O, $O$) { dir: N }
+label lP(P, $P$)
+label lA(A, $A$)
+label lB(B, $B$)
+label lO(O, $O$) { dir: N }
 
-label li = label(P, $\theta$) { dir: S, gap: 0.8 }
-label lc = label(O, $2\theta$) { dir: S, gap: 0.6 }
+label li(P, $\theta$) { dir: S, gap: 0.8 }
+label lc(O, $2\theta$) { dir: S, gap: 0.6 }
 
-arrow see = arrow(li.center, lc.center) [construction] { head: ->, bend: -30deg }
+arrow see(li.center, lc.center) [construction] { head: ->, bend: -30deg }
 
-text_block thm = text_block($\angle AOB = 2\,\angle APB$) { place: below }
+text_block thm($\angle AOB = 2\,\angle APB$) { place: below }
 
 // ---- intent ----------------------------------------------
 assert on(P, c) and on(A, c) and on(B, c)

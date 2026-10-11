@@ -1,0 +1,148 @@
+locus 0 beta 6
+
+meta title = "Agent workflow: never render until check passes"
+meta note = "Composition example: concise declarations, reusable functions, separate shapes and labels, centering and containment, relational layout, and automatic routing; supported by the beta 6 measured solver and validated across SVG, TikZ and PNG"
+
+style textbook
+
+// ---- declaration shorthand ----------------------------------
+// Proposed kind name(args) expands to kind name = kind(args).
+// For example, rect shape() expands to rect shape = rect(), and
+// label no(failure, "no") expands to label no = label(failure, "no").
+// Constructor overloads, style classes, and properties retain their meaning.
+// User-defined functions use the same named-call form to expand a block.
+
+// ---- layout relation set (20 names) --------------
+// center(content, container) aligns both measured centers without sizing.
+// contain(container, content...) encloses content with style padding.
+// Matching dimensions use ordinary numeric equality on width and height.
+// gap_x(A, B, ...) separates adjacent full bounds from left to right.
+// gap_y(A, B, ...) separates adjacent full bounds from top to bottom.
+// Argument order supplies direction; reverse it for the opposite direction.
+// Gaps are chosen automatically, need not be equal, and are not numeric inputs.
+// Neither gap relation imposes alignment along the other axis.
+// row(items...) combines gap_x with align_center_y; column(items...) combines
+// gap_y with align_center_x. They expand groups into ordered members first.
+// align_left/right/top/bottom(items...) align the corresponding bounds only.
+// align_center_x/y(items...) align measured centers on the named axis only.
+// Alignment permits overlap and imposes no ordering, separation, or sizing.
+// inset_left/right/top/bottom(content, container) align the named content edge
+// to the container's inner margin using style padding; the other axis is free.
+// Each inset accepts { padding: none } to share that container border instead.
+// Containment and center alignment remain separate relations. Two flush insets
+// place a corner; one flush inset plus center alignment places a side center.
+// cover_x/y(container, items...) cover combined bounds on the named axis with
+// style padding; the other dimension and axis placement remain free.
+// avoid(subject, obstacles...) keeps geometry clear with automatic clearance.
+// trim_endpoints(paths, boundary) clips visible interior endpoints to the
+// boundary's outline while retaining logical endpoints and middle crossings.
+// Except row and column, these layout relations use a group's
+// combined measured bounds. Path operations act on individual group members.
+// on, center alignments, and numeric equality are existing relations.
+// Not every proposed relation is used in this example.
+
+// ---- reusable functions -------------------------------------
+// Proposed fn syntax is syntax sugar for a reusable statement block.
+// Parameters are substituted at expansion time; text accepts a text value.
+// Define a function before invoking it. There is no return type or value.
+// A named invocation, labeled_rect init(...), expands the declarations
+// as init.shape and init.caption and rewrites its relations to those ids.
+// Each invocation creates fresh objects; all expanded declarations and
+// relations participate in the figure's shared solve and rendering.
+// The invocation name is a namespace, not another geometric object.
+// Qualified references expose the expanded objects and their usual anchors.
+fn labeled_rect(text) {
+    // rect() leaves placement, width, and height for Locus to choose.
+    rect shape()
+    // label(text) measures text independently; relations set its placement.
+    label caption(text)
+
+    // center(content, container): make the content's measured bounding-box
+    // center coincide with the container's center on both axes.
+    // This sets alignment only; it does not require the content to fit.
+    rel center(caption, shape)
+
+    // contain(container, content): keep the entire measured content box
+    // inside the container's actual interior, with padding from the style.
+    // Containment does not imply centering. With center and unspecified
+    // dimensions, Locus chooses compact sizes satisfying both relations;
+    // the style supplies proportions when several sizes would work.
+    // External dimension equalities may enlarge the expanded shape further.
+    rel contain(shape, caption)
+}
+
+fn labeled_diamond(text) {
+    // diamond() leaves placement, width, and height for Locus to choose.
+    diamond shape()
+    label caption(text)
+    rel center(caption, shape)
+    // Containment accounts for the diamond's sloping sides, not just its bounds.
+    rel contain(shape, caption)
+}
+
+// ---- nodes --------------------------------------------------
+// Each call reuses the definition but creates its own shape and label.
+// An invocation's style class is copied to expanded declarations that
+// do not specify their own class.
+labeled_rect init("locus init")
+labeled_rect add("locus add < ops.locus")
+labeled_rect check("locus check")
+labeled_diamond decision("exit 0?")
+labeled_rect render("locus render -o fig.svg") [highlight]
+labeled_rect repair("fix ops (update / edit)")
+
+// ---- layout intent ------------------------------------------
+// column(A, B, ...): align the objects' centers on a vertical line and
+// place them from top to bottom in argument order. Keep adjacent shapes
+// separate, with clear gaps chosen by Locus from the active style.
+// This relation defines placement only; it does not create connectors.
+rel column(init.shape, add.shape, check.shape, decision.shape, render.shape)
+
+// These rectangles share width and height through ordinary measurement
+// equalities, without placement or numeric distances. Combined with contain,
+// their dimensions must accommodate every label, including the longest one.
+rel add.shape.width == init.shape.width and add.shape.height == init.shape.height
+rel check.shape.width == init.shape.width and check.shape.height == init.shape.height
+rel render.shape.width == init.shape.width and render.shape.height == init.shape.height
+rel repair.shape.width == init.shape.width and repair.shape.height == init.shape.height
+
+// gap_x(A, B): place B entirely to the right of A, with a clear gap
+// chosen by Locus. Compare the shapes' boundaries, not just their centers.
+// This establishes horizontal order without imposing vertical alignment.
+rel gap_x(decision.shape, repair.shape)
+
+// align_center_y(A, B): place the centers at the same vertical level.
+// Together with gap_x, this puts the repair shape on the decision row
+// and makes their east-to-west connector horizontal.
+rel align_center_y(repair.shape, decision.shape)
+
+// ---- forward flow -------------------------------------------
+arrow initialize(init.shape.s, add.shape.n)
+arrow validate(add.shape.s, check.shape.n)
+arrow decide(check.shape.s, decision.shape.n)
+
+// Proposed label overload: label(arrow, text) attaches text to a connector.
+// near: start prefers a position near the arrow's source, along its path.
+// side: left means the page's left side of this downward connector;
+// Locus chooses the offset and keeps the label clear of strokes and shapes.
+arrow success(decision.shape.s, render.shape.n)
+label yes(success, "yes") { near: start, side: left }
+
+arrow failure(decision.shape.e, repair.shape.w)
+// side: above places this label above the horizontal connector, while
+// near: start keeps it near the decision rather than near the repair shape.
+label no(failure, "no") { near: start, side: above }
+
+// ---- repair loop --------------------------------------------
+// Proposed route property: route: curved requests a smooth connector.
+// Its endpoints remain the repair's north port and the add shape's east
+// port. Locus chooses the curve controls and boundary approach directions.
+arrow retry(repair.shape.n, add.shape.e) { route: curved }
+
+// avoid(path, obstacle, ...): keep the entire routed path clear of every
+// listed obstacle. For shapes, avoid their interiors and outlines; for
+// connectors, avoid crossings and overlapping strokes. Locus chooses
+// clearance from the active style and adjusts this path's route, without
+// moving the obstacles. The source and target ports remain attached.
+// Report a routing conflict if no permitted curve satisfies the requirements.
+rel avoid(retry, init.shape, check.shape, decision.shape, render.shape, failure)

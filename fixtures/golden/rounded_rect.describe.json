@@ -9,9 +9,9 @@
         "line": 5,
         "col": 1,
         "byte_start": 104,
-        "byte_end": 155
+        "byte_end": 140
       },
-      "definition": "rounded_rect(4, 2, 0.5)",
+      "definition": "rounded_rect start(4, 2, 0.5)",
       "resolved": {
         "kind": "rounded_rect",
         "width": 4.0,
@@ -27,10 +27,10 @@
       "span": {
         "line": 6,
         "col": 1,
-        "byte_start": 156,
-        "byte_end": 231
+        "byte_start": 141,
+        "byte_end": 201
       },
-      "definition": "rounded_rect(offset(start.center, 7, 0), 4, 2, 1)",
+      "definition": "rounded_rect end(offset(start.center, 7, 0), 4, 2, 1)",
       "resolved": {
         "kind": "rounded_rect",
         "width": 4.0,
@@ -46,10 +46,10 @@
       "span": {
         "line": 7,
         "col": 1,
-        "byte_start": 232,
-        "byte_end": 301
+        "byte_start": 202,
+        "byte_end": 263
       },
-      "definition": "label(start.center, \"Rounded box\")",
+      "definition": "label start_text(start.center, \"Rounded box\")",
       "resolved": {
         "kind": "annotation"
       }
@@ -60,10 +60,10 @@
       "span": {
         "line": 8,
         "col": 1,
-        "byte_start": 302,
-        "byte_end": 363
+        "byte_start": 264,
+        "byte_end": 317
       },
-      "definition": "label(end.center, \"Capsule\")",
+      "definition": "label end_text(end.center, \"Capsule\")",
       "resolved": {
         "kind": "annotation"
       }
@@ -74,42 +74,719 @@
       "span": {
         "line": 9,
         "col": 1,
-        "byte_start": 364,
-        "byte_end": 398
+        "byte_start": 318,
+        "byte_end": 344
       },
-      "definition": "arrow(start.e, end.w)",
+      "definition": "arrow flow(start.e, end.w)",
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "measured_decision",
+      "kind": "diamond",
+      "span": {
+        "line": 19,
+        "col": 1,
+        "byte_start": 588,
+        "byte_end": 615
+      },
+      "definition": "diamond measured_decision()",
+      "resolved": {
+        "kind": "diamond",
+        "area": 12.274112250397161,
+        "perimeter": 15.310342627781784
+      }
+    },
+    {
+      "id": "measured_question",
+      "kind": "label",
+      "span": {
+        "line": 20,
+        "col": 1,
+        "byte_start": 616,
+        "byte_end": 681
+      },
+      "definition": "label measured_question(\"Does this entire measured caption fit?\")",
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "measured_flow",
+      "kind": "arrow",
+      "span": {
+        "line": 25,
+        "col": 1,
+        "byte_start": 858,
+        "byte_end": 923
+      },
+      "definition": "arrow measured_flow(end.e, measured_decision.w)",
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "measured_result",
+      "kind": "label",
+      "span": {
+        "line": 26,
+        "col": 1,
+        "byte_start": 924,
+        "byte_end": 994
+      },
+      "definition": "label measured_result(measured_flow, \"fit\")",
       "resolved": {
         "kind": "annotation"
       }
     }
   ],
+  "diagram": [
+    {
+      "accepted": {
+        "automatic_dimensions": false,
+        "height": 2.0,
+        "width": 4.0
+      },
+      "definition": {
+        "source": "rounded_rect(4, 2, 0.5)",
+        "tree": {
+          "args": [
+            {
+              "dimension": "length",
+              "kind": "number",
+              "source": "4",
+              "value": 4.0
+            },
+            {
+              "dimension": "length",
+              "kind": "number",
+              "source": "2",
+              "value": 2.0
+            },
+            {
+              "dimension": "length",
+              "kind": "number",
+              "source": "0.5",
+              "value": 0.5
+            }
+          ],
+          "kind": "call",
+          "name": "rounded_rect"
+        }
+      },
+      "id": "start",
+      "properties": []
+    },
+    {
+      "accepted": {
+        "automatic_dimensions": false,
+        "height": 2.0,
+        "width": 4.0
+      },
+      "definition": {
+        "source": "rounded_rect(offset(start.center, 7, 0), 4, 2, 1)",
+        "tree": {
+          "args": [
+            {
+              "args": [
+                {
+                  "args": [],
+                  "base": {
+                    "id": "start",
+                    "kind": "ref"
+                  },
+                  "kind": "property",
+                  "name": "center"
+                },
+                {
+                  "dimension": "length",
+                  "kind": "number",
+                  "source": "7",
+                  "value": 7.0
+                },
+                {
+                  "dimension": "length",
+                  "kind": "number",
+                  "source": "0",
+                  "value": 0.0
+                }
+              ],
+              "kind": "call",
+              "name": "offset"
+            },
+            {
+              "dimension": "length",
+              "kind": "number",
+              "source": "4",
+              "value": 4.0
+            },
+            {
+              "dimension": "length",
+              "kind": "number",
+              "source": "2",
+              "value": 2.0
+            },
+            {
+              "dimension": "length",
+              "kind": "number",
+              "source": "1",
+              "value": 1.0
+            }
+          ],
+          "kind": "call",
+          "name": "rounded_rect"
+        }
+      },
+      "id": "end",
+      "properties": []
+    },
+    {
+      "accepted": {
+        "height": 0.38136,
+        "role": "normal",
+        "width": 1.7488800000000002
+      },
+      "definition": {
+        "source": "label(start.center, \"Rounded box\")",
+        "tree": {
+          "args": [
+            {
+              "args": [],
+              "base": {
+                "id": "start",
+                "kind": "ref"
+              },
+              "kind": "property",
+              "name": "center"
+            },
+            {
+              "kind": "text",
+              "segments": [
+                {
+                  "kind": "plain",
+                  "source": "Rounded box"
+                }
+              ]
+            }
+          ],
+          "kind": "call",
+          "name": "label"
+        }
+      },
+      "id": "start_text",
+      "properties": [
+        {
+          "name": "dir",
+          "value": {
+            "expr": {
+              "id": "center",
+              "kind": "ref"
+            },
+            "kind": "expr"
+          }
+        }
+      ]
+    },
+    {
+      "accepted": {
+        "height": 0.38136,
+        "role": "normal",
+        "width": 1.04356
+      },
+      "definition": {
+        "source": "label(end.center, \"Capsule\")",
+        "tree": {
+          "args": [
+            {
+              "args": [],
+              "base": {
+                "id": "end",
+                "kind": "ref"
+              },
+              "kind": "property",
+              "name": "center"
+            },
+            {
+              "kind": "text",
+              "segments": [
+                {
+                  "kind": "plain",
+                  "source": "Capsule"
+                }
+              ]
+            }
+          ],
+          "kind": "call",
+          "name": "label"
+        }
+      },
+      "id": "end_text",
+      "properties": [
+        {
+          "name": "dir",
+          "value": {
+            "expr": {
+              "id": "center",
+              "kind": "ref"
+            },
+            "kind": "expr"
+          }
+        }
+      ]
+    },
+    {
+      "accepted": {
+        "clipped": false,
+        "logical_length": 3.0,
+        "route": "direct"
+      },
+      "definition": {
+        "source": "arrow(start.e, end.w)",
+        "tree": {
+          "args": [
+            {
+              "args": [],
+              "base": {
+                "id": "start",
+                "kind": "ref"
+              },
+              "kind": "property",
+              "name": "e"
+            },
+            {
+              "args": [],
+              "base": {
+                "id": "end",
+                "kind": "ref"
+              },
+              "kind": "property",
+              "name": "w"
+            }
+          ],
+          "kind": "call",
+          "name": "arrow"
+        }
+      },
+      "id": "flow",
+      "properties": []
+    },
+    {
+      "accepted": {
+        "automatic_dimensions": true,
+        "height": 3.6473595540185033,
+        "width": 6.730409803921894
+      },
+      "definition": {
+        "source": "diamond()",
+        "tree": {
+          "args": [],
+          "kind": "call",
+          "name": "diamond"
+        }
+      },
+      "id": "measured_decision",
+      "properties": []
+    },
+    {
+      "accepted": {
+        "height": 0.38136,
+        "role": "normal",
+        "width": 4.97728
+      },
+      "definition": {
+        "source": "label(\"Does this entire measured caption fit?\")",
+        "tree": {
+          "args": [
+            {
+              "kind": "text",
+              "segments": [
+                {
+                  "kind": "plain",
+                  "source": "Does this entire measured caption fit?"
+                }
+              ]
+            }
+          ],
+          "kind": "call",
+          "name": "label"
+        }
+      },
+      "id": "measured_question",
+      "properties": []
+    },
+    {
+      "accepted": {
+        "clipped": false,
+        "logical_length": 0.5808479703041161,
+        "route": "curved",
+        "side": "right"
+      },
+      "definition": {
+        "source": "arrow(end.e, measured_decision.w)",
+        "tree": {
+          "args": [
+            {
+              "args": [],
+              "base": {
+                "id": "end",
+                "kind": "ref"
+              },
+              "kind": "property",
+              "name": "e"
+            },
+            {
+              "args": [],
+              "base": {
+                "id": "measured_decision",
+                "kind": "ref"
+              },
+              "kind": "property",
+              "name": "w"
+            }
+          ],
+          "kind": "call",
+          "name": "arrow"
+        }
+      },
+      "id": "measured_flow",
+      "properties": [
+        {
+          "name": "route",
+          "value": {
+            "expr": {
+              "id": "curved",
+              "kind": "ref"
+            },
+            "kind": "expr"
+          }
+        }
+      ]
+    },
+    {
+      "accepted": {
+        "attachment": {
+          "path": "measured_flow",
+          "region": [
+            0.7,
+            0.9
+          ],
+          "side": "above"
+        },
+        "height": 0.38136,
+        "role": "normal",
+        "width": 0.26964
+      },
+      "definition": {
+        "source": "label(measured_flow, \"fit\")",
+        "tree": {
+          "args": [
+            {
+              "id": "measured_flow",
+              "kind": "ref"
+            },
+            {
+              "kind": "text",
+              "segments": [
+                {
+                  "kind": "plain",
+                  "source": "fit"
+                }
+              ]
+            }
+          ],
+          "kind": "call",
+          "name": "label"
+        }
+      },
+      "id": "measured_result",
+      "properties": [
+        {
+          "name": "near",
+          "value": {
+            "expr": {
+              "id": "end",
+              "kind": "ref"
+            },
+            "kind": "expr"
+          }
+        },
+        {
+          "name": "side",
+          "value": {
+            "expr": {
+              "id": "above",
+              "kind": "ref"
+            },
+            "kind": "expr"
+          }
+        }
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "kind": "call",
+      "name": "center",
+      "args": [
+        {
+          "kind": "ref",
+          "id": "measured_question"
+        },
+        {
+          "kind": "ref",
+          "id": "measured_decision"
+        }
+      ]
+    },
+    {
+      "kind": "call",
+      "name": "contain",
+      "args": [
+        {
+          "kind": "ref",
+          "id": "measured_decision"
+        },
+        {
+          "kind": "ref",
+          "id": "measured_question"
+        }
+      ]
+    },
+    {
+      "kind": "call",
+      "name": "gap_x",
+      "args": [
+        {
+          "kind": "ref",
+          "id": "end"
+        },
+        {
+          "kind": "ref",
+          "id": "measured_decision"
+        }
+      ]
+    },
+    {
+      "kind": "call",
+      "name": "align_center_y",
+      "args": [
+        {
+          "kind": "ref",
+          "id": "end"
+        },
+        {
+          "kind": "ref",
+          "id": "measured_decision"
+        }
+      ]
+    }
+  ],
   "solve": {
-    "unknowns": 2,
-    "equations": 0,
-    "rank": 0,
-    "attempts": 0,
-    "accepted_steps": 0,
-    "max_normalized_residual": 0.0,
-    "final_damping": 0.001,
+    "unknowns": 11,
+    "equations": 12,
+    "rank": 3,
+    "attempts": 3,
+    "outer_search_attempts": 1,
+    "measurement_passes": 1,
+    "routing_attempts": 0,
+    "accepted_steps": 3,
+    "max_normalized_residual": 1.054441684017832e-16,
+    "final_damping": 1.0000000000000002e-6,
+    "settling": {
+      "settling_complete": true,
+      "exit_reason": "complete",
+      "projected_gradient": 3.999726613281018e-11,
+      "steps": 26,
+      "accepted_moves": 24,
+      "working_set_pivots": 1,
+      "model_rebuilds": 1,
+      "evaluations": 211,
+      "line_search_evaluations": 45,
+      "restoration_steps": 155,
+      "active_layout_requirements": [
+        {
+          "line": 22,
+          "col": 5,
+          "byte_start": 735,
+          "byte_end": 780
+        },
+        {
+          "line": 23,
+          "col": 5,
+          "byte_start": 785,
+          "byte_end": 814
+        },
+        {
+          "line": 26,
+          "col": 1,
+          "byte_start": 924,
+          "byte_end": 994
+        }
+      ],
+      "active_remaining": 5
+    },
     "dof": {
-      "global_remaining": 2,
+      "global_remaining": 8,
       "objects": [
         {
+          "class": "geometric",
           "id": "start",
           "span": {
             "line": 5,
             "col": 1,
             "byte_start": 104,
-            "byte_end": 155
+            "byte_end": 140
           },
           "hint_settled_dofs": 2,
           "suggestion": "add a relation if unintended, e.g. on(start, …) or vdist(…) == …"
+        },
+        {
+          "class": "geometric",
+          "id": "measured_decision",
+          "span": {
+            "line": 19,
+            "col": 1,
+            "byte_start": 588,
+            "byte_end": 615
+          },
+          "hint_settled_dofs": 2,
+          "suggestion": "add a relation if unintended, e.g. on(measured_decision, …) or vdist(…) == …"
+        },
+        {
+          "class": "automatic_dimension",
+          "id": "measured_decision",
+          "span": {
+            "line": 19,
+            "col": 1,
+            "byte_start": 588,
+            "byte_end": 615
+          },
+          "hint_settled_dofs": 2,
+          "suggestion": ""
+        },
+        {
+          "class": "label_placement",
+          "id": "measured_question",
+          "span": {
+            "line": 20,
+            "col": 1,
+            "byte_start": 616,
+            "byte_end": 681
+          },
+          "hint_settled_dofs": 2,
+          "suggestion": ""
+        },
+        {
+          "class": "route_label_parameter",
+          "id": "measured_flow",
+          "span": {
+            "line": 25,
+            "col": 1,
+            "byte_start": 858,
+            "byte_end": 923
+          },
+          "hint_settled_dofs": 1,
+          "suggestion": ""
+        },
+        {
+          "class": "route_label_parameter",
+          "id": "measured_result",
+          "span": {
+            "line": 26,
+            "col": 1,
+            "byte_start": 924,
+            "byte_end": 994
+          },
+          "hint_settled_dofs": 1,
+          "suggestion": ""
+        },
+        {
+          "class": "route_label_parameter",
+          "id": "measured_result",
+          "span": {
+            "line": 26,
+            "col": 1,
+            "byte_start": 924,
+            "byte_end": 994
+          },
+          "hint_settled_dofs": 1,
+          "suggestion": ""
         }
       ]
     },
-    "branch_resolutions": [],
+    "branch_resolutions": [
+      {
+        "span": {
+          "line": 25,
+          "col": 1,
+          "byte_start": 858,
+          "byte_end": 923
+        },
+        "choice": "route measured_flow: Right, quadratic"
+      },
+      {
+        "span": {
+          "line": 26,
+          "col": 1,
+          "byte_start": 924,
+          "byte_end": 994
+        },
+        "choice": "label measured_result: Above, candidate 0"
+      }
+    ],
     "hint_displacements": [],
     "redundant_relations": [],
-    "relation_residuals": []
+    "relation_residuals": [
+      {
+        "span": {
+          "line": 21,
+          "col": 5,
+          "byte_start": 686,
+          "byte_end": 730
+        },
+        "max_normalized_residual": 4.942695393833587e-18,
+        "implicated_unknowns": [
+          "measured_decision",
+          "measured_question"
+        ]
+      },
+      {
+        "span": {
+          "line": 22,
+          "col": 5,
+          "byte_start": 735,
+          "byte_end": 780
+        },
+        "max_normalized_residual": 0.0,
+        "implicated_unknowns": []
+      },
+      {
+        "span": {
+          "line": 23,
+          "col": 5,
+          "byte_start": 785,
+          "byte_end": 814
+        },
+        "max_normalized_residual": 1.054441684017832e-16,
+        "implicated_unknowns": [
+          "start",
+          "measured_decision"
+        ]
+      },
+      {
+        "span": {
+          "line": 24,
+          "col": 5,
+          "byte_start": 819,
+          "byte_end": 857
+        },
+        "max_normalized_residual": 4.1173175383535155e-18,
+        "implicated_unknowns": [
+          "start",
+          "measured_decision"
+        ]
+      }
+    ]
   }
 }

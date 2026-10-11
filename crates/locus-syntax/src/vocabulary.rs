@@ -3,7 +3,9 @@
 use crate::ast::Kind;
 
 /// Non-object top-level statement keywords.
-pub const STATEMENT_NAMES: &[&str] = &["locus", "meta", "style", "class", "rel", "assert"];
+pub const STATEMENT_NAMES: &[&str] = &[
+    "locus", "meta", "style", "class", "rel", "assert", "fn", "group",
+];
 
 /// Built-in rendering presets accepted by a `style` statement.
 pub const STYLE_PRESET_NAMES: &[&str] = &["textbook"];
@@ -55,6 +57,7 @@ pub const CONSTRUCTOR_NAMES: &[&str] = &[
     "line",
     "ray",
     "seg",
+    "edge",
     "perpendicular",
     "parallel",
     "perp_bisector",
@@ -104,6 +107,7 @@ pub const CONSTRUCTOR_SIGNATURES: &[(&str, &str)] = &[
     ("line", "line(A, B) -> line"),
     ("ray", "ray(A, B) -> ray"),
     ("seg", "seg(A, B) -> segment"),
+    ("edge", "edge(rect, direction) -> segment"),
     ("perpendicular", "perpendicular(P, linear) -> line"),
     ("parallel", "parallel(P, linear) -> line"),
     ("perp_bisector", "perp_bisector(A, B) -> line"),
@@ -164,6 +168,7 @@ const CONSTRUCTOR_KINDS: &[(&str, Kind)] = &[
     ("line", Kind::Line),
     ("ray", Kind::Ray),
     ("seg", Kind::Segment),
+    ("edge", Kind::Segment),
     ("perpendicular", Kind::Line),
     ("parallel", Kind::Line),
     ("perp_bisector", Kind::Line),
@@ -198,17 +203,34 @@ pub const PREDICATE_NAMES: &[&str] = &[
     "perpendicular",
     "collinear",
     "concyclic",
-    "congruent",
-    "coincident",
     "midpoint",
-    "horizontal",
-    "vertical",
     "between",
     "inside",
+    "center",
+    "contain",
+    "gap_x",
+    "gap_y",
+    "row",
+    "column",
+    "align_left",
+    "align_right",
+    "align_top",
+    "align_bottom",
+    "align_center_x",
+    "align_center_y",
+    "inset_left",
+    "inset_right",
+    "inset_top",
+    "inset_bottom",
+    "cover_x",
+    "cover_y",
+    "avoid",
+    "trim_endpoints",
 ];
 
 /// Numeric expression functions from specification Part 6.
 pub const NUMERIC_FUNCTION_NAMES: &[&str] = &[
+    "style_metric",
     "dist",
     "hdist",
     "vdist",
@@ -227,7 +249,8 @@ pub const NUMERIC_FUNCTION_NAMES: &[&str] = &[
 
 /// Closed set of operation properties, including constructor-specific annotation props.
 pub const PROP_NAMES: &[&str] = &[
-    "dir", "gap", "head", "bend", "n", "size", "place", "anchor", "mark",
+    "dir", "gap", "head", "bend", "n", "size", "place", "anchor", "mark", "route", "side", "near",
+    "role", "padding",
 ];
 
 const PROP_NAMES_BY_KIND: [&[&str]; 18] = [
@@ -244,8 +267,8 @@ const PROP_NAMES_BY_KIND: [&[&str]; 18] = [
     &[],
     &[],
     &[],
-    &["dir", "gap"],
-    &["head", "bend"],
+    &["dir", "gap", "near", "side", "role"],
+    &["head", "bend", "route", "side"],
     &[],
     &["size"],
     &["place", "anchor", "dir"],
@@ -268,6 +291,7 @@ pub const STYLE_PROP_NAMES: &[&str] = &[
 
 /// Geometry and layout property/anchor names.
 pub const PROPERTY_NAMES: &[&str] = &[
+    "length",
     "midpoint",
     "start",
     "end",
@@ -310,10 +334,52 @@ pub const BUILTIN_ATTR_NAMES: &[&str] = &["main", "auxiliary", "highlight", "con
 
 /// Closed-set literal values accepted by properties and expressions.
 pub const ENUM_VALUE_NAMES: &[&str] = &[
-    "true", "false", "auto", "center", "N", "NE", "E", "SE", "S", "SW", "W", "NW", "dot", "cross",
-    "none", "below", "above", "left", "right", "solid", "dashed", "dotted", "thin", "normal",
-    "bold", "ink", "gray", "blue", "orange", "teal", "green", "red", "purple", "tint", "butt",
-    "round", "square", "miter", "bevel",
+    "true",
+    "false",
+    "auto",
+    "center",
+    "N",
+    "NE",
+    "E",
+    "SE",
+    "S",
+    "SW",
+    "W",
+    "NW",
+    "dot",
+    "cross",
+    "none",
+    "below",
+    "above",
+    "left",
+    "right",
+    "solid",
+    "dashed",
+    "dotted",
+    "thin",
+    "normal",
+    "bold",
+    "ink",
+    "gray",
+    "blue",
+    "orange",
+    "teal",
+    "green",
+    "red",
+    "purple",
+    "tint",
+    "butt",
+    "round",
+    "square",
+    "miter",
+    "bevel",
+    "direct",
+    "curved",
+    "orthogonal",
+    "start",
+    "middle",
+    "end",
+    "title",
 ];
 
 const DIRECTION_NAMES: &[&str] = &["auto", "center", "N", "NE", "E", "SE", "S", "SW", "W", "NW"];
@@ -332,6 +398,11 @@ const CAP_NAMES: &[&str] = &["butt", "round", "square"];
 const JOIN_NAMES: &[&str] = &["miter", "round", "bevel"];
 const DASH_CALL_NAMES: &[&str] = &["dash"];
 const PROPERTY_ENUM_VALUES: &[(&str, &[&str])] = &[
+    ("route", &["direct", "curved", "orthogonal"]),
+    ("side", &["auto", "left", "right", "above", "below"]),
+    ("near", &["auto", "start", "middle", "end"]),
+    ("role", &["normal", "title"]),
+    ("padding", &["none"]),
     ("dir", DIRECTION_NAMES),
     ("place", PLACEMENT_NAMES),
     ("mark", MARK_NAMES),
@@ -368,6 +439,7 @@ pub fn is_known_call(name: &str) -> bool {
     CONSTRUCTOR_NAMES.contains(&name)
         || PREDICATE_NAMES.contains(&name)
         || NUMERIC_FUNCTION_NAMES.contains(&name)
+        || LEGACY_PREDICATE_NAMES.contains(&name)
         || name == "dash"
 }
 
@@ -383,3 +455,6 @@ pub fn all_call_names() -> Vec<&'static str> {
     names.push("dash");
     names
 }
+
+/// Deprecated beta 5 relation spellings, accepted only in legacy source.
+pub const LEGACY_PREDICATE_NAMES: &[&str] = &["congruent", "coincident", "horizontal", "vertical"];

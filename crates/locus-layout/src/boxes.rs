@@ -142,20 +142,32 @@ pub(crate) fn mark(
             right_angle(*vertex, *first, *second, size.unwrap_or(options.mark_size)),
             Leader::None,
         ),
+        AnnotationSpec::Arrow {
+            route: Some(route),
+            head,
+            ..
+        } => {
+            let leader = if route.via.is_empty() {
+                Leader::Arrow {
+                    from: route.from.clone().into(),
+                    to: route.to.clone().into(),
+                    control: route.control.clone().map(Into::into),
+                    head: *head,
+                }
+            } else {
+                Leader::Routed {
+                    route: route.clone(),
+                    head: *head,
+                }
+            };
+            (Vec::new(), leader)
+        }
         AnnotationSpec::Arrow { head, bend, .. } => {
             (Vec::new(), arrow(id, anchors[0], anchors[1], *head, *bend)?)
         }
         _ => return Err(LayoutError::invalid(id)),
     };
-    let mut points: Vec<_> = strokes.iter().flat_map(|s| [s.start, s.end]).collect();
-    if let Leader::Arrow {
-        from, to, control, ..
-    } = &leader
-    {
-        points.extend([*from, *to]);
-        points.extend(*control);
-    }
-    let bounds = BBox::from_points(points).map_err(|_| LayoutError::invalid(id))?;
+    let bounds = mark_bounds(id, &strokes, &leader)?;
     let bounds = expand(bounds, options.stroke_width / 2.0);
     if !valid_bounds(bounds) {
         return Err(LayoutError::invalid(id));
@@ -169,6 +181,27 @@ pub(crate) fn mark(
         strokes,
         candidate_index: 0,
     })
+}
+
+fn mark_bounds(id: &Ident, strokes: &[Segment], leader: &Leader) -> Result<BBox, LayoutError> {
+    if let Leader::Routed { route, .. } = leader {
+        return Ok(route.bbox());
+    }
+    if let Leader::Arrow {
+        from, to, control, ..
+    } = leader
+    {
+        return Ok(locus_core::geom::route::Route {
+            from: (*from).into(),
+            to: (*to).into(),
+            control: control.map(Into::into),
+            via: Vec::new(),
+            parameter: None,
+        }
+        .bbox());
+    }
+    BBox::from_points(strokes.iter().flat_map(|stroke| [stroke.start, stroke.end]))
+        .map_err(|_| LayoutError::invalid(id))
 }
 
 fn ticks(segment: Segment, count: u8, size: f64) -> Vec<Segment> {
@@ -209,8 +242,9 @@ fn arrow(
     head: locus_syntax::HeadKind,
     bend: f64,
 ) -> Result<Leader, LayoutError> {
-    let control =
-        locus_core::geom::arrow::control(from, to, bend).map_err(|_| LayoutError::invalid(id))?;
+    let route = locus_core::geom::route::Route::direct(from, to, bend)
+        .map_err(|_| LayoutError::invalid(id))?;
+    let control = route.control.map(Into::into);
     Ok(Leader::Arrow {
         from,
         to,

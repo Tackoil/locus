@@ -1,0 +1,9 @@
+locus 0 beta 6
+// Seed diameter is 0.5; normalized preferences are 0.2*(t, polynomial(t)).
+// Full Gauss-Newton steps cycle 0 -> 1 -> 0; Armijo must backtrack.
+num x = free 2.5
+num t = 2*x-5
+point origin()
+point moving = offset(origin, 0.1*(2*t*t*t-1.5*t*t-2*t+2.5)+0.25, 0)
+rel gap_x(origin, moving)
+assert gap_x(origin, moving)

@@ -10,21 +10,28 @@
 pub mod assert;
 pub mod eval;
 pub mod geom;
+pub mod inputs;
 pub mod inspect;
+pub mod metrics;
+pub mod preset;
+mod program;
 pub mod scene;
 pub mod solve;
 pub mod tol;
 
 pub use r#assert::{
     ActualValue, AssertionReport, AssertionResult, ReportDimension, SubtermActual,
-    evaluate_assertions,
+    evaluate_assertions, evaluate_assertions_with_inputs,
 };
 pub use eval::{
     DependencyError, DependencyGraph, EvalError, RemovalImpact, StatementDependency,
-    StatementDependencyKind, Value, evaluate,
+    StatementDependencyKind, Value, evaluate, evaluate_with_inputs,
 };
 pub use geom::{
     Arc, BBox, Circle, ConstructError, Line, Point, Polygon, Ray, RoundedRect, Segment, Vec2,
+};
+pub use inputs::{
+    EvaluationChoices, EvaluationInputs, LabelChoice, MeasuredContent, MeasuredRole, MeasuredText,
 };
 pub use inspect::{
     DistanceMeasurement, GeometryBounds, Incidence, InspectDiagnostic, InspectionReport,
@@ -32,12 +39,13 @@ pub use inspect::{
     TriangleAngleMeasurement, inspect, inspect_scene, inspect_scene_with_options,
     query_measurements,
 };
+pub use preset::LayoutMetrics;
 pub use scene::{
     AnchorSpec, AnnotationSpec, Dimension, Evaluation, NumericValue, PointMark, ResolvedArc,
     ResolvedObject, ResolvedPoint, ResolvedScene, Scene,
 };
 pub use solve::{
-    BranchResolution, DofReport, HintDisplacement, ObjectDof, RelationReport, SolveSummary, Solved,
-    solve,
+    BranchResolution, DofReport, HintDisplacement, ObjectDof, RelationReport, SettlingSummary,
+    SolveSummary, Solved, UnknownClass, solve, solve_with_inputs,
 };
 pub use tol::Tolerance;

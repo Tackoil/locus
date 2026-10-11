@@ -1,6 +1,7 @@
 //! Stable Locus diagnostic conversion to LSP diagnostics.
 
 use locus_core::EvalError;
+use locus_layout::LayoutError;
 use locus_syntax::Diagnostic as SyntaxDiagnostic;
 use lsp_types::{Diagnostic, DiagnosticSeverity, NumberOrString};
 use serde_json::json;
@@ -28,6 +29,21 @@ pub(crate) fn syntax(document: &Document, value: &SyntaxDiagnostic) -> Diagnosti
     }
 }
 
+pub(crate) fn layout(document: &Document, error: &LayoutError) -> Diagnostic {
+    let span = match error {
+        LayoutError::MissingMeasurement { span, .. }
+        | LayoutError::Anchor { span, .. }
+        | LayoutError::Invalid { span, .. }
+        | LayoutError::Conflict { span, .. }
+        | LayoutError::Measurement { span, .. } => *span,
+        LayoutError::Options => locus_syntax::Span::default(),
+    };
+    evaluation(
+        document,
+        &EvalError::new(error.code(), span, error.to_string()),
+    )
+}
+
 pub(crate) fn evaluation(document: &Document, value: &EvalError) -> Diagnostic {
     let message = value.object_id.as_ref().map_or_else(
         || value.message.clone(),
@@ -48,6 +64,7 @@ pub(crate) fn evaluation(document: &Document, value: &EvalError) -> Diagnostic {
             "span": value.span,
             "message": value.message,
             "object_id": value.object_id,
+            "invocation_chain": value.invocation_chain,
             "measured": value.measured.iter().map(|measurement| json!({
                 "name": measurement.name,
                 "value": measurement.value,

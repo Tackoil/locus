@@ -1,7 +1,11 @@
 //! Forward-mode automatic differentiation through derived geometry.
 
 use std::collections::BTreeMap;
+mod automatic;
+mod path_label;
 mod rounded_rect;
+mod route;
+pub(crate) mod sdf;
 use rounded_rect::DRoundedRect;
 
 use locus_syntax::{
@@ -9,8 +13,8 @@ use locus_syntax::{
 };
 
 use crate::Tolerance;
-use crate::eval::EvalError;
 use crate::eval::expr::{DimensionMap, InferredDimension};
+use crate::eval::{EvalError, PreparedEvaluation};
 use crate::scene::{Dimension, ResolvedObject};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -213,6 +217,35 @@ impl Jet {
         result
     }
 
+    /// Layout pieces select values and derivatives together; ties retain the first operand.
+    pub(crate) fn abs_live(&self) -> Self {
+        if self.value < 0.0 {
+            self.scale(-1.0)
+        } else {
+            self.clone()
+        }
+    }
+
+    pub(crate) fn min_live(&self, rhs: &Self) -> Self {
+        if self.value <= rhs.value {
+            self.clone()
+        } else {
+            rhs.clone()
+        }
+    }
+
+    pub(crate) fn max_live(&self, rhs: &Self) -> Self {
+        if self.value >= rhs.value {
+            self.clone()
+        } else {
+            rhs.clone()
+        }
+    }
+
+    pub(crate) fn hinge(&self) -> Self {
+        self.min_live(&Self::constant(0.0, self.gradient.len()))
+    }
+
     fn from_binary(
         value: f64,
         seed_value: f64,
@@ -327,6 +360,7 @@ pub(crate) struct DLinear {
     pub(crate) start: DPoint,
     pub(crate) through: DPoint,
     pub(crate) domain: LinearDomain,
+    pub(crate) layout_live: bool,
 }
 
 impl DLinear {
@@ -372,8 +406,9 @@ pub(crate) enum DObject {
     Arc(DArc),
     Ellipse(DEllipse),
     Bspline(DBspline),
-    Polygon(Vec<DPoint>, bool),
+    Polygon(Vec<DPoint>, bool, bool),
     RoundedRect(DRoundedRect),
+    Route(crate::geom::route::Route<Jet>),
     Annotation,
 }
 
@@ -389,23 +424,41 @@ enum DValue {
 }
 
 pub(crate) struct DifferentiatedFile {
+    live_layout: bool,
+    pub(crate) retained_routes: BTreeMap<String, (f64, f64)>,
+    pub(crate) retained_distances: BTreeMap<String, (f64, f64)>,
+    pub(crate) path_labels: BTreeMap<String, Vec<String>>,
     objects: BTreeMap<String, DObject>,
     unknown_count: usize,
     tolerance: Tolerance,
     inferred_dimensions: DimensionMap,
+    pub(crate) metrics: crate::preset::LayoutMetrics,
+    pub(crate) collections: std::collections::BTreeMap<String, locus_syntax::Collection>,
+    pub(crate) aliases: BTreeMap<String, String>,
 }
 
 impl DifferentiatedFile {
     pub(crate) fn evaluate(
-        file: &File,
+        prepared: &PreparedEvaluation<'_>,
         normalized: &[f64],
         normalized_seed: &[f64],
         scales: &[f64],
         dimensions: &BTreeMap<String, NumericDimension>,
-        inferred_dimensions: &DimensionMap,
         tolerance: Tolerance,
     ) -> Result<Self, EvalError> {
+        let file = prepared.file();
+        let inferred_dimensions = prepared.dimensions();
+        let live_layout = super::relations::collect(file)
+            .iter()
+            .any(|source| super::layout::is_layout(source.expression))
+            || has_engine_layout(prepared);
         let mut evaluator = AdEvaluator {
+            aliases: crate::program::alias_identities(file),
+            live_layout,
+            path_labels: crate::eval::path_label::attachments(file),
+            choices: &prepared.inputs().choices,
+            route_choices: prepared.route_choices(),
+            measured: &prepared.inputs().measured,
             objects: BTreeMap::new(),
             normalized,
             normalized_seed,
@@ -414,20 +467,29 @@ impl DifferentiatedFile {
             inferred_dimensions,
             tolerance,
             cursor: 0,
+            metrics: prepared.inputs().metrics,
         };
-        for statement in &file.statements {
-            if let Statement::Op(op) = statement {
-                evaluator.eval_op(op)?;
+        for op in prepared.solver_ops() {
+            if let Some(range) = prepared.unknown_range(&op.id.name) {
+                evaluator.cursor = range.start;
             }
+            evaluator.eval_op(op)?;
         }
         if evaluator.cursor != normalized.len() {
             return Err(solver_error(file.span, "unknown vector length mismatch"));
         }
         Ok(Self {
+            live_layout,
+            retained_routes: prepared.inputs().choices.retained_routes.clone(),
+            retained_distances: prepared.inputs().choices.retained_distances.clone(),
+            path_labels: evaluator.path_labels,
             objects: evaluator.objects,
             unknown_count: normalized.len(),
             tolerance,
             inferred_dimensions: inferred_dimensions.clone(),
+            metrics: prepared.inputs().metrics,
+            collections: prepared.collections().clone(),
+            aliases: evaluator.aliases,
         })
     }
 
@@ -437,7 +499,10 @@ impl DifferentiatedFile {
             self.unknown_count,
             self.tolerance,
             &self.inferred_dimensions,
-        );
+        )
+        .with_metrics(self.metrics)
+        .with_path_labels(&self.path_labels)
+        .with_live_layout(self.live_layout);
         evaluator.eval_object(expression)
     }
 
@@ -451,7 +516,10 @@ impl DifferentiatedFile {
             self.unknown_count,
             self.tolerance,
             &self.inferred_dimensions,
-        );
+        )
+        .with_metrics(self.metrics)
+        .with_path_labels(&self.path_labels)
+        .with_live_layout(self.live_layout);
         evaluator.eval_matching_numbers(lhs, rhs)
     }
 
@@ -470,10 +538,9 @@ impl DifferentiatedFile {
             if !matches!(name.name.as_str(), "intersect" | "tangent_line") {
                 continue;
             }
-            let differentiated = self
-                .objects
-                .get(&op.id.name)
-                .ok_or_else(|| solver_error(op.id.span, "AD object is missing"))?;
+            let Some(differentiated) = self.objects.get(&op.id.name) else {
+                continue;
+            };
             let actual = resolved
                 .get(&op.id)
                 .ok_or_else(|| solver_error(op.id.span, "resolved object is missing"))?;
@@ -513,6 +580,12 @@ fn point_primal_matches(lhs: &DPoint, rhs: crate::geom::Point, tolerance: Tolera
 }
 
 struct AdEvaluator<'a> {
+    aliases: BTreeMap<String, String>,
+    live_layout: bool,
+    path_labels: BTreeMap<String, Vec<String>>,
+    choices: &'a crate::inputs::EvaluationChoices,
+    route_choices: &'a BTreeMap<String, crate::geom::route::RouteChoice>,
+    measured: &'a crate::inputs::MeasuredContent,
     objects: BTreeMap<String, DObject>,
     normalized: &'a [f64],
     normalized_seed: &'a [f64],
@@ -521,20 +594,49 @@ struct AdEvaluator<'a> {
     inferred_dimensions: &'a DimensionMap,
     tolerance: Tolerance,
     cursor: usize,
+    metrics: crate::preset::LayoutMetrics,
+}
+
+fn live_carrier(mut object: DObject, enabled: bool) -> DObject {
+    if let DObject::Linear(linear) = &mut object {
+        linear.layout_live |= enabled;
+    }
+    object
+}
+
+fn has_engine_layout(prepared: &PreparedEvaluation<'_>) -> bool {
+    prepared.registry().iter().any(|op| {
+        crate::eval::automatic::is_automatic_box(op)
+            || crate::eval::automatic::is_standalone_label(op)
+            || crate::eval::path_label::owns_parameters(op, prepared.file())
+            || crate::eval::routing::route_kind(op).is_some()
+    })
 }
 
 impl AdEvaluator<'_> {
     fn eval_op(&mut self, op: &OpStmt) -> Result<(), EvalError> {
-        let object = if crate::eval::is_placed_op(op, self.inferred_dimensions) {
+        let object = if crate::eval::path_label::path_name(op)
+            .is_some_and(|name| matches!(self.objects.get(name), Some(DObject::Route(_))))
+        {
+            self.path_label_object(op)?
+        } else if crate::eval::automatic::is_automatic_box(op)
+            || crate::eval::automatic::is_standalone_label(op)
+        {
+            self.automatic_object(op)?
+        } else if crate::eval::is_placed_op(op, self.inferred_dimensions) {
             self.placed_object(op)?
         } else {
             self.eval_regular_op(op)?
         };
-        self.objects.insert(op.id.name.clone(), object);
+        self.objects
+            .insert(op.id.name.clone(), live_carrier(object, self.live_layout));
         Ok(())
     }
 
     fn eval_regular_op(&mut self, op: &OpStmt) -> Result<DObject, EvalError> {
+        if op.kind == Kind::Arrow {
+            return self.eval_arrow_op(op);
+        }
         match &op.ctor {
             Constructor::FreeNum { .. } => self.free_number(op),
             Constructor::Expr { expr, .. } if op.kind == Kind::Num => {
@@ -548,7 +650,10 @@ impl AdEvaluator<'_> {
                     self.normalized.len(),
                     self.tolerance,
                     self.inferred_dimensions,
-                );
+                )
+                .with_metrics(self.metrics)
+                .with_path_labels(&self.path_labels)
+                .with_live_layout(self.live_layout);
                 let (value, dimension) = evaluator.eval_number_as(expr, expected)?;
                 Ok(DObject::Number(value, dimension))
             }
@@ -567,6 +672,9 @@ impl AdEvaluator<'_> {
             self.tolerance,
             self.inferred_dimensions,
         )
+        .with_metrics(self.metrics)
+        .with_path_labels(&self.path_labels)
+        .with_live_layout(self.live_layout)
     }
 
     fn placed_object(&mut self, op: &OpStmt) -> Result<DObject, EvalError> {
@@ -628,25 +736,46 @@ impl AdEvaluator<'_> {
 }
 
 struct RelationEvaluator<'a> {
+    live_layout: bool,
+    path_labels: BTreeMap<String, Vec<String>>,
     objects: &'a BTreeMap<String, DObject>,
     count: usize,
     tolerance: Tolerance,
     inferred_dimensions: &'a DimensionMap,
+    metrics: crate::preset::LayoutMetrics,
 }
 
 impl<'a> RelationEvaluator<'a> {
-    const fn new(
+    fn new(
         objects: &'a BTreeMap<String, DObject>,
         count: usize,
         tolerance: Tolerance,
         inferred_dimensions: &'a DimensionMap,
     ) -> Self {
         Self {
+            live_layout: false,
+            path_labels: BTreeMap::new(),
             objects,
             count,
             tolerance,
             inferred_dimensions,
+            metrics: crate::preset::LayoutMetrics::default(),
         }
+    }
+
+    const fn with_metrics(mut self, metrics: crate::preset::LayoutMetrics) -> Self {
+        self.metrics = metrics;
+        self
+    }
+
+    fn with_path_labels(mut self, labels: &BTreeMap<String, Vec<String>>) -> Self {
+        self.path_labels = labels.clone();
+        self
+    }
+
+    const fn with_live_layout(mut self, enabled: bool) -> Self {
+        self.live_layout = enabled;
+        self
     }
 
     fn eval(&mut self, expression: &Expr) -> Result<DValue, EvalError> {
@@ -778,6 +907,9 @@ impl<'a> RelationEvaluator<'a> {
     }
 
     fn eval_call(&mut self, name: &str, args: &[Expr], span: Span) -> Result<DValue, EvalError> {
+        if name == "edge" {
+            return self.eval_edge(args, span).map(DValue::Object);
+        }
         if is_numeric_function(name) {
             return self.eval_numeric_call(name, args, span);
         }
@@ -834,6 +966,7 @@ impl<'a> RelationEvaluator<'a> {
         span: Span,
     ) -> Result<DValue, EvalError> {
         match name {
+            "style_metric" => self.eval_style_metric(args, span),
             "ratio" => self.eval_ratio(args, span),
             "sqrt" | "abs" => self.eval_unary_numeric(name, args, span),
             "min" | "max" => self.eval_extremum(name, args, span),
@@ -1290,7 +1423,7 @@ impl<'a> RelationEvaluator<'a> {
 
     fn eval_object(&mut self, expression: &Expr) -> Result<DObject, EvalError> {
         match self.eval(expression)? {
-            DValue::Object(object) => Ok(object),
+            DValue::Object(object) => Ok(live_carrier(object, self.live_layout)),
             _ => Err(solver_error(
                 expression.span(),
                 "expected a geometry object",
@@ -1321,7 +1454,7 @@ impl<'a> RelationEvaluator<'a> {
 
     fn eval_polygon(&mut self, expression: &Expr) -> Result<Vec<DPoint>, EvalError> {
         match self.eval_object(expression)? {
-            DObject::Polygon(vertices, _) => Ok(vertices),
+            DObject::Polygon(vertices, _, _) => Ok(vertices),
             _ => Err(solver_error(expression.span(), "expected a polygon")),
         }
     }
@@ -1381,10 +1514,26 @@ impl<'a> RelationEvaluator<'a> {
         } else {
             diamond_vertices(center, &width, &height)
         };
-        Ok(DObject::Polygon(vertices, true))
+        Ok(DObject::Polygon(vertices, true, kind == Kind::Rect))
     }
 
     fn eval_constructor(
+        &mut self,
+        name: &str,
+        args: &[Expr],
+        kind: Kind,
+        span: Span,
+    ) -> Result<DObject, EvalError> {
+        if name == "edge" {
+            return self.eval_edge(args, span);
+        }
+        if kind == Kind::Arrow {
+            return self.eval_direct_arrow(args, &Jet::constant(0.0, self.count), span);
+        }
+        self.eval_constructor_by_kind(name, args, kind, span)
+    }
+
+    fn eval_constructor_by_kind(
         &mut self,
         name: &str,
         args: &[Expr],
@@ -1764,6 +1913,7 @@ impl<'a> RelationEvaluator<'a> {
                 start: self.eval_point(&args[0])?,
                 through: self.eval_point(&args[1])?,
                 domain,
+                layout_live: self.live_layout,
             });
         }
         self.eval_derived_line(name, args, span)
@@ -1805,6 +1955,7 @@ impl<'a> RelationEvaluator<'a> {
             start: point.clone(),
             through: point.add_vector(&direction),
             domain: LinearDomain::Line,
+            layout_live: false,
         })
     }
 
@@ -1818,6 +1969,7 @@ impl<'a> RelationEvaluator<'a> {
             start: midpoint.clone(),
             through: midpoint.add_vector(&direction),
             domain: LinearDomain::Line,
+            layout_live: false,
         })
     }
 
@@ -1856,6 +2008,7 @@ impl<'a> RelationEvaluator<'a> {
             start: b.clone(),
             through: b.add_vector(&carrier_direction),
             domain: LinearDomain::Line,
+            layout_live: false,
         })
     }
 
@@ -1902,6 +2055,7 @@ impl<'a> RelationEvaluator<'a> {
             start: point,
             through: contacts[branch].clone(),
             domain: LinearDomain::Line,
+            layout_live: false,
         })
     }
 
@@ -2039,7 +2193,7 @@ impl<'a> RelationEvaluator<'a> {
                 .iter()
                 .map(|arg| self.eval_point(arg))
                 .collect::<Result<Vec<_>, _>>()?;
-            return Ok(DObject::Polygon(vertices, false));
+            return Ok(DObject::Polygon(vertices, false, false));
         }
         require_arity(name, args, 3, span)?;
         let center = self.eval_point(&args[0])?;
@@ -2050,7 +2204,7 @@ impl<'a> RelationEvaluator<'a> {
         } else {
             diamond_vertices(&center, &width, &height)
         };
-        Ok(DObject::Polygon(vertices, true))
+        Ok(DObject::Polygon(vertices, true, name == "rect"))
     }
 
     fn eval_property(
@@ -2061,10 +2215,13 @@ impl<'a> RelationEvaluator<'a> {
         span: Span,
     ) -> Result<DValue, EvalError> {
         require_arity(name, args, usize::from(name == "at"), span)?;
-        match self.eval_object(base)? {
+        let object = self.eval_object(base)?;
+        if let DObject::Route(route) = &object {
+            return self.attached_route_property(base, route, name, span);
+        }
+        match object {
             DObject::Point(point) => Ok(DValue::Object(DObject::Point(point))),
-            DObject::Linear(linear) => linear_property(linear, name, span)
-                .map(|point| DValue::Object(DObject::Point(point))),
+            DObject::Linear(linear) => Self::linear_measure_or_property(linear, name, span),
             DObject::Circle(circle) => self.circle_property(circle, name, args, span),
             object => self.eval_curve_or_shape_property(object, name, args, span),
         }
@@ -2082,11 +2239,12 @@ impl<'a> RelationEvaluator<'a> {
                 arc_property(arc, name, span).map(|point| DValue::Object(DObject::Point(point)))
             }
             DObject::RoundedRect(rect) => rect.property(name, span, self.count),
-            DObject::Polygon(vertices, boxed) => {
+            DObject::Polygon(vertices, boxed, _) => {
                 polygon_property(&vertices, boxed, name, span, self.count)
             }
             DObject::Ellipse(ellipse) => self.ellipse_property(ellipse, name, args, span),
             DObject::Bspline(spline) => self.bspline_property(&spline, name, args, span),
+            DObject::Route(route) => Self::route_property(&route, name, span),
             _ => Err(solver_error(
                 span,
                 format!("property `{name}` is unavailable"),
@@ -3051,26 +3209,13 @@ fn diagonal_anchor(minimum: DPoint, maximum: DPoint, name: &str) -> Option<DPoin
 }
 
 fn is_numeric_function(name: &str) -> bool {
-    matches!(
-        name,
-        "dist"
-            | "hdist"
-            | "vdist"
-            | "angle"
-            | "dir_angle"
-            | "radius"
-            | "length"
-            | "area"
-            | "perimeter"
-            | "ratio"
-            | "sqrt"
-            | "abs"
-            | "min"
-            | "max"
-    )
+    locus_syntax::NUMERIC_FUNCTION_NAMES.contains(&name)
 }
 
 fn constructor_kind(name: &str, span: Span) -> Result<Kind, EvalError> {
+    if name == "arrow" {
+        return Ok(Kind::Arrow);
+    }
     if matches!(
         name,
         "line" | "perpendicular" | "parallel" | "perp_bisector" | "angle_bisector" | "tangent_line"
@@ -3286,6 +3431,23 @@ const fn numeric_dimension(value: InferredDimension) -> NumericDimension {
 #[cfg(test)]
 #[allow(clippy::expect_used, clippy::float_cmp)]
 mod tests {
+    #[test]
+    fn layout_piece_gradients_switch_at_live_values_and_retain_first_ties() {
+        let a = super::Jet::variable(-2.0, 3.0, 0, 1.0, 2);
+        let b = super::Jet::variable(1.0, -4.0, 1, 1.0, 2);
+        assert_eq!(a.abs_live().gradient, [-1.0, 0.0]);
+        assert_eq!(a.min_live(&b).gradient, [1.0, 0.0]);
+        assert_eq!(a.max_live(&b).gradient, [0.0, 1.0]);
+        assert_eq!(a.hinge().gradient, [1.0, 0.0]);
+        assert_eq!(b.hinge().gradient, [0.0, 0.0]);
+        let boundary = super::Jet::variable(0.0, 7.0, 0, 1.0, 2);
+        assert_eq!(boundary.hinge().gradient, [1.0, 0.0]);
+        assert_eq!(
+            boundary.min_live(&super::Jet::constant(0.0, 2)).gradient,
+            [1.0, 0.0]
+        );
+    }
+
     use super::*;
 
     fn jet(value: f64, seed_value: f64, derivative: f64) -> Jet {
@@ -3312,6 +3474,7 @@ mod tests {
                 y: Jet::constant(0.0, 1),
             },
             domain: LinearDomain::Segment,
+            layout_live: false,
         };
         let projection = closest_point(&point, &segment, Span::default()).expect("projection");
         assert_eq!(projection.x.value, 0.0);

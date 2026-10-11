@@ -1,0 +1,12 @@
+locus 0 beta 6
+
+rect panel(4, 2)
+point start()
+point finish()
+segment divider(start, finish)
+rel on(start, edge(panel, W))
+rel on(finish, edge(panel, E))
+rel align_center_y(start, finish, panel)
+assert on(start, edge(panel, W))
+assert on(finish, edge(panel, E))
+assert length(divider) == 4

@@ -329,7 +329,10 @@ fn operation(statement: &Statement) -> Option<&OpStmt> {
         | Statement::Assert(_)
         | Statement::Meta(_)
         | Statement::Style(_)
-        | Statement::Class(_) => None,
+        | Statement::Class(_)
+        | Statement::Fn(_)
+        | Statement::Group(_)
+        | Statement::Call(_) => None,
     }
 }
 

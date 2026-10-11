@@ -1,4 +1,4 @@
-locus 0 beta 5
+locus 0 beta 6
 
 meta title = "Locus logo"
 meta note = "An exact figure, its defining path, and the point selected by their relations"
@@ -12,22 +12,22 @@ class solution { accent: #4F46E5, fill: #4F46E5, weight: 1 }
 class wordmark { accent: #4F46E5 }
 
 // The figure: an exact locus with three related points and their shared center.
-point O     = point() { mark: none }
+point O() { mark: none }
 num radius  = 1
-circle path = circle(O, radius) [orbit]
+circle path(O, radius) [orbit]
 
 point A                   = on_circle(path, 90deg) { mark: none }
 point B                   = on_circle(path, 210deg) { mark: none }
 point C                   = on_circle(path, 330deg) { mark: none }
-polygon relation_triangle = polygon(A, B, C) [relation]
-circle node_a             = circle(A, 0.06) [node]
-circle node_b             = circle(B, 0.06) [node]
-circle node_c             = circle(C, 0.06) [node]
-circle solution_point     = circle(O, 0.08) [solution]
+polygon relation_triangle(A, B, C) [relation]
+circle node_a(A, 0.06) [node]
+circle node_b(B, 0.06) [node]
+circle node_c(C, 0.06) [node]
+circle solution_point(O, 0.08) [solution]
 
 // The wordmark is part of the scene, not text added after rendering.
-text_block name = text_block("locus") [wordmark] { place: right }
+text_block name("locus") [wordmark] { place: right }
 
 assert dist(O, A) == radius and dist(O, B) == radius and dist(O, C) == radius
 assert dist(A, B) == dist(B, C) and dist(B, C) == dist(C, A)
-assert coincident(relation_triangle.centroid, O)
+assert center(relation_triangle.centroid, O)

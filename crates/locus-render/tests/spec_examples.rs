@@ -6,13 +6,13 @@ use std::fs;
 use std::path::Path;
 use std::time::Instant;
 
-use locus_core::{AssertionReport, Solved, evaluate_assertions, solve};
-use locus_layout::{LayoutOptions, LayoutScene, boxes::measure_scene, layout};
+use locus_core::{AssertionReport, Solved, evaluate_assertions_with_inputs};
+use locus_layout::{LayoutOptions, LayoutScene, measurement::measure_file, solve_layout};
 use locus_render::{
     RenderOptions, render_svg, render_tikz,
     style::{Color, StyleSheet},
 };
-use locus_tex::{FontSize, PlaintextEngine, RexEngine};
+use locus_tex::{PlaintextEngine, RexEngine};
 
 #[path = "../../../spec/test/support/mod.rs"]
 mod support;
@@ -54,15 +54,29 @@ fn export_gallery(cases: &[support::Case]) -> Result<(), Box<dyn Error>> {
         )?;
     }
     let gallery = format!(
-        "<!doctype html><html lang=\"en\"><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><title>Locus 0 beta 5 stress drawings</title><style>body{{margin:0;padding:32px;background:#f3f4f6;color:#111827;font:16px system-ui,sans-serif}}main{{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px}}article{{padding:16px;background:white;border:1px solid #d1d5db;border-radius:12px}}img{{display:block;width:100%;height:320px;object-fit:contain;background:white}}h1{{margin-top:0}}h2{{font-size:16px;text-transform:capitalize}}a{{color:#2563eb}}p{{color:#4b5563}}</style><h1>Locus 0 beta 5 stress drawings</h1><p>All {count} workloads, verified and drawn with a white background. Select a drawing to view the full SVG.</p><main>{cards}</main></html>"
+        "<!doctype html><html lang=\"en\"><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><title>Locus 0 beta 6 stress drawings</title><style>body{{margin:0;padding:32px;background:#f3f4f6;color:#111827;font:16px system-ui,sans-serif}}main{{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px}}article{{padding:16px;background:white;border:1px solid #d1d5db;border-radius:12px}}img{{display:block;width:100%;height:320px;object-fit:contain;background:white}}h1{{margin-top:0}}h2{{font-size:16px;text-transform:capitalize}}a{{color:#2563eb}}p{{color:#4b5563}}</style><h1>Locus 0 beta 6 stress drawings</h1><p>All {count} workloads, verified and drawn with a white background. Select a drawing to view the full SVG.</p><main>{cards}</main></html>"
     );
     export("index", "html", gallery.as_bytes())
 }
 
 fn render_case(case: &support::Case) -> Result<Run, Box<dyn Error>> {
     let file = case.parse()?;
-    let solved = solve(&file)?;
-    let assertions = evaluate_assertions(&file, &solved.scene)?;
+    let (inputs, measured) = measure_file(
+        &file,
+        &PlaintextEngine::new(),
+        &RexEngine,
+        locus_core::preset::LayoutMetrics::default(),
+    )?;
+    let options = LayoutOptions {
+        em_size: inputs.metrics.em_size,
+        ..LayoutOptions::default()
+    };
+    let (scene, placed) = solve_layout(&file, inputs, &measured, options)?;
+    let solved = Solved {
+        scene: scene.resolved().ok_or("accepted stress scene")?.clone(),
+        summary: scene.solve_summary().ok_or("stress solve report")?.clone(),
+    };
+    let assertions = evaluate_assertions_with_inputs(&file, &solved.scene, &scene.inputs)?;
     assert!(assertions.passed, "{}: {assertions:?}", case.name);
     case.check_report(
         assertions.assertions.len(),
@@ -70,22 +84,7 @@ fn render_case(case: &support::Case) -> Result<Run, Box<dyn Error>> {
         solved.summary.attempts,
         solved.summary.max_normalized_residual,
     );
-    // Export the same real math outlines used by the CLI's default renderer.
-    let measured = measure_scene(
-        &solved.scene,
-        &PlaintextEngine::new(),
-        &RexEngine,
-        FontSize::DEFAULT,
-    )?;
-    let placed = layout(
-        &solved.scene,
-        &measured,
-        LayoutOptions {
-            em_size: 0.28,
-            ..LayoutOptions::default()
-        },
-    )?;
-    let styles = StyleSheet::from_file(&file)?;
+    let styles = StyleSheet::from_file(&scene.file)?;
     let options = RenderOptions {
         background: Some(Color(255, 255, 255, 255)),
         ..RenderOptions::default()

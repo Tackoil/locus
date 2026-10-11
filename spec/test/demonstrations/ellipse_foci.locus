@@ -1,4 +1,4 @@
-locus 0 beta 5
+locus 0 beta 6
 
 meta title = "Rotated ellipse: semiaxes and the focal-distance identity"
 meta note = "Dimensions are semiaxes; the center is owned by the ellipse"
@@ -6,24 +6,24 @@ meta note = "Dimensions are semiaxes; the center is owned by the ellipse"
 style textbook
 
 // ---- shapes and derived anchors ----------------------------
-ellipse e = ellipse(3, 2, 30deg)
-ellipse inner = ellipse(e.center, 1.5, 1, 30deg)   [construction]
+ellipse e(3, 2, 30deg)
+ellipse inner(e.center, 1.5, 1, 30deg)   [construction]
 point O = e.center
 point F1 = e.focus1
 point F2 = e.focus2
 point P = e.at(60deg)
 
-segment major = seg(e.major_start, e.major_end)   [auxiliary]
-segment minor = seg(e.minor_start, e.minor_end)   [auxiliary]
-segment focal1 = seg(F1, P)   [highlight]
-segment focal2 = seg(F2, P)   [highlight]
+segment major(e.major_start, e.major_end)   [auxiliary]
+segment minor(e.minor_start, e.minor_end)   [auxiliary]
+segment focal1(F1, P)   [highlight]
+segment focal2(F2, P)   [highlight]
 
 // ---- annotation -------------------------------------------
-label lO = label(O, $O$)   { dir: S }
-label lF1 = label(F1, $F_1$)   { dir: S }
-label lF2 = label(F2, $F_2$)   { dir: S }
-label lP = label(P, $P$)   { dir: N }
-text_block identity = text_block($PF_1 + PF_2 = 2a$)   { place: below }
+label lO(O, $O$)   { dir: S }
+label lF1(F1, $F_1$)   { dir: S }
+label lF2(F2, $F_2$)   { dir: S }
+label lP(P, $P$)   { dir: N }
+text_block identity($PF_1 + PF_2 = 2a$)   { place: below }
 
 // ---- intent -----------------------------------------------
 assert on(P, e)

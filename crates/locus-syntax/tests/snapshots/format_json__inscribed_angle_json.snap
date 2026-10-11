@@ -1,9 +1,10 @@
 ---
 source: crates/locus-syntax/tests/format_json.rs
+assertion_line: 56
 expression: json
 ---
 {
-  "version": "0 beta 5",
+  "version": "0 beta 6",
   "meta": [
     {
       "key": "title",

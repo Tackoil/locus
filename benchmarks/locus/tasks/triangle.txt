@@ -1,7 +1,0 @@
-Draw a textbook 3-4-5 right triangle. A is the lower-left vertex, B is 4 units to
-the right of A, and C is 3 units above A. Draw the main triangle, the altitude
-from A to its foot H on BC, the circumcircle, and the incircle. Highlight the
-altitude; use subdued construction styling for the circumcircle and distinct
-auxiliary styling for the incircle. Show right-angle marks at A and H, attached
-labels A, B, C, H, and a caption stating area = 6 and altitude AH = 2.4.
-Choose a readable layout with no clipping or overlapping labels.

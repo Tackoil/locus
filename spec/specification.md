@@ -1,10 +1,10 @@
-# Locus Specification 0 beta 5
+# Locus Specification 0 beta 6
 
 *A relational language and CLI toolchain for plane-geometry figures and technical diagrams with precise alignment and ratios.*
 
 This document is self-contained and normative. The project is under development and supports only this latest draft; earlier file formats are not accepted.
 
-This revision uses single-line metadata, scalar seeds directly after `free`, and optional alpha in HEX colors, alongside object-owned placement and parameterless `point()` declarations. The `0 beta 5` format remains unfrozen pending the initialization rules in Part 12.
+This revision incorporates the beta 6 proposal into the normative language and toolchain contract. The [relation diagram](relations.svg), its [Locus source](relations.locus), and both [composition examples](test/composition/) are formal reference material. It adds reusable functions, constructor declarations, ordered groups, automatic box sizing, standalone and path-attached labels, automatic connector routing, preset measurements, and rectangular boundary edges. The draft remains unfrozen pending the numerical and implementation contracts listed in Part 12. The measured runtime and 30-source acceptance now implement the contracts pinned in §7.7, §8.7 and §9. Remaining freeze questions stay listed in Part 12.
 
 ---
 
@@ -18,12 +18,29 @@ This revision uses single-line metadata, scalar seeds directly after `free`, and
 
 ### 0.1 Current model (informative)
 
-The current draft uses a relational model, keeps placement initialization inside Locus, provides parameterless `point()` and dimension-only shape declarations, makes circle tangency choices explicit, and includes ellipses and B-splines:
+The current draft uses a relational model, keeps placement initialization inside Locus, provides parameterless `point()`, explicit or automatic shape dimensions, and measured labels, makes circle tangency choices explicit, and includes ellipses and B-splines:
 
-1. Geometry is declared by its intrinsic properties (`point()`, `circle(2)`, `rect(4, 2)`); its placement belongs to Locus. Objects are related through points and anchors, never through authored coordinates.
-2. Relations between objects (`tangent`, `on`, `horizontal`, `dist(A,B) == 6`, …) are first-class statements that *define* geometry, not just check it.
+1. Geometry and content are declared by their intrinsic properties (`point()`, `circle(2)`, `rect(4, 2)`, `rect()`, `label("text")`); their placement belongs to Locus. Objects are related through measured bounds, points, and anchors, never through authored coordinates.
+2. Relations between objects (`tangent`, `on`, `align_center_y`, `dist(A,B) == 6`, …) are first-class statements that *define* geometry, not just check it.
 
 This is the geometric-constraint paradigm proven by CAD sketchers (SolveSpace, FreeCAD/planegcs). The constructive constructors survive as the **derived tier** — direct evaluation, zero unknowns — under the doctrine: **construct when you can, relate when you must.**
+
+### 0.2 Diagram-authoring additions (informative)
+
+The [agent-loop example](test/composition/flowchart_agent_loop.locus) and [checkout example](test/composition/checkout_sequence.locus) use generic drawing objects and composition. Business meaning comes from text and local functions; there are no participant, message-event, branch, guard, activation, or lifeline primitives.
+
+| Addition | Required behavior | Defined in |
+|---|---|---|
+| Functions, constructor declarations, and groups | Expand named local composition and ordered references into the shared figure. | §1.4–§1.6 |
+| Automatic shape dimensions | `rect()`, `diamond()`, and `rounded_rect()` obtain compact dimensions from measured content, relations, and preset defaults. | §2.2, §5.5 |
+| Independent and connector labels | `label(text)` participates in layout; `label(path, text)` follows a connector with `near` and page-relative `side` preferences. | §5.6–§5.7, §8.1 |
+| Typography roles | `role: title` selects preset title typography without assigning a position. | §5.7, §8.2 |
+| Automatic routes | `route: curved` and `route: orthogonal` preserve endpoints while the engine chooses controls and detours. | §5.7, §8.6 |
+| Preset measurements | `style_metric("short_length")` and `style_metric("narrow_width")` return length values. | §6.2 |
+| Boundary and path measurements | `edge(rect, direction)` derives a finite side; an arrow's `.length` measures its untrimmed centerline. | §5.8, §6.2 |
+| Integrated layout and feedback | Text measurement, sizing, separation, routing, and clipping produce one validated scene and source-anchored reports. | §8.6, §9.3–§9.4 |
+
+Initialization, numerical layout, routing search, and preset constants are specified in §7.7–§8.7. The geometric equality algorithm is retained in §7.1. The unified vocabulary in Part 3 is authoritative; remaining freeze questions are listed in Part 12.
 
 ---
 
@@ -33,7 +50,7 @@ This is the geometric-constraint paradigm proven by CAD sketchers (SolveSpace, F
 
 - Extension: `*.locus`; encoding UTF-8; newline-terminated statements.
 - Comments: `//` to end of line. Outside strings and TeX spans, a comment may occupy a whole line or follow any statement.
-- Header: `locus 0 beta 5`. This exact header is mandatory.
+- Header: `locus 0 beta 6`. This exact header is mandatory.
 - **Compatibility:** Earlier headers and file formats are rejected. Backward compatibility is not maintained while the project is under development.
 - The file stores the **relational program**, never resolved coordinates. Resolved geometry is always derived by solving + evaluation.
 - Machine interchange: `locus fmt --json` emits the parsed AST as JSON (§9.4). The DSL is the authoring format; JSON is derived, never authored.
@@ -41,7 +58,7 @@ This is the geometric-constraint paradigm proven by CAD sketchers (SolveSpace, F
 ### 1.2 File shape
 
 ```locus
-locus 0 beta 5                      // format version header, mandatory, first statement
+locus 0 beta 6                      // format version header, mandatory, first statement
 
 meta title = "Externally tangent circles"
 
@@ -49,17 +66,17 @@ style textbook               // optional; defaults to textbook
 class faint { stroke: dash(5, 3), weight: 0.75, accent: #6B7280 }   // optional style classes (§8.3)
 
 // ---- objects ----
-circle c1 = circle(2)
-circle c2 = circle(3) where { horizontal(c1.center, c2.center) }   [highlight]
-point O_1 = c1.center
+circle c1(2)
+circle c2(3) where { align_center_y(c1, c2) }   [highlight]
+point O_1 = c1.center               // = rhs names a derived value
 point O_2 = c2.center
-line  ax  = line(O_1, O_2)   [faint]
+line  ax(O_1, O_2)   [faint]
 
 // ---- relations ----
 rel tangent(c1, c2)
 
 // ---- annotation ----
-label l1 = label(O_1, $O_1$)  { dir: S }
+label l1(O_1, $O_1$)  { dir: S }
 
 // ---- intent ----
 assert dist(O_1, O_2) == 5
@@ -69,26 +86,35 @@ assert dist(O_1, O_2) == 5
 
 ```
 file          := header (statement | eol)*
-header        := "locus" "0" "beta" "5" eol
-statement     := op | rel | assert | meta | style | class
+header        := "locus" "0" "beta" "6" eol
+statement     := op | ctor_op | group_stmt | fn_def | fn_call | rel | assert | meta | style | class
 
 op            := free_num_op | object_op
 free_num_op   := "num" ident "=" "free" expr [where] [attr] [props] eol -- expr is the required numeric seed
-object_op     := kind ident "=" rhs [where] [attr] [props] eol
-rhs           := expr                              -- result type must match kind
+object_op     := kind ident "=" rhs [where] [attr] [props] eol -- alias, derived value, or differently named constructor
+ctor_op       := kind ident "(" [args] ")" [where] [attr] [props] eol -- call of the constructor named `kind` (§1.4)
+group_stmt    := "group" ident "(" group_members ")" eol -- ordered references; no geometry or placement (§1.6)
+group_members := member_ref ("," member_ref)*
+member_ref    := ident ("." ident)*                  -- existing object/point, group, or function instance
+fn_def        := "fn" ident "(" [params] ")" "{" eol (fn_body_stmt | eol)* "}" eol
+params        := ident ("," ident)*
+fn_body_stmt  := op | ctor_op | group_stmt | fn_call | rel | assert
+fn_call       := ident ident "(" [args] ")" [attr] eol -- function name, instance name, positional arguments
+rhs           := expr                              -- result type must match kind; never a call of the constructor named `kind` (§1.4)
 kind        := "point" | "num" | "line" | "ray" | "segment" | "circle" | "arc" | "ellipse" | "bspline"
              | "polygon" | "rect" | "rounded_rect" | "diamond"
              | "label" | "arrow" | "tick" | "right_angle" | "text_block"
 
 where       := "where" "{" boolexpr ("," boolexpr)* "}"
-attr        := "[" ident "]"                       -- built-in or declared style class
+attr        := "[" ident "]"                       -- built-in/declared class, or a class parameter inside fn
 props       := "{" [prop ("," prop)*] "}"
 prop        := ident ":" propvalue
 propvalue   := expr | string | ident | headtok | hexcolor
 headtok     := "->" | "<->" | "-"                  -- dedicated tokens (arrow heads)
 hexcolor    := "#" hex_digit hex_digit hex_digit hex_digit hex_digit hex_digit [hex_digit hex_digit] -- #RRGGBB or #RRGGBBAA
 
-rel         := "rel" boolexpr eol
+rel         := "rel" (boolexpr [props] | trim_op) eol -- props only for a standalone inset (§3.4)
+trim_op     := "trim_endpoints" "(" expr "," expr ")" -- rendering operation, not a Boolean predicate (§3.5)
 assert      := "assert" boolexpr ["tol" number] eol
 meta        := "meta" ident "=" string eol        -- one metadata key/value pair per line
 style       := "style" ident eol
@@ -112,7 +138,7 @@ bool_and    := bool_not ("and" bool_not)*
 bool_not    := ["not"] bool_primary
 bool_primary := cmp | predicate | "(" boolexpr ")"
 cmp         := expr ("==" | "<" | ">" | "<=" | ">=") expr
-predicate   := ident "(" args ")"                 -- Boolean condition call, e.g. horizontal(A, B); requires at least one argument
+predicate   := ident "(" args ")"                 -- Boolean condition call, e.g. align_center_y(A, B); requires at least one argument
 
 number      := (digits ["." [digits]] | "." digits) [exponent]
 exponent    := ("e" | "E") [("+" | "-")] digits
@@ -132,30 +158,119 @@ eol         := [COMMENT] NEWLINE
 
 `plain_char` excludes raw newlines, `"`, `\`, and `$`. `tex_chars` excludes raw newlines and an unescaped `$`; backslashes inside a TeX span are preserved verbatim. These lexical exclusions make a quoted string and a bare TeX literal unambiguous.
 
-Note the `postfix` production: property access applies to any expression, so `seg(B, D).midpoint` and `rect(...)` anchors compose without intermediate ids.
+Symbolic enum arguments are validated by their call context: the second argument of `edge` accepts the direction literals `N | E | S | W` (§5.8), and class arguments passed to local functions resolve as class names (§1.5). Neither form is an undeclared numeric variable, and neither is shadowed by a same-named object id.
+
+Note the `postfix` production: property access applies to any expression, so `seg(B, D).midpoint` and `rect(...)` anchors compose without intermediate ids. It also resolves function-instance members before ordinary object properties: `approved.payment.path` selects an expanded object, and `init.shape.n` selects a shape member's anchor (§1.5).
 
 ### 1.4 Statement rules
 
-- **One logical statement per line.** No semicolons, continuation syntax, or multi-line statements. Metadata uses `meta key = "value"`, with one key/value pair per statement; additional entries use additional `meta` statements. Parse errors are recovered at the next line boundary, so one bad statement never invalidates the file's remaining diagnostics.
+- **One simple statement per line.** No semicolons or continuation syntax. A function definition is a block: its opening declaration, each body statement, and its closing brace occupy separate lines (§1.5). Metadata uses `meta key = "value"`, with one key/value pair per statement; additional entries use additional `meta` statements. Parse errors are recovered at the next line boundary, so one bad simple statement never invalidates the file's remaining diagnostics.
 - **Comments are trivia.** The lexer removes `//` through the end of its physical line when it occurs outside a quoted string or TeX span; the terminating newline remains for recovery. This makes both comment-only lines and trailing comments valid without adding comment alternatives to every production.
-- **`kind id = rhs`** is deliberately redundant: the declared kind must match the result type. This cross-check catches agent mistakes early (`point M = seg(A,B)` → immediate type error) and makes files skimmable.
+- **Two declaration forms, one type check.** `kind id(args)` calls the constructor that shares the kind's name: `circle c(2)`, `point P()`, `label l(P, "A")`, `rect box()`. For `segment` that constructor is `seg`. `kind id = rhs` is used when the right-hand side is anything else — an alias (`point O = c.center`), a derived constructor with another name (`point M = midpoint(A, B)`, `line t = tangent_line(E, c, 0)`, `arc m = angle_arc(A, B, C, r)`), an expression, or a `free` num. The two forms do not overlap: `circle c = circle(2)` is rejected with a fix-it to `circle c(2)`, and `num` has no constructor, so `num n(...)` is rejected. Both forms are deliberately redundant: the declared kind must match the result type. This cross-check catches agent mistakes early (`point M = seg(A,B)` → immediate type error) and makes files skimmable. Overloads are resolved from the arguments as for any call, and a constructor declaration has exactly the placed/derived status and unknowns of its constructor (§2.2).
 - **`free` is reserved for numeric declarations.** A free `num` requires a scalar seed expression directly after `free`, as in `num r = free 1.5`; a missing seed or a coordinate-pair seed is a local parse error. `point P = free ...` is invalid. There is no location type, absolute point constructor, coordinate-hint syntax, or `pin` relation.
 - **Points and object references are values.** `point O = c.center` names a derived anchor and introduces no unknowns. A reference such as `circle other = c` aliases the same geometry; it does not allocate another placement.
-- **`point()` takes no arguments.** `point P = point()` declares an independently placed point; `point(1)`, `point(1, 2)`, and `point(A)` are local arity errors. Use `point Q = P` to name the same point, or a derived constructor to construct another. Neither declaration syntax nor point props accept coordinates, seeds, or a location field.
-- **Placement-owning constructors occur only as the complete right-hand side of a matching declaration.** `circle c = circle(2)` is valid; `label(circle(2).center, "O")` is invalid. Declare the object first. This gives each placement a stable source id and prevents hidden unknowns in nested expressions (§2.2).
-- **Identifiers**: unique per file, `[A-Za-z][A-Za-z0-9_']*`. Convention (not enforced): single/primed letters for points (`A`, `B'`, `M_1`), words for derived objects (`tri`, `inc`).
+- **`point()` takes no arguments.** `point P()` declares an independently placed point; `point P(1)`, `point P(1, 2)`, and `point P(A)` are local arity errors. Use `point Q = P` to name the same point, or a derived constructor to construct another. Neither declaration syntax nor point props accept coordinates, seeds, or a location field.
+- **Placement-owning constructors occur only as a constructor declaration.** `circle c(2)` is valid; `label(circle(2).center, "O")` is invalid. Declare the object first. This gives each placement a stable source id and prevents hidden unknowns in nested expressions (§2.2).
+- **Identifiers**: `[A-Za-z][A-Za-z0-9_']*`, unique within their scope. Top-level objects, groups, classes, functions, and instance names share the file namespace. Function parameters and local members follow §1.5; qualified expanded ids are unique per file. Convention (not enforced): single/primed letters for points (`A`, `B'`, `M_1`), words for derived objects (`tri`, `inc`).
 - **Reference order**: an op's `rhs` may only reference ids defined on earlier lines; its `where` clause may also reference the id being declared. `rel` and `assert` statements may reference any id defined above them; `rel` equations constrain *earlier* objects (the solve is simultaneous, §7).
-- **`[attr]`** — a style class: one of the built-ins `main` (default) | `auxiliary` | `highlight` | `construction`, or a `class` declared on an earlier line (§8.3). A class may use preset tokens or exact color, width, dash, opacity, cap, and join values.
-- **`{props}`** — op-specific fields (closed set per kind, §5.7). Unknown props are errors.
+- **`[attr]`** — a style class: one of the built-ins `main` (default) | `auxiliary` | `highlight` | `construction`, or a `class` declared on an earlier line (§8.3). Inside a function, a class parameter may supply this name; a class on a named invocation supplies the fallback described in §1.5. A class may use preset tokens or exact color, width, dash, opacity, cap, and join values.
+- **`{props}`** — op-specific fields (closed set per kind, §5.7). A standalone `rel inset_*(A, B)` additionally accepts `{ padding: none }` (§3.4); other relation properties and properties on conjunctions are errors. Unknown props are errors.
 - **Text strings may mix plain text and TeX.** Outside a TeX span, quoted strings support `\"`, `\\`, `\$`, and `\n`; `\n` produces a centered multi-line text stack. An unescaped `$` opens or closes an inline TeX span, so `"filter offset $O_2$"` is stored as three ordered segments: plain text, TeX, plain text. Use `\$` for a literal dollar sign in the plain-text portion. An unmatched delimiter is a local syntax error.
 - **TeX spans preserve backslashes.** Inside either an inline span or a bare all-TeX literal, TeX source is not processed as string escapes: `"angle $\alpha$"` and `$\triangle ABC$` both deliver the backslash to the TeX engine. Raw newlines and nested unescaped dollar delimiters are invalid. `\$` inside TeX remains TeX source for a rendered dollar and does not close the span.
 - **Text is represented as segments.** The AST stores every text value as an ordered list of `{kind: "plain" | "tex", source: string}` segments. A bare `$...$` value is therefore one TeX segment, a string without inline spans is one plain segment, and a mixed string has multiple segments. Formatting preserves segment boundaries and escapes canonically.
+
+### 1.5 Reusable statement functions
+
+Functions follow the composition model in [the agent-loop example](test/composition/flowchart_agent_loop.locus) and [the checkout example](test/composition/checkout_sequence.locus). A function is a file-local reusable statement block, expanded before solving. It has no return type or return value, and its definition creates no objects until invoked. A call is a named statement, not an expression-valued `funcall` from §1.3. Function bodies use the same two declaration forms as the top level (§1.4); `rect shape()` and `label caption(text)` inside a body are ordinary constructor declarations with automatic dimensions (§5.5) and standalone measured text (§5.6).
+
+**Definition and invocation.** Define a function before invoking it. Parameters are positional, named without type annotations, and substituted as structured arguments at expansion time. Their uses determine the required kinds and numeric dimensions. A call must supply exactly the declared number of arguments, including zero arguments for a parameterless function. Object and anchor arguments refer to existing values; passing an object does not copy it or allocate another placement. Text arguments preserve their plain/TeX segments. A parameter used in `[appearance]` must receive a built-in or previously declared style-class name.
+
+The checkout example's connector illustrates object, text, and class arguments:
+
+```locus
+fn connector(source, target, text, path_style, text_style) {
+    point tail() { mark: none }
+    point tip() { mark: none }
+    rel on(tail, source)
+    rel on(tip, target)
+    rel align_center_y(tail, tip)
+    arrow path(tail, tip) [path_style]
+    label caption(path, text) [text_style] { near: middle, side: above }
+    rel avoid(caption, source, target)
+}
+
+// source_line and target_line are previously declared segments.
+connector checkout(source_line, target_line, "1. Checkout(cart)", main, highlight)
+```
+
+This creates `checkout.tail`, `checkout.tip`, `checkout.path`, and `checkout.caption`, and rewrites the body's relations to those members. For example, `on(tail, source)` becomes `on(checkout.tail, source_line)`, and `avoid(caption, source, target)` becomes `avoid(checkout.caption, source_line, target_line)`. The external segments retain their identities. Another invocation creates fresh local declarations and placements even when its arguments are identical; explicit aliases still share the referenced geometry (§1.4). Each expanded declaration has the same placed/derived status and DOFs as its ordinary declaration; the function and its instance namespace add no unknowns of their own.
+
+The agent-loop example composes content and a shape with separate centering and containment requirements:
+
+```locus
+fn labeled_rect(text) {
+    rect shape()
+    label caption(text)
+    rel center(caption, shape)
+    rel contain(shape, caption)
+}
+
+labeled_rect init("locus init")
+labeled_rect render("locus render -o fig.svg") [highlight]
+```
+
+`init.shape` and `init.caption` expose the first instance's objects; `render.shape` and `render.caption` expose the second. Their dimensions and label placement follow §5.5–§5.6. An external relation such as `column(init.shape, render.shape)` participates in the same figure-wide layout as the relations expanded inside each call.
+
+**Scope and composition.** Parameters and local declaration/call names must be distinct within a function. They may be reused in other functions or invocation instances. A body reference resolves to a parameter, then to a previously declared local member, then to a file-level value or class declared before the function definition. Call arguments resolve in the caller's scope. Substitution preserves those bindings: it never captures a caller's name, rewrites text, or mistakes an object property such as `.center` for a local identifier. A declaration's `where` clause may also reference that declaration, as at top level.
+
+Bodies may contain declarations of either form, groups (§1.6), named calls to earlier functions, relations, and assertions. They may not declare nested functions, metadata, presets, or style classes. There are no returns, recursion, control flow, default arguments, or variadic parameters. Function names cannot replace built-in constructor, measurement, or relation names. Unknown functions, duplicate names, wrong arity, incompatible argument uses, and unresolved members are source-anchored errors.
+
+Nested calls extend the namespace. In the checkout example, `legend key()` expands its `swatch_entry requests(...)` call as `key.requests`; the sample arrow is `key.requests.sample`. Likewise, `payment_branch approved(...)` exposes `approved.payment.path` and `approved.update.path`. Expand calls at their source position, recursively in body order. All resulting declarations, relations, and assertions participate in the figure's shared solve, checks, and rendering; there is no per-function solve.
+
+**Styles.** A class on an invocation is the fallback class for expanded declarations that have no explicit class. An explicit body class, including a substituted class parameter, takes precedence. For nested calls, an explicit class on the inner invocation replaces the inherited fallback for that subtree. An invocation accepts no property block or `where` clause: properties and declaration-site relations stay on the individual declarations inside the body.
+
+**Instance bounds.** An instance name is a namespace and a layout collection, not a geometric object with its own center, dimensions, or anchors. Its bounds combine its own expanded visible members, including members of nested calls. External objects referenced or passed as arguments are excluded: a connector instance includes its path and caption, not the full bounds of the source and target guides. Hidden points contribute no visible extent to the collection, but remain addressable and usable in geometric relations. A local group is an alias collection, not an owned drawing object; declaring one does not pull its external references into the instance's automatic bounds. Alignment, gap, cover, containment, `row`, and `column` treat an instance as one item with these combined bounds; member-wise operations such as `avoid` and `trim_endpoints` visit the applicable owned members, including those of nested calls (§3.4–§3.5). Geometric constructors and predicates must receive a qualified object member such as `checkout.path` rather than a namespace. Explicit groups can select instance collections or individual qualified members (§1.6).
+
+Expansion diagnostics retain the function-body source location and the invocation chain. CLI and JSON representations must preserve editable definitions and calls alongside qualified expanded identities (§9.4). This is the required language behavior; parser, expansion, and reporting support still need implementation and validation (Part 12).
+
+### 1.6 Ordered groups
+
+Groups follow the ordered collection model described in [the agent-loop example](test/composition/flowchart_agent_loop.locus) and used in [the checkout example](test/composition/checkout_sequence.locus). `group name(member, ...)` aliases existing objects. It draws nothing, creates no objects or placement unknowns, and imposes no layout relation. Members retain their identities, styles, and geometric relationships; an object can belong to several groups without being copied or rendered again.
+
+**Members and order.** A group requires at least one member reference. Each reference must resolve to an already declared drawable object or point, group, or function instance. Qualified references such as `customer.shape` and `approved.payment.path` are accepted. Numeric values, text literals, style classes, function definitions, and constructor calls are not group members. Groups have no style class, properties, `where` clause, geometric anchors, or intrinsic dimensions; relations supply their layout behavior.
+
+Expand nested groups from left to right into their members. An instance reference remains one member: a composed collection whose bounds and member-wise traversal follow §1.5. Keep only the first occurrence of each object or instance identity, including when another name aliases the same object. This normalized member order is stable; it is not sorted by position or changed by solving. References must exist before the group declaration, so forward references and cyclic membership are invalid. Membership is fixed by the declarations, while bounds are recomputed from the members' resolved geometry and measured content.
+
+```locus
+// The four header shapes were declared by earlier function calls.
+group headers(customer.shape, web.shape, order.shape, gateway.shape)
+rel row(headers)
+
+// Nested groups flatten in order and remove repeated object identities.
+group first_pair(customer.shape, web.shape)
+group all_headers(first_pair, order.shape, web.shape, gateway.shape)
+// all_headers has the same normalized members as headers.
+
+// Instance references stay whole: each contributes its owned visible objects as one member.
+group loops(approved.update, declined.update)
+group headings(approved.heading, declined.heading)
+```
+
+**Measured bounds and layout.** A group's bounds are the union of its member measurements, using the same geometry, route, and text measurements as layout relations (§3.4–§3.5). Referencing a path does not include unrelated geometry it references, such as an external guide. An explicitly listed point supplies zero-size bounds even when its mark is hidden; automatic instance collections continue to include only owned visible members. A group supplies no independent center or placement to the solver: its measured center and bounds follow its members.
+
+`row` and `column` expand group arguments into their normalized ordered members before applying alignment and adjacent separation. Thus `row(headers)` arranges four shapes and is valid with one group argument; the expanded sequence must still have at least two items. An instance member stays one item, so `column(approved, declined)` stacks two composed branches rather than interleaving their members. Expansion across arguments retains the first occurrence of each identity. By contrast, center/bound alignment, `gap_x`, `gap_y`, cover, and content containment treat each group argument as one item with combined measured bounds. For example, `gap_y(headers, checkout)` separates the whole header collection from the checkout instance; it does not impose gaps between the headers. A group declaration alone never implies a row, column, alignment, separation, or enclosure.
+
+Clearance checks visit individual members rather than treating the bounding box's empty space as an obstacle. `avoid(headings, guides)` checks the heading labels against the guide members; `avoid(loops, gateway_line.path)` applies to the eligible geometry in each loop instance, here each loop's orthogonal route and caption, while its endpoints stay on their guide. `trim_endpoints(paths, boundary)` visits member paths and preserves their logical endpoints (§3.5). A group has no actual interior or outline, so a containment container or clipping boundary must be a supported closed shape rather than a group. Likewise, `on`, `inside`, tangency, and other geometric predicates do not acquire group overloads; select a member object explicitly.
+
+**Functions and diagnostics.** Groups may be declared inside a function, where their local names expand to qualified ids like other members. A group or instance collection can be passed as a function argument when its uses accept collections: the checkout example passes `paths` to `narrow_overlay`, which applies `trim_endpoints` to that existing collection. Passing or regrouping a collection adds no placement and does not copy its members. Unknown or forward member references, duplicate declaration names, incompatible member kinds, empty group declarations, and collections without measurable members for the requested operation produce source-anchored errors. Diagnostics identify the group and affected member; local groups also retain their invocation chain.
+
+Group grammar, membership, and layout semantics are normative. Parser, measurement, expansion, and CLI/JSON integration follow §1.6, §8.7, and §9.4.
 
 ---
 
 ## Part 2 — The object model: placed and derived
 
-Geometry is either **placed** (owns an unknown placement) or **derived** (computed from other objects). Numeric parameters may also be unknown. A parameterless `point()` owns its placement just as `circle(r)` owns its center. A point obtained from an anchor or construction is derived. Placement remains internal in both cases.
+Geometry is either **placed** (owns an unknown placement) or **derived** (computed from other objects). Numeric parameters and automatic box dimensions may also be unknown. A parameterless `point()` owns its placement just as `circle(r)` owns its center. A standalone measured label owns a layout placement; point-anchored and path-attached labels follow their attachment. A point obtained from an anchor or construction is derived. Placement remains internal in all cases.
 
 ### 2.1 Derived tier (direct, zero unknowns)
 
@@ -166,21 +281,33 @@ A derived object is a deterministic `f64` function of previously defined objects
 The following declarations introduce unknowns:
 
 ```locus
-point P = point()               // 2 internal placement DOFs; no constructor arguments
-circle c = circle(2)            // 2 internal placement DOFs; radius is exactly 2
-ellipse e = ellipse(3, 2)        // 2 internal placement DOFs; semiaxes 3 and 2
-rect box = rect(4, 2)           // 2 internal placement DOFs; width 4, height 2
-diamond decision = diamond(3, 2) // 2 internal placement DOFs; width 3, height 2
+point P()                       // 2 internal placement DOFs; no constructor arguments
+circle c(2)                     // 2 internal placement DOFs; radius is exactly 2
+ellipse e(3, 2)                 // 2 internal placement DOFs; semiaxes 3 and 2
+rect box(4, 2)                  // 2 internal placement DOFs; width 4, height 2
+diamond decision(3, 2)          // 2 internal placement DOFs; width 3, height 2
 num r = free 1.5                // 1 DOF: a numeric parameter, with a scalar seed
 ```
 
-`circle(r)`, `ellipse(a, b [, theta])`, `rect(w, h)`, `rounded_rect(w, h, r)`, and `diamond(w, h)` each own a center that Locus solves internally. Rectangles, rounded rectangles, and diamonds are axis-aligned; a circle has no orientation parameter. An ellipse's rotation is an angle expression, defaulting to `0deg`, and introduces no implicit orientation unknown. Dimensions are expressions of earlier values, not implicitly free parameters. `circle(r)` with a free numeric `r` therefore depends on three unknown components in total: its two placement components and the separately declared radius parameter.
+`circle(r)`, `ellipse(a, b [, theta])`, `rect(w, h)`, `rounded_rect(w, h, r)`, and `diamond(w, h)` each own a center that Locus solves internally. Rectangles, rounded rectangles, and diamonds are axis-aligned; a circle has no orientation parameter. An ellipse's rotation is an angle expression, defaulting to `0deg`, and introduces no implicit orientation unknown. Explicit dimensions are expressions of earlier values, not implicitly free parameters. `circle(r)` with a free numeric `r` therefore depends on three unknown components in total: its two placement components and the separately declared radius parameter.
 
-Anchors such as `c.center`, `box.n`, and `decision.e` expose geometric relationships without exposing coordinates. Naming an anchor does not allocate unknowns, and constraining it moves its owning geometry (or the upstream objects and parameters on which it depends). `point()` introduces two internal unknowns owned by its declaration; relations constrain them directly. The old `point P = free ...` syntax remains invalid, and there is no independently placed line constructor. Lines, rays, segments, polygons, arcs, B-splines, and annotations are derived from existing geometry. A B-spline's controls may be declared points, anchors, or constructed points; the spline allocates no hidden control points or placement (§5.11).
+The zero-argument box overloads add automatic dimensions, and standalone labels add layout placement:
+
+| Declaration | Owned continuous components | Engine-selected values |
+|---|---|---|
+| `rect box()` / `diamond box()` | center x/y, width, height | compact dimensions and placement |
+| `rounded_rect box()` | center x/y, width, height | compact dimensions, placement, and preset-derived corner radius |
+| `label caption(text)` | label-box center x/y | placement; text dimensions are measured, not unknown |
+| `label caption(anchor, text)` | no independent geometric components | anchor-relative annotation offset |
+| `label caption(path, text)` | no independent geometric components | path-relative annotation placement |
+
+Zero-argument box constructors and `label(text)` are declaration-only, including inside function expansion. They accept no coordinate seed or authored location. An automatic rounded rectangle's radius is derived from the preset and resolved dimensions within its radius domain; it is not an extra independent unknown. Router controls and attached-label offsets are internal layout choices, not automatically declared free points or nums. Their integration and reporting follow §8.6 and Part 12.
+
+Anchors such as `c.center`, `box.n`, and `decision.e` expose geometric relationships without exposing coordinates. Naming an anchor does not allocate unknowns, and constraining it moves its owning geometry (or the upstream objects and parameters on which it depends). `point()` introduces two internal unknowns owned by its declaration; relations constrain them directly. The old `point P = free ...` syntax remains invalid, and there is no independently placed line constructor. Lines, rays, segments, polygons, arcs, and B-splines derive from existing geometry. Arrows retain existing endpoints and resolve their route; annotations follow their constructor's placement mode (§5.6). A B-spline's controls may be declared points, anchors, or constructed points; the spline allocates no hidden control points or placement (§5.11).
 
 Explicit-center forms such as `circle(O, r)`, `ellipse(O, a, b [, theta])`, and `rect(C, w, h)` remain derived constructors: their center argument must already be a point value, whether declared with `point()` or derived. They allocate no placement of their own. This permits concentric shapes and constructions at geometric centers without introducing authored coordinates.
 
-The unknown vector concatenates the two internal components of each declared `point()`, the two center components of each placed shape, and the single value of each free `num`, in declaration order. Derived objects and aliases contribute no components. Two `point()` declarations own distinct placements even if relations later make them coincident; `point Q = P` shares P's placement and adds no unknowns.
+For the explicit-dimension geometric subset, the equality subsystem's unknown vector concatenates the two internal components of each declared `point()`, the two center components of each placed shape, and the single value of each free `num`, in expanded declaration order (§7.1). Automatic box dimensions and standalone-label placements additionally belong to the joint layout model (§8.6); their numerical integration is to be finalized in Part 12. Derived objects, groups, namespaces, and aliases contribute no independent components. Two `point()` declarations own distinct placements even if relations later make them coincident; `point Q = P` shares P's placement and adds no unknowns.
 
 `num` also has a derived form — a named constant or computed scalar:
 
@@ -191,7 +318,7 @@ num phi = (1 + sqrt(5)) / 2
 
 ### 2.3 Placement and solution choices
 
-- **Locus initializes placement.** No source syntax or public CLI field accepts a point or center seed. The engine supplies a deterministic initial placement and settles unconstrained placement internally (§7). A standalone `point P = point()` or `circle c = circle(2)` is a complete valid figure after the required header.
+- **Locus initializes placement.** No source syntax or public CLI field accepts a point or center seed. The engine supplies a deterministic initial placement and settles unconstrained placement internally (§7). A standalone `point P()` or `circle c(2)` is a complete valid figure after the required header.
 - **Relations express intent.** Use anchors, alignment, distances, and tangency to relate shapes. Relative measurements such as `hdist(a.center, b.center) == 5` remain part of the language; they express separation between objects, not absolute locations.
 - **Discrete choices are geometric.** `tangent(c1, c2)` means external tangency; `internally_tangent(outer, inner)` explicitly requests internal tangency. Multi-valued derived constructions use the documented branch selector (§5). Source choices must never be inferred from hidden center seeds.
 - **Numeric seeds remain numeric.** `num r = free 1.5` supplies a solver seed for a dimension, angle, ratio, or other numeric parameter. It is never a fixed value or an absolute coordinate. Relations determine the solved value; unresolved numeric freedom settles toward this seed. To fix a radius, write `circle(2)` or pass a constant `num`.
@@ -204,10 +331,10 @@ Assertions verify the chosen solution; they do not steer placement or select ano
 Relations may be attached at the declaration site; this desugars to standalone `rel` statements immediately following the op:
 
 ```locus
-circle c2 = circle(3) where { horizontal(c1.center, c2.center), tangent(c1, c2) }
+circle c2(3) where { align_center_y(c1.center, c2.center), tangent(c1, c2) }
 // ≡
-circle c2 = circle(3)
-rel horizontal(c1.center, c2.center)
+circle c2(3)
+rel align_center_y(c1.center, c2.center)
 rel tangent(c1, c2)
 ```
 
@@ -217,9 +344,11 @@ A `where` clause may only reference earlier ids (plus the id being declared).
 
 ## Part 3 — Relations
 
-### 3.1 One relation language, two modes
+### 3.1 One relation vocabulary, defining facts and checks
 
-The boolean expression language is shared between `rel` and `assert`; only the keyword differs:
+The relation vocabulary follows [the relation diagram](relations.svg). It has **32 entries**, counting equivalent numeric comparison forms and geometric overloads together: the 20 layout and clipping names used by the composition examples (`center`, `contain`, `gap_x`, `gap_y`, `row`, `column`, the four `align_*` bounds, `align_center_x`, `align_center_y`, the four `inset_*`, `cover_x`, `cover_y`, `avoid`, `trim_endpoints`) plus the 12 numeric and geometric entries (`==`, the ordered comparisons, `inside`, `on`, `tangent`, `internally_tangent`, `parallel`, `perpendicular`, `collinear`, `concyclic`, `midpoint`, `between`). The layout additions and their measurement, routing, and solve contracts are normative (§7.7–§8.7).
+
+For a Boolean relation supported in both modes, only the keyword differs:
 
 ```
 rel    tangent(c1, c2)        -- constrains: the solver must make this true
@@ -228,42 +357,118 @@ assert tangent(c1, c2)        -- checks: verified after solving, never solved fo
 
 **`rel` is an input to the solver; `assert` is an independent test.** A well-written figure uses both: `rel` for the defining facts, `assert` for derived truths that should follow — the figure carries its own tests.
 
-### 3.2 Relation vocabulary (usable in `rel` and `assert`)
+Equality-based geometric relations work in `rel`, `where`, and `assert`. Numeric inequalities, `inside`, and `between` remain assert-only under the current solve contract (§3.3). Measured layout relations define placement, sizing requirements, or clearance; their Boolean checks test the resulting layout. `trim_endpoints` is a rendering operation in `rel`, not a Boolean assertion or a point-placement equation. It preserves the underlying geometry (§3.5).
 
-| Relation | Meaning and raw residual | Equations |
+### 3.2 Unified relation vocabulary
+
+| Relation | Meaning |
+|---|---|
+| `expr == expr` | Equal numeric measurements with matching dimensions. `length(s) == length(t)` expresses segment congruence. |
+| `a < b` / `a > b` / `a <= b` / `a >= b` | Compare numeric measurements with matching dimensions, strictly or inclusively (§7.4). |
+| `center(A, B)` | Align both measured centers; two points coincide. Sizing stays independent. |
+| `align_center_x(A, B, ...)` | Share a horizontal center; points share an x position. No ordering or separation. |
+| `align_center_y(A, B, ...)` | Share a vertical center; points share a y position. No ordering or separation. |
+| `align_left(A, B, ...)` | Align left bounds; other placement stays free. |
+| `align_right(A, B, ...)` | Align right bounds; other placement stays free. |
+| `align_top(A, B, ...)` | Align top bounds; other placement stays free. |
+| `align_bottom(A, B, ...)` | Align bottom bounds; other placement stays free. |
+| `gap_x(A, B, ...)` | Separate adjacent bounds from left to right with automatic gaps; no alignment. |
+| `gap_y(A, B, ...)` | Separate adjacent bounds from top to bottom with automatic gaps; no alignment. |
+| `row(A, B, C, ...)` | Left-to-right order and separation with a shared vertical center. |
+| `column(A, B, C, ...)` | Top-to-bottom order and separation with a shared horizontal center. |
+| `inset_left(A, B)` | Place A at B's inner left margin, or shared border with `padding: none`; y stays free. |
+| `inset_right(A, B)` | Place A at B's inner right margin, or shared border with `padding: none`; y stays free. |
+| `inset_top(A, B)` | Place A at B's inner top margin, or shared border with `padding: none`; x stays free. |
+| `inset_bottom(A, B)` | Place A at B's inner bottom margin, or shared border with `padding: none`; x stays free. |
+| `cover_x(A, B, C, ...)` | A covers the combined horizontal extent of the remaining objects with style padding; height and y stay free. |
+| `cover_y(A, B, C, ...)` | A covers the combined vertical extent of the remaining objects with style padding; width and x stay free. |
+| `contain(B, A, ...)` | Enclose all content's measured bounds in B's actual interior, with style padding. |
+| `inside(P, obj)` | P is strictly inside a supported closed region, including a circle, ellipse, or simple polygon; boundary points are excluded. |
+| `on(P, obj)` | P lies on supported geometry; closed endpoints count. Ellipses are supported. |
+| `avoid(subject, obstacle, ...)` | Keep the subject — a path, label, shape, or collection — clear of every obstacle with automatic clearance. |
+| `trim_endpoints(paths, B)` | Clip interior ends of a path or collection of paths to B's outline while retaining the original points. |
+| `tangent(c, obj)` | Circle touches a linear object or another circle externally; closed endpoint contact counts. |
+| `internally_tangent(outer, inner)` | Inner circle touches outer internally; the outer radius must be strictly larger. |
+| `parallel(l1, l2)` | Linear objects have parallel directions; both directions must be nonzero. |
+| `perpendicular(l1, l2)` | Linear objects have perpendicular directions; both directions must be nonzero. |
+| `collinear(A, B, C, ...)` | All points share the line through distinct A and B; their order is unrestricted. |
+| `concyclic(A, B, C, D, ...)` | All points share the circumcircle of three distinct, non-collinear initial points. |
+| `midpoint(M, A, B)` | M is halfway between A and B; A–M and M–B have equal lengths. |
+| `between(A, B, C)` | B lies strictly between distinct A and C on their line; endpoints are excluded. |
+
+There are **no vocabulary aliases**. Point coincidence uses `center(P, Q)`; horizontal point alignment uses `align_center_y(P, Q)`, and vertical point alignment uses `align_center_x(P, Q)`. Segment congruence uses numeric length equality. The former predicates `coincident`, `horizontal`, `vertical`, and `congruent` are replaced by these forms, not retained as synonyms. The point constructor `center(c)` (§5.1) remains distinct from the two-argument relation `center(A, B)`. Naming an existing geometric value (§1.4) does not add a vocabulary alias.
+
+### 3.3 Geometric residuals and assert-only conditions
+
+The geometric subset retains the following raw residuals and equation counts:
+
+| Relation | Raw residual | Equations |
 |---|---|---|
-| `expr == expr` | matching numeric values; `lhs − rhs` | 1 |
-| `on(P, obj)` | zero signed distance to a line, radial difference to a circle, or zero closest-point distance to a closed ray/segment/arc | 1 |
-| `on(P, e)` | ellipse: `b × (sqrt((u/a)² + (v/b)²) − 1)`, with local components `u, v` from §5.10; a length-valued implicit residual, not Euclidean distance | 1 |
-| `tangent(c, l)` | circle tangent to a line/ray/segment; closest distance from center to the closed linear object minus radius | 1 |
-| `tangent(c1, c2)` | external circle tangency; center distance minus `r1 + r2` | 1 |
-| `internally_tangent(outer, inner)` | internal circle tangency; center distance minus `r_outer − r_inner`, requiring `r_outer > r_inner` | 1 |
-| `parallel(l1, l2)` | parallel linear objects; normalized 2D cross product of their direction vectors | 1 |
-| `perpendicular(l1, l2)` | perpendicular linear objects; normalized dot product of their direction vectors | 1 |
-| `collinear(A, B, C, ...)` | points after the first two on their line; one signed perpendicular distance for each remaining point | n−2 |
-| `concyclic(A, B, C, D, ...)` | points after the first three on their circumcircle; one radial difference for each remaining point | n−3 |
-| `congruent(s1, s2)` | equal segment lengths; `length(s1) − length(s2)` | 1 |
-| `coincident(P, Q)` | same point; `x(P) − x(Q)` and `y(P) − y(Q)` | 2 |
-| `midpoint(M, A, B)` | relational form of the constructor; component differences from `(A+B)/2` | 2 |
-| `horizontal(P, Q)` / `vertical(P, Q)` | `y(Q) − y(P)` / `x(Q) − x(P)` | 1 |
+| `expr == expr` | `lhs − rhs` | 1 |
+| `center(P, Q)` | `x(P) − x(Q)` and `y(P) − y(Q)` | 2 |
+| `align_center_x(P, Q, ...)` | x difference from the first point for each remaining point | n−1 |
+| `align_center_y(P, Q, ...)` | y difference from the first point for each remaining point | n−1 |
+| `on(P, obj)` | Signed distance to a line, radial difference to a circle, or closest-point distance to a closed ray/segment/arc | 1 |
+| `on(P, e)` | Ellipse: `b × (sqrt((u/a)² + (v/b)²) − 1)`, with local components from §5.10; a length-valued implicit residual, not Euclidean distance | 1 |
+| `tangent(c, l)` | Closest distance from the circle center to the line or closed ray/segment minus radius | 1 |
+| `tangent(c1, c2)` | Center distance minus `r1 + r2` | 1 |
+| `internally_tangent(outer, inner)` | Center distance minus `r_outer − r_inner`, requiring `r_outer > r_inner` | 1 |
+| `parallel(l1, l2)` | Normalized 2D cross product of direction vectors | 1 |
+| `perpendicular(l1, l2)` | Normalized dot product of direction vectors | 1 |
+| `collinear(A, B, C, ...)` | Signed perpendicular distance to the line through A and B for each remaining point | n−2 |
+| `concyclic(A, B, C, D, ...)` | Radial difference from the circumcircle of A, B, and C for each remaining point | n−3 |
+| `midpoint(M, A, B)` | Component differences from `(A+B)/2` | 2 |
 
 Here a **linear object** is a line, ray, or segment. Its direction is the ordered vector from its defining first point to its second point; a zero direction is degenerate. `parallel` and `perpendicular` accept any pair of linear objects. A ray, segment, and arc are closed sets for `on`, so their endpoints count as on the object. Closest-point distance is the ordinary Euclidean distance to that closed set. For `tangent(c, ray|segment)`, endpoint-only contact counts as tangency of the two closed rendered objects; callers that require tangency to the supporting line can additionally assert perpendicularity to the radius.
 
 Circle-circle tangency is selected by the predicate, never by initialization. `tangent(c1, c2)` is symmetric and always external. `internally_tangent(outer, inner)` is ordered: its first circle contains the second, and equal or reversed radii are invalid. The same meaning and domain apply in `rel` and `assert`.
 
-All raw residuals are normalized by §7.4. `collinear` requires its first two points to be distinct. `concyclic` requires its first three points to be distinct and non-collinear. Direction normalization in `parallel`/`perpendicular` divides by both direction lengths. Violating one of these preconditions produces a source-anchored degenerate-geometry error instead of an arbitrary truth value.
+All geometric raw residuals are normalized by §7.4. `collinear` requires its first two points to be distinct. `concyclic` requires its first three points to be distinct and non-collinear. Direction normalization in `parallel`/`perpendicular` divides by both direction lengths. Violating one of these preconditions produces a source-anchored degenerate-geometry error instead of an arbitrary truth value.
 
 Signed axis offsets are expressed through the numeric functions `hdist`/`vdist` (§6.2) under `==`: `rel vdist(b.n, a.s) == 0.8`.
 
-There are **no vocabulary aliases**: exactly one name per concept. (A `touch` alias for `tangent` was considered and rejected — synonyms multiply the surface an agent must recall and the surface `describe` must print.) Naming an existing geometric value (§1.4) does not add a synonym to the language vocabulary.
-
-### 3.3 Assert-only predicates
-
-Inherently inequality-shaped conditions cannot be solved for in `0 beta 5` and are **assert-only**: `between(A, B, C)`, `inside(P, poly)`, `inside(P, c)`, and the comparisons `<  >  <=  >=`. Boolean `or` and `not` are also assert-only because they do not define a single smooth equation set. A `rel` or `where` clause may contain a solvable atomic equality/predicate or an `and` conjunction of them; using an assert-only form there is a semantic error. Ordering, containment, and other discrete choices are established by geometric relations or explicit constructions, then *verified* by asserts.
+The comparisons `< > <= >=`, `between(A, B, C)`, and `inside(P, obj)` are **assert-only** under the equality solve contract in §7.1. Boolean `or` and `not` are also assert-only because they do not define a single smooth equation set. A geometric `rel` or `where` clause may contain a solvable atomic equality/predicate or an `and` conjunction of them; using an assert-only form there is a semantic error. The new layout requirements in §3.4 are not lowered to ordinary smooth equalities by this contract; their constraint handling remains a prerequisite for freezing (Part 12).
 
 `between(A, B, C)` is strict: it requires `B` to be collinear with distinct `A` and `C`, and the projection parameter of `B` on directed segment `A→C` to lie inside the tolerance-shrunk interval `(ε, 1−ε)`. Endpoints are not between. `inside(P, c)` is also strict and requires `(radius(c) − dist(center(c), P)) / D > ε`; a boundary point is not inside. `inside(P, poly)` requires a valid simple polygon, first rejects points within tolerance of any closed edge, then uses the nonzero winding rule; boundary points are not inside. These definitions use the assert's `ε` from §7.4.
 
-`inside(P, e)` for an ellipse requires the negative of its `on` residual divided by `D` to exceed `ε`; its boundary is excluded. B-splines are open curves and do not accept `inside`. General `on(P, spline)` is not supported in this version: to constrain a point to a selected curve parameter, use `coincident(P, spline.at(t))`. A free numeric `t` may be solved within the domain `[0, 1]`; it does not create a free geometric point.
+`inside(P, e)` for an ellipse requires the negative of its `on` residual divided by `D` to exceed `ε`; its boundary is excluded. B-splines are open curves and do not accept `inside`. General `on(P, spline)` is not supported in this version: to constrain a point to a selected curve parameter, use `center(P, spline.at(t))`. A free numeric `t` may be solved within the domain `[0, 1]`; it does not create a free geometric point.
+
+### 3.4 Measured alignment, separation, and enclosure
+
+Layout relations use measured axis-aligned bounds and their centers, including actual rendered text extents (§8.2). A point has zero-size bounds. They accept geometric objects and measured content; they do not require authors to supply coordinates or estimate text size. Existing geometry-tier anchors remain subject to §5.8: measured content can participate directly in layout without turning label-box anchors into geometric constructor inputs.
+
+`center` sets two center equalities. Each `align_*` relation aligns only its named bound or center component, using the first argument as the reference for the remaining arguments. These relations permit overlap and do not impose ordering, separation, containment, or equal dimensions. Matching dimensions use ordinary numeric equality.
+
+`gap_x` and `gap_y` require at least two items. Argument order supplies direction: left to right for x, top to bottom for y. Reverse the arguments to reverse the order. A longer list is a chain of adjacent pairs: `gap_y(A, B, C)` means `gap_y(A, B)` and `gap_y(B, C)`. Separation applies to adjacent full measured bounds, not just centers; a hidden point still supplies its zero-size bound. Gaps are chosen automatically from the active style, need not be equal, and are not numeric relation arguments. The other axis remains free. In internal y-up space, top-to-bottom order means decreasing y.
+
+`row(items...)` combines `gap_x(items...)` with `align_center_y(items...)`; `column(items...)` combines `gap_y(items...)` with `align_center_x(items...)`. Neither creates connectors or imposes equal sizes. These combinations apply after collection expansion: a group contributes its normalized ordered members, each function instance counts as one item with combined bounds, and the first occurrence of each identity is retained (§1.5–§1.6). A single group argument is valid when it expands to at least two items. Other alignment, separation, and enclosure relations use each collection's combined measured bounds.
+
+For `inset_*(content, container)`, the first argument is content and the second is its container. The named content bound aligns with the container's corresponding inner margin using style padding; the other axis remains free. A standalone inset may use `{ padding: none }` to align with the container's outer bound instead. This is a symbolic option, not a numeric distance. Two such insets place a corner; one inset plus center alignment places a side center. Insets do not imply full containment.
+
+```locus
+rel inset_left(A, B) { padding: none }
+rel inset_top(A, B) { padding: none }
+```
+
+`cover_x(container, items...)` covers the union of the content's x extents with style padding, leaving height and y placement free; `cover_y` does the same for y, leaving width and x placement free. Each requires a container and at least one content item; items may be shapes, paths, labels, or collections. An automatic container chooses the required extent compactly, so one overlay may span several stacked paths. Covering one axis does not imply containment in the container's actual shape.
+
+`contain(container, content...)` requires the entire measured bounds of every content item to fit inside the container's actual interior with style padding. It accounts for sloping diamond sides, curved boundaries, and other nonrectangular interiors; fitting inside an outer bounding box alone is insufficient. Containment does not imply centering. `center(content, container)` and `contain(container, content)` are separate requirements. `inside(P, obj)` checks strict point membership without style padding; it does not replace measured-content containment.
+
+### 3.5 Clearance and visible endpoint clipping
+
+`avoid(subject, obstacles...)` keeps the listed geometry clear using automatic style clearance. Obstacles are closed shapes (their interiors and outlines), segments and routed paths (their strokes, so crossings and overlaps are avoided), labels (their measured boxes), or collections of these. Collections are traversed member by member (§1.6); avoidance checks actual member geometry rather than empty space inside their combined bounds. Path operations visit the applicable member paths. How the requirement is satisfied depends on the subject:
+
+- A **routed path** subject keeps its source and target attachments while the engine adjusts its route; the obstacles are not moved on its behalf (§8.6).
+- A **label** subject keeps its attachment or layout relations while the engine chooses its offset; when the surrounding placement is otherwise unconstrained, layout may widen gaps or margins to make room, as a connector caption can widen guide spacing.
+- A **shape or collection** subject applies the rule to each eligible member: paths and labels as above, and placed shapes through their layout placement.
+
+Avoidance concerns actual geometry and routes; it is not implied by alignment or ordered spacing. Routing choices, clearance metrics, and failure diagnostics must be deterministic and finalized in Part 12.
+
+`trim_endpoints(paths, boundary)` changes only visible path ends whose original endpoints lie inside the closed boundary. The visible start becomes the first exit intersection with the outline; the visible end becomes the last entry intersection. Middle crossings remain intact, and arrowheads follow the visible target ends. Original points, anchors, measurements, and their `on` relations remain unchanged. Paths with no interior endpoints are unchanged. A fully enclosed path or incompatible clipping boundaries is diagnosed instead of silently discarded.
+
+Clipping is applied to the resolved path during rendering. It introduces no placement unknowns or geometric equations, and cannot be used as a Boolean condition in `assert`, `and`, `or`, or `not`. Clearance and clipping must participate in render validation and diagnostics; neither changes the mathematical incidence and tangency definitions in §3.3.
+
+Clipping boundaries are the closed regions of circles, ellipses, simple polygons, rectangles, rounded rectangles, and diamonds. Lines, rays, open paths, arcs, groups, and label boxes are not closed-boundary operands. Render-only intersections with these outlines do not add general `intersect` or tangency overloads for curves; their deterministic clipping procedure must be pinned before freezing (Part 12).
 
 ---
 
@@ -282,8 +487,8 @@ Inherently inequality-shaped conditions cannot be solved for in `0 beta 5` and a
 ### 5.1 `point`
 
 ```locus
-point P = point()
-point Q = point() where { horizontal(P, Q), dist(P, Q) == 4 }
+point P()
+point Q() where { align_center_y(P, Q), dist(P, Q) == 4 }
 point M = midpoint(P, Q)
 ```
 
@@ -292,7 +497,7 @@ declaration creates a distinct geometric point, not a point fixed at the origin.
 position is determined by relations and Locus's deterministic defaults. It supports the
 usual point marks and styles (§5.7), and may be used anywhere a point value is accepted,
 including as a shape's center or a B-spline control. A `where` clause adds relationships
-without adding constructor parameters. In the example, `horizontal` does not specify
+without adding constructor parameters. In the example, `align_center_y` does not specify
 which point is to the right; use `hdist(P, Q) == 4` when that ordering matters.
 
 Like other placement-owning constructors, `point()` is declaration-only: nested calls
@@ -318,7 +523,7 @@ orthocenter(A, B, C)
 center(c)                       -- center of circle/arc/ellipse
 ```
 
-An independently declared point may instead be constrained by relations, for example `point T = point() where { on(T, c1), on(T, c2) }`. Such relations do not distinguish multiple intersections; use an explicit construction branch when that distinction matters. `intersect` omits `k` only when the intersection is unique; when two branches exist and `k` is omitted, that is an error (never a default). Branch ordering for explicit `k`: sorted by the parameter of `o1` — along its direction for a line/ray/segment, by CCW angle from +x for a circle. `locus describe` reports the selected index, defining objects, and distinguishing relative measurements. A non-integer or out-of-range branch is a type error.
+An independently declared point may instead be constrained by relations, for example `point T() where { on(T, c1), on(T, c2) }`. Such relations do not distinguish multiple intersections; use an explicit construction branch when that distinction matters. `intersect` omits `k` only when the intersection is unique; when two branches exist and `k` is omitted, that is an error (never a default). Branch ordering for explicit `k`: sorted by the parameter of `o1` — along its direction for a line/ray/segment, by CCW angle from +x for a circle. `locus describe` reports the selected index, defining objects, and distinguishing relative measurements. A non-integer or out-of-range branch is a type error.
 
 ### 5.2 `num`
 
@@ -361,6 +566,9 @@ In either `circle` form, `r` is a length expression, for example `2`, `dist(A, B
 
 ```
 polygon(A, B, C, ...)               -- ≥ 3 vertices, listed in order
+rect()                             -- placed rectangle with automatic width and height
+diamond()                          -- placed rhombus with automatic width and height
+rounded_rect()                     -- automatic dimensions and preset-derived corner radius
 rect(w, h)                         -- placed axis-aligned rectangle; width w, height h
 diamond(w, h)                      -- placed axis-aligned rhombus; width w, height h
 rect(C, w, h)                      -- derived rectangle at existing anchor C
@@ -368,6 +576,10 @@ diamond(C, w, h)                   -- derived rhombus at existing anchor C
 rounded_rect(w, h, r)              -- placed rounded rectangle; circular corner radius r
 rounded_rect(C, w, h, r)           -- derived rounded rectangle at existing anchor C
 ```
+
+The zero-argument forms leave center placement, width, and height to Locus. Their dimensions are positive length values exposed through `.width` and `.height`, so ordinary relations can equate or fix them. No extra `free` declaration or numeric hint is required. Explicit-dimension overloads keep their existing meaning; they are never silently resized to fit content.
+
+`contain(shape, content...)` uses actual measured content and the shape's interior to require sufficient dimensions. `cover_x` and `cover_y` impose extent requirements on the selected axis. Subject to all defining relations, the engine chooses compact dimensions and preset proportions; a standalone automatic box receives positive preset defaults. For equal-sized boxes, every containment requirement participates: the longest caption can enlarge all boxes linked by dimension equalities. A diamond must fit content inside its sloping sides, and a rounded rectangle must respect its corner arcs. `center(content, shape)` remains a separate requirement. When fixed dimensions cannot satisfy containment, checking reports a layout conflict instead of changing the dimensions or hiding overflow. The exact compact-sizing objective, preset proportions, and tie-breaks must be pinned before freezing (Part 12).
 
 A polygon implies its edges for incidence detection, label collision, and rendering, but does **not** auto-create edge ids; an agent needing a specific edge writes `seg(A, B)` explicitly (index-based edge access is deliberately absent — agents are unreliable with indices). `regular(...)` from v0.2 is removed: its vertices were unaddressable; construct vertices by `rotate` instead.
 
@@ -382,7 +594,9 @@ SVG renders a native rounded rectangle; PNG follows SVG, and TikZ uses the same 
 ### 5.6 Annotations
 
 ```
-label(anchor, text)
+label(text)                        -- standalone measured content; layout owns placement
+label(anchor, text)                -- point/anchor attachment
+label(path, text)                  -- arrow attachment; placement follows the resolved path
 arrow(from_anchor, to_anchor)
 tick(s, n)                          -- n equal-length tick marks on segment s, n ∈ 1..4
 right_angle(V, P, Q)                -- square mark at V between rays V→P and V→Q
@@ -391,18 +605,32 @@ text_block(text)
 
 The `text` argument accepts a quoted text string, including any number of inline `$...$` TeX spans, or a bare all-TeX `$...$` literal. See §1.4 and §8.2.
 
+`label(text)` measures text independently and can participate directly in `center`, alignment, containment, ordered spacing, and avoidance. Text width and height come from the renderer, including its typography role, and cannot be independently stretched. No anchor point is synthesized. A standalone label without relations uses deterministic layout defaults; it needs no authored position.
+
+The two-argument `label` overload is selected by its first argument's kind. A point value uses the existing anchor-relative placement. An arrow attaches the label to its resolved centerline with the `near` and `side` preferences in §5.7. Attachment creates no connector or additional geometric point. Several labels may attach to one arrow, and each is drawn and measured once. A path's layout bounds include its full route and attached labels, excluding external source/target objects, guides, and overlays. These extents participate in collection bounds and layout without making resolved label-box anchors valid inputs to geometric constructors (§5.8).
+
+`arrow(from_anchor, to_anchor)` always retains those endpoint identities, including points constrained to slide along segments. Its route uses the modes in §5.7; automatic routing introduces no authored controls or special loop constructor. Distinct points on the same guide can be connected by an ordinary orthogonal route. Arrowheads and path labels follow the visible routed path, including endpoint clipping (§8.6).
+
 ### 5.7 Props per kind
 
 | Kind | Props | Default |
 |---|---|---|
-| `label` | `dir: auto \| center \| N \| NE \| E \| SE \| S \| SW \| W \| NW`; `gap: expr` | `auto`; style-derived gap |
-| `arrow` | `head: -> \| <-> \| -`; `bend: angle` | `->`; `0deg` |
+| `label` (all modes) | `role: normal \| title` | `normal` |
+| `label` (point-anchored) | `dir: auto \| center \| N \| NE \| E \| SE \| S \| SW \| W \| NW`; `gap: expr` | `auto`; style-derived gap |
+| `label` (path-attached) | `near: auto \| start \| middle \| end`; `side: auto \| left \| right \| above \| below` | `auto`; `auto` |
+| `arrow` | `head: -> \| <-> \| -`; `route: direct \| curved \| orthogonal`; `bend: angle` (direct only); `side: auto \| left \| right \| above \| below` (automatic routes only) | `->`; `direct`; `0deg`; `auto` |
 | `angle_arc` | `n: 1..4` (multiplicity marks, for distinguishing equal-angle families) | `1` |
 | `right_angle` | `size: expr` | style-derived |
 | `text_block` | `place: below \| above \| left \| right` (relative to figure bbox) or `anchor: <anchor>, dir: <dir>` | `below` |
 | `point` | `mark: dot \| cross \| none` | `dot` |
 
-`dir: center` places the label centered on its anchor with zero gap — text inside a `rect`/`diamond`/box.
+`dir: center` places a point-anchored label centered on its anchor with zero gap. A standalone label is centered on another object by a `center` relation; it does not accept `dir`, `gap`, `near`, or `side`. A path-attached label accepts `near` and `side`, not point-anchor `dir` or `gap`. Properties used with the wrong label overload are source-anchored errors.
+
+`role: title` selects the preset's title font and size before text is measured. It does not imply centering, top-of-figure placement, or a link to `meta title`; ordinary layout relations place the label. Its explicit or inherited style class still supplies color and other applicable appearance values.
+
+For path labels, `near` prefers the source, middle, or target portion of the visible route. These are preferred regions, not authored numeric fractions; the engine chooses a collision-free position consistent with the preference. `side` is page-relative: left/right mean smaller/larger page x, and above/below mean up/down on the page, independent of traversal direction. Thus `near: start, side: left` can label a downward connector near its source, while `near: start, side: above` labels a rightward connector above it. Placement conflicts are diagnosed when the selected side and available route cannot accommodate the measured label and clearance.
+
+`route: direct` preserves the existing endpoint-to-endpoint line or numeric-bend quadratic. `route: curved` requests a smooth connector whose controls and boundary approach directions are engine-selected. `route: orthogonal` requests axis-aligned segments with right-angle bends; the engine chooses detour distances and corners. For either automatic mode, arrow `side` chooses a page-relative detour side, with `auto` leaving the choice to the engine. An explicit `bend` together with an automatic route, or an explicit arrow `side` with a direct route, is an error. Numerical routing parameters, candidate order, and tie-breaks must be fixed before freezing (Part 12).
 
 Labels do not draw a connector from the anchor to the text box by default. The `gap` property controls spacing only; use an explicit `arrow` for a visible connection.
 
@@ -413,6 +641,8 @@ Arrow bends use a quadratic control point at the chord midpoint plus
 including during checking of solved scenes. Use a gentler bend such as `45deg`.
 Layout and export also reject non-finite control geometry or a control point
 more than 500 chord lengths from the midpoint (allowing floating-point rounding).
+
+The bend formula applies only to direct routes. Automatic routes retain source and target anchors, honor explicit clearance requirements, and report a routing conflict when no permitted route is found (§8.6). They do not create free control-point declarations, participant bindings, or special self-message behavior.
 
 ### 5.8 Anchors
 
@@ -430,10 +660,24 @@ poly.centroid
 r.center  r.n  r.s  r.e  r.w  r.ne  r.nw  r.se  r.sw     -- rect / rounded_rect / diamond
 r.width   r.height                                        -- numeric anchors
 r.corner_radius                                          -- rounded_rect only, length
+path.length                                             -- arrow centerline length, before clipping
 lbl.center              -- resolved label box center (annotation layer ONLY)
 ```
 
-Geometry-tier anchors (everything above except `lbl.center`) are ordinary derived points: legal in constructors, `rel`, and `assert`. Label-box anchors resolve *after* layout (§8) and are legal only in annotations — geometry must never depend on layout.
+Point-valued geometry anchors are ordinary derived points, legal in constructors, `rel`, and `assert`. Numeric properties retain their length/angle types; an arrow's `.length` is a layout-dependent measurement (§6.2). Label-box anchors resolve during layout (§8) and are legal only in annotations, never as inputs to geometric constructors or predicates. Measured label objects can participate directly in the layout relations in Part 3, including content-dependent shape sizing.
+
+`edge(shape, direction)` derives a finite closed boundary segment of an axis-aligned `rect`. The direction is one of the symbolic literals `N`, `E`, `S`, or `W`; it is not an angle or a numbered edge index. Directed endpoints are `.nw → .ne`, `.ne → .se`, `.se → .sw`, and `.sw → .nw`, respectively. The segment follows the shape's resolved dimensions and center, introduces no unknowns or visible drawing by itself, and is legal wherever a segment value is accepted. Endpoints count for `on`. Other shape kinds, diagonal directions, and collections do not have this overload.
+
+```locus
+point left() { mark: none }
+point right() { mark: none }
+rel on(left, edge(frame, W))
+rel on(right, edge(frame, E))
+rel align_center_y(left, right)
+segment divider(left, right) [auxiliary]
+```
+
+Here `frame` is an earlier rectangle; points can slide on its finite west/east sides to define a divider without authored positions. This boundary-derived segment is distinct from a box's side-center anchor such as `.w`, which is a single point.
 
 ### 5.9 Domains and degeneracy
 
@@ -441,6 +685,7 @@ Every parsed number, evaluated expression, hint, solved value, and resolved coor
 
 - Rounded-rectangle radii must satisfy `0 <= r <= min(w, h)/2`; width and height must be strictly positive.
 - Circle radii, rectangle/diamond widths and heights, and `angle_arc` radii must be strictly positive. Label gaps are nonnegative. A `right_angle` size, whether explicit or style-derived, is strictly positive.
+- Automatic boxes must resolve to positive dimensions and a valid corner radius. Text values and selected typography roles must have finite measured extents. A routed arrow needs distinct endpoints; a loop uses distinct points on the same object, not coincident endpoints. Invalid role/route/placement tokens, incompatible properties, and unsupported `edge` combinations are source-anchored errors.
 - Ellipse semiaxes satisfy `a >= b > 0`; both are lengths. Rotation is a finite angle. Equal semiaxes are valid, with coincident foci, but the value retains its ellipse type and parameterization.
 - A B-spline requires at least four finite point-valued controls, whether independently placed or derived. Repeated controls are allowed; the first and last must be distinct. Parameters are finite scalars in `[0, 1]`, without wrapping, extrapolation, or clamping of out-of-domain input. Self-intersection and vanishing derivatives are allowed for evaluation and rendering; no arbitrary tangent is supplied at a stationary point.
 - A free `num` has no universal sign restriction; its uses impose constructor-specific domains. A trial vector that violates a domain is rejected as described in §7.1, while a final violation is a construction error.
@@ -537,10 +782,10 @@ silently sampling the curve or treating its control polygon as the curve.
 
 Every numeric expression has one of four dimensions: **scalar**, **length**, **area**, or **angle**. Length is measured in the file's arbitrary scene unit; area is its square. Angles are stored internally in radians, with `deg` and `rad` accepted at the source boundary. Dimensions are semantic types, not user-selectable unit systems.
 
-- Geometry determines dimensions: `dist`, `hdist`, `vdist`, `radius`, `length`, rectangle dimensions, ellipse semiaxes, and relative point offsets are lengths; `area` is area; `angle`, `dir_angle`, ellipse rotation and ellipse `.at` arguments, and arrow `bend` are angles; B-spline `.at` arguments, counts, and ratios are scalars.
+- Geometry determines dimensions: `dist`, `hdist`, `vdist`, `radius`, `length`, arrow `.length`, `style_metric`, box dimensions, ellipse semiaxes, and relative point offsets are lengths; `area` is area; `angle`, `dir_angle`, ellipse rotation and ellipse `.at` arguments, and direct-arrow `bend` are angles; B-spline `.at` arguments, counts, and ratios are scalars. Typography roles, route modes, label preferences, and boundary directions are symbolic choices, not numeric dimensions.
 - A numeric literal without `deg` or `rad` begins as a dimension variable and is unified from context. Thus the `6` in `dist(A, B) == 6` becomes a length, while the `2` in `2 * angle(A, B, C)` is scalar. An otherwise unconstrained literal defaults to scalar.
 - Each named `num`, including a free `num`, has one dimension inferred from all of its uses in the file. Conflicting uses are a type error. A free numeric hint has the inferred dimension of its declaration.
-- Addition, subtraction, comparison, `min`, and `max` require matching dimensions. Multiplication or division by a scalar preserves the other operand's dimension. `length * length` produces area; `area / length` produces length; equal-dimension division produces scalar. Other dimension products are errors in `0 beta 5`.
+- Addition, subtraction, comparison, `min`, and `max` require matching dimensions. Multiplication or division by a scalar preserves the other operand's dimension. `length * length` produces area; `area / length` produces length; equal-dimension division produces scalar. Other dimension products are errors in `0 beta 6`.
 - `abs` preserves dimension. `sqrt` accepts a scalar or an area and returns a scalar or length respectively. `ratio(a, b)` requires equal dimensions and returns scalar.
 - Constructor arguments and properties impose their documented dimensions. In particular, circle radii, rectangle/diamond sizes, label gaps, tick/right-angle sizes, and all point offsets are lengths. A bare number in an angle position remains an error; contextual inference never turns it into an angle without `deg` or `rad`.
 
@@ -557,13 +802,24 @@ Dimension inference is whole-file and deterministic even though value references
 | `ratio(a, b)` | `a / b` (sugar — agents state ratios constantly) |
 | `radius(c)` `length(s)` `area(poly)` `perimeter(poly)` | as named |
 | `area(e)` | ellipse area `π × e.semimajor × e.semiminor` |
+| `style_metric(name)` | preset-defined positive length; supported names are `"short_length"` and `"narrow_width"` |
+| `length(path)` / `path.length` | arrow's untrimmed centerline length, excluding arrowheads and labels |
 | `sqrt(x)` `abs(x)` `min(a, b)` `max(a, b)` | as named |
 
-All numeric functions are differentiable almost everywhere and legal inside `rel` equations; the solver composes through them (and through derived-object definitions).
+`style_metric(name)` requires a plain string naming a supported metric. `short_length` supplies a general short-path length, and `narrow_width` supplies a general narrow-shape width; neither is tied to sequence-diagram meaning. Values are scene-unit lengths supplied by the active preset, independent of solved positions and bounding boxes. Unknown names and non-string arguments are errors. Exact values and the preset's scene/text scale must be pinned before freezing; metrics may not be looked up from platform defaults or inferred from the output viewport. An appearance class does not redefine these metrics.
+
+An arrow's `.length` and `length(path)` are the same measurement. For a straight route this is endpoint distance; for an orthogonal route it is the sum of span lengths; for a curved or numeric-bend route it is centerline arc length. Clipping changes visible ends but not this logical measurement or endpoint identities. This does not add a general B-spline length or ellipse perimeter overload. The deterministic curved-path arc-length procedure and tolerances remain to be pinned (Part 12).
+
+```locus
+rel sample.length == style_metric("short_length")
+rel overlay.width == style_metric("narrow_width")
+```
+
+Numeric measurements are legal in `rel` equalities and `assert` comparisons. Geometric functions differentiate through their definitions under §7.1. Measurements of automatic routes participate in the joint layout dependencies (§8.6); changing discrete route candidates is not assumed to be a smooth geometric function.
 
 ### 6.3 Predicate summary
 
-Relations (§3.2) work in both `rel` and `assert`. Assert-only: `between`, `inside`, `< > <= >=` (§3.3). Angle/length equality uses `==` on numeric functions rather than dedicated predicates: `angle(A, B, C) == 90deg`.
+The unified vocabulary and mode restrictions are in §3.1–§3.5. Equality-based geometric relations work in `rel` and `assert`; `between`, `inside`, and `< > <= >=` remain assert-only under the current equality solver. Measured layout requirements need the additional contract in Part 12, and `trim_endpoints` is a standalone rendering operation. Angle/length equality uses `==` on numeric functions rather than dedicated predicates: `angle(A, B, C) == 90deg`.
 
 ---
 
@@ -571,20 +827,20 @@ Relations (§3.2) work in both `rel` and `assert`. Assert-only: `between`, `insi
 
 ### 7.1 The solve
 
-The format-version-3 solve contract is defined below. The numerical iteration is specified, but the deterministic placement initializer and retry schedule must be finalized before this draft is frozen (Part 12). Implementations may optimize the frozen solver only if they produce the same resolved `f64` values and reports for every valid input; changing any frozen constant or acceptance rule requires a new format version.
+The geometric equality solve contract is defined below. Measured layout adds the registry, initializer, hard inequalities, working-set preferences, and bounded feedback rules in §7.7 and §8.7. Implementations may optimize the frozen solver only if they produce the same resolved `f64` values and reports for every valid input; changing any frozen constant or acceptance rule requires a new format version.
 
 1. **Unknown vector and initialization.** Concatenate each `point()` declaration's internal `(x, y)`, each placed shape's internal center `(x, y)`, and each free numeric value in declaration order (§2.2). Build the initial vector `h` from engine-generated point and center placements and authored numeric hints. Initialization must account for shape dimensions and relation dependencies, avoid coincident-point or coincident-center degeneracy where a direction is needed, and use a bounded deterministic retry schedule when an initial arrangement is invalid. It must accept a standalone `point()` or `circle(2)` declaration without any additional input. The initializer may not read asserts to choose a solution or change explicit branch semantics. Normalize unknown coordinates before linear algebra: point/center coordinates and length-valued nums by `D`, area-valued nums by `D²`, angle-valued nums by `1 rad`, and scalar nums by `max(1, abs(hᵢ))`, where `D` is the solve-time characteristic length from §7.4. The normalized vector is `z`; its normalized initial vector is `zₕ`. All point/center components and placement seeds remain internal.
-2. **Residual vector.** Desugar `where` clauses in source order, flatten allowed `and` conjunctions left-to-right, and expand each relation into the component residuals specified in §3.2. Evaluate them in that order and normalize each by §7.4. Tangency type and explicit constructor branch indices come from the source and remain unchanged throughout the solve.
-3. **Derived evaluation and differentiation.** For the initial vector and every trial vector, evaluate the transitive dependencies of relations and placed-shape dimensions top-to-bottom as pure functions of the current unknown values before evaluating residuals. Derived objects used only by annotations or asserts are deferred until final evaluation; for example, the intersection of two circles being solved into tangency need not exist at initialization. Compute the Jacobian `J = ∂r/∂z` with forward-mode automatic differentiation through those definitions; finite differences are not conforming. At a piecewise definition, differentiate the active piece of the current evaluation. A construction precondition failure at initialization requests the next bounded initialization attempt; a failure at a later trial gives that trial infinite objective without leaking NaN or infinity into output. Explicit branches retain their documented geometric ordering at each evaluation.
+2. **Residual vector.** Desugar `where` clauses in source order, flatten allowed `and` conjunctions left-to-right, and expand each geometric equality relation into the component residuals specified in §3.3. Evaluate these residuals in that order and normalize each by §7.4. Layout constraint expansion follows §7.7; endpoint clipping contributes no residuals. Tangency type and explicit constructor branch indices come from the source and remain unchanged throughout the solve.
+3. **Derived evaluation and differentiation.** For the initial vector and every trial vector, evaluate the transitive dependencies of relations and placed-shape dimensions top-to-bottom as pure functions of the current unknown values before evaluating residuals. Derived objects used only by annotations or asserts are deferred until final evaluation; for example, the intersection of two circles being solved into tangency need not exist at initialization. Compute the Jacobian `J = ∂r/∂z` with forward-mode automatic differentiation through those definitions; finite differences are not conforming. Layout pieces differentiate the active piece of the current evaluation, with first-operand ties. Pure-geometric systems retain initialization-selected absolute-value, min/max, finite-carrier and arc pieces for compatibility; those pieces remain frozen through a numerical solve. Layout-involved property anchors and incidences use the relation-aware initializer and live finite-carrier AD; the other historical geometric pieces stay frozen. This explicit exception reconciles the historical geometric behavior rather than implying live geometric derivatives. A construction precondition failure at initialization requests the next bounded initialization attempt; a failure at a later trial gives that trial infinite objective without leaking NaN or infinity into output. Explicit branches retain their documented geometric ordering at each evaluation.
 4. **Rank and null space.** Compute an SVD of `J` with the deterministic one-sided Jacobi procedure below. A singular value has rank when `σᵢ > 1e-10 × max(σ₀, 1)`. The Moore–Penrose pseudoinverse `J⁺` uses exactly those retained singular values, and the null-space projector is `N = I − J⁺J`. Sign choices for singular vectors do not affect `J⁺` or `N`.
-5. **LM trial step.** Start with `λ = 1e-3`. At each attempt, compute the primary step from `(JᵀJ + λI) δₚ = −Jᵀr` using Cholesky factorization in ascending row/column order. Compute the settling component `δₕ = N(zₕ − (z + δₚ))`, then use `δ = δₚ + δₕ / (1 + λ)`. All dot products and sums execute sequentially in index order; contraction into fused multiply-add is forbidden.
+5. **LM trial step.** Start with `λ = 1e-3`. At each attempt, compute the primary step from `(JᵀJ + λI) δₚ = −Jᵀr` using Cholesky factorization in ascending row/column order. Compute the settling component `δₕ = N(zₕ − (z + δₚ))` restricted to geometric unknown columns, then use `δ = δₚ + δₕ / (1 + λ)`. All dot products and sums execute sequentially in index order; contraction into fused multiply-add is forbidden.
 6. **Acceptance schedule.** Let `F(z) = 0.5 × Σ rᵢ²`, summed in residual order. Accept a finite trial if its maximum absolute residual is below `1e-12`, or otherwise only if its `F` is strictly smaller. After acceptance set `λ = max(λ / 10, 1e-15)` and recompute values, `J`, rank, and `N`. After rejection keep `z` unchanged and set `λ = min(λ × 10, 1e15)`. An attempt, accepted or rejected, counts as one iteration. Stop successfully when `max(abs(rᵢ)) < 1e-12`; a file with no relations requires zero numerical iterations after valid initialization. End this initialization attempt after 200 numerical attempts or after a rejection at `λ = 1e15`; report solve failure only after the bounded initialization schedule is exhausted.
 7. **Lexicographic settling semantics.** Relation satisfaction is the primary objective. Null-space motion toward `zₕ` is secondary and may never justify accepting a worse primary objective. Remaining freedoms settle deterministically toward engine placement defaults and numeric hints; this is not a claim of a global closest solution across disconnected branches. Engine placement does not become an authored constraint.
 8. **Final evaluation and asserts.** Evaluate every derived object top-to-bottom at the accepted unknown vector, build the final scene, and then check asserts using §7.4. This final pass uses the same functions as residual evaluation and introduces no new geometry semantics. A failed assert is reported as a failed test, never used to trigger a search for a different arrangement.
 
 All arithmetic is IEEE-754 binary64, round-to-nearest ties-to-even, with subnormals preserved. Transcendental functions come from the format-version-pinned `libm` implementation. No randomness, parallel reductions, locale-sensitive parsing/formatting, reassociation, or platform BLAS/LAPACK calls are permitted in the normative path.
 
-For the one-sided Jacobi SVD, start with `A = J` and `V = I`. A sweep visits every column pair `(p, q)` in lexicographic order. Let `α = dot(Ap, Ap)`, `β = dot(Aq, Aq)`, and `γ = dot(Ap, Aq)`, with dots summed by ascending row. Skip the pair if either norm is zero or `abs(γ) <= 2^-48 × sqrt(αβ)`. Otherwise set `ζ = (β−α)/(2γ)`, `t = 1` when `ζ = 0`, and otherwise `t = sign(ζ)/(abs(ζ)+sqrt(1+ζ²))`; then `c = 1/sqrt(1+t²)` and `s = c×t`. Replace the columns with `(c×Ap−s×Aq, s×Ap+c×Aq)` and apply the same rotation to `V`. Stop after the first sweep that performs no rotations, or fail with numerical non-convergence after 64 sweeps. Singular values are the final column norms; sort them descending with the original column index as the stable tie-break, and derive `U` by normalizing nonzero columns. This procedure, including its skip threshold and ordering, is part of `0 beta 5`.
+For the one-sided Jacobi SVD, start with `A = J` and `V = I`. A sweep visits every column pair `(p, q)` in lexicographic order. Let `α = dot(Ap, Ap)`, `β = dot(Aq, Aq)`, and `γ = dot(Ap, Aq)`, with dots summed by ascending row. Skip the pair if either norm is zero or `abs(γ) <= 2^-48 × sqrt(αβ)`. Otherwise set `ζ = (β−α)/(2γ)`, `t = 1` when `ζ = 0`, and otherwise `t = sign(ζ)/(abs(ζ)+sqrt(1+ζ²))`; then `c = 1/sqrt(1+t²)` and `s = c×t`. Replace the columns with `(c×Ap−s×Aq, s×Ap+c×Aq)` and apply the same rotation to `V`. Stop after the first sweep that performs no rotations, or fail with numerical non-convergence after 64 sweeps. Singular values are the final column norms; sort them descending with the original column index as the stable tie-break, and derive `U` by normalizing nonzero columns. This procedure, including its skip threshold and ordering, is part of `0 beta 6`.
 
 ### 7.2 DOF accounting
 
@@ -615,8 +871,8 @@ Generic-position figures may intentionally leave relative freedoms, hence "info"
 figure.locus  solve: 4 unknowns, 1 equation, rank 1
   placement: 2 common-translation DOFs handled by Locus
   info[I310]: c1 and c2 have 1 unresolved relative DOF
-     12 | circle c2 = circle(3)
-        = add horizontal(c1.center, c2.center) if alignment is intended
+     12 | circle c2(3)
+        = add align_center_y(c1.center, c2.center) if alignment is intended
   solved: max scaled residual 3.1e-13 in 6 numerical iterations
 ```
 
@@ -637,9 +893,9 @@ For numeric comparisons, both operands have the same inferred dimension (§6.1).
 
 Equality passes when `abs(lhs − rhs) / S <= ε`. Strict comparison uses a tolerance dead band: `lhs < rhs` requires `(rhs − lhs) / S > ε`, while `lhs <= rhs` requires `(lhs − rhs) / S <= ε`; `>` and `>=` are symmetric. Boolean `and`, `or`, and `not` combine the already evaluated atomic truth values.
 
-Each geometric predicate defines a raw residual with a dimension in §3.2; it is divided by the matching scale above before comparison with `ε`. Multi-equation predicates pass only when every component passes. Assert-only containment predicates use the boundary rules in §3.3. Detected incidences use the same normalized residuals and default `ε`, so `inspect` and `assert` cannot disagree solely because they use different epsilon systems.
+Each geometric equality predicate defines a raw residual with a dimension in §3.3; it is divided by the matching scale above before comparison with `ε`. Multi-equation predicates pass only when every component passes. Assert-only containment predicates use the boundary rules in §3.3. Detected incidences use the same normalized residuals and default `ε`, so `inspect` and `assert` cannot disagree solely because they use different epsilon systems.
 
-The solve criterion is `max(abs(normalized relation residual)) < 1e-12`, strictly tighter than the default assert threshold. A converged solve therefore cannot fail its own `rel` when restated as a default-tolerance `assert` with the same branch and domain semantics.
+The geometric equality solve criterion is `max(abs(normalized relation residual)) < 1e-12`, strictly tighter than the default assert threshold. A converged geometric equality relation therefore cannot fail when restated as a default-tolerance `assert` with the same branch and domain semantics. Layout checks require the measurement and tolerance contract identified in Part 12; `trim_endpoints` has no Boolean assertion form.
 
 ### 7.5 Construction errors
 
@@ -655,15 +911,166 @@ Diagnostics must name the op id, the failing precondition, and the offending mea
 
 ### 7.6 Determinism (normative)
 
-Identical file bytes → identical solve → identical internal coordinates → byte-identical SVG. All tie-breaks (initialization and retry schedule, LM schedule, branch ordering, label candidate selection, float formatting) must be frozen without randomness. The outstanding initialization rules in Part 12 are therefore a prerequisite for format-version-3 conformance. `locus-core` must use a pinned math library (`libm` crate, not system libm) so this holds across platforms. This enables golden-file snapshot testing in CI, including solve-heavy fixtures on every platform in the matrix. Rendered formats necessarily contain coordinates; those are generated output, not an authoring or agent-feedback interface.
+Identical file bytes → identical solve → identical internal coordinates → byte-identical SVG. All tie-breaks (initialization and retry schedule, LM schedule, branch ordering, label candidate selection, float formatting) must be frozen without randomness. The initialization rules in §7.7 are part of geometric equality conformance. `locus-core` must use a pinned math library (`libm` crate, not system libm) so this holds across platforms. This enables golden-file snapshot testing in CI, including solve-heavy fixtures on every platform in the matrix. Rendered formats necessarily contain coordinates; those are generated output, not an authoring or agent-feedback interface.
 
 ---
+
+### 7.7 Registry, initialization, and measured preference solve (normative)
+
+Build the complete unknown registry in expanded declaration order before selecting dependencies. Unreferenced placed objects and free numeric parameters retain their unknowns. Automatic box centers are geometric; their width/height are automatic-dimension unknowns. Standalone-label centers are label-placement unknowns. Orthogonal detours, curved control offsets and path-label `t`/`o` are internal route/label-parameter unknowns. Engine classes do not create actionable under-constraint warnings when preset defaults apply and never appear as free authored points or nums. Common translation includes all placed centers.
+
+The solver dependency closure includes defining relations, collection members, route endpoints, and registry-member dimension/argument expressions. Derived declarations outside it are deferred until final evaluation. Solve-time `D` includes only the registry and closure. This can change historic pure-geometry rounding when deferred geometry formerly enlarged `D`; the largest observed corpus distance change is about `1.21236e-13`. Ring seeds and historical frozen geometric pieces remain unchanged. Deferred bounds must not be reintroduced merely to preserve old output bits.
+
+Pure geometry uses successive seed pairs `(0,0), (4,0), (0,3), (4,3), (-4,0), (0,-3), (-4,3), (4,-3)`. For declaration index `i`, add `(1.25r,-0.75r)` where `r = floor(i/8)`. These are internal implementation coordinates. Initialization-precondition retries use placement scales `1, 0.25, 0.5, 2, 4, 0.125, 8, 16` in that order; type, property, dependency and authored branch errors do not trigger retries.
+
+For layout, first seed automatic dimensions at the maximum of preset size and measured content plus padding, then seed property anchors. Build per-axis ordered graphs from separation, inset, cover and containment requirements after collection expansion, with alignment components sharing coordinates. Run two graph/aggregate passes on x, then two on y; DAG longest paths use full extents and preferred gaps, while cyclic components receive bounded deterministic component offsets. Seed containers, refresh translated derived bounds, then shared coordinates, finite-carrier incidences and measured guide-caption spacing. Preserve ordered container axes. Standalone labels use a center partner when present and ring placement otherwise. Re-evaluate primal values and `D` after layout seeding and before AD branch validation. Asserts never select seeds.
+
+Hard residuals are geometric/layout equalities and `min(g,0)/S` for each `g >= 0` requirement. At `g = 0` the hinge retains its gradient; a strictly positive row has zero gradient. Reject nonfinite normalized rows before selecting hinge pieces. Secondary preferences use unit weight per normalized row: authored numeric parameters toward their hints, automatic dimensions toward preset dimensions, label/route parameters toward seeded defaults, and layout margins/separations toward their preset minimum. In measured layout systems, engine-generated point, shape-center and standalone-label placement seeds only initialize the solve; they do not contribute competing positional preferences. Pure geometry retains its initialized-default settling semantics. Hard authored dimensions, branches and relations take priority; a required larger gap remains valid. Phase 1 keeps the §7.1 LM schedule and the aggregate gap, cover and signed-distance containment rows of §8.7, preserving their residual weights. Phase 2 uses the equivalent individual hard faces specified there. Splitting hard faces never duplicates compact-gap preferences or alignment equalities.
+
+
+A primal active-set iteration over the feasible set `{r_eq = 0, g ≥ 0}` that minimizes the
+merit function `Φ(z) = 0.5 Σ qᵢ²` and never leaves the last accepted feasible iterate without
+improving it. Notation: `z` is the normalized unknown vector of §7.1 step 1; each `qᵢ` is
+normalized by the same scale `S` as a residual of its dimension, so `Φ` is dimensionless;
+`Q = ∂q/∂z` (forward-mode AD like `J`); `N_W = I − J_W⁺J_W` is the null-space projector of
+the working set, computed with the §7.1 Jacobi SVD and rank threshold; `∇Φ = Qᵀq`.
+For layout settling, form this projector directly as the sum of outer products of the
+discarded right singular vectors, in descending singular-value order with the same index
+tie-breaks. This avoids cancellation in the inverse-product formula near dependent active
+constraints. The legacy geometric projection keeps its established arithmetic order.
+
+1. Initially nominate inequalities with `g ≤ τ_active` (`1e-7`). Before every direction,
+   retain only genuinely binding nominations (`g < 1e-12`): a positive slack between
+   hard-feasibility tolerance and activation tolerance must not become an equality or
+   certify interior stationarity. Slack nominations still participate in blocking.
+   Retain an independent boundary basis in ascending row order, modulo the equality row
+   space. Project each nominated row through the equality null projector, then perform
+   two ordered modified Gram–Schmidt passes against retained unit rows. Retain a row
+   when its remaining Euclidean norm exceeds `1e-10 × max(1, ‖row‖₂)`.
+   `W` contains all equalities and this boundary basis. Removed dependent inequalities
+   remain in every hard-feasibility check and blocking test; they can block subsequent
+   motion. They are never discarded from the problem.
+2. **Direction**: the projected Gauss–Newton direction `δ = −N_W (Q N_W)⁺ q`, with the
+   pseudoinverse from the same SVD procedure, together with the multipliers of the rows in
+   `W`. Bound the normalized step's Euclidean norm by the preset trust radius `8`. First
+   try the undamped step; if it exceeds the radius, replace each retained inverse-square
+   weight `1/σ²` by `1/(σ² + λ)`. Start `λ` at `1e-6` times the largest squared singular
+   value, multiplying by `10` until a fitting upper bracket exists, then bisect the
+   damping bracket to reach the trust boundary within relative squared-norm tolerance
+   `1e-6`, with at most `64` trials. Return the last fitting step if the trial cap is
+   reached. This avoids excessive damping and spurious release/block cycles. Discarded
+   singular directions remain discarded. Trust damping never changes hard constraints,
+   feasibility acceptance or the projected-gradient convergence test.
+   The undamped directional derivative is `∇Φ·δ = −‖Π q‖² ≤ 0`, where `Π` is the orthogonal
+   projector onto the **retained singular subspace** of `Q N_W` — the span of the left
+   singular vectors whose singular values pass the rank threshold. With truncation this is a
+   proper subspace of `range(Q N_W)` (the `diag(1e11, 1)` example in step 4 retains only the
+   first direction), so `δ` is a descent direction whenever it is nonzero, but a zero `δ` does
+   not imply a zero projected gradient. Damping multiplies each retained squared-residual
+   term in the slope by `σ²/(σ² + λ)`, preserving a nonpositive directional derivative.
+3. **Release**: compute multipliers from `J_Wᵀ μ = −Qᵀ(q + Qδ)` by the pinned
+   least-squares procedure. When the projected-gradient convergence threshold is
+   satisfied, instead use the **current** gradient, `J_Wᵀ μ = −Qᵀq`: a large model
+   step in a weakly weighted tangent direction must not hide a required release at
+   the current iterate. Inequality multipliers are unique modulo the equality row
+   space because the boundary directions are independent. A sign-valid certificate has
+   `μ_ineq ≤ τ_stop`; excluded dependent rows receive zero multipliers. An unrestricted
+   minimum-norm solution over all dependent inequalities is not a sign certificate.
+   If any inequality in `W` has `μ > τ_stop`, indicating the preference direction
+   would move into its interior, remove the one with the lowest row index and return to
+   step 2. This lets `x ≥ 0` release when the preference is `x = 1`.
+4. **Convergence test**: compute the projected gradient `‖N_W ∇Φ‖∞`. If it is
+   `≤ τ_stop · max(1, ‖q‖∞)` (`τ_stop = 1e-9`, normalized coordinates) and no release is pending,
+   settling is **complete**: stop with `settling_complete: true`. This is the only exit that
+   may report completion.
+   **Stall guard**: otherwise, if `(N_W ∇Φ)·δ ≥ −τ_dir ‖δ‖₂` (`τ_dir = 1e-14`) — a negligible or
+   non-descent slope per unit direction while the projected gradient is still large — the iteration has **stalled**
+   numerically, not converged: keep the current feasible iterate and stop with
+   `settling_complete: false`. The direction is never line-searched. Example: with `N_W = I`,
+   `Q = diag(1e11, 1)`, `q = (0, −1)`, the §7.1 rank threshold `1e-10 × max(σ₀, 1) = 10`
+   discards the second singular direction, so `δ = 0` and the slope is `0` although
+   `‖N_W ∇Φ‖∞ = 1`; this must be reported as a stall. Evaluate the slope using the
+   tangent gradient to avoid cancellation against constraint-normal components.
+5. **Block**: ratio-test `δ` against all inactive inequalities; truncate by the factor
+   `ρ ∈ (0, 1]` to the first blocking boundary (lowest row index on ties) and mark that row for
+   addition to `W`. Ignore predicted rates `Aᵢδ ≥ −1e-14 × max(1, ‖Aᵢ‖₂) × max(1, ‖δ‖₂)`
+   in this ratio test to avoid zero-distance pivots caused by projection roundoff.
+   Every trial still checks all hard inequalities and restores any actual violation.
+   Positive scaling preserves descent.
+6. **Line search**: for `α ∈ {1, ½, ¼, …}` down to `α_min = 1/1024`, form the trial
+   `z + αρδ`, run **feasibility restoration** (at most `k_restore = 8` damped LM corrections with `W`
+   fixed), and accept the first trial that is feasible (`max|r| < 1e-12`) and satisfies the
+   Armijo condition on the directional derivative
+   `Φ(trial) ≤ Φ(z) + c·α·∇Φ(z)·(ρδ)` with `c ∈ (0, ½)` preset (`1e-4`).
+   Because the right-hand side uses the actual slope, an exact Gauss–Newton step toward a
+   solution always passes: for `q = 0.001(x − 1)` from `x = 0`, `δ = 1`, `∇Φ·δ = −1e-6`, and
+   `Φ(1) = 0 ≤ 0.5e-6 − 1e-10`. Full steps without the test cycle on cases such as
+   `q = (x, 2x³ − 1.5x² − 2x + 2.5)` (0 → 1 → 0, `Φ` 3.125 → 1 → 3.125); the second step
+   fails the decrease condition and is backtracked.
+   Restoration's linear solve contains all equality rows, the independent active
+   boundary rows, and inactive inequalities that actually violate hard tolerance
+   (`g ≤ −1e-12`). Feasible inactive faces, including zero-valued redundant faces,
+   do not become equality penalties. Every restoration trial still checks every
+   hard row; a newly violated inactive face enters the next correction. This avoids
+   both spurious pinning and quadratic zero-row weighting after bound expansion.
+7. On acceptance: commit `z`, add any blocking row to `W`, re-evaluate `r`, `q`, `Q`, and `W`,
+   and double the current trust radius up to its preset maximum. On rejection at `α_min`,
+   or when restoration exhausts `k_restore` for every `α`, keep the last accepted iterate,
+   contract the trust radius by `0.25`, and recompute the direction. Stop with
+   `line_search_failed` if the next radius would be below `1e-6`. Radius retries count
+   against the existing total direction-iteration cap; they never count as accepted moves.
+8. Return to step 1. Allow at most 256 accepted preference moves, 64 consecutive
+   working-set pivots without an accepted move, and 1024 total direction iterations.
+   A release or zero-distance block is a pivot, not an accepted move. After the last
+   allowed move, the convergence test may still certify completion before another move.
+   Exhausting any cap ends the loop with `settling_complete: false`; completion is
+   decided solely by the convergence test in step 4.
+
+Lowest-index tie-breaking makes release/block choices deterministic; it is not relied on to
+prevent cycling — the Armijo decrease on `Φ` is.
+
+**Bounded curvature recovery.** After at least one accepted move, permit one model-rebuild
+attempt per continuous solve when no release is pending, the ordinary direction has
+negative slope, and the projected gradient lies above the convergence threshold but at
+or below `1e-5 × max(1, ‖q‖∞)`. The Gauss–Newton model omits curvature of preferences
+and restored hard boundaries; it can otherwise converge slowly and lose resolvable
+objective decrease before stationarity. This recovery changes neither feasibility nor
+the stationarity threshold.
+
+Build an orthonormal tangent basis by visiting projector columns in order, applying the
+same two orthogonalization passes and retaining norms above `1e-10`. Attempt recovery
+only for 1–32 retained directions. For each direction, restore probes at `z ± 1e-4 v`
+with the same active basis and eight-attempt restoration cap. Reject the rebuild if a
+probe fails or its restoration correction exceeds `0.1 × 1e-4` in Euclidean norm.
+At each probe recompute the working projector and tangent preference gradient. Central
+differences of these gradients, projected into the original tangent basis, form a reduced
+Hessian; symmetrize it by averaging transposed entries. Solve its Newton equation by
+the pinned least-squares procedure. Retain this direction only if its tangent-gradient
+slope is negative and its infinity norm is at most eight times the ordinary direction's.
+An unavailable or rejected rebuild leaves the original direction in place. A retained
+direction uses the same blocking, feasibility restoration, Armijo test and rollback as
+every ordinary move. Probe evaluations never commit geometry, and completion still
+requires step 4. Reports count model-rebuild attempts separately; restoration counts
+include probe restoration work.
+
+**Exit outcomes.** Settling always terminates on a feasible iterate: the last accepted one.
+`settling_complete: true` is reported only when the projected-gradient test in step 4 passes.
+Every other exit — stall guard, rollback after a failed line search or restoration, or the
+step cap — leaves the figure valid and solved but reports `settling_complete: false` together
+with the exit reason (`stalled`, `line_search_failed`, `step_cap`), the remaining
+projected-gradient norm, and the relations in `W`; `check --strict` treats it as a warning,
+not an error. Restoration failure inside the line search only rejects a trial and is never
+surfaced as a solve failure.
+
+**Conditioning.** Both working-set and preference pseudoinverses retain the §7.1 rank threshold. No smaller preference cutoff is adopted. Normalized preferences can still be ill conditioned; an incomplete result must stay incomplete in reports. Total settling iterations, accepted preference moves, working-set pivots, model-rebuild attempts, line-search evaluations, total live state evaluations (including probes), and restoration steps are separate counters.
+
+Equality rank uses equality rows only. Reports expose active requirement source spans and remaining active directions separately; an active inequality bounds motion on one side and must not be represented as an authored equality.
 
 ## Part 8 — Annotation layout and rendering
 
 ### 8.1 Label placement
 
-For each label with `dir: auto`:
+For each point-anchored label with `dir: auto`:
 
 1. **Candidates**: 8 compass directions × 2 gap radii around the anchor, plus domain-informed preferences — vertex labels prefer the external angle bisector direction; segment labels prefer the two perpendicular offsets; circle labels prefer outward along the radius.
 2. **Scoring**: penalties for overlapping strokes, other label boxes, or exceeding figure margin.
@@ -671,11 +1078,13 @@ For each label with `dir: auto`:
 
 Pinned `dir` (including `center`) bypasses the heuristic entirely.
 
+Standalone labels are measured content placed by layout relations and deterministic defaults (§5.6); they do not use point-anchor direction candidates. Path-attached labels use the resolved visible route, prefer the region named by `near`, and remain on the page side named by `side`. The engine chooses offsets with style clearance, accounts for strokes, shapes, and other labels, and uses deterministic candidate ordering. An unsatisfied explicit avoidance requirement is a layout conflict; ordinary annotation collisions remain source-anchored diagnostics.
+
 ### 8.2 Mixed text and TeX
 
 Each text value is laid out as its ordered segment list (§1.4). Plain segments use the preset's deterministic text font and metrics; TeX segments render server-side using the guaranteed TeX subset. Adjacent segments share one baseline and are concatenated without implicit whitespace. A `\n` in a plain segment ends the current line and starts a centered new line; TeX spans cannot contain raw line breaks.
 
-The layout engine measures every segment with its actual renderer, composes the line boxes, and feeds the resulting **measured** bounding box into label placement. Extents are never estimated. Rendering a mixed value such as `"filter offset $O_2$"` therefore produces one label, not independently placeable fragments.
+The layout engine resolves the label's typography role first, measures every segment with its actual renderer, composes the line boxes, and feeds the resulting **measured** bounding box into label placement and content-dependent shape sizing. Extents are never estimated. Rendering a mixed value such as `"filter offset $O_2$"` therefore produces one label, not independently placeable fragments. Role-specific font families, sizes, baseline metrics, and their scene-unit conversion are preset data and must be pinned with the renderer.
 
 ### 8.3 Style system
 
@@ -742,7 +1151,279 @@ Incidence and measurements always use the analytic definitions, not rendered pol
 The fixed derivative evaluation, conversion operation order, and curve-aware label
 collision procedure must be frozen with the curve implementation (Part 12).
 
+### 8.6 Joint diagram layout and routed paths
+
+Diagram layout resolves measured content, automatic dimensions, relative placement, and routes into one consistent scene. It must not size boxes with guessed text extents, route connectors before finalizing their source/target geometry, or apply clearance only as a final cosmetic adjustment. The numerical method and bounded retry policy remain open in Part 12; the behavioral requirements are:
+
+1. Expand functions and groups in source order and validate constructor overloads, properties, symbolic directions, class arguments, and preset measurements. Resolve typography and measure text before using it in layout constraints.
+2. Satisfy authored geometric equalities together with layout requirements. Alignment and insets use measured bounds; ordered gaps require full-bound separation; containment uses actual interiors and style padding. These named layout requirements do not make ordinary numeric inequalities legal in `rel` (§3.3). Fixed dimensions and explicit construction branches remain binding.
+3. Choose compact automatic dimensions, appropriate preset proportions, positive default sizes, automatic gaps, and deterministic placement only after satisfying defining facts. Engine preferences may never relax a required relation, enlarge an explicitly fixed dimension, or steer the result using asserts.
+4. Resolve automatic routes between the existing endpoints. Curved paths use smooth centerlines; orthogonal paths use axis-aligned spans. For a routed-path `avoid` subject, the routing pass holds obstacle geometry fixed and adjusts the subject's path. It keeps attached ports, excludes obstacle interiors/outlines, and avoids listed connector crossings and overlapping strokes, with automatic style clearance. Explicit endpoint contact remains permitted where an attachment declares it.
+5. Place path labels with their measured boxes and `near`/`side` preferences. Text avoidance and route/collection bounds participate in the shared layout: if unconstrained guide spacing must widen to fit a caption, layout may widen it while retaining endpoint incidence and all authored constraints. A route's bounds include its attached captions, but not the external objects referenced by the route. Check all measurement-dependent equalities, including `.length`, against the accepted layout.
+6. Apply endpoint clipping to the resolved route against the supported closed boundary's actual outline, including rounded corners. Preserve logical points, incidences, and untrimmed measurements; retain middle crossings and move arrowheads to visible target ends. Keep path labels on the retained visible route. Diagnose fully enclosed paths, incompatible clipping boundaries, and failed intersection or placement requirements.
+7. Validate the complete accepted scene before assertions and rendering. Report a layout/routing conflict with source relations and affected member ids when the bounded search cannot satisfy requirements; failure to find a route is not by itself proof that every possible route is infeasible. SVG, PNG, and TikZ use the same resolved routes, captions, corner geometry, and clipped endpoints.
+
+Original route measurements and collection layout bounds use the logical, untrimmed route; clipping changes rendering, not mathematical facts. Resolved visible strokes and labels determine the final viewport. This separation prevents clipping from silently changing a `sample.length` equality or endpoint incidence.
+
+Reports distinguish geometric equality unknowns/rank from automatic dimensions, standalone-label placements, routing choices, and active layout requirements. Preset choices are reported as engine decisions, never as authored constraints or coordinate hints. Groups, functions, aliases, and clipping add no independent placements. Equality-only rank and DOFs remain separate from one-sided active requirements and preference completion (§7.7).
+
 ---
+
+### 8.7 Pinned measured lowering, routes, and feedback (normative)
+
+
+Measured bounds `L, R, B, T`, center `c`, y-up, `pad`/`gap`/`clearance` from the preset.
+
+| Relation | Rows |
+|---|---|
+| `center(A, B)` | `cx(A) − cx(B)`, `cy(A) − cy(B)` |
+| `align_center_x/y`, `align_left/right/top/bottom` | component difference from the first argument, n−1 rows |
+| `inset_left(A, B)` (`{ padding: none }` → `pad = 0`) | `L(A) − (L(B) + pad)`; mirrored for the other sides |
+| `gap_x(A, B, …)` | `L(Bᵢ₊₁) − R(Bᵢ) − gap ≥ 0` per adjacent pair; preference `= gap` |
+| `gap_y(A, B, …)` | `B(Aᵢ) − T(Aᵢ₊₁) − gap ≥ 0` |
+| `row` / `column` | collection expansion, then `gap_*` chain + `align_center_*` |
+| `cover_x(C, items)` | `minL(items) − pad − L(C) ≥ 0`, `R(C) − maxR(items) − pad ≥ 0`; `cover_y` likewise |
+| `contain(C, items)` | each item's four box corners: `−sdf_C(P) − pad ≥ 0` (below) |
+| `on(P, edge(rect, W))` | existing segment residual on a derived `DLinear` |
+| numeric `==` on `.width`, `.height`, `.length`, `style_metric` | existing numeric equality over `Jet` values |
+| `avoid(subject, obstacles…)` | member-wise rows `sep(A, B) − clearance ≥ 0` per pair; see [Avoidance](#avoidance) |
+| `trim_endpoints` | no rows |
+
+Operand bounds: point → zero size; shapes → from center and dimensions; segment → endpoint
+box; arrow → `Route` bounds ∪ attached label boxes; standalone label → center ± measured
+half size; group / instance → live-selected union of member bounds.
+
+**Hard-face representation for settling.** Recursively enumerate collection/instance
+members in declaration order and deduplicate canonical alias identities. Keep a route's
+geometry and each attached caption separately identifiable, including when a caption is
+also an explicit collection member. Straight/polyline route geometry contributes its
+endpoints and bends. A quadratic contributes both endpoints and its x/y stationary
+points with parameters clamped to `[0,1]` (use parameter zero for a zero denominator).
+These candidates have fixed identities even when the extreme changes. Finite segments,
+unboxed polygons and B-spline control boxes contribute individual points; automatic
+shapes and measured label boxes retain their own bounds. Ordinary aggregate bounds
+remain the measurement, equality and preference representation.
+
+For each adjacent horizontal gap, emit `L(b) − R(a) − gap ≥ 0` for every contributor pair
+`(a,b)`; vertically emit `B(a) − T(b) − gap ≥ 0`. Their conjunction is exactly the
+aggregate inequality. Emit **one** original aggregate compact-gap preference per
+adjacent operand pair, and preserve the aggregate row/column center equality. For cover,
+emit both padded axis faces per content contributor against the container's aggregate
+bounds. For axis-aligned rectangular containment, emit all four padded faces per content
+contributor rather than a selected nearest signed-distance face. Row order is source
+order, adjacent-pair order, contributor order, then low/high x and low/high y faces.
+Identity deduplication is structural, never based on current equal coordinates or
+derivatives, so row identities and source/member provenance remain stable between trials.
+Gap expansion is quadratic in the two contributor counts; cover and rectangular
+containment are linear. Phase 1 retains the original aggregate residual weights.
+
+For diamonds, ellipses, rounded rectangles and other nonrectangular containers, retain
+the four **combined-box** corner signed-distance rows per original content operand.
+Member-wise containment is not equivalent: the combined box can have synthetic corners
+outside the union of its members. These rows keep live geometric piece selection.
+
+#### Signed boundary distance
+
+"Shrunk along inward normals by `pad`" is exactly the set of interior points whose Euclidean
+distance to the boundary is at least `pad`. `sdf_C(P)` is the **exact Euclidean signed
+distance** from `P` to `C`'s outline, negative inside, pinned per shape:
+
+- rect: `max_live(|dx| − w/2, |dy| − h/2)` inside; corner/edge distance outside.
+- rounded rect: the existing exact signed distance (`geom/rounded_rect.rs`,
+  `solve/ad/rounded_rect.rs`).
+- diamond: exact distance to the rhombus outline (vertex/edge pieces, live-selected).
+- circle: `|P − O| − r`.
+- ellipse: exact nearest-point distance by the pinned algorithm (Eberly's robust root-finding
+  on the ellipse parameter, fixed iteration count, deterministic), negated inside.
+
+**Ellipse derivatives.** Let `Q` be the nearest boundary point at parameter `φ*`, with
+`Q = O + a cos φ* U + b sin φ* V`, and let `n` be the outward unit normal at `Q`
+(`(u_Q/a², v_Q/b²)` in local coordinates, normalized, mapped through `U, V`). By the
+envelope theorem:
+
+- `∂sdf/∂P = n` when `|P − Q| > 0` this equals `±(P − Q)/|P − Q|`; **at the boundary
+  (`P = Q`) the quotient is `0/0` and `n` is used directly**. Signed distance is `C¹` across a
+  smooth boundary, so approaches from inside and outside agree.
+- `∂sdf/∂O = −n`, `∂sdf/∂a = −n · (cos φ* U)`, `∂sdf/∂b = −n · (sin φ* V)`,
+  `∂sdf/∂θ = −n · (a cos φ* V − b sin φ* U)`. The same expressions hold at zero distance.
+- On the medial axis (the major-axis segment between the evolute cusps, which contains the
+  center when `a > b`) two nearest points tie; the live piece picks the one with nonnegative
+  local `v`.
+
+Pinned boundary cases: center of `(4, 1)` (distance `1`); `(1, 0)` in `(4, 1)` (distance
+`≈ 0.9661`); boundary points at both vertices and at a generic parameter, approached from
+inside and outside with matching one-sided gradients; near-medial-axis ties; `a = b`.
+
+**Empty inset regions.** The `pad`-inset region of `C` is empty iff `pad > inradius(C)`
+(the largest inscribed circle: `min(w, h)/2` for a rect, `r` for a circle, `b` for an ellipse,
+`wh/(2√(w² + h²))` for a diamond). At `pad = inradius` the region is the **set of deepest
+points** (`sdf = −pad`, row exactly `0`): a single point for a circle, square, diamond, or
+ellipse with `a > b`, but the segment `[−(w − h)/2, (w − h)/2] × {0}` for a `w > h` rect (a
+centered `10 × 2` rect with `pad = 1` keeps `[−4, 4] × {0}`, so a horizontal segment of
+length up to 8 still fits). Whether content fits is decided only by its corner rows, never by
+a separate emptiness test. An empty region is a layout conflict
+for fixed-dimension containers and an infeasible row for automatic ones. The ellipse's
+implicit `on` residual (§3.3) is not used for padding.
+
+#### Avoidance
+
+`avoid` dispatches member-wise over subject and obstacle collections (instances contribute
+owned visible members; groups contribute normalized members). Each pair contributes one row
+`sep(A, B) − clearance ≥ 0`, where `sep` is a **shape-aware signed separation** computed in
+two steps. Bounding boxes are a fast rejection test only, never the constraint.
+
+1. **Reduce.** Strokes carry half their width and circles/rounded rects are reduced to their
+   core shape by Minkowski decomposition (`sep(A ⊕ disk(ρ), B) = sep(A, B) − ρ`). Every core is
+   a point, a segment, or a convex polygon with nonempty interior.
+2. **Classify and measure by core kind.** Degenerate cores are handled explicitly because they
+   contribute no, or too few, edge normals:
+   - *point–point*: `sep = |P − Q|` (never overlapping).
+   - *point–segment*: `sep` = distance to the closed segment (live-selected endpoint/interior
+     piece; never overlapping).
+   - *segment–segment*: proper or touching intersection by orientation tests (including the
+     collinear-overlap case) ⇒ overlapping with `sep = −` the smaller escape distance along the
+     two segment normals; otherwise disjoint with `sep` = minimum of the four endpoint–segment
+     distances. Two collinear segments separated along their length are correctly disjoint
+     here, whereas their shared normal alone cannot separate them.
+   - *point–polygon*: inside iff on the inner side of every edge half-plane; inside ⇒
+     `sep = −min` inward edge distance (escape distance), outside ⇒ distance to the outline.
+   - *segment–polygon* and *polygon–polygon*: separating-axis test with axis set = edge normals
+     of both shapes **plus the direction axis of any segment core**. For each unit axis `u`
+     compute the **directional escape distance** `e(u) = min(max_u A − min_u B, max_u B − min_u A)`,
+     i.e. how far one shape must move along `±u` to separate. If some axis has `e(u) < 0` the
+     pair is disjoint and `sep` = minimum vertex–edge feature distance (live-selected; exact
+     for convex pairs). Otherwise the pair overlaps and `sep = −min_live e(u)`; the minimizing
+     axis is the penetration direction. `e(u)` is deliberately not the interval-intersection
+     length: a segment crossing a box has zero-width projection but nonzero escape distance.
+
+Examples: segment `(−2, 0)–(2, 0)` through the box `[−1, 1]²` has every vertex–edge distance
+`≥ 1`, but no axis separates it and the `y` escape distance is `min(0 − (−1), 1 − 0) = 1`, so
+`sep = −1`. Two unit circles offset by `(1.5, 1.5)` reduce to point–point with
+`sep = √4.5 − 2 ≈ 0.1213` and satisfy a `0.1` clearance even though their boxes overlap on
+both axes.
+
+| Pair | Treatment |
+|---|---|
+| label box, rect, diamond | convex polygons with interior |
+| segment, polyline span, arrow route span | segment cores |
+| hidden point, circle center | point cores |
+| circle | point ⊕ disk(`r`) |
+| rounded rect | inner rect ⊕ disk(`r`) |
+| general simple polygon | per-edge strokes for crossings plus point-in-polygon containment of the subject's corners; penetration for a fully contained subject is `−min` corner distance to the outline (documented approximation for non-convex obstacles) |
+| ellipse vs point-like (label corner, circle center) | exact nearest-point distance |
+| ellipse vs segment/polygon | conservative: the ellipse's exact rotated bounding box stands in for the outline; documented limitation of this version |
+
+- **routed path as subject**: no rows; handled by the discrete route search, with the
+  measurement loop closing the dependency.
+- **penetration direction**: for an overlapping pair the minimizing escape axis is
+  live-selected with lowest-index tie-breaking. Because `sep` is non-convex, a local solve can settle on the
+  wrong side of an obstacle; that case uses the [outer discrete search](#outer-discrete-search),
+  which forces the next penetration direction for the lowest-index conflicting pair. Disjoint
+  pairs need no side choice.
+
+#### Shared route representation
+
+One `Route` type in `locus-core` (`geom/route.rs`) is the single source of bounds, length,
+sampling, and rendering geometry for every arrow, evaluated as `Jet`s during the solve and as
+`f64` afterwards:
+
+- `Direct { bend }` — endpoint segment or quadratic Bézier. Bounds come from the curve's exact
+  axis extremes (parameter `t = (P0 − P1)/(P0 − 2P1 + P2)` per axis, clamped to `[0, 1]`,
+  live-selected), not the endpoint box. Length: segment distance or closed-form quadratic arc
+  length.
+- `Orthogonal { side, topology, d }` — axis-aligned span sequence derived from the endpoints,
+  side, topology, and detour unknown `d`; for the three-span right detour
+  `tail → (x_d, y_tail) → (x_d, y_tip) → tip` with `x_d = max_live(x_tail, x_tip) + d`. Length
+  is the sum of actual span lengths (`|x_d − x_tail| + |y_tip − y_tail| + |x_d − x_tip|`), valid
+  for differing endpoint x.
+- `Curved { side, k }` — quadratic Bézier whose control is the chord midpoint offset by `k`
+  perpendicular toward `side`; exact extremes and closed-form length as for `Direct`.
+- Attached labels: measured box at route parameter `t` offset by `o` on the page side; `t` and
+  `o` are the label-parameter unknowns above. The box is part of the path's bounds.
+
+Continuous route/label parameters (`d`, `k`, `t`, `o`) are unknowns of the continuous solve;
+discrete parameters (side, topology, retained-route candidate) are frozen within a solve pass.
+Route **coordinates** are always functions of the current endpoints and parameters, so a route
+never detaches from endpoints that move during a re-solve.
+
+#### Outer discrete search
+
+Discrete route and avoidance choices are enumerated by a bounded, deterministic schedule that
+runs in two situations — after a continuous solve fails Phase 1, and when the discrete layout
+pass reports a conflict:
+
+1. Identify the lowest-index materially failing row whose implicated unknowns or measurements involve a
+   route, label, or avoidance pair (`relation_reports`/`implicated` already provide this for
+   geometric rows).
+2. Advance that element's discrete choice to the next candidate in preset order: route side
+   `auto → right, left, above, below` (filtered by the authored `side`), topology
+   `3-span → 5-span` for orthogonal routes, penetration direction for an overlapping
+   avoidance pair, retained-route candidate for a clipped label.
+3. Re-run the continuous solve. Candidates are visited in lexicographic order over elements
+   and choices with a total cap of 32; exhausting them reports the original failing rows as
+   a layout/routing conflict (exit 2).
+
+This schedule does not depend on an `avoid` relation being present; a plain
+`route: orthogonal` whose authored `.length` cannot be met with the default side or topology
+is covered.
+
+#### Measurement feedback loop
+
+After each successful continuous solve, the discrete layout pass runs: route search for
+`avoid` with a routed-path subject, path-label candidate selection within the solved `t`/`o`
+region, `trim_endpoints` clipping, and avoidance validation. It may change discrete route
+choices, label candidates, and the retained visible route on which a label sits. Then:
+
+- Recompute every solve-time measurement (route bounds, label boxes, collection bounds,
+  `.length`) from the accepted choices.
+- If any differs from the values the solve used beyond `1e-12 × S`, re-run the continuous
+  solve with the new discrete choices frozen. Repeat up to a preset pass cap (3).
+- On convergence, the solve's route equals the accepted route: `rel path.length`, asserts,
+  collection bounds, and rendering all use the **accepted logical route** and the **accepted
+  label placement**. Preset defaults exist only as first-pass seeds; there is no separate
+  nominal semantics.
+- Clipping never changes `.length` or logical bounds (§8.6), but it can move a retained-route
+  label; that change participates in the loop like any other.
+- Exhausting the pass cap is a layout/routing conflict (exit 2) naming the oscillating
+  measurements and their relations.
+
+
+Search priority considers rows above `max(1e-12, worst_residual * 1e-8)` so small numerical noise does not hide a later material failure. This changes only candidate priority: accepted feasibility remains strictly `max|r| < 1e-12`. Joint retries retain other accepted/forced choices, honor authored side and topology, and preserve the original failure diagnostic when exhausted. Route offset enlargement factors are `1,2,4,8,16,32,64,128`. Actual route probes share a global 32 budget across bootstrap and measurement passes; unsuccessful/recovered continuous probes are counted.
+
+Feedback compares proposals with the actual accepted continuous choices, including outer-search retries. If a core retry replaced the requested label candidate, that just-rejected input candidate is excluded from the immediate visual proposals for the same solve; the accepted placement remains the baseline, its warnings remain reportable, and every distinct proposal still requires an ordinary solve. New route floors, label candidates or physical prefix/suffix arc-length trims always require an ordinary solve. Native retained parameters describe rendering; physical trim distances have shared primal, AD and assertion semantics. Clipping leaves logical route length and logical bounds, including attached labels, unchanged. Only one initial clipping-related E413 may obtain positive trim choices from an explicitly unsolved relation-aware seed; ordinary solving and final layout must then succeed, or the original diagnostic is retained. Measurement changes use `1e-12` times the characteristic scale, with three passes maximum.
+
+Label candidates score visible strokes and text overlap, respecting intentional clear container interiors. If equality-only DOF analysis determines both attached-label parameters, retain their accepted candidate: a nominal shift cannot override those hard source facts. Collision warnings are still rebuilt from the actual visible scene. Explicit solid avoidance remains a hard constraint. Prediction uses proposed routes and visible obstacles. Curved collision spans use the same conservative quadratic/cubic subdivision in primal and AD. Endpoint contact is allowed only if its outward prefix stays outside; inward excursions remain collisions.
+
+#### Pinned textbook presets
+
+`locus_core::preset` is the shared implementation of these values. All lengths below are scene units, except typography sizes in ems and normalized tolerances.
+
+| Value | Pinned constant |
+|---|---|
+| Automatic box width/height | `2 / 1` |
+| Padding and gap | `0.25 / 0.25` |
+| Avoidance clearance | `0.15` |
+| Scene units per em; normal/title size | `0.28`; `1 / 1.4` |
+| `short_length`, `narrow_width` | `1 / 0.3` |
+| Collision stroke width; margin; mark size | `0.04 / 2 / 0.2` |
+| Automatic rounded radius | `0.15 * min(width,height)` |
+| Route detour/control default; positive minimum | `0.5 / 0.5`; `1e-6` |
+| Label default `t`; source/middle/target regions | `0.5`; `[0.1,0.3] / [0.4,0.6] / [0.7,0.9]` |
+| Route page side order; signed side order | right, left, above, below; `+1,-1` |
+| Label page side order | above, below, right, left |
+| Active/stop/direction tolerance | `1e-7 / 1e-9 / 1e-14` |
+| Armijo; minimum alpha; accepted-move/restoration caps | `1e-4`; `1/1024`; `256 / 8` |
+| Consecutive working-set pivots; total settling iterations | `64 / 1024` |
+| Curvature rebuild attempts; gradient trigger; difference step; tangent-dimension cap | `1`; `1e-5 × max(1, ‖q‖∞)`; `1e-4`; `32` |
+| Rebuild probe correction / step; rebuilt / ordinary direction infinity-norm bound | `0.1 / 8` |
+| Outer search; avoidance directions; measurement passes | `32 / 16 / 3` |
+| Search row priority factor | `1e-8` |
+| Ellipse nearest-point bisections | `96` |
+| Clipping depth, bisections, interval cap | `48 / 64 / 16384` |
+| Attachment bracket subdivisions/prefix interval cap | `256 / 2048` |
+| Conservative curve collision subdivisions | `64` |
+
+Text measurement uses bundled Noto Sans Regular with Noto Sans CJK Simplified Chinese Regular fallback for normal/title plain text, and the bundled Rex math fonts for TeX, with exact measured extents passed into core; core has no font-engine dependency. The checked corpus fixture pins those extents as binary64 bits and validates them against the bundled fonts. SVG, TikZ and PNG consume the same accepted expanded styles and geometry.
 
 ## Part 9 — CLI
 
@@ -752,13 +1433,15 @@ collision procedure must be frozen with the curve implementation (Part 12).
 |---|---|
 | `locus init <file> [--style textbook]` | create a new scene file |
 | `locus add <file>` | append statements from stdin; whole file re-validated |
-| `locus update <file> --id X --def "<rhs>"` / `--set 'dir=NE'` | surgical edit; re-solve |
+| `locus update <file> --id X --def "<rhs or (args)>"` / `--set 'dir=NE'` | surgical edit of a declaration's `= rhs` or constructor arguments; re-solve |
 | `locus remove <file> --id X` | remove; orphaned dependents → exit 2 |
 | `locus describe <file>` | structural dump: objects, defs, anchor ownership, relative geometry, solve summary, DOF report, numeric-hint changes, branch resolutions |
 | `locus inspect <file> [--distance A B] [--angle A B C] [--ratio A M B] [--measurements] [--incidences]` | diagnostics and explicitly requested measurements/incidences |
 | `locus check <file>... [--strict]` | solve + diagnostics + all in-file asserts; warnings are non-fatal unless strict — the CI command |
 | `locus fmt <file> [--json]` | canonical formatting / AST-as-JSON export |
 | `locus render <file> -o out.svg [--png] [--tikz] [--stdout]` | render (intended for humans, not agent feedback) |
+
+`check` measures text with bundled fonts whenever measured content exists and validates accepted layout before assertions. `update --id` accepts top-level object, instance and group ids: instance `--def "function(arguments)"` preserves the name, class and trailing comment; group `--def "group(members...)"` preserves its name. Properties are editable only on object declarations. Qualified member edits return E305 naming the body line and invocation chain. Function definitions are edited directly in source. Removal uses expanded dependencies, including groups, call arguments and external member references; dependent declarations/relations/asserts return E303. A mutation is written only after the full candidate validates.
 
 Since the format is line-oriented, agents may equally edit the file directly; `check` validates everything regardless of how edits happened. CLI ops are the "safe API," direct editing the "expert mode."
 
@@ -768,7 +1451,7 @@ Since the format is line-oriented, agents may equally edit the file directly; `c
 |---|---|
 | `0` | success / all asserts pass |
 | `1` | one or more asserts failed, or `check --strict` found warnings |
-| `2` | solve failure (conflicting relations, non-convergence) or construction/dependency error |
+| `2` | solve, layout, routing, or clipping failure; construction/dependency error |
 | `3` | usage / parse error |
 
 ### 9.3 Output conventions
@@ -780,11 +1463,18 @@ Since the format is line-oriented, agents may equally edit the file directly; `c
 - Visual `crowding` requires two visible point markers; `mark: none` points do not produce `crowding` or `out_of_view` diagnostics. Hidden helpers remain part of mathematical measurements, incidences, and assertions. Geometry and solve diagnostics do not depend on marker visibility.
 - Declarations do not require incoming source references. Terminal drawing objects are intended outputs; unused numeric declarations and hidden construction objects are also valid. An absent reference alone produces no diagnostic and cannot fail `check --strict`.
 - On assert failure, the report includes the actual value of **every measurable subterm** so the agent can localize which upstream definition is wrong.
+- Diagram reports include automatic versus explicit dimensions, measured label sizes and roles, attachment ids, `near`/`side` choices, route modes and logical lengths, clipping boundaries, collection membership, and failed layout/clearance requirements. They identify qualified function members and source chains. `check` validates routing, containment, and clipping requirements before `render`; these failures return exit 2 with source-anchored layout/routing diagnostics. Ordinary annotation-collision warnings retain the existing strict-check policy. Public reports omit absolute label positions, route control coordinates, and internal search candidates.
 - Ellipse reports include semiaxes, rotation, anchor identities, and area. B-spline reports include the ordered control expressions, degree `3`, derived knot vector, span count, and endpoint identities. Neither report exposes internal control coordinates. Detected incidence for ellipses uses §3.2; B-spline incidence is not inferred from samples or its control polygon.
 
 ### 9.4 JSON interchange
 
-`locus fmt --json` emits the AST: version, segmented meta text, style preset, declared classes, ordered ops (`{id, kind, def, where, attr, props}` with `def` as both source string and parsed tree), rels, and asserts. A free numeric op additionally carries its scalar `hint`; geometry ops never carry a hint or location field. Placement ownership follows from the constructor overload; implicit centers are not synthesized as free-point ops. Numeric expression nodes include their inferred dimension (§6.1); text nodes contain the ordered plain/TeX segments from §1.4. This is the integration surface for future MCP shims, editors, or watch-mode preview servers — all of which wrap the CLI, never reimplement it.
+`locus fmt --json` emits the AST: version, segmented meta text, style preset, declared classes, ordered ops (`{id, kind, def, where, attr, props}` with `def` as both source string and parsed tree; a constructor declaration's `def` is the constructor call), rels, and asserts. A free numeric op additionally carries its scalar `hint`; geometry ops never carry a hint or location field. Placement ownership follows from the constructor overload; implicit centers are not synthesized as free-point ops. Numeric expression nodes include their inferred dimension (§6.1); text nodes contain the ordered plain/TeX segments from §1.4. This is the integration surface for future MCP shims, editors, or watch-mode preview servers — all of which wrap the CLI, never reimplement it.
+
+For reusable functions (§1.5), preserve ordered definitions, parameter names, body statements, and named invocations with their arguments and optional class. Also expose expanded ops, rels, and asserts with qualified ids and origin information linking each item to its body statement and invocation chain. Definition templates are not scene objects and contribute no unknowns. `fmt` preserves the reusable source form; `describe` and diagnostics identify expanded members such as `approved.payment.path`. `functions`, `calls`, and `groups` retain ordered source AST records. `collections` is keyed by qualified id and contains `id`, `kind` (`group` or `instance`), normalized ordered `members`, `span`, and `origin`. `expansion_origins` aligns with expanded statement order and contains the body `span` plus ordered `invocations` (`function`, qualified `instance`, call `span`). `expanded` contains the flat interchange document; `relation_properties` associates props with `relation_index`. Empty extension fields are omitted.
+
+For groups (§1.6), preserve ordered declarations and authored member references, and expose the normalized member identities after nested-group and instance expansion. Group metadata remains separate from drawable ops and never carries placement unknowns or coordinate hints. `fmt` preserves group declarations; `describe` reports membership and the relations involving the collection, and removal checks include group references as dependencies. Local group records retain qualified ids and expansion origins. `describe` attaches nonempty invocation `origin` records to expanded objects and includes `collections`, `expansion_origins`, expanded `relations` and `relation_properties`, and `diagram` records with qualified `id`, canonical expanded `definition`, authored `properties` and coordinate-free `accepted` details. Box details distinguish automatic dimensions and width/height; labels report measured width/height, typography role and accepted path side/region; arrows report accepted route mode, side, logical length and clipping. Collection relations use the expanded relation trees. Internal candidate indices and control coordinates are omitted.
+
+Preserve zero-argument shape/label constructor forms, label attachment mode and typography role, route/placement properties, symbolic `edge` directions, and `style_metric` calls in the source AST. Do not replace omitted dimensions with authored numeric literals or synthesize free points for labels and router controls. Resolved reports may include measured dimensions and logical path lengths; coordinates and control arrays are restricted to generated rendering output. Solve reports include equality DOF classes, active requirements, settling completion/reason/projected gradient and separate settling, restoration, outer-search, routing and measurement counters. E413 conflicts name source requirements and implicated members; incomplete settling is a warning and fails strict checks.
 
 ### 9.5 Intended agent loop
 
@@ -801,23 +1491,25 @@ Recommended agent policy: **never `render` until `check` exits 0.**
 
 ---
 
-## Part 10 — Out of scope for 0 beta 5 (reserved)
+## Part 10 — Out of scope for 0 beta 6 (reserved)
 
 - Inequality relations in `rel` (only asserts may compare with `< > <= >=`).
-- Content-driven box sizing (rect width from measured label extents) and arrow routing (elbows, box clipping) — the rest of "diagram mode."
-- Location values, the old hinted free-point syntax, absolute coordinate hints, and `pin` are excluded from the authoring model, not reserved for later addition. Independent placements beyond points, circles, ellipses, rectangles, rounded rectangles, and diamonds are out of scope for this version (§2.2). B-splines derive all controls from existing geometry.
+- Authored router control coordinates, arbitrary route programs, and domain-specific sequence/flowchart primitives. Automatic box sizing, routed connectors, and measured labels are in scope (§5.5–§5.7, §8.6); their numerical implementation is pinned in §7.7 and §8.7.
+- Location values, the old hinted free-point syntax, absolute coordinate hints, and `pin` are excluded from the authoring model, not reserved for later addition. Independent placement is limited to points, supported placed shapes, and standalone measured labels (§2.2). B-splines derive all controls from existing geometry; automatic arrow controls remain engine-owned.
 - General ellipse/B-spline intersections, curve tangency and projection; ellipse arcs and perimeter; variable-degree, custom-knot, rational, periodic, closed, or fitted B-splines (§5.10–§5.11).
 - User-defined presets or named palettes; per-op inline style declarations; whole-figure transforms; layers; animation; 3D. Exact values remain reusable through classes (§8.3).
-- Statement continuations or multi-line statements; includes/imports; user-defined functions.
+- Statement continuations or multi-line simple statements; includes/imports; recursive or expression-valued user-defined functions. Reusable statement blocks and named calls are specified in §1.5.
 
 The file header identifies the language draft and will change when a future draft makes incompatible changes.
 
 ---
 
-## Part 11 — Complete example
+## Part 11 — Complete examples
+
+### 11.1 Geometric construction
 
 ```locus
-locus 0 beta 5
+locus 0 beta 6
 
 meta title = "Externally tangent circles with a common external tangent"
 
@@ -827,8 +1519,8 @@ style textbook
 num r_1 = 2
 num r_2 = 3
 
-circle c1 = circle(r_1)
-circle c2 = circle(r_2) where { horizontal(c1.center, c2.center) }
+circle c1(r_1)
+circle c2(r_2) where { align_center_y(c1.center, c2.center) }
 point O_1 = c1.center
 point O_2 = c2.center
 
@@ -846,9 +1538,9 @@ point P_1 = foot(O_1, t_ext)
 point P_2 = foot(O_2, t_ext)
 
 // ---- annotation -------------------------------------------
-label l1 = label(O_1, $O_1$)  { dir: S }
-label l2 = label(O_2, $O_2$)  { dir: S }
-label lT = label(T, $T$)      { dir: SE }
+label l1(O_1, $O_1$)  { dir: S }
+label l2(O_2, $O_2$)  { dir: S }
+label lT(T, $T$)      { dir: SE }
 
 // ---- intent -----------------------------------------------
 assert dist(O_1, O_2) == r_1 + r_2
@@ -861,16 +1553,53 @@ assert collinear(E, P_1, P_2)
 
 The agent states radii and a tangency relation, then derives anchors, the contact point, and a common tangent. The assertions verify their consequences. No standalone location, free point, or coordinate seed appears in the file.
 
+### 11.2 Relational diagram
+
+```locus
+locus 0 beta 6
+
+style textbook
+
+fn labeled_rect(text) {
+    rect shape()
+    label caption(text)
+    rel center(caption, shape)
+    rel contain(shape, caption)
+}
+
+label title("Validate before rendering") { role: title }
+labeled_rect check("locus check")
+labeled_rect render("locus render") [highlight]
+group nodes(check.shape, render.shape)
+rel column(nodes)
+rel align_center_x(title, nodes)
+rel gap_y(title, nodes)
+
+arrow success(check.shape.s, render.shape.n)
+label yes(success, "pass") { near: start, side: left }
+arrow retry(render.shape.e, check.shape.e) { route: curved, side: right }
+label again(retry, "retry") { near: middle, side: right }
+rel avoid(retry, success)
+```
+
+Shape sizes, gaps, standalone label placement, and return-route controls are engine-selected. Function members remain addressable, group membership does not draw extra objects, and connector captions use the accepted visible paths.
+
+The two composition examples in §0.2 are broader acceptance cases: together they exercise orthogonal loops, class arguments and nested calls, preset path/overlay dimensions, finite rectangle edges, content-dependent frames, grouped avoidance, and endpoint clipping. Both are executable current-format programs.
+
 ---
 
 ## Part 12 — Open questions before freezing
 
-1. **Deterministic placement initialization** — specify and validate the exact dimension-aware initial arrangements, construction-domain handling, bounded retry schedule, and tie-breaks between otherwise valid arrangements. Cover standalone points and shapes, points related into nondegenerate triangles and spline controls, tangent and concentric circles, relation-dependent intersections, and disconnected diagrams. Authors must never repair initialization by supplying coordinates. This algorithm is required before freezing `0 beta 5`; the iteration rules alone no longer define a complete reference solver.
-2. **Rigid symmetry classification** — common translation is handled by §7.2. Define when common rotation is also presentation-only, accounting for horizontal/vertical relations, compass anchors, relative offsets, and angle-based constructions, before exempting it from strict checks.
-3. **Solver constants** — empirically validate the specified normalization, rank threshold, damping schedule, and `1e-12`/`1e-9` gap on extreme-scale figures before freezing `0 beta 5`; any change after freezing requires a new file header.
-4. **Implementation migration** — update parser/AST, constructor typing, unknown ownership, solver initialization, CLI/JSON reports, and fixtures together. Existing coordinate hints are not silently discarded: translate their intended relative geometry into relations and explicit construction branches.
+1. **Placement initializer — pinned** in §7.7, including ring seeds, relation-aware passes and bounded precondition retry scales.
+2. **Rigid symmetry classification** — common translation is handled by §7.2. Define when common rotation is also presentation-only, accounting for axis-alignment relations, compass anchors, relative offsets, and angle-based constructions, before exempting it from strict checks.
+3. **Solver constants** — empirically validate the specified normalization, rank threshold, damping schedule, and `1e-12`/`1e-9` gap on extreme-scale figures before freezing `0 beta 6`; any change after freezing requires a new file header.
+4. **Implementation migration — complete** for parser/AST, constructor typing, unknown ownership, solver initialization, CLI/JSON reports, and fixtures. Earlier headers and constructor forms are rejected; intended relative geometry must be expressed through relations and explicit construction branches.
 5. **KaTeX subset boundary** — which TeX commands are guaranteed? Needs an explicit whitelist appendix before v1.
-6. **Curve implementation** — add ellipse/B-spline syntax and typed overloads, parameter domains, analytic evaluation and differentiation (including B-spline endpoint derivatives), rotated/conservative bounds, exact cubic span conversion, and curve-aware layout. Pin conversion operation order and collision tolerances; verify endpoint, interior-knot, repeated-control, and rotated-ellipse cases across renderers. The curve demonstrations are draft acceptance cases, not claims of existing runtime support.
+6. **Curve implementation** — add ellipse/B-spline syntax and typed overloads, parameter domains, analytic evaluation and differentiation (including B-spline endpoint derivatives), rotated/conservative bounds, exact cubic span conversion, and curve-aware layout. Pin conversion operation order and collision tolerances; verify endpoint, interior-knot, repeated-control, and rotated-ellipse cases across renderers. Ellipse and B-spline demonstrations now pass runtime acceptance and renderer parity; the remaining freeze review concerns conversion operation order and extreme-scale coverage.
+7. **Measured layout and path operations — pinned** in §7.7–§8.7: live hinges, hard feasibility, working-set preferences, exact boundary distances, bounded search, measurement feedback and honest incomplete-settling reports.
+8. **Function expansion, source JSON and CLI editing — pinned** in §1.5 and §9.1–§9.4. Independent, nested, object/class arguments, source tracing and qualified-member edits are validated.
+9. **Ordered groups — pinned** in §1.6, §8.7 and §9.4: normalized membership, atomic instance row/column operands, aggregate bounds, recursive member avoidance, source chains and removal dependencies.
+10. **Diagram presets and rendering constants — pinned** in §8.7, with accepted-route SVG/TikZ/PNG parity and the 30-source corpus. Rounded-rectangle preference settling can stall while remaining feasible; strict checking retains its warning.
 
 ### Decided (previously open)
 
@@ -880,7 +1609,14 @@ The agent states radii and a tangency relation, then derives anchors, the contac
 - **No authored locations** — hinted free-point declarations, coordinate hints, and `pin` are removed. The new `point()` constructor takes no arguments. Public authoring and feedback expose geometry and relationships, not absolute coordinates (§1.4, §9.3).
 - **Explicit tangency semantics** — `tangent(c1, c2)` is external; `internally_tangent(outer, inner)` is internal, independent of initialization (§3.2).
 - Unresolved relative DOFs report as **info** by default; `--strict` promotes. Common translation alone never fails strict checking (§7.2–§7.3).
-- **No vocabulary aliases** — `touch` removed; exactly one name per concept (§3.2).
+- **Unified relation vocabulary** — 32 entries follow the relation diagram, including measured alignment, separation, enclosure, clearance, and clipping. `center`, axis-center alignment, and numeric length equality replace `coincident`, `horizontal`, `vertical`, and `congruent`; no vocabulary aliases are retained (§3.2).
+- **Reusable local functions** — `fn` defines a statement block with positional arguments and no return value. Named calls expand fresh local declarations and shared relations; qualified members, nested composition, style fallback, and measured instance collections follow §1.5.
+- **Constructor declarations** — `kind id(args)` is the only way to call the constructor named after the kind; `kind id = rhs` is reserved for aliases, differently named derived constructors, expressions, and `free` nums (§1.4).
+- **Ordered groups** — `group name(members...)` aliases existing objects and collections, flattens nested membership in order, and keeps the first occurrence of each object identity. Groups draw nothing, introduce no unknowns, and impose no layout; relation-specific expansion or combined bounds follow §1.6.
+- **Automatic box sizing** — zero-argument rectangle, diamond, and rounded-rectangle constructors obtain positive compact dimensions from measured content, defining relations, and preset defaults; explicit dimensions stay fixed (§5.5).
+- **Measured label modes and typography** — standalone content, point-anchor attachment, and path attachment share measured text; path labels use `near`/`side`, and `role: title` selects preset typography without prescribing placement (§5.6–§5.7).
+- **Generic automatic routes** — curved and orthogonal arrows preserve endpoint identities, choose controls internally, and participate in clearance, path-label placement, and endpoint clipping (§8.6).
+- **General diagram measurements** — preset `short_length`/`narrow_width`, logical arrow length, and finite `edge(rect, direction)` values replace domain-specific sample paths, activation widths, and divider placement (§5.8, §6.2).
 - **Numeric `free` only** — scalar hints remain for unknown numeric parameters; points and lines cannot use `free` (§2.2–§2.3).
 - **Style classes introduced** — reusable classes with a closed property set (§8.3); resolves F13.
 - **Exact class styles supported** — HEX colors, numeric line weights, custom dash arrays, opacity, caps, and joins coexist with preset tokens (§8.3).

@@ -1,0 +1,178 @@
+locus 0 beta 6
+
+meta title = "Checkout Sequence Diagram"
+meta note = "Composition example: general geometry and layout relations with reusable local functions; no sequence-specific language primitives or manual position calculations; supported by the beta 6 measured solver and validated across SVG, TikZ and PNG"
+
+style textbook
+
+
+class header_shape { accent: #4F46E5, fill: #E0E7FF }
+class header_text { accent: #1E1B4B }
+class guide_style { accent: #9CA3AF, stroke: dashed, weight: thin }
+class band_style { accent: #4F46E5, fill: #C7D2FE }
+class solid_path { accent: #1F2937, stroke: solid }
+class dashed_path { accent: #2563EB, stroke: dashed }
+class blue_text { accent: #1E3A8A }
+class frame_style { accent: #6B7280, fill: none }
+class tab_style { accent: #6B7280, fill: #E5E7EB }
+class divider_style { accent: #6B7280, stroke: dashed }
+class legend_style { accent: #D1D5DB, fill: #F9FAFB }
+class approved_style { accent: #065F46 }
+class declined_style { accent: #991B1B }
+
+
+
+fn labeled_rounded_rect(text) {
+    rounded_rect shape() [header_shape]
+    label caption(text) [header_text]
+    rel center(caption, shape)
+    rel contain(shape, caption)
+}
+
+fn vertical_guide(start) {
+    point end() { mark: none }
+    segment path(start, end) [guide_style]
+    rel align_center_x(start, end)
+    rel gap_y(start, end)
+}
+
+fn connector(source, target, text, path_style, text_style, obstacles) {
+    point tail() { mark: none }
+    point tip() { mark: none }
+    rel on(tail, source)
+    rel on(tip, target)
+    rel align_center_y(tail, tip)
+    arrow path(tail, tip) [path_style]
+    label caption(path, text) [text_style] { near: middle, side: above }
+    rel avoid(caption, source, target, obstacles)
+}
+
+fn loop_connector(guide, text, obstacles) {
+    point tail() { mark: none }
+    point tip() { mark: none }
+    rel on(tail, guide)
+    rel on(tip, guide)
+    rel gap_y(tail, tip)
+    arrow path(tail, tip) [solid_path] { route: orthogonal, side: right }
+    label caption(path, text) { near: middle, side: right }
+    rel avoid(caption, guide, obstacles)
+}
+
+fn approved_branch(customer, web, order, gateway, obstacles) {
+    label heading("[payment approved]") [approved_style]
+    connector payment(gateway, order, "4. paymentId", dashed_path, blue_text, obstacles)
+    loop_connector update(order, "5. confirmOrder()", obstacles)
+    connector notify_web(order, web, "6. orderConfirmed(orderId)", dashed_path, blue_text, obstacles)
+    connector notify_customer(web, customer, "7. Show confirmation", dashed_path, blue_text, obstacles)
+    rel gap_y(heading, payment, update, notify_web, notify_customer)
+}
+
+fn declined_branch(customer, web, order, gateway, obstacles) {
+    label heading("[payment declined]") [declined_style]
+    connector payment(gateway, order, "4. paymentDeclined", dashed_path, blue_text, obstacles)
+    loop_connector update(order, "5. cancelOrder()", obstacles)
+    connector notify_web(order, web, "6. paymentFailed", dashed_path, blue_text, obstacles)
+    connector notify_customer(web, customer, "7. Show payment error", dashed_path, blue_text, obstacles)
+    rel gap_y(heading, payment, update, notify_web, notify_customer)
+}
+
+fn swatch_entry(text, appearance) {
+    point tail() { mark: none }
+    point tip() { mark: none }
+    rel align_center_y(tail, tip)
+    rel gap_x(tail, tip)
+    arrow sample(tail, tip) [appearance]
+    rel sample.length == style_metric("short_length")
+    label caption(text) [appearance]
+    rel row(sample, caption)
+}
+
+fn legend() {
+    rounded_rect frame() [legend_style]
+    swatch_entry requests("Request (solid arrow)", solid_path)
+    swatch_entry responses("Return (dashed arrow)", dashed_path)
+    rel gap_y(requests, responses)
+    rel align_left(requests, responses)
+    rel contain(frame, requests, responses)
+}
+
+fn divided_frame(text, upper, lower, upper_heading, lower_heading) {
+    rect frame() [frame_style]
+    rect tab() [tab_style]
+    label caption(text)
+    rel center(caption, tab)
+    rel contain(tab, caption)
+    rel inset_left(tab, frame) { padding: none }
+    rel inset_top(tab, frame) { padding: none }
+    rel contain(frame, upper, lower, tab.se)
+    rel gap_y(tab, upper)
+    rel inset_left(upper_heading, frame)
+    rel inset_left(lower_heading, frame)
+
+    point left() { mark: none }
+    point right() { mark: none }
+    rel on(left, edge(frame, W))
+    rel on(right, edge(frame, E))
+    rel align_center_y(left, right)
+    segment divider(left, right) [divider_style]
+    rel gap_y(upper, divider, lower)
+}
+
+fn narrow_overlay(axis) {
+    rect shape() [band_style]
+    rel align_center_x(shape, axis)
+    rel shape.width == style_metric("narrow_width")
+}
+
+fn clip_visible_endpoints(paths, boundary) {
+    rel trim_endpoints(paths, boundary)
+}
+
+label title("Checkout Sequence Diagram") { role: title }
+legend key()
+labeled_rounded_rect customer("Customer")
+labeled_rounded_rect web("Web App")
+labeled_rounded_rect order("Order Service")
+labeled_rounded_rect gateway("Payment Gateway")
+
+group headers(customer.shape, web.shape, order.shape, gateway.shape)
+rel row(headers)
+rel web.shape.width == customer.shape.width and web.shape.height == customer.shape.height
+rel order.shape.width == customer.shape.width and order.shape.height == customer.shape.height
+rel gateway.shape.width == customer.shape.width and gateway.shape.height == customer.shape.height
+rel align_center_x(title, headers)
+rel gap_y(title, key.frame, headers)
+rel align_left(key.frame, headers)
+
+vertical_guide customer_line(customer.shape.s)
+vertical_guide web_line(web.shape.s)
+vertical_guide order_line(order.shape.s)
+vertical_guide gateway_line(gateway.shape.s)
+group guides(customer_line.path, web_line.path, order_line.path, gateway_line.path)
+
+narrow_overlay web_active(web_line.path)
+narrow_overlay order_active(order_line.path)
+group overlays(web_active.shape, order_active.shape)
+
+connector checkout(customer_line.path, web_line.path, "1. Checkout(cart)", solid_path, solid_path, overlays)
+connector create_order(web_line.path, order_line.path, "2. createOrder(cart)", solid_path, solid_path, overlays)
+connector charge(order_line.path, gateway_line.path, "3. charge(amount)", solid_path, solid_path, overlays)
+
+approved_branch approved(customer_line.path, web_line.path, order_line.path, gateway_line.path, overlays)
+declined_branch declined(customer_line.path, web_line.path, order_line.path, gateway_line.path, overlays)
+divided_frame alt("alt", approved, declined, approved.heading, declined.heading)
+rel gap_y(headers, checkout, create_order, charge, alt.frame)
+
+group loops(approved.update, declined.update)
+group headings(approved.heading, declined.heading)
+rel avoid(loops, gateway_line.path)
+rel avoid(headings, guides)
+
+rel cover_y(web_active.shape, checkout.tip, declined.notify_customer.tail)
+rel cover_y(order_active.shape, create_order.tip, declined.notify_web.tail)
+
+group messages(checkout, create_order, charge, approved, declined)
+clip_visible_endpoints web_clipping(messages, web_active.shape)
+clip_visible_endpoints order_clipping(messages, order_active.shape)
+rel align_center_y(customer_line.end, web_line.end, order_line.end, gateway_line.end)
+rel gap_y(alt.frame, customer_line.end)

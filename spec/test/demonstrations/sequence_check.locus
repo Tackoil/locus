@@ -1,4 +1,4 @@
-locus 0 beta 5
+locus 0 beta 6
 
 meta title = "Sequence: agent runs locus check"
 meta note = "Rows step down lifeline A via offset; other endpoints via foot() — same y by construction"
@@ -15,19 +15,19 @@ num hp = 4.0         // participant pitch
 num rp = 0.85        // message row pitch
 
 // ---- participant heads ---------------------------------------
-rect boxA = rect(bw, bh)
-label hA = label(boxA.center, "Agent")  { dir: center }
+rect boxA(bw, bh)
+label hA(boxA.center, "Agent")  { dir: center }
 
-rect boxB = rect(bw, bh) where { horizontal(boxA.center, boxB.center), hdist(boxA.center, boxB.center) == hp }
-label hB = label(boxB.center, "locus CLI")  { dir: center }
+rect boxB(bw, bh) where { align_center_y(boxA.center, boxB.center), hdist(boxA.center, boxB.center) == hp }
+label hB(boxB.center, "locus CLI")  { dir: center }
 
-rect boxC = rect(bw, bh) where { horizontal(boxB.center, boxC.center), hdist(boxB.center, boxC.center) == hp }
-label hC = label(boxC.center, "Kernel")  { dir: center }
+rect boxC(bw, bh) where { align_center_y(boxB.center, boxC.center), hdist(boxB.center, boxC.center) == hp }
+label hC(boxC.center, "Kernel")  { dir: center }
 
 // ---- lifelines (exact dash, weight, color, and cap via a declared class)
-segment lifeA = seg(boxA.s, offset(boxA.s, 0, -6))  [lifeline]
-segment lifeB = seg(boxB.s, offset(boxB.s, 0, -6))  [lifeline]
-segment lifeC = seg(boxC.s, offset(boxC.s, 0, -6))  [lifeline]
+segment lifeA(boxA.s, offset(boxA.s, 0, -6))  [lifeline]
+segment lifeB(boxB.s, offset(boxB.s, 0, -6))  [lifeline]
+segment lifeC(boxC.s, offset(boxC.s, 0, -6))  [lifeline]
 
 // ---- message rows (chained offsets → equal pitch by construction)
 point r1 = offset(boxA.s, 0, -rp)  { mark: none }
@@ -39,35 +39,145 @@ point r6 = offset(r5, 0, -rp)      { mark: none }
 
 // ---- messages --------------------------------------------------
 point p1b = foot(r1, lifeB)  { mark: none }
-arrow m1 = arrow(r1, p1b)  { head: -> }
-label l1 = label(seg(r1, p1b).midpoint, "check fig.locus")  { dir: N, gap: 0.12 }
+arrow m1(r1, p1b)  { head: -> }
+label l1(seg(r1, p1b).midpoint, "check fig.locus")  { dir: N, gap: 0.12 }
 
 point p2b = foot(r2, lifeB)  { mark: none }
 point p2c = foot(r2, lifeC)  { mark: none }
-arrow m2 = arrow(p2b, p2c)  { head: -> }
-label l2 = label(seg(p2b, p2c).midpoint, "parse + solve + evaluate")  { dir: N, gap: 0.12 }
+arrow m2(p2b, p2c)  { head: -> }
+label l2(seg(p2b, p2c).midpoint, "parse + solve + evaluate")  { dir: N, gap: 0.12 }
 
 point p3b = foot(r3, lifeB)  { mark: none }
 point p3c = foot(r3, lifeC)  { mark: none }
-arrow m3 = arrow(p3c, p3b)  [ret]  { head: -> }   // return
-label l3 = label(seg(p3b, p3c).midpoint, "resolved scene + DOF report")  { dir: N, gap: 0.12 }
+arrow m3(p3c, p3b)  [ret]  { head: -> }   // return
+label l3(seg(p3b, p3c).midpoint, "resolved scene + DOF report")  { dir: N, gap: 0.12 }
 
 point p4b = foot(r4, lifeB)  { mark: none }
 point p4c = foot(r4, lifeC)  { mark: none }
-arrow m4 = arrow(p4b, p4c)  { head: -> }
-label l4 = label(seg(p4b, p4c).midpoint, "run asserts")  { dir: N, gap: 0.12 }
+arrow m4(p4b, p4c)  { head: -> }
+label l4(seg(p4b, p4c).midpoint, "run asserts")  { dir: N, gap: 0.12 }
 
 point p5b = foot(r5, lifeB)  { mark: none }
 point p5c = foot(r5, lifeC)  { mark: none }
-arrow m5 = arrow(p5c, p5b)  [ret]  { head: -> }
-label l5 = label(seg(p5b, p5c).midpoint, "$a_3$ failed: got 1.618")  { dir: N, gap: 0.12 }
+arrow m5(p5c, p5b)  [ret]  { head: -> }
+label l5(seg(p5b, p5c).midpoint, "$a_3$ failed: got 1.618")  { dir: N, gap: 0.12 }
 
 point p6b = foot(r6, lifeB)  { mark: none }
-arrow m6 = arrow(p6b, r6)  [ret]  { head: -> }
-label l6 = label(seg(r6, p6b).midpoint, "exit 1 + JSON report")  { dir: N, gap: 0.12 }
+arrow m6(p6b, r6)  [ret]  { head: -> }
+label l6(seg(r6, p6b).midpoint, "exit 1 + JSON report")  { dir: N, gap: 0.12 }
 
 // ---- invariants -------------------------------------------------
 assert parallel(lifeA, lifeB) and parallel(lifeB, lifeC)
-assert horizontal(r1, p1b)                         // messages horizontal
-assert congruent(seg(r1, r2), seg(r2, r3))         // uniform rhythm
+assert align_center_y(r1, p1b)                         // messages horizontal
+assert (length(seg(r1, r2)) == length(seg(r2, r3)))         // uniform rhythm
 assert on(p2b, lifeB) and on(p2c, lifeC)
+
+// ---- beta 6 specification acceptance: generic sequence composition ----
+fn beta6_header(text) {
+    rect shape()
+    label caption(text)
+    rel center(caption, shape)
+    rel contain(shape, caption)
+}
+
+fn beta6_guide(start) {
+    point finish() { mark: none }
+    rel align_center_x(start, finish)
+    rel gap_y(start, finish)
+    segment path(start, finish) [lifeline]
+}
+
+fn beta6_message(source, target, text) {
+    point tail() { mark: none }
+    point tip() { mark: none }
+    rel on(tail, source)
+    rel on(tip, target)
+    rel align_center_y(tail, tip)
+    arrow path(tail, tip)
+    label caption(path, text) { near: middle, side: above }
+    rel avoid(caption, source, target)
+    assert on(tail, source) and on(tip, target)
+    assert path.length == dist(tail, tip)
+}
+
+fn beta6_loop(guide, text) {
+    point tail() { mark: none }
+    point tip() { mark: none }
+    rel on(tail, guide)
+    rel on(tip, guide)
+    rel gap_y(tail, tip)
+    arrow path(tail, tip) { route: orthogonal, side: right }
+    label caption(path, text) { near: middle, side: right }
+    rel avoid(caption, guide)
+    assert on(tail, guide) and on(tip, guide)
+    assert path.length > dist(tail, tip)
+}
+
+fn beta6_overlay(guide, paths) {
+    rect shape() [highlight]
+    rel align_center_x(shape, guide)
+    rel shape.width == style_metric("narrow_width")
+    rel cover_y(shape, paths)
+    rel trim_endpoints(paths, shape)
+    assert shape.width == style_metric("narrow_width")
+    assert shape.height > 0
+}
+
+fn beta6_key(text, appearance) {
+    point tail() { mark: none }
+    point tip() { mark: none }
+    rel align_center_y(tail, tip)
+    rel gap_x(tail, tip)
+    arrow sample(tail, tip) [appearance]
+    rel sample.length == style_metric("short_length")
+    label caption(text) [appearance]
+    rel row(sample, caption)
+    assert sample.length == style_metric("short_length")
+}
+
+beta6_header beta6_agent("Caller")
+beta6_header beta6_kernel("Measured service endpoint")
+rel beta6_agent.shape.width == beta6_kernel.shape.width
+rel beta6_agent.shape.height == beta6_kernel.shape.height
+group beta6_headers(beta6_agent, beta6_kernel)
+rel row(beta6_headers)
+rel gap_y(lifeA, beta6_headers)
+rel align_left(boxA, beta6_headers)
+beta6_guide beta6_source(beta6_agent.shape.s)
+beta6_guide beta6_target(beta6_kernel.shape.s)
+beta6_message beta6_request(beta6_source.path, beta6_target.path, "A long request caption determines the guide spacing")
+beta6_loop beta6_work(beta6_target.path, "Local processing")
+beta6_message beta6_reply(beta6_target.path, beta6_source.path, "Measured response") [ret]
+group beta6_events(beta6_request, beta6_work, beta6_reply)
+rect beta6_frame() [auxiliary]
+rel contain(beta6_frame, beta6_events)
+rel gap_y(beta6_headers, beta6_frame)
+rect beta6_tab()
+label beta6_tab_text("generic block")
+rel center(beta6_tab_text, beta6_tab)
+rel contain(beta6_tab, beta6_tab_text)
+rel inset_left(beta6_tab, beta6_frame) { padding: none }
+rel inset_top(beta6_tab, beta6_frame) { padding: none }
+rel gap_y(beta6_tab, beta6_events)
+
+point beta6_divider_left() { mark: none }
+point beta6_divider_right() { mark: none }
+rel on(beta6_divider_left, edge(beta6_frame, W))
+rel on(beta6_divider_right, edge(beta6_frame, E))
+rel align_center_y(beta6_divider_left, beta6_divider_right)
+segment beta6_divider(beta6_divider_left, beta6_divider_right) [auxiliary]
+rel gap_y(beta6_request, beta6_divider, beta6_work, beta6_reply)
+rel align_center_y(beta6_source.finish, beta6_target.finish)
+rel gap_y(beta6_events, beta6_source.finish)
+
+// Pass an existing group into a function; original guides are not copied.
+group beta6_clipped(beta6_request.path, beta6_reply.path)
+beta6_overlay beta6_band(beta6_target.path, beta6_clipped)
+rel gap_x(beta6_source.path, beta6_band.shape)
+beta6_key beta6_legend("Dashed return", ret)
+rel gap_y(beta6_frame, beta6_legend)
+rel align_left(beta6_frame, beta6_legend)
+assert align_center_y(beta6_agent.shape, beta6_kernel.shape)
+assert contain(beta6_frame, beta6_events)
+assert contain(beta6_tab, beta6_tab_text)
+assert on(beta6_divider_left, edge(beta6_frame, W)) and on(beta6_divider_right, edge(beta6_frame, E))

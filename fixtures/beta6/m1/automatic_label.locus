@@ -1,0 +1,10 @@
+locus 0 beta 6
+
+rect panel()
+label caption("Measured caption")
+rel panel.width == 4
+rel panel.height == 2
+rel center(caption, panel)
+assert panel.width == 4
+assert panel.height == 2
+assert center(caption, panel)

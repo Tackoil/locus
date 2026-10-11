@@ -21,15 +21,57 @@ pub enum EnvError {
 pub struct Environment {
     objects: IndexMap<Ident, ResolvedObject>,
     indices: BTreeMap<String, usize>,
+    aliases: BTreeMap<String, String>,
 }
 
 impl Environment {
+    pub(crate) fn set_aliases(&mut self, aliases: &BTreeMap<String, String>) {
+        self.aliases.clone_from(aliases);
+    }
+
+    pub(crate) fn identity<'a>(&'a self, name: &'a str) -> &'a str {
+        self.aliases.get(name).map_or(name, String::as_str)
+    }
+    pub(crate) fn include_path_label_bounds(&mut self, aliases: &BTreeMap<String, String>) {
+        let labels = self
+            .objects
+            .values()
+            .filter_map(|object| match object {
+                ResolvedObject::Annotation(crate::scene::AnnotationSpec::Label {
+                    path: Some(path),
+                    bounds: Some(bounds),
+                    ..
+                }) => Some((path.path.clone(), *bounds)),
+                _ => None,
+            })
+            .collect::<Vec<_>>();
+        let mut combined = BTreeMap::<String, crate::BBox>::new();
+        for (path, bounds) in labels {
+            let identity = aliases.get(&path).unwrap_or(&path);
+            combined
+                .entry(identity.clone())
+                .and_modify(|old| *old = old.union(bounds))
+                .or_insert(bounds);
+        }
+        for (id, object) in &mut self.objects {
+            let identity = aliases.get(&id.name).unwrap_or(&id.name);
+            if let Some(bounds) = combined.get(identity)
+                && let ResolvedObject::Annotation(crate::scene::AnnotationSpec::Arrow {
+                    label_bounds,
+                    ..
+                }) = object
+            {
+                *label_bounds = Some(*bounds);
+            }
+        }
+    }
     /// Creates an empty environment.
     #[must_use]
     pub fn new() -> Self {
         Self {
             objects: IndexMap::new(),
             indices: BTreeMap::new(),
+            aliases: BTreeMap::new(),
         }
     }
 

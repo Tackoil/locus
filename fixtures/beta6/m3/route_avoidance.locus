@@ -1,0 +1,9 @@
+locus 0 beta 6
+point start()
+point finish = offset(start, 0, 4)
+point center = offset(start, 0, 2)
+rect obstacle(center, 2.5, 1)
+arrow path(start, finish) { route: orthogonal, side: right }
+rel avoid(path, obstacle)
+assert avoid(path, obstacle)
+assert path.length >= 7

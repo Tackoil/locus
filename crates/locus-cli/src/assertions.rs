@@ -63,10 +63,11 @@ pub(crate) struct SourceExpression {
 
 pub(crate) fn report(
     report: locus_core::AssertionReport,
-    file: &File,
+    scene: &locus_core::Scene,
     source: &str,
 ) -> Result<AssertionReport, DependencyError> {
-    let graph = DependencyGraph::extract(file)?;
+    let file = &scene.file;
+    let graph = DependencyGraph::extract_scene(scene)?;
     let expressions = file
         .statements
         .iter()

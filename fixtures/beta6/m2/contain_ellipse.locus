@@ -1,0 +1,8 @@
+locus 0 beta 6
+num major = free 4
+num minor = free 1
+ellipse panel(major, minor)
+label caption("A long measured ellipse caption")
+rel center(panel, caption)
+rel contain(panel, caption)
+assert contain(panel, caption)

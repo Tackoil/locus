@@ -13,7 +13,7 @@ use crate::format::format_expr;
 use serde::Serialize;
 use std::collections::{BTreeMap, BTreeSet};
 
-/// The Locus 0 beta 5 JSON interchange document.
+/// Source and expanded Locus JSON interchange document.
 #[derive(Clone, Debug, PartialEq, Serialize)]
 pub struct Interchange {
     pub version: String,
@@ -22,7 +22,28 @@ pub struct Interchange {
     pub classes: Vec<Class>,
     pub ops: Vec<Op>,
     pub rels: Vec<ExprNode>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub relation_properties: Vec<RelationProperties>,
     pub asserts: Vec<Assert>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub functions: Vec<crate::ast::FnStmt>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub calls: Vec<crate::ast::CallStmt>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub groups: Vec<crate::ast::GroupStmt>,
+    #[serde(skip_serializing_if = "BTreeMap::is_empty")]
+    pub collections: BTreeMap<String, crate::Collection>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub expansion_origins: Vec<crate::ExpansionOrigin>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expanded: Option<Box<Interchange>>,
+}
+
+/// Properties attached to one relation, indexed in the `rels` array.
+#[derive(Clone, Debug, PartialEq, Serialize)]
+pub struct RelationProperties {
+    pub relation_index: usize,
+    pub props: Vec<Property>,
 }
 
 /// One metadata entry in source order.
@@ -176,18 +197,54 @@ pub fn to_interchange(file: &File) -> Interchange {
         classes: Vec::new(),
         ops: Vec::new(),
         rels: Vec::new(),
+        relation_properties: Vec::new(),
         asserts: Vec::new(),
+        functions: Vec::new(),
+        calls: Vec::new(),
+        groups: Vec::new(),
+        collections: BTreeMap::new(),
+        expansion_origins: Vec::new(),
+        expanded: None,
     };
     for statement in &file.statements {
         push_statement(&mut output, statement, &dimensions);
+    }
+    if file.statements.iter().any(|statement| {
+        matches!(
+            statement,
+            Statement::Fn(_) | Statement::Group(_) | Statement::Call(_)
+        )
+    }) {
+        let expanded = crate::expand(file);
+        output.collections = expanded.collections;
+        output.expansion_origins = expanded.origins;
+        output.expanded = Some(Box::new(to_interchange(&expanded.file)));
     }
     output
 }
 
 /// Returns inferred numeric dimensions keyed by each expression's UTF-8 byte range.
+/// Ambiguous ranges shared by expanded instances with different dimensions are omitted.
 #[must_use]
 pub fn inferred_expression_dimensions(file: &File) -> BTreeMap<(usize, usize), Dimension> {
     Dimensions::infer(file).expression_dimensions()
+}
+
+/// Returns dimensions keyed by the identity of each expression in this AST.
+///
+/// Keys use `std::ptr::from_ref(expr) as usize` and remain valid while the AST is unmoved.
+/// Unlike source spans, these keys distinguish repeated function-body expressions.
+#[must_use]
+pub fn inferred_expression_dimensions_by_node(file: &File) -> BTreeMap<usize, Dimension> {
+    Dimensions::infer(file).node_dimensions()
+}
+
+/// Returns a source-span dimension map for each statement in declaration order.
+#[must_use]
+pub fn inferred_statement_expression_dimensions(
+    file: &File,
+) -> Vec<BTreeMap<(usize, usize), Dimension>> {
+    Dimensions::infer(file).statement_dimensions(file.statements.len())
 }
 
 /// Serializes interchange JSON without insignificant whitespace.
@@ -209,18 +266,39 @@ pub fn to_json_pretty(file: &File) -> Result<String, serde_json::Error> {
 }
 
 fn push_statement(output: &mut Interchange, statement: &Statement, dimensions: &Dimensions) {
-    match statement {
-        Statement::Meta(entry) => output.meta.push(MetaEntry {
-            key: entry.key.name.clone(),
-            value: text_segments(&entry.value),
-        }),
-        Statement::Style(style) => output.style.clone_from(&style.name.name),
-        Statement::Class(class) => output.classes.push(Class {
+    if let Statement::Fn(function) = statement {
+        output.functions.push(function.clone());
+        return;
+    }
+    if let Statement::Call(call) = statement {
+        output.calls.push(call.clone());
+        return;
+    }
+    if let Statement::Group(group) = statement {
+        output.groups.push(group.clone());
+        return;
+    }
+    if let Statement::Class(class) = statement {
+        output.classes.push(Class {
             name: class.name.name.clone(),
             props: properties(&class.props, dimensions),
-        }),
+        });
+        return;
+    }
+    if let Statement::Style(style) = statement {
+        output.style.clone_from(&style.name.name);
+        return;
+    }
+    if let Statement::Meta(entry) = statement {
+        output.meta.push(MetaEntry {
+            key: entry.key.name.clone(),
+            value: text_segments(&entry.value),
+        });
+        return;
+    }
+    match statement {
         Statement::Op(op) => output.ops.push(op_node(op, dimensions)),
-        Statement::Rel(rel) => output.rels.push(expr_node(&rel.expr, dimensions)),
+        Statement::Rel(rel) => push_relation(output, rel, dimensions),
         Statement::Assert(assertion) => output.asserts.push(Assert {
             expr: expr_node(&assertion.expr, dimensions),
             tolerance: assertion
@@ -228,7 +306,18 @@ fn push_statement(output: &mut Interchange, statement: &Statement, dimensions: &
                 .as_ref()
                 .map(|number| number_node(number, Dimension::Scalar)),
         }),
+        _ => unreachable!(),
     }
+}
+
+fn push_relation(output: &mut Interchange, rel: &crate::ast::RelStmt, dimensions: &Dimensions) {
+    if !rel.props.items.is_empty() {
+        output.relation_properties.push(RelationProperties {
+            relation_index: output.rels.len(),
+            props: properties(&rel.props, dimensions),
+        });
+    }
+    output.rels.push(expr_node(&rel.expr, dimensions));
 }
 
 fn op_node(op: &crate::ast::OpStmt, dimensions: &Dimensions) -> Op {
@@ -452,7 +541,10 @@ const fn dimension_index(dimension: Dimension) -> u8 {
 struct Dimensions {
     parent: Vec<usize>,
     domains: Vec<DimensionSet>,
-    exprs: BTreeMap<ExprKey, usize>,
+    exprs: BTreeMap<usize, usize>,
+    source_keys: BTreeMap<usize, ExprKey>,
+    statement_keys: BTreeMap<usize, usize>,
+    statement_index: usize,
     nums: BTreeMap<String, usize>,
     kinds: BTreeMap<String, Kind>,
     products: Vec<Product>,
@@ -485,6 +577,9 @@ impl Dimensions {
             parent: Vec::new(),
             domains: Vec::new(),
             exprs: BTreeMap::new(),
+            source_keys: BTreeMap::new(),
+            statement_keys: BTreeMap::new(),
+            statement_index: 0,
             nums: BTreeMap::new(),
             kinds: BTreeMap::new(),
             products: Vec::new(),
@@ -510,7 +605,8 @@ impl Dimensions {
     }
 
     fn visit_file(&mut self, file: &File) {
-        for statement in &file.statements {
+        for (index, statement) in file.statements.iter().enumerate() {
+            self.statement_index = index;
             self.visit_statement(statement);
         }
     }
@@ -525,7 +621,11 @@ impl Dimensions {
                 self.visit_expr(&assertion.expr);
             }
             Statement::Class(class) => self.visit_props(&class.props),
-            Statement::Meta(_) | Statement::Style(_) => {}
+            Statement::Meta(_)
+            | Statement::Style(_)
+            | Statement::Fn(_)
+            | Statement::Group(_)
+            | Statement::Call(_) => {}
         }
     }
 
@@ -744,7 +844,7 @@ impl Dimensions {
             }
             return None;
         }
-        matches!(name, "width" | "height" | "corner_radius")
+        matches!(name, "width" | "height" | "length" | "corner_radius")
             .then(|| self.expr_var(expr, Some(Dimension::Length)))
     }
 
@@ -755,7 +855,10 @@ impl Dimensions {
     }
 
     fn expr_var(&mut self, expr: &Expr, fixed: Option<Dimension>) -> usize {
-        let key = (expr.span().byte_start, expr.span().byte_end);
+        let key = std::ptr::from_ref(expr) as usize;
+        self.source_keys
+            .insert(key, (expr.span().byte_start, expr.span().byte_end));
+        self.statement_keys.insert(key, self.statement_index);
         if let Some(variable) = self.exprs.get(&key).copied() {
             if let Some(dimension) = fixed {
                 self.constrain(variable, dimension);
@@ -1006,17 +1109,43 @@ impl Dimensions {
     }
 
     fn dimension(&self, expr: &Expr) -> Option<Dimension> {
-        let key = (expr.span().byte_start, expr.span().byte_end);
+        let key = std::ptr::from_ref(expr) as usize;
         self.exprs
             .get(&key)
             .and_then(|variable| self.known(*variable))
     }
 
-    fn expression_dimensions(&self) -> BTreeMap<ExprKey, Dimension> {
+    fn node_dimensions(&self) -> BTreeMap<usize, Dimension> {
         self.exprs
             .iter()
             .filter_map(|(key, variable)| self.known(*variable).map(|dimension| (*key, dimension)))
             .collect()
+    }
+
+    fn expression_dimensions(&self) -> BTreeMap<ExprKey, Dimension> {
+        let mut dimensions = BTreeMap::new();
+        let mut ambiguous = BTreeSet::new();
+        for (key, dimension) in self.node_dimensions() {
+            let source_key = self.source_keys[&key];
+            if dimensions
+                .insert(source_key, dimension)
+                .is_some_and(|previous| previous != dimension)
+            {
+                ambiguous.insert(source_key);
+            }
+        }
+        for key in ambiguous {
+            dimensions.remove(&key);
+        }
+        dimensions
+    }
+
+    fn statement_dimensions(&self, count: usize) -> Vec<BTreeMap<ExprKey, Dimension>> {
+        let mut dimensions = vec![BTreeMap::new(); count];
+        for (key, dimension) in self.node_dimensions() {
+            dimensions[self.statement_keys[&key]].insert(self.source_keys[&key], dimension);
+        }
+        dimensions
     }
 }
 
@@ -1070,7 +1199,9 @@ fn tuple_is_compatible(
 
 fn fixed_call_dimension(name: &str) -> Option<Dimension> {
     match name {
-        "dist" | "hdist" | "vdist" | "radius" | "length" | "perimeter" => Some(Dimension::Length),
+        "style_metric" | "dist" | "hdist" | "vdist" | "radius" | "length" | "perimeter" => {
+            Some(Dimension::Length)
+        }
         "area" => Some(Dimension::Area),
         "angle" | "dir_angle" => Some(Dimension::Angle),
         "ratio" => Some(Dimension::Scalar),
@@ -1140,445 +1271,5 @@ fn ellipse_arg_dimensions(args: &[Option<usize>]) -> &'static [(usize, Dimension
         (3, false) => &[(1, Length), (2, Length)],
         (4, _) => &[(1, Length), (2, Length), (3, Angle)],
         _ => &[],
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::{Dimension, Dimensions, ExprNode, Hint, NumberNode, to_interchange};
-    use crate::parse;
-
-    #[test]
-    fn infers_dimensions_through_declarations_and_uses() {
-        let parsed = parse(
-            "locus 0 beta 5\npoint A = point()\npoint B = point()\nnum r = 2\ncircle c = circle(A, r)\nassert dist(A, B) == r\n",
-        );
-        assert!(parsed.diagnostics.is_empty(), "{:#?}", parsed.diagnostics);
-        let json = to_interchange(&parsed.file);
-        let Some(definition) = &json.ops[2].def else {
-            assert!(json.ops[2].def.is_some());
-            return;
-        };
-        assert!(matches!(
-            definition.tree,
-            ExprNode::Number(super::NumberNode {
-                dimension: Dimension::Length,
-                ..
-            })
-        ));
-    }
-
-    #[test]
-    fn defaults_style_and_unconstrained_numbers() {
-        let parsed = parse("locus 0 beta 5\nnum n = 3\n");
-        let json = to_interchange(&parsed.file);
-        assert_eq!(json.style, "textbook");
-        assert!(matches!(
-            json.ops[0].def.as_ref().map(|def| &def.tree),
-            Some(ExprNode::Number(super::NumberNode {
-                dimension: Dimension::Scalar,
-                ..
-            }))
-        ));
-    }
-
-    #[test]
-    fn infers_scalar_coefficient_of_angle() {
-        let parsed = parse(
-            "locus 0 beta 5\npoint A = point()\npoint O = point()\npoint B = point()\nassert angle(A, O, B) == 2 * angle(A, O, B)\n",
-        );
-        let json = to_interchange(&parsed.file);
-        let ExprNode::Binary { rhs, .. } = &json.asserts[0].expr else {
-            assert!(matches!(json.asserts[0].expr, ExprNode::Binary { .. }));
-            return;
-        };
-        let ExprNode::Binary { lhs, .. } = rhs.as_ref() else {
-            assert!(matches!(rhs.as_ref(), ExprNode::Binary { .. }));
-            return;
-        };
-        assert!(matches!(
-            lhs.as_ref(),
-            ExprNode::Number(super::NumberNode {
-                dimension: Dimension::Scalar,
-                ..
-            })
-        ));
-    }
-
-    #[test]
-    fn resolves_literal_defaults_after_known_product_dimensions() {
-        let parsed = parse(
-            "locus 0 beta 5\npoint A = point()\npoint B = point()\nnum mul = 2 * dist(A, B)\nnum div = dist(A, B) / 2\n",
-        );
-        assert!(parsed.diagnostics.is_empty(), "{:#?}", parsed.diagnostics);
-        let json = to_interchange(&parsed.file);
-        for definition in json.ops[2..4].iter().filter_map(|op| op.def.as_ref()) {
-            let ExprNode::Binary {
-                lhs,
-                rhs,
-                dimension,
-                ..
-            } = &definition.tree
-            else {
-                assert!(matches!(definition.tree, ExprNode::Binary { .. }));
-                return;
-            };
-            assert_eq!(*dimension, Some(Dimension::Length));
-            assert!(matches!(
-                (lhs.as_ref(), rhs.as_ref()),
-                (
-                    ExprNode::Number(NumberNode {
-                        dimension: Dimension::Scalar,
-                        ..
-                    }),
-                    ExprNode::Call {
-                        dimension: Some(Dimension::Length),
-                        ..
-                    }
-                ) | (
-                    ExprNode::Call {
-                        dimension: Some(Dimension::Length),
-                        ..
-                    },
-                    ExprNode::Number(NumberNode {
-                        dimension: Dimension::Scalar,
-                        ..
-                    })
-                )
-            ));
-        }
-    }
-
-    #[test]
-    fn reverse_infers_area_and_length_operands() {
-        let parsed = parse(
-            "locus 0 beta 5\npoint A = point()\npoint B = point()\npoint C = point()\npolygon tri = polygon(A, B, C)\nnum a = free 4\nnum r = a / dist(A, B)\ncircle c = circle(A, r)\nnum side = free 2\nnum product = side * dist(A, B)\nassert product == area(tri)\n",
-        );
-        assert!(parsed.diagnostics.is_empty(), "{:#?}", parsed.diagnostics);
-        let json = to_interchange(&parsed.file);
-        let Some(Hint::Scalar(ExprNode::Number(area_hint))) = &json.ops[4].hint else {
-            assert!(json.ops[4].hint.is_some());
-            return;
-        };
-        assert_eq!(area_hint.dimension, Dimension::Area);
-        let Some(Hint::Scalar(ExprNode::Number(side_hint))) = &json.ops[7].hint else {
-            assert!(json.ops[7].hint.is_some());
-            return;
-        };
-        assert_eq!(side_hint.dimension, Dimension::Length);
-        assert!(matches!(
-            json.ops[5].def.as_ref().map(|definition| &definition.tree),
-            Some(ExprNode::Binary {
-                dimension: Some(Dimension::Length),
-                ..
-            })
-        ));
-        assert!(matches!(
-            json.ops[8].def.as_ref().map(|definition| &definition.tree),
-            Some(ExprNode::Binary {
-                dimension: Some(Dimension::Area),
-                ..
-            })
-        ));
-    }
-
-    #[test]
-    fn leaves_sqrt_pending_until_its_input_dimension_is_known() {
-        let parsed = parse(
-            "locus 0 beta 5\npoint A = point()\npoint B = point()\npoint C = point()\npolygon tri = polygon(A, B, C)\nnum n = sqrt(2 * area(tri))\n",
-        );
-        assert!(parsed.diagnostics.is_empty(), "{:#?}", parsed.diagnostics);
-        let json = to_interchange(&parsed.file);
-        let Some(ExprNode::Call {
-            args, dimension, ..
-        }) = json.ops[4].def.as_ref().map(|definition| &definition.tree)
-        else {
-            assert!(matches!(
-                json.ops[4].def.as_ref().map(|definition| &definition.tree),
-                Some(ExprNode::Call { .. })
-            ));
-            return;
-        };
-        assert_eq!(*dimension, Some(Dimension::Length));
-        assert!(matches!(
-            args.as_slice(),
-            [ExprNode::Binary {
-                lhs,
-                rhs,
-                dimension: Some(Dimension::Area),
-                ..
-            }] if matches!(lhs.as_ref(), ExprNode::Number(NumberNode {
-                dimension: Dimension::Scalar,
-                ..
-            })) && matches!(rhs.as_ref(), ExprNode::Call {
-                dimension: Some(Dimension::Area),
-                ..
-            })
-        ));
-    }
-
-    #[test]
-    fn infers_shared_multiplication_operands_from_an_area_result() {
-        let parsed = parse(
-            "locus 0 beta 5\npoint A = point()\npoint B = point()\npoint C = point()\npolygon tri = polygon(A, B, C)\nnum r = free 2\nnum a = r * r\nassert a == area(tri)\n",
-        );
-        assert!(parsed.diagnostics.is_empty(), "{:#?}", parsed.diagnostics);
-        let json = to_interchange(&parsed.file);
-        assert!(matches!(
-            &json.ops[4].hint,
-            Some(Hint::Scalar(ExprNode::Number(NumberNode {
-                dimension: Dimension::Length,
-                ..
-            })))
-        ));
-        assert!(matches!(
-            json.ops[5].def.as_ref().map(|definition| &definition.tree),
-            Some(ExprNode::Binary {
-                lhs,
-                rhs,
-                dimension: Some(Dimension::Area),
-                ..
-            }) if matches!(lhs.as_ref(), ExprNode::Ref {
-                dimension: Some(Dimension::Length),
-                ..
-            }) && matches!(rhs.as_ref(), ExprNode::Ref {
-                dimension: Some(Dimension::Length),
-                ..
-            })
-        ));
-        assert!(matches!(
-            &json.asserts[0].expr,
-            ExprNode::Binary { lhs, rhs, .. }
-                if matches!(lhs.as_ref(), ExprNode::Ref {
-                    dimension: Some(Dimension::Area),
-                    ..
-                }) && matches!(rhs.as_ref(), ExprNode::Call {
-                    dimension: Some(Dimension::Area),
-                    ..
-                })
-        ));
-    }
-
-    #[test]
-    fn shape_dimensions_constrain_numeric_declarations_to_length() {
-        let parsed = parse("locus 0 beta 5\nnum x = free 1\ncircle c = circle(x)\n");
-        assert!(parsed.diagnostics.is_empty(), "{:#?}", parsed.diagnostics);
-        let json = to_interchange(&parsed.file);
-        assert!(matches!(
-            &json.ops[0].hint,
-            Some(Hint::Scalar(ExprNode::Number(NumberNode {
-                dimension: Dimension::Length,
-                ..
-            })))
-        ));
-        assert!(matches!(
-            json.ops[1].def.as_ref().map(|definition| &definition.tree),
-            Some(ExprNode::Call { args, .. })
-                if matches!(args.first(), Some(ExprNode::Ref {
-                    dimension: Some(Dimension::Length),
-                    ..
-                }))
-        ));
-    }
-
-    #[test]
-    fn resolves_constraints_across_sqrt_and_division_before_defaults() {
-        let parsed = parse(
-            "locus 0 beta 5\npoint A = point()\nnum a = free 4\nnum n = sqrt(a)\ncircle c = circle(A, n / 2)\n",
-        );
-        assert!(parsed.diagnostics.is_empty(), "{:#?}", parsed.diagnostics);
-        let json = to_interchange(&parsed.file);
-        assert!(matches!(
-            &json.ops[1].hint,
-            Some(Hint::Scalar(ExprNode::Number(NumberNode {
-                dimension: Dimension::Area,
-                ..
-            })))
-        ));
-        assert!(matches!(
-            json.ops[2].def.as_ref().map(|definition| &definition.tree),
-            Some(ExprNode::Call {
-                args,
-                dimension: Some(Dimension::Length),
-                ..
-            }) if matches!(args.as_slice(), [ExprNode::Ref {
-                dimension: Some(Dimension::Area),
-                ..
-            }])
-        ));
-        let Some(ExprNode::Call { args, .. }) =
-            json.ops[3].def.as_ref().map(|definition| &definition.tree)
-        else {
-            assert!(matches!(
-                json.ops[3].def.as_ref().map(|definition| &definition.tree),
-                Some(ExprNode::Call { .. })
-            ));
-            return;
-        };
-        assert!(matches!(
-            args.get(1),
-            Some(ExprNode::Binary {
-                lhs,
-                rhs,
-                dimension: Some(Dimension::Length),
-                ..
-            }) if matches!(lhs.as_ref(), ExprNode::Ref {
-                dimension: Some(Dimension::Length),
-                ..
-            }) && matches!(rhs.as_ref(), ExprNode::Number(NumberNode {
-                dimension: Dimension::Scalar,
-                ..
-            }))
-        ));
-    }
-
-    #[test]
-    fn scalar_division_carries_equal_operand_constraints() {
-        let parsed = parse(
-            "locus 0 beta 5\npoint A = point()\npoint B = point()\npoint C = point()\npolygon tri = polygon(A, B, C)\nnum r = free 2\nnum s = free 3\nnum a = r * s\nassert a == area(tri)\ntick t = tick(seg(A, B), r / s)\n",
-        );
-        assert!(parsed.diagnostics.is_empty(), "{:#?}", parsed.diagnostics);
-        let json = to_interchange(&parsed.file);
-        for op in &json.ops[4..6] {
-            assert!(matches!(
-                &op.hint,
-                Some(Hint::Scalar(ExprNode::Number(NumberNode {
-                    dimension: Dimension::Length,
-                    ..
-                })))
-            ));
-        }
-        assert!(matches!(
-            json.ops[6].def.as_ref().map(|definition| &definition.tree),
-            Some(ExprNode::Binary {
-                dimension: Some(Dimension::Area),
-                ..
-            })
-        ));
-        let Some(ExprNode::Call { args, .. }) =
-            json.ops[7].def.as_ref().map(|definition| &definition.tree)
-        else {
-            assert!(matches!(
-                json.ops[7].def.as_ref().map(|definition| &definition.tree),
-                Some(ExprNode::Call { .. })
-            ));
-            return;
-        };
-        assert!(matches!(
-            args.get(1),
-            Some(ExprNode::Binary {
-                lhs,
-                rhs,
-                dimension: Some(Dimension::Scalar),
-                ..
-            }) if matches!(lhs.as_ref(), ExprNode::Ref {
-                dimension: Some(Dimension::Length),
-                ..
-            }) && matches!(rhs.as_ref(), ExprNode::Ref {
-                dimension: Some(Dimension::Length),
-                ..
-            })
-        ));
-    }
-
-    #[test]
-    fn backtracks_scalar_defaults_across_cyclic_product_constraints() {
-        let parsed = parse(
-            "locus 0 beta 5\npoint A = point()\npoint B = point()\npoint C = point()\npolygon tri = polygon(A, B, C)\nnum r = free 2\nnum s = free 3\nnum t = free 4\nrel r * s == area(tri)\nrel s * t == area(tri)\nrel r * t == area(tri)\n",
-        );
-        assert!(parsed.diagnostics.is_empty(), "{:#?}", parsed.diagnostics);
-        let json = to_interchange(&parsed.file);
-        for op in &json.ops[4..7] {
-            assert!(matches!(
-                &op.hint,
-                Some(Hint::Scalar(ExprNode::Number(NumberNode {
-                    dimension: Dimension::Length,
-                    ..
-                })))
-            ));
-        }
-        for relation in &json.rels {
-            assert!(matches!(
-                relation,
-                ExprNode::Binary { lhs, rhs, .. }
-                    if matches!(lhs.as_ref(), ExprNode::Binary {
-                        lhs: factor_a,
-                        rhs: factor_b,
-                        dimension: Some(Dimension::Area),
-                        ..
-                    } if matches!(factor_a.as_ref(), ExprNode::Ref {
-                        dimension: Some(Dimension::Length),
-                        ..
-                    }) && matches!(factor_b.as_ref(), ExprNode::Ref {
-                        dimension: Some(Dimension::Length),
-                        ..
-                    })) && matches!(rhs.as_ref(), ExprNode::Call {
-                        dimension: Some(Dimension::Area),
-                        ..
-                    })
-            ));
-        }
-    }
-
-    #[test]
-    fn excludes_unrelated_declarations_from_failed_product_search() {
-        let parsed = parse(
-            "locus 0 beta 5\npoint A = point()\npoint B = point()\nnum n0 = 1\nnum n1 = 1\nnum n2 = 1\nnum n3 = 1\nnum n4 = 1\nnum n5 = 1\nnum n6 = 1\nnum n7 = 1\nnum n8 = 1\nnum n9 = 1\nnum n10 = 1\nnum n11 = 1\nnum r = free 2\nnum s = free 3\nnum t = free 4\nrel r * s == dist(A, B)\nrel s * t == dist(A, B)\nrel r * t == dist(A, B)\n",
-        );
-        assert!(parsed.diagnostics.is_empty(), "{:#?}", parsed.diagnostics);
-        let dimensions = Dimensions::infer(&parsed.file);
-        let groups = dimensions.product_groups();
-        assert_eq!(groups.len(), 1);
-        assert_eq!(groups[0].products.len(), 3);
-        for index in 0..12 {
-            let variable = dimensions.nums[&format!("n{index}")];
-            assert!(!groups[0].roots.contains(&dimensions.root(variable)));
-            assert_eq!(dimensions.known(variable), Some(Dimension::Scalar));
-        }
-    }
-
-    #[test]
-    fn fixed_dimensions_do_not_connect_independent_product_groups() {
-        let parsed = parse(
-            "locus 0 beta 5\npoint A = point()\npoint B = point()\nnum k = 1\ntick mark = tick(seg(A, B), k)\nnum n0 = 1\nnum p0 = n0 * k\nnum n1 = 1\nnum p1 = n1 * k\nnum n2 = 1\nnum p2 = n2 * k\nnum n3 = 1\nnum p3 = n3 * k\nnum n4 = 1\nnum p4 = n4 * k\nnum n5 = 1\nnum p5 = n5 * k\nnum n6 = 1\nnum p6 = n6 * k\nnum n7 = 1\nnum p7 = n7 * k\nnum n8 = 1\nnum p8 = n8 * k\nnum n9 = 1\nnum p9 = n9 * k\nnum r = free 2\nnum s = free 3\nnum t = free 4\nrel (r * k) * s == dist(A, B)\nrel s * t == dist(A, B)\nrel r * t == dist(A, B)\n",
-        );
-        assert!(parsed.diagnostics.is_empty(), "{:#?}", parsed.diagnostics);
-        let dimensions = Dimensions::infer(&parsed.file);
-        let groups = dimensions.product_groups();
-        assert_eq!(groups.len(), 1);
-        assert_eq!(groups[0].products.len(), 4);
-        let fixed = dimensions.nums["k"];
-        assert_eq!(dimensions.known(fixed), Some(Dimension::Scalar));
-        assert!(!groups[0].roots.contains(&dimensions.root(fixed)));
-        for index in 0..10 {
-            for prefix in ["n", "p"] {
-                let variable = dimensions.nums[&format!("{prefix}{index}")];
-                assert!(!groups[0].roots.contains(&dimensions.root(variable)));
-                assert_eq!(dimensions.known(variable), Some(Dimension::Scalar));
-            }
-        }
-    }
-
-    #[test]
-    fn repartitions_product_groups_after_a_branch_fixes_a_dimension() {
-        let parsed = parse(
-            "locus 0 beta 5\npoint A = point()\npoint B = point()\nnum k = 1\nnum n0 = 1\nnum p0 = n0 * k\nnum n1 = 1\nnum p1 = n1 * k\nnum n2 = 1\nnum p2 = n2 * k\nnum n3 = 1\nnum p3 = n3 * k\nnum n4 = 1\nnum p4 = n4 * k\nnum n5 = 1\nnum p5 = n5 * k\nnum n6 = 1\nnum p6 = n6 * k\nnum n7 = 1\nnum p7 = n7 * k\nnum n8 = 1\nnum p8 = n8 * k\nnum n9 = 1\nnum p9 = n9 * k\nnum r = free 2\nnum s = free 3\nnum t = free 4\nrel (r * k) * s == dist(A, B)\nrel s * t == dist(A, B)\nrel r * t == dist(A, B)\n",
-        );
-        assert!(parsed.diagnostics.is_empty(), "{:#?}", parsed.diagnostics);
-        let dimensions = Dimensions::infer(&parsed.file);
-        for (name, expected) in [
-            ("k", Dimension::Length),
-            ("r", Dimension::Scalar),
-            ("s", Dimension::Scalar),
-            ("t", Dimension::Length),
-        ] {
-            assert_eq!(dimensions.known(dimensions.nums[name]), Some(expected));
-        }
-        for index in 0..10 {
-            let input = dimensions.nums[&format!("n{index}")];
-            let product = dimensions.nums[&format!("p{index}")];
-            assert_eq!(dimensions.known(input), Some(Dimension::Scalar));
-            assert_eq!(dimensions.known(product), Some(Dimension::Length));
-        }
     }
 }

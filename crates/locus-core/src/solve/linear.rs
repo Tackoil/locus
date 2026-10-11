@@ -25,7 +25,7 @@ pub(crate) fn analyze(jacobian: &[Vec<f64>]) -> Result<Analysis, ()> {
             null: Vec::new(),
         });
     }
-    let (rotated, vectors, singulars) = jacobi(jacobian, columns)?;
+    let (rotated, vectors, singulars) = jacobi(jacobian, columns, true)?;
     let order = descending_singular_order(&singulars);
     let maximum = order.first().map_or(0.0, |index| singulars[*index]);
     let threshold = RANK_FACTOR * maximum.max(1.0);
@@ -40,8 +40,44 @@ pub(crate) fn analyze(jacobian: &[Vec<f64>]) -> Result<Analysis, ()> {
     })
 }
 
+/// Orthogonal tangent projection for layout settling, without inverse-product cancellation.
+/// The legacy geometric projector retains its established arithmetic order.
+pub(crate) fn tangent_projector(jacobian: &[Vec<f64>]) -> Result<Vec<Vec<f64>>, ()> {
+    let columns = jacobian.first().map_or(0, Vec::len);
+    if columns == 0 {
+        return Ok(Vec::new());
+    }
+    let (_, vectors, singulars) = jacobi(jacobian, columns, true)?;
+    let order = descending_singular_order(&singulars);
+    let maximum = order.first().map_or(0.0, |index| singulars[*index]);
+    let threshold = RANK_FACTOR * maximum.max(1.0);
+    let mut result = vec![vec![0.0; columns]; columns];
+    for component in order
+        .into_iter()
+        .filter(|index| singulars[*index] <= threshold)
+    {
+        for (row, values) in result.iter_mut().enumerate() {
+            for (column, value) in values.iter_mut().enumerate() {
+                *value += vectors[row][component] * vectors[column][component];
+            }
+        }
+    }
+    Ok(result)
+}
+
 pub(crate) fn rank(matrix: &[Vec<f64>]) -> Result<usize, ()> {
-    analyze(matrix).map(|analysis| analysis.rank)
+    let columns = matrix.first().map_or(0, Vec::len);
+    if columns == 0 {
+        return Ok(0);
+    }
+    let (_, _, singulars) = jacobi(matrix, columns, false)?;
+    let order = descending_singular_order(&singulars);
+    let maximum = order.first().map_or(0.0, |index| singulars[*index]);
+    let threshold = RANK_FACTOR * maximum.max(1.0);
+    Ok(order
+        .iter()
+        .filter(|index| singulars[**index] > threshold)
+        .count())
 }
 
 pub(crate) fn lm_primary_step(
@@ -70,9 +106,106 @@ pub(crate) fn multiply(matrix: &[Vec<f64>], vector: &[f64]) -> Vec<f64> {
     matrix.iter().map(|row| ordered_dot(row, vector)).collect()
 }
 
-fn jacobi(input: &[Vec<f64>], columns: usize) -> Result<JacobiResult, ()> {
+/// Minimum-norm least-squares solution using the normative rank cutoff.
+pub(crate) fn least_squares(matrix: &[Vec<f64>], rhs: &[f64]) -> Result<Vec<f64>, ()> {
+    let columns = matrix.first().map_or(0, Vec::len);
+    if columns == 0 {
+        return Ok(Vec::new());
+    }
+    let (rotated, vectors, singulars) = jacobi(matrix, columns, true)?;
+    let order = descending_singular_order(&singulars);
+    let maximum = order.first().map_or(0.0, |index| singulars[*index]);
+    let threshold = RANK_FACTOR * maximum.max(1.0);
+    let inverse = pseudoinverse(&rotated, &vectors, &singulars, &order, threshold);
+    Ok(multiply(&inverse, rhs))
+}
+
+/// A trust-region preference step over the same retained singular subspace.
+pub(crate) fn bounded_least_squares(
+    matrix: &[Vec<f64>],
+    rhs: &[f64],
+    radius: f64,
+) -> Result<Vec<f64>, ()> {
+    let columns = matrix.first().map_or(0, Vec::len);
+    if columns == 0 {
+        return Ok(Vec::new());
+    }
+    let (rotated, vectors, singulars) = jacobi(matrix, columns, true)?;
+    let order = descending_singular_order(&singulars);
+    let maximum = order.first().map_or(0.0, |index| singulars[*index]);
+    let threshold = RANK_FACTOR * maximum.max(1.0);
+    let inverse = pseudoinverse(&rotated, &vectors, &singulars, &order, threshold);
+    let step = multiply(&inverse, rhs);
+    if ordered_dot(&step, &step) <= radius * radius {
+        return Ok(step);
+    }
+    let projected_rhs = multiply(&transpose(&rotated), rhs);
+    let modes = order
+        .into_iter()
+        .filter(|index| singulars[*index] > threshold)
+        .map(|index| {
+            (
+                index,
+                singulars[index] * singulars[index],
+                projected_rhs[index],
+            )
+        })
+        .collect::<Vec<_>>();
+    trust_step(&vectors, &modes, radius, maximum * maximum)
+}
+
+fn trust_step(
+    vectors: &[Vec<f64>],
+    modes: &[(usize, f64, f64)],
+    radius: f64,
+    maximum_square: f64,
+) -> Result<Vec<f64>, ()> {
+    let mut damping = maximum_square * crate::preset::SETTLING_TRUST_DAMPING;
+    let mut lower = 0.0;
+    let mut upper = None;
+    let mut accepted = None;
+    for _ in 0..crate::preset::SETTLING_TRUST_TRIALS {
+        let step = regularized_step(vectors, modes, damping);
+        let norm_square = ordered_dot(&step, &step);
+        if norm_square <= radius * radius {
+            if norm_square >= radius * radius * (1.0 - crate::preset::SETTLING_TRUST_TOLERANCE) {
+                return Ok(step);
+            }
+            accepted = Some(step);
+            upper = Some(damping);
+        } else {
+            lower = damping;
+        }
+        damping = upper.map_or(damping * 10.0, |bound| lower.midpoint(bound));
+    }
+    accepted.ok_or(())
+}
+
+fn regularized_step(vectors: &[Vec<f64>], modes: &[(usize, f64, f64)], damping: f64) -> Vec<f64> {
+    let mut step = vec![0.0; vectors.len()];
+    for (component, square, projection) in modes {
+        let weight = projection / (square + damping);
+        for (row, value) in step.iter_mut().enumerate() {
+            *value += vectors[row][*component] * weight;
+        }
+    }
+    step
+}
+
+pub(crate) fn transpose(matrix: &[Vec<f64>]) -> Vec<Vec<f64>> {
+    let columns = matrix.first().map_or(0, Vec::len);
+    (0..columns)
+        .map(|column| matrix.iter().map(|row| row[column]).collect())
+        .collect()
+}
+
+fn jacobi(input: &[Vec<f64>], columns: usize, compute_vectors: bool) -> Result<JacobiResult, ()> {
     let mut matrix = input.to_vec();
-    let mut vectors = identity(columns);
+    let mut vectors = if compute_vectors {
+        identity(columns)
+    } else {
+        Vec::new()
+    };
     for _ in 0..64 {
         let mut rotated = false;
         for first in 0..columns {
@@ -302,10 +435,77 @@ mod tests {
     }
 
     #[test]
+    fn rank_only_jacobi_retains_exact_singular_value_bits() {
+        for matrix in [
+            vec![vec![1.0, 1.0e-12, -2.0, 0.0], vec![0.0, 1.0e-12, 3.0, 0.0]],
+            vec![vec![1.0, 2.0, 3.0], vec![2.0, 4.0, 6.0]],
+        ] {
+            let columns = matrix[0].len();
+            let (_, _, full) = jacobi(&matrix, columns, true).expect("full Jacobi");
+            let (_, _, minimal) = jacobi(&matrix, columns, false).expect("rank Jacobi");
+            assert_eq!(
+                full.iter().map(|v| v.to_bits()).collect::<Vec<_>>(),
+                minimal.iter().map(|v| v.to_bits()).collect::<Vec<_>>()
+            );
+            assert_eq!(
+                rank(&matrix).expect("rank"),
+                analyze(&matrix).expect("analysis").rank
+            );
+        }
+    }
+
+    #[test]
     fn singular_order_is_descending_with_original_index_ties() {
         assert_eq!(
             descending_singular_order(&[1.0, 3.0, 3.0, 2.0]),
             [1, 2, 3, 0]
         );
+    }
+    #[test]
+    fn tangent_projection_has_no_motion_normal_to_nearly_parallel_equalities() {
+        let matrix = vec![
+            vec![1.0, 2.0, 3.0],
+            vec![1.0 + 1.0e-8, 2.0 - 1.0e-8, 3.0 + 2.0e-8],
+        ];
+        let null = tangent_projector(&matrix).expect("tangent projector");
+        let projected = multiply(&null, &[1.0, -1.0, 1.0]);
+        for residual in multiply(&matrix, &projected) {
+            assert!(
+                residual.abs() < 1e-12,
+                "normal leakage: {residual}; {projected:?}"
+            );
+        }
+        let repeated = multiply(&null, &projected);
+        for (first, second) in projected.iter().zip(repeated) {
+            assert!(
+                (first - second).abs() < 1e-12,
+                "projection must be idempotent"
+            );
+        }
+        assert!(ordered_dot(&projected, &projected) > 0.1);
+    }
+    #[test]
+    fn bounded_preference_step_preserves_progress_in_strong_directions() {
+        let step = bounded_least_squares(&[vec![1.0, 0.0], vec![0.0, 1e-8]], &[1.0, 1.0], 1.0)
+            .expect("bounded preference step");
+        assert!(ordered_dot(&step, &step) <= 1.0);
+        assert!(step[0] > 0.99, "strong direction lost progress: {step:?}");
+        assert!(
+            step[1].abs() < 0.02,
+            "weak direction dominated the step: {step:?}"
+        );
+    }
+    #[test]
+    fn bounded_step_reaches_the_trust_boundary_without_excessive_damping() {
+        let step = bounded_least_squares(&[vec![1.0, 0.0], vec![0.0, 1e-8]], &[1.0, 1.0], 8.0)
+            .expect("accurate trust step");
+        let norm_square = ordered_dot(&step, &step);
+        assert!(norm_square <= 64.0);
+        assert!(
+            norm_square > 64.0 * (1.0 - 1e-6),
+            "excessive damping: {step:?}"
+        );
+        assert!(step[0] > 0.99);
+        assert!(step[1] > 7.9);
     }
 }

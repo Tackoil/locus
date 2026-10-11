@@ -1,4 +1,4 @@
-locus 0 beta 5
+locus 0 beta 6
 
 meta title = "Golden ratio in the regular pentagon"
 meta note = "Vertices by rotation around a placed circle; diagonal intersection is derived"
@@ -6,7 +6,7 @@ meta note = "Vertices by rotation around a placed circle; diagonal intersection 
 style textbook
 
 // ---- objects ----------------------------------------------
-circle circ = circle(3)   [construction]
+circle circ(3)   [construction]
 point O = circ.center
 point A = circ.at(90deg)
 
@@ -15,27 +15,27 @@ point C = rotate(A, O, 144deg)
 point D = rotate(A, O, 216deg)
 point E = rotate(A, O, 288deg)
 
-polygon pent = polygon(A, B, C, D, E)
+polygon pent(A, B, C, D, E)
 
-segment d1 = seg(A, C)   [highlight]
-segment d2 = seg(B, E)   [highlight]
+segment d1(A, C)   [highlight]
+segment d2(B, E)   [highlight]
 
 // The diagonals have a unique intersection, so no branch selector is needed.
 point P = intersect(d1, d2)
 
 // equal-side ticks
-tick t1 = tick(seg(A, B), 1)
-tick t2 = tick(seg(B, C), 1)
+tick t1(seg(A, B), 1)
+tick t2(seg(B, C), 1)
 
 // ---- annotation ------------------------------------------
-label lA = label(A, $A$)
-label lB = label(B, $B$)
-label lC = label(C, $C$)
-label lD = label(D, $D$)
-label lE = label(E, $E$)
-label lP = label(P, $P$)  { dir: N }
+label lA(A, $A$)
+label lB(B, $B$)
+label lC(C, $C$)
+label lD(D, $D$)
+label lE(E, $E$)
+label lP(P, $P$)  { dir: N }
 
-text_block phi = text_block($\dfrac{AC}{AB} = \varphi = \dfrac{1+\sqrt5}{2}$)  { place: below }
+text_block phi($\dfrac{AC}{AB} = \varphi = \dfrac{1+\sqrt5}{2}$)  { place: below }
 
 // ---- intent ----------------------------------------------
 assert on(P, d1) and on(P, d2)

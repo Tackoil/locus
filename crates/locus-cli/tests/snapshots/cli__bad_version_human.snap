@@ -9,6 +9,6 @@ E111
  1 │ locus 3
    ·       ┬
    ·       ╰── unsupported Locus file header
- 2 │ point A = point()
+ 2 │ point A()
    ╰────
-  help: locus 0 beta 5
+  help: locus 0 beta 6

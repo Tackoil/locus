@@ -1,17 +1,21 @@
 //! Thin command orchestration over `locus-syntax` and `locus-core`.
 #![allow(missing_docs, reason = "command report plumbing is crate-internal")]
 
+mod diagram_report;
+mod edit_beta6;
 mod layout;
+mod measurement;
 mod render;
 
 use std::fs::{self, OpenOptions};
 use std::io::{self, Read as _, Write as _};
 use std::path::{Path, PathBuf};
 
+use locus_core::metrics::{measure, span};
 use locus_core::{
     DependencyGraph, Dimension, EvalError, Evaluation, InspectDiagnostic, MeasurementQuery, Point,
     PointMark, RemovalImpact, ResolvedObject, ResolvedScene, Scene, SolveSummary,
-    evaluate_assertions, inspect_scene_with_options, query_measurements,
+    evaluate_assertions_with_inputs, inspect_scene_with_options, query_measurements,
 };
 use locus_syntax::{Diagnostic, File, OpStmt, Span, Statement, format, parse};
 
@@ -71,24 +75,32 @@ fn execute_analysis(command: Command) -> Execution {
 }
 
 fn init(path: &Path, style: Style) -> Execution {
+    let _file = span(path.to_string_lossy());
     let style = match style {
         Style::Textbook => "textbook",
     };
     let source = format!("{}\n\nstyle {style}\n", locus_syntax::FILE_HEADER);
-    let result = OpenOptions::new().write(true).create_new(true).open(path);
-    match result.and_then(|mut file| file.write_all(source.as_bytes())) {
+    let result = measure("write_source", || {
+        OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .open(path)
+            .and_then(|mut file| file.write_all(source.as_bytes()))
+    });
+    match result {
         Ok(()) => mutation("init", path, None, format!("created {}", path.display())),
         Err(error) => io_failure("init", path, &error),
     }
 }
 
 fn add(path: &Path) -> Execution {
+    let _file = span(path.to_string_lossy());
     let loaded = match read_source("add", path) {
         Ok(loaded) => loaded,
         Err(execution) => return *execution,
     };
     let mut appended = String::new();
-    let read_result = io::stdin().read_to_string(&mut appended);
+    let read_result = measure("read_stdin", || io::stdin().read_to_string(&mut appended));
     #[cfg(debug_assertions)]
     crate::rejected_requests::stdin(&appended);
     if let Err(error) = read_result {
@@ -99,10 +111,14 @@ fn add(path: &Path) -> Execution {
 }
 
 fn update(path: &Path, id: &str, definition: Option<&str>, property: Option<&str>) -> Execution {
+    let _file = span(path.to_string_lossy());
     let loaded = match load_parsed("update", path) {
         Ok(loaded) => loaded,
         Err(execution) => return *execution,
     };
+    if let Some(execution) = edit_beta6::update(&loaded, id, definition, property) {
+        return execution;
+    }
     let Some(op) = find_op(&loaded.file, id) else {
         return edit_target_failure("update", &loaded, id);
     };
@@ -129,10 +145,14 @@ fn updated_source(
 }
 
 fn remove(path: &Path, id: &str) -> Execution {
+    let _file = span(path.to_string_lossy());
     let loaded = match load_parsed("remove", path) {
         Ok(loaded) => loaded,
         Err(execution) => return *execution,
     };
+    if let Some(execution) = edit_beta6::remove(&loaded, id) {
+        return execution;
+    }
     let Some(op) = find_op(&loaded.file, id) else {
         return edit_target_failure("remove", &loaded, id);
     };
@@ -172,15 +192,23 @@ fn orphan_failure(loaded: &LoadedFile, op: &OpStmt, id: &str, impact: &RemovalIm
 }
 
 fn describe(path: &Path) -> Execution {
+    let _file = span(path.to_string_lossy());
     let loaded = match load_scene("describe", path) {
         Ok(loaded) => loaded,
         Err(execution) => return *execution,
     };
-    let objects = describe_objects(&loaded.file, resolved_scene(&loaded.scene), &loaded.source);
+    let _report = span("describe");
+    let objects = describe_objects(&loaded.scene, &loaded.source);
+    let interchange = locus_syntax::to_interchange(&loaded.scene.file);
     let result = DescribeResult {
         command: "describe",
         path: path_string(path),
         objects,
+        collections: loaded.scene.collections.clone(),
+        expansion_origins: diagram_report::origins(&loaded.scene),
+        diagram: diagram_report::describe(&loaded.scene, &loaded.placed),
+        relations: interchange.rels,
+        relation_properties: interchange.relation_properties,
         solve: loaded.scene.solve_summary().map(SolveReport::from),
     };
     success(CommandOutput::Describe(result), loaded.document())
@@ -188,10 +216,12 @@ fn describe(path: &Path) -> Execution {
 
 fn inspect(args: &InspectArgs) -> Execution {
     let path = &args.file;
+    let _file = span(path.to_string_lossy());
     let loaded = match load_scene("inspect", path) {
         Ok(loaded) => loaded,
         Err(execution) => return *execution,
     };
+    let _inspection = span("inspect");
     let mut inspection =
         inspect_scene_with_options(&loaded.scene, args.measurements, args.incidences);
     let queries = measurement_queries(args);
@@ -264,7 +294,8 @@ fn check(args: &CheckArgs) -> Execution {
 }
 
 fn load_checked(path: &Path, args: &CheckArgs) -> CheckedOutcome {
-    let loaded = match load_scene("check", path) {
+    let _file = span(path.to_string_lossy());
+    let loaded = match load_scene_with_engine("check", path, args.tex_engine) {
         Ok(loaded) => loaded,
         Err(execution) => return failed_check(path, *execution),
     };
@@ -285,17 +316,23 @@ fn load_checked(path: &Path, args: &CheckArgs) -> CheckedOutcome {
 }
 
 fn check_file(loaded: &LoadedScene, args: &CheckArgs) -> Result<CheckFileResult, Box<Execution>> {
-    let mut inspection = inspect_scene_with_options(&loaded.scene, false, false);
+    let mut inspection = measure("inspect", || {
+        inspect_scene_with_options(&loaded.scene, false, false)
+    });
     if args.layout {
-        let placed = layout::place(loaded, args.tex_engine)
-            .map_err(|error| Box::new(layout::failure("check", loaded, &error)))?;
-        locus_layout::report::extend_inspection(&mut inspection, &placed);
+        locus_layout::report::extend_inspection(&mut inspection, &loaded.placed);
     }
-    let diagnostics = inspection_diagnostics(&loaded.path, &inspection.diagnostics);
-    let assertions = evaluate_assertions(&loaded.file, resolved_scene(&loaded.scene))
-        .map_err(|error| Box::new(eval_failure("check", &loaded.as_file(), error)))?;
+    let mut diagnostics = inspection_diagnostics(&loaded.path, &inspection.diagnostics);
+    append_settling_warning(loaded, &mut diagnostics);
+    let _assertions = span("assertions");
+    let assertions = evaluate_assertions_with_inputs(
+        &loaded.scene.source_file,
+        resolved_scene(&loaded.scene),
+        &loaded.scene.inputs,
+    )
+    .map_err(|error| Box::new(eval_failure("check", &loaded.as_file(), error)))?;
     let assertions =
-        crate::assertions::report(assertions, &loaded.file, &loaded.source).map_err(|error| {
+        crate::assertions::report(assertions, &loaded.scene, &loaded.source).map_err(|error| {
             Box::new(dependency_failure(
                 "check",
                 &loaded.as_file(),
@@ -312,6 +349,23 @@ fn check_file(loaded: &LoadedScene, args: &CheckArgs) -> Result<CheckFileResult,
         diagnostics,
         assertions: Some(assertions),
     })
+}
+
+fn append_settling_warning(loaded: &LoadedScene, diagnostics: &mut Vec<CliDiagnostic>) {
+    let Some(settling) = loaded
+        .scene
+        .solve_summary()
+        .and_then(|s| s.settling.as_ref())
+        .filter(|s| !s.settling_complete)
+    else {
+        return;
+    };
+    diagnostics.push(CliDiagnostic {
+        code:"settling_incomplete".to_owned(),severity:Severity::Warning,path:path_string(&loaded.path),
+        span:settling.active_layout_requirements.first().copied().unwrap_or_default(),
+        message:format!("layout preferences remain unsettled ({}; projected gradient {:.6e}); geometry is feasible",settling.exit_reason,settling.projected_gradient),
+        notes:Vec::new(),collision_details:Vec::new(),suggestion:None,
+    });
 }
 
 fn failed_check(path: &Path, execution: Execution) -> CheckedOutcome {
@@ -364,15 +418,16 @@ fn check_result(
 }
 
 fn fmt(path: &Path) -> Execution {
+    let _file = span(path.to_string_lossy());
     let loaded = match read_source("fmt", path) {
         Ok(loaded) => loaded,
         Err(execution) => return *execution,
     };
-    let formatted = format(&loaded.source);
+    let formatted = measure("format", || format(&loaded.source));
     if !formatted.diagnostics.is_empty() {
         return syntax_failure("fmt", &loaded, formatted.diagnostics);
     }
-    let parsed = parse(&loaded.source);
+    let parsed = measure("parse", || parse(&loaded.source));
     let result = FormatResult {
         source: formatted.source,
         ast: locus_syntax::to_interchange(&parsed.file),
@@ -417,6 +472,7 @@ struct LoadedScene {
     source: String,
     file: File,
     scene: Scene,
+    placed: locus_layout::LayoutScene,
 }
 
 #[derive(Clone, Debug)]
@@ -444,7 +500,7 @@ impl LoadedScene {
 }
 
 fn read_source(command: &'static str, path: &Path) -> Result<LoadedSource, Box<Execution>> {
-    match fs::read_to_string(path) {
+    match measure("read_source", || fs::read_to_string(path)) {
         Ok(source) => Ok(LoadedSource {
             path: path.to_owned(),
             source,
@@ -455,7 +511,7 @@ fn read_source(command: &'static str, path: &Path) -> Result<LoadedSource, Box<E
 
 fn load_parsed(command: &'static str, path: &Path) -> Result<LoadedFile, Box<Execution>> {
     let loaded = read_source(command, path)?;
-    let parsed = parse(&loaded.source);
+    let parsed = measure("parse", || parse(&loaded.source));
     if !parsed.diagnostics.is_empty() {
         return Err(Box::new(syntax_failure(
             command,
@@ -471,15 +527,32 @@ fn load_parsed(command: &'static str, path: &Path) -> Result<LoadedFile, Box<Exe
 }
 
 fn load_scene(command: &'static str, path: &Path) -> Result<LoadedScene, Box<Execution>> {
+    load_scene_with_engine(command, path, crate::TextEngine::Rex)
+}
+
+fn load_scene_with_engine(
+    command: &'static str,
+    path: &Path,
+    engine: crate::TextEngine,
+) -> Result<LoadedScene, Box<Execution>> {
     let loaded = load_parsed(command, path)?;
-    match Scene::new(loaded.file.clone()) {
-        Ok(scene) => Ok(LoadedScene {
+    let (inputs, measured) = measurement::prepare(&loaded.file, engine)
+        .map_err(|error| Box::new(layout::file_failure(command, &loaded, &error)))?;
+    let options = layout::options(inputs.metrics);
+    match locus_layout::solve_layout(&loaded.file, inputs, &measured, options) {
+        Ok((scene, placed)) => Ok(LoadedScene {
             path: loaded.path,
             source: loaded.source,
-            file: loaded.file,
+            file: scene.file.clone(),
             scene,
+            placed,
         }),
-        Err(error) => Err(Box::new(eval_failure(command, &loaded, error))),
+        Err(locus_layout::SolveLayoutError::Evaluation(error)) => {
+            Err(Box::new(eval_failure(command, &loaded, error)))
+        }
+        Err(locus_layout::SolveLayoutError::Layout(error)) => {
+            Err(Box::new(layout::file_failure(command, &loaded, &error)))
+        }
     }
 }
 
@@ -496,21 +569,44 @@ fn validate_and_write(
         path: path.to_owned(),
         source: candidate.clone(),
     };
-    let parsed = parse(&candidate);
+    let parsed = measure("parse", || parse(&candidate));
     if !parsed.diagnostics.is_empty() {
         return syntax_failure(command, &loaded, parsed.diagnostics);
     }
-    if let Err(error) = Scene::new(parsed.file.clone()) {
-        let file = LoadedFile {
-            path: path.to_owned(),
-            source: candidate.clone(),
-            file: parsed.file,
-        };
-        return eval_failure(command, &file, error);
+    let file = LoadedFile {
+        path: path.to_owned(),
+        source: candidate.clone(),
+        file: parsed.file.clone(),
+    };
+    let (inputs, measured) = match measurement::prepare(&parsed.file, crate::TextEngine::Rex) {
+        Ok(prepared) => prepared,
+        Err(error) => return layout::file_failure(command, &file, &error),
+    };
+    let options = layout::options(inputs.metrics);
+    if let Err(execution) = validate_layout(command, &file, inputs, &measured, options) {
+        return *execution;
     }
-    match fs::write(path, candidate) {
+    match measure("write_source", || fs::write(path, candidate)) {
         Ok(()) => mutation(command, path, id, format!("{action} in {}", path.display())),
         Err(error) => io_failure(command, path, &error),
+    }
+}
+
+fn validate_layout(
+    command: &'static str,
+    file: &LoadedFile,
+    inputs: locus_core::EvaluationInputs,
+    measured: &locus_layout::TextBoxes,
+    options: locus_layout::LayoutOptions,
+) -> Result<(), Box<Execution>> {
+    match locus_layout::solve_layout(&file.file, inputs, measured, options) {
+        Ok(_) => Ok(()),
+        Err(locus_layout::SolveLayoutError::Evaluation(error)) => {
+            Err(Box::new(eval_failure(command, file, error)))
+        }
+        Err(locus_layout::SolveLayoutError::Layout(error)) => {
+            Err(Box::new(layout::file_failure(command, file, &error)))
+        }
     }
 }
 
@@ -557,6 +653,12 @@ fn eval_failure(command: &'static str, loaded: &LoadedFile, error: EvalError) ->
     if let Some(measured) = error.measured_note() {
         notes.push(measured);
     }
+    notes.extend(error.invocation_chain.iter().map(|call| {
+        format!(
+            "invoked `{}` as `{}` at {}:{}",
+            call.function, call.instance, call.span.line, call.span.col
+        )
+    }));
     let diagnostic = CliDiagnostic {
         code: error.code.to_owned(),
         severity: Severity::Error,
@@ -708,19 +810,65 @@ fn update_definition(source: &str, op: &OpStmt, definition: &str) -> Result<Stri
     if definition.is_empty() {
         return Err("definition update requires one non-empty expression or constructor");
     }
-    let candidate = replace_span(source, op.ctor.span(), definition);
+    let (span, replacement) = replacement_definition(source, op, definition);
+    let candidate = replace_span(source, span, &replacement);
     let parsed = parse(&candidate);
     if !parsed.diagnostics.is_empty() {
         return Err("definition update must be exactly one expression or constructor");
     }
     let updated = find_op(&parsed.file, &op.id.name)
         .ok_or("definition update must be exactly one expression or constructor")?;
-    if candidate.get(updated.ctor.span().byte_start..updated.ctor.span().byte_end)
-        != Some(definition)
-    {
+    let start = if span.byte_start == op.span.byte_start {
+        updated.span.byte_start
+    } else {
+        updated.ctor.span().byte_start
+    };
+    if candidate.get(start..updated.ctor.span().byte_end) != Some(replacement.as_str()) {
         return Err("definition update must not contain trailing source or comments");
     }
     Ok(candidate)
+}
+
+fn replacement_definition(source: &str, op: &OpStmt, definition: &str) -> (Span, String) {
+    let constructor = if op.kind == locus_syntax::Kind::Segment {
+        "seg"
+    } else {
+        op.kind.as_str()
+    };
+    let arguments = definition
+        .find('(')
+        .filter(|opening| definition[..*opening].trim() == constructor);
+    if !(op.is_constructor_declaration() || uses_beta6_header(source) && arguments.is_some()) {
+        return (op.ctor.span(), definition.to_owned());
+    }
+    let replacement = arguments.map_or_else(
+        || format!("{} {} = {definition}", op.kind.as_str(), op.id.name),
+        |opening| {
+            format!(
+                "{} {}{}",
+                op.kind.as_str(),
+                op.id.name,
+                &definition[opening..]
+            )
+        },
+    );
+    let span = Span::new(
+        op.span.line,
+        op.span.col,
+        op.span.byte_start,
+        op.ctor.span().byte_end,
+    );
+    (span, replacement)
+}
+
+fn uses_beta6_header(source: &str) -> bool {
+    source
+        .lines()
+        .map(str::trim)
+        .find(|line| !line.is_empty() && !line.starts_with("//"))
+        .is_some_and(|line| {
+            line.split("//").next().unwrap_or_default().trim() == locus_syntax::FILE_HEADER
+        })
 }
 
 fn update_property(source: &str, op: &OpStmt, assignment: &str) -> Result<String, &'static str> {
@@ -806,15 +954,18 @@ fn remove_physical_line(source: &str, span: Span) -> String {
     candidate
 }
 
-fn describe_objects(file: &File, scene: &ResolvedScene, source: &str) -> Vec<ObjectReport> {
-    file.statements
+fn describe_objects(scene: &Scene, source: &str) -> Vec<ObjectReport> {
+    scene
+        .file
+        .statements
         .iter()
-        .filter_map(|statement| match statement {
-            Statement::Op(op) => scene
+        .enumerate()
+        .filter_map(|(index, statement)| match statement {
+            Statement::Op(op) => resolved_scene(scene)
                 .objects
                 .iter()
                 .find(|(id, _)| id.name == op.id.name)
-                .map(|(_, object)| object_report(op, object, source)),
+                .map(|(_, object)| object_report(op, object, source, scene.origins.get(index))),
             _ => None,
         })
         .collect()
@@ -833,12 +984,20 @@ fn object_anchors(file: &File) -> Vec<ObjectAnchorReport> {
         .collect()
 }
 
-fn object_report(op: &OpStmt, object: &ResolvedObject, source: &str) -> ObjectReport {
+fn object_report(
+    op: &OpStmt,
+    object: &ResolvedObject,
+    source: &str,
+    origin: Option<&locus_syntax::ExpansionOrigin>,
+) -> ObjectReport {
     ObjectReport {
         id: op.id.name.clone(),
         kind: op.kind.as_str().to_owned(),
         span: op.span,
         definition: source[op.ctor.span().byte_start..op.ctor.span().byte_end].to_owned(),
+        origin: origin
+            .filter(|origin| !origin.invocations.is_empty())
+            .cloned(),
         resolved: resolved_value(object),
     }
 }
@@ -1024,9 +1183,16 @@ impl From<&SolveSummary> for SolveReport {
             equations: summary.equations,
             rank: summary.rank,
             attempts: summary.attempts,
+            outer_search_attempts: summary.outer_search_attempts,
+            measurement_passes: summary.measurement_passes,
+            routing_attempts: summary.routing_attempts,
             accepted_steps: summary.accepted_steps,
             max_normalized_residual: summary.max_normalized_residual,
             final_damping: summary.final_damping,
+            settling: summary
+                .settling
+                .as_deref()
+                .map(crate::output::SettlingReport::from),
             dof: dof_report(summary),
             branch_resolutions: summary
                 .branch_resolutions
@@ -1059,6 +1225,7 @@ fn dof_report(summary: &SolveSummary) -> DofReport {
             .objects
             .iter()
             .map(|object| ObjectDofReport {
+                class: object.class.as_str().to_owned(),
                 id: object.id.clone(),
                 span: object.span,
                 hint_settled_dofs: object.hint_settled_dofs,

@@ -51,7 +51,16 @@ fn nested_symbol(document: &crate::document::Document, statement: &Statement) ->
         deprecated: None,
         range: document.span_to_range(statement.span()),
         selection_range: document.span_to_range(selection),
-        children: None,
+        children: match statement {
+            Statement::Fn(function) => Some(
+                function
+                    .body
+                    .iter()
+                    .map(|statement| nested_symbol(document, statement))
+                    .collect(),
+            ),
+            _ => None,
+        },
     }
 }
 
@@ -112,6 +121,31 @@ fn symbol_parts(statement: &Statement) -> (String, String, SymbolKind, locus_syn
             SymbolKind::CLASS,
             value.name.span,
         ),
+        Statement::Fn(_) | Statement::Group(_) | Statement::Call(_) => namespace_parts(statement),
+    }
+}
+
+fn namespace_parts(statement: &Statement) -> (String, String, SymbolKind, locus_syntax::Span) {
+    match statement {
+        Statement::Fn(value) => (
+            value.name.name.clone(),
+            "function".to_owned(),
+            SymbolKind::FUNCTION,
+            value.name.span,
+        ),
+        Statement::Group(value) => (
+            value.name.name.clone(),
+            "group".to_owned(),
+            SymbolKind::NAMESPACE,
+            value.name.span,
+        ),
+        Statement::Call(value) => (
+            value.id.name.clone(),
+            format!("{} instance", value.function.name),
+            SymbolKind::OBJECT,
+            value.id.span,
+        ),
+        _ => unreachable!("namespace symbol requires a function, group, or instance"),
     }
 }
 

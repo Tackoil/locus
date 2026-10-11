@@ -18,8 +18,8 @@ expression: output_text(json.stdout)?
           "span": {
             "line": 3,
             "col": 7,
-            "byte_start": 39,
-            "byte_end": 40
+            "byte_start": 31,
+            "byte_end": 32
           },
           "message": "duplicate identifier `A`",
           "notes": []

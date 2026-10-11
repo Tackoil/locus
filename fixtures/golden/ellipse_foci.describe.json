@@ -9,9 +9,9 @@
         "line": 9,
         "col": 1,
         "byte_start": 244,
-        "byte_end": 276
+        "byte_end": 266
       },
-      "definition": "ellipse(3, 2, 30deg)",
+      "definition": "ellipse e(3, 2, 30deg)",
       "resolved": {
         "kind": "ellipse",
         "semimajor": 3.0,
@@ -26,10 +26,10 @@
       "span": {
         "line": 10,
         "col": 1,
-        "byte_start": 277,
-        "byte_end": 342
+        "byte_start": 267,
+        "byte_end": 322
       },
-      "definition": "ellipse(e.center, 1.5, 1, 30deg)",
+      "definition": "ellipse inner(e.center, 1.5, 1, 30deg)",
       "resolved": {
         "kind": "ellipse",
         "semimajor": 1.5,
@@ -44,8 +44,8 @@
       "span": {
         "line": 11,
         "col": 1,
-        "byte_start": 343,
-        "byte_end": 361
+        "byte_start": 323,
+        "byte_end": 341
       },
       "definition": "e.center",
       "resolved": {
@@ -59,8 +59,8 @@
       "span": {
         "line": 12,
         "col": 1,
-        "byte_start": 362,
-        "byte_end": 381
+        "byte_start": 342,
+        "byte_end": 361
       },
       "definition": "e.focus1",
       "resolved": {
@@ -74,8 +74,8 @@
       "span": {
         "line": 13,
         "col": 1,
-        "byte_start": 382,
-        "byte_end": 401
+        "byte_start": 362,
+        "byte_end": 381
       },
       "definition": "e.focus2",
       "resolved": {
@@ -89,8 +89,8 @@
       "span": {
         "line": 14,
         "col": 1,
-        "byte_start": 402,
-        "byte_end": 423
+        "byte_start": 382,
+        "byte_end": 403
       },
       "definition": "e.at(60deg)",
       "resolved": {
@@ -104,10 +104,10 @@
       "span": {
         "line": 16,
         "col": 1,
-        "byte_start": 425,
-        "byte_end": 486
+        "byte_start": 405,
+        "byte_end": 460
       },
-      "definition": "seg(e.major_start, e.major_end)",
+      "definition": "segment major(e.major_start, e.major_end)",
       "resolved": {
         "kind": "segment",
         "length": 6.0
@@ -119,10 +119,10 @@
       "span": {
         "line": 17,
         "col": 1,
-        "byte_start": 487,
-        "byte_end": 548
+        "byte_start": 461,
+        "byte_end": 516
       },
-      "definition": "seg(e.minor_start, e.minor_end)",
+      "definition": "segment minor(e.minor_start, e.minor_end)",
       "resolved": {
         "kind": "segment",
         "length": 4.0
@@ -134,10 +134,10 @@
       "span": {
         "line": 18,
         "col": 1,
-        "byte_start": 549,
-        "byte_end": 590
+        "byte_start": 517,
+        "byte_end": 552
       },
-      "definition": "seg(F1, P)",
+      "definition": "segment focal1(F1, P)",
       "resolved": {
         "kind": "segment",
         "length": 4.118033988749895
@@ -149,10 +149,10 @@
       "span": {
         "line": 19,
         "col": 1,
-        "byte_start": 591,
-        "byte_end": 632
+        "byte_start": 553,
+        "byte_end": 588
       },
-      "definition": "seg(F2, P)",
+      "definition": "segment focal2(F2, P)",
       "resolved": {
         "kind": "segment",
         "length": 1.881966011250105
@@ -164,10 +164,10 @@
       "span": {
         "line": 22,
         "col": 1,
-        "byte_start": 697,
-        "byte_end": 734
+        "byte_start": 653,
+        "byte_end": 682
       },
-      "definition": "label(O, $O$)",
+      "definition": "label lO(O, $O$)",
       "resolved": {
         "kind": "annotation"
       }
@@ -178,10 +178,10 @@
       "span": {
         "line": 23,
         "col": 1,
-        "byte_start": 735,
-        "byte_end": 776
+        "byte_start": 683,
+        "byte_end": 716
       },
-      "definition": "label(F1, $F_1$)",
+      "definition": "label lF1(F1, $F_1$)",
       "resolved": {
         "kind": "annotation"
       }
@@ -192,10 +192,10 @@
       "span": {
         "line": 24,
         "col": 1,
-        "byte_start": 777,
-        "byte_end": 818
+        "byte_start": 717,
+        "byte_end": 750
       },
-      "definition": "label(F2, $F_2$)",
+      "definition": "label lF2(F2, $F_2$)",
       "resolved": {
         "kind": "annotation"
       }
@@ -206,10 +206,10 @@
       "span": {
         "line": 25,
         "col": 1,
-        "byte_start": 819,
-        "byte_end": 856
+        "byte_start": 751,
+        "byte_end": 780
       },
-      "definition": "label(P, $P$)",
+      "definition": "label lP(P, $P$)",
       "resolved": {
         "kind": "annotation"
       }
@@ -220,13 +220,183 @@
       "span": {
         "line": 26,
         "col": 1,
-        "byte_start": 857,
-        "byte_end": 928
+        "byte_start": 781,
+        "byte_end": 839
       },
-      "definition": "text_block($PF_1 + PF_2 = 2a$)",
+      "definition": "text_block identity($PF_1 + PF_2 = 2a$)",
       "resolved": {
         "kind": "annotation"
       }
+    }
+  ],
+  "diagram": [
+    {
+      "accepted": {
+        "height": 0.19068000000000004,
+        "role": "normal",
+        "width": 0.19628000000000004
+      },
+      "definition": {
+        "source": "label(O, $O$)",
+        "tree": {
+          "args": [
+            {
+              "id": "O",
+              "kind": "ref"
+            },
+            {
+              "kind": "text",
+              "segments": [
+                {
+                  "kind": "tex",
+                  "source": "O"
+                }
+              ]
+            }
+          ],
+          "kind": "call",
+          "name": "label"
+        }
+      },
+      "id": "lO",
+      "properties": [
+        {
+          "name": "dir",
+          "value": {
+            "expr": {
+              "id": "S",
+              "kind": "ref"
+            },
+            "kind": "expr"
+          }
+        }
+      ]
+    },
+    {
+      "accepted": {
+        "height": 0.24276000000000003,
+        "role": "normal",
+        "width": 0.22963171875000005
+      },
+      "definition": {
+        "source": "label(F1, $F_1$)",
+        "tree": {
+          "args": [
+            {
+              "id": "F1",
+              "kind": "ref"
+            },
+            {
+              "kind": "text",
+              "segments": [
+                {
+                  "kind": "tex",
+                  "source": "F_1"
+                }
+              ]
+            }
+          ],
+          "kind": "call",
+          "name": "label"
+        }
+      },
+      "id": "lF1",
+      "properties": [
+        {
+          "name": "dir",
+          "value": {
+            "expr": {
+              "id": "S",
+              "kind": "ref"
+            },
+            "kind": "expr"
+          }
+        }
+      ]
+    },
+    {
+      "accepted": {
+        "height": 0.24276000000000003,
+        "role": "normal",
+        "width": 0.22963171875000005
+      },
+      "definition": {
+        "source": "label(F2, $F_2$)",
+        "tree": {
+          "args": [
+            {
+              "id": "F2",
+              "kind": "ref"
+            },
+            {
+              "kind": "text",
+              "segments": [
+                {
+                  "kind": "tex",
+                  "source": "F_2"
+                }
+              ]
+            }
+          ],
+          "kind": "call",
+          "name": "label"
+        }
+      },
+      "id": "lF2",
+      "properties": [
+        {
+          "name": "dir",
+          "value": {
+            "expr": {
+              "id": "S",
+              "kind": "ref"
+            },
+            "kind": "expr"
+          }
+        }
+      ]
+    },
+    {
+      "accepted": {
+        "height": 0.18396,
+        "role": "normal",
+        "width": 0.168
+      },
+      "definition": {
+        "source": "label(P, $P$)",
+        "tree": {
+          "args": [
+            {
+              "id": "P",
+              "kind": "ref"
+            },
+            {
+              "kind": "text",
+              "segments": [
+                {
+                  "kind": "tex",
+                  "source": "P"
+                }
+              ]
+            }
+          ],
+          "kind": "call",
+          "name": "label"
+        }
+      },
+      "id": "lP",
+      "properties": [
+        {
+          "name": "dir",
+          "value": {
+            "expr": {
+              "id": "N",
+              "kind": "ref"
+            },
+            "kind": "expr"
+          }
+        }
+      ]
     }
   ],
   "solve": {
@@ -234,6 +404,9 @@
     "equations": 0,
     "rank": 0,
     "attempts": 0,
+    "outer_search_attempts": 1,
+    "measurement_passes": 1,
+    "routing_attempts": 0,
     "accepted_steps": 0,
     "max_normalized_residual": 0.0,
     "final_damping": 0.001,
@@ -241,12 +414,13 @@
       "global_remaining": 2,
       "objects": [
         {
+          "class": "geometric",
           "id": "e",
           "span": {
             "line": 9,
             "col": 1,
             "byte_start": 244,
-            "byte_end": 276
+            "byte_end": 266
           },
           "hint_settled_dofs": 2,
           "suggestion": "add a relation if unintended, e.g. on(e, …) or vdist(…) == …"

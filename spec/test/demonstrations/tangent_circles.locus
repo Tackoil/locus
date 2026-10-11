@@ -1,7 +1,7 @@
-locus 0 beta 5
+locus 0 beta 6
 
 meta title = "Externally tangent circles with a common external tangent"
-meta note = "0 beta 5 showcase: tangency is stated once as a relation; the tangent point, center distance, and common tangent follow"
+meta note = "0 beta 6 showcase: tangency is stated once as a relation; the tangent point, center distance, and common tangent follow"
 
 style textbook
 
@@ -9,8 +9,8 @@ style textbook
 num r_1 = 2
 num r_2 = 3
 
-circle c1 = circle(r_1)
-circle c2 = circle(r_2) where { horizontal(c1.center, c2.center) }
+circle c1(r_1)
+circle c2(r_2) where { align_center_y(c1.center, c2.center) }
 point O_1 = c1.center
 point O_2 = c2.center
 
@@ -33,21 +33,21 @@ point P_1 = foot(O_1, t_ext)
 // its touch point on the second circle — exact, so constructed
 point P_2 = foot(O_2, t_ext)
 
-segment s1 = seg(O_1, P_1)   [auxiliary]
-segment s2 = seg(O_2, P_2)   [auxiliary]
+segment s1(O_1, P_1)   [auxiliary]
+segment s2(O_2, P_2)   [auxiliary]
 
-right_angle q1 = right_angle(P_1, O_1, E)
-right_angle q2 = right_angle(P_2, O_2, E)
+right_angle q1(P_1, O_1, E)
+right_angle q2(P_2, O_2, E)
 
 // ---- annotation ------------------------------------------
-label lO1 = label(O_1, $O_1$)  { dir: S }
-label lO2 = label(O_2, $O_2$)  { dir: S }
-label lT  = label(T, $T$)      { dir: SE }
-label lE  = label(E, $E$)      { dir: S }
-label lP1 = label(P_1, $P_1$)
-label lP2 = label(P_2, $P_2$)
+label lO1(O_1, $O_1$)  { dir: S }
+label lO2(O_2, $O_2$)  { dir: S }
+label lT(T, $T$)      { dir: SE }
+label lE(E, $E$)      { dir: S }
+label lP1(P_1, $P_1$)
+label lP2(P_2, $P_2$)
 
-arrow homothety = arrow(E, T)  [construction]  { head: ->, bend: 25deg }
+arrow homothety(E, T)  [construction]  { head: ->, bend: 25deg }
 
 // ---- intent ----------------------------------------------
 // (no assert tangent(c1, c2): restating a rel is a no-op test, §7.4)

@@ -2,14 +2,25 @@
 source: crates/locus-cli/tests/cli.rs
 expression: output_text(human.stderr)?
 ---
+E156
+
+  × same-kind constructors use a constructor declaration
+   ╭─[fixtures/errors/forward_reference.locus:3:14]
+ 2 │ point A()
+ 3 │ segment AC = seg(A, C)
+   ·              ─┬─
+   ·               ╰── same-kind constructors use a constructor declaration
+ 4 │ point C()
+   ╰────
+  help: segment AC(...)
+
 E135
 
   × unknown or forward reference `C`
    ╭─[fixtures/errors/forward_reference.locus:3:21]
- 2 │ point A = point()
+ 2 │ point A()
  3 │ segment AC = seg(A, C)
    ·                     ┬
    ·                     ╰── unknown or forward reference `C`
- 4 │ point C = point()
+ 4 │ point C()
    ╰────
-  help: A

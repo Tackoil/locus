@@ -6,24 +6,13 @@ pub(super) enum Target<'a> {
     Object(&'a Ident),
     Class(&'a Ident),
     Callable(&'a Ident),
+    Member(&'a Expr, &'a Ident),
 }
 
 pub(super) fn at(file: &File, byte: usize) -> Option<Target<'_>> {
     file.statements
         .iter()
         .find_map(|statement| statement_target(statement, byte))
-}
-
-pub(super) fn object_definition<'a>(
-    file: &'a File,
-    name: &str,
-) -> Option<&'a locus_syntax::OpStmt> {
-    file.statements
-        .iter()
-        .find_map(|statement| match statement {
-            Statement::Op(op) if op.id.name == name => Some(op),
-            _ => None,
-        })
 }
 
 pub(super) fn class_definition<'a>(
@@ -38,6 +27,18 @@ pub(super) fn class_definition<'a>(
         })
 }
 
+pub(super) fn named_definition<'a>(file: &'a File, name: &str) -> Option<&'a Ident> {
+    file.statements.iter().find_map(|statement| {
+        let id = match statement {
+            Statement::Fn(value) => &value.name,
+            Statement::Group(value) => &value.name,
+            Statement::Call(value) => &value.id,
+            _ => return None,
+        };
+        (id.name == name).then_some(id)
+    })
+}
+
 fn statement_target(statement: &Statement, byte: usize) -> Option<Target<'_>> {
     match statement {
         Statement::Op(op) => op_target(op, byte),
@@ -45,7 +46,44 @@ fn statement_target(statement: &Statement, byte: usize) -> Option<Target<'_>> {
         Statement::Assert(value) => expr_target(&value.expr, byte),
         Statement::Class(value) => ident_target(&value.name, byte, Target::Class)
             .or_else(|| props_target(&value.props, byte)),
+        Statement::Fn(_) | Statement::Group(_) | Statement::Call(_) => {
+            namespace_target(statement, byte)
+        }
         Statement::Meta(_) | Statement::Style(_) => None,
+    }
+}
+
+fn namespace_target(statement: &Statement, byte: usize) -> Option<Target<'_>> {
+    match statement {
+        Statement::Fn(value) => ident_target(&value.name, byte, Target::Callable)
+            .or_else(|| {
+                value
+                    .params
+                    .iter()
+                    .find_map(|id| ident_target(id, byte, Target::Object))
+            })
+            .or_else(|| {
+                value
+                    .body
+                    .iter()
+                    .find_map(|statement| statement_target(statement, byte))
+            }),
+        Statement::Group(value) => ident_target(&value.name, byte, Target::Object).or_else(|| {
+            value
+                .members
+                .iter()
+                .find_map(|expr| expr_target(expr, byte))
+        }),
+        Statement::Call(value) => ident_target(&value.function, byte, Target::Callable)
+            .or_else(|| ident_target(&value.id, byte, Target::Object))
+            .or_else(|| value.args.iter().find_map(|expr| expr_target(expr, byte)))
+            .or_else(|| {
+                value
+                    .attr
+                    .as_ref()
+                    .and_then(|attr| ident_target(&attr.name, byte, Target::Class))
+            }),
+        _ => None,
     }
 }
 
@@ -108,9 +146,11 @@ fn compound_target(expression: &Expr, byte: usize) -> Option<Target<'_>> {
     match expression {
         Expr::Call { name, args, .. } => ident_target(name, byte, Target::Callable)
             .or_else(|| args.iter().find_map(|arg| expr_target(arg, byte))),
-        Expr::Property { base, args, .. } => {
-            expr_target(base, byte).or_else(|| args.iter().find_map(|arg| expr_target(arg, byte)))
-        }
+        Expr::Property {
+            base, name, args, ..
+        } => ident_target(name, byte, |id| Target::Member(expression, id))
+            .or_else(|| expr_target(base, byte))
+            .or_else(|| args.iter().find_map(|arg| expr_target(arg, byte))),
         Expr::Group { expr, .. } | Expr::Unary { expr, .. } => expr_target(expr, byte),
         Expr::Binary { lhs, rhs, .. } => expr_target(lhs, byte).or_else(|| expr_target(rhs, byte)),
         Expr::Number(_) | Expr::Boolean { .. } | Expr::String(_) | Expr::Tex(_) | Expr::Ref(_) => {

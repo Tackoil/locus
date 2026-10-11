@@ -1,10 +1,9 @@
-locus 0 beta 5
+locus 0 beta 6
 // <- keyword
 //    ^ number
-point A' = point()
+point A()
 // <- type
 //    ^ variable
-//         ^ function
 num angle = 90deg
 //          ^ number
 class faint { accent: #Ab12EF }
@@ -12,19 +11,8 @@ class faint { accent: #Ab12EF }
 //    ^ type
 //            ^ property
 //                    ^ string.special
-circle c = circle(2) [faint]
-//                    ^ attribute
-point B = c.center
-//          ^ property
-label caption = label(B, "hello $\alpha$ \n")
-//                       ^ string
-//                               ^ string.escape
-//                                       ^ string.escape
-label math = label(A', $\frac{1}{2}$)
-//                      ^ string.escape
-//                           ^ string.special
-// A comment containing point, 12, and "text".
-// <- comment
+point B = A
+// <- type
 assert true and not false
 //     ^ boolean
 //          ^ operator

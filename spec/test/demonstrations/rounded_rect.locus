@@ -1,15 +1,28 @@
-locus 0 beta 5
+locus 0 beta 6
 meta title = "Rounded rectangles"
 style textbook
 class node { fill: tint, accent: blue }
-rounded_rect start = rounded_rect(4, 2, 0.5) [node]
-rounded_rect end = rounded_rect(offset(start.center, 7, 0), 4, 2, 1) [node]
-label start_text = label(start.center, "Rounded box") { dir: center }
-label end_text = label(end.center, "Capsule") { dir: center }
-arrow flow = arrow(start.e, end.w)
+rounded_rect start(4, 2, 0.5) [node]
+rounded_rect end(offset(start.center, 7, 0), 4, 2, 1) [node]
+label start_text(start.center, "Rounded box") { dir: center }
+label end_text(end.center, "Capsule") { dir: center }
+arrow flow(start.e, end.w)
 assert start.corner_radius == 0.5
 assert end.width == 4
 assert end.height == 2
 assert on(start.e, start)
 assert inside(end.center, end)
 assert not on(end.ne, end)
+
+
+// Automatic dimensions are distinct from the explicit rounded/capsule forms.
+diamond measured_decision()
+label measured_question("Does this entire measured caption fit?")
+rel center(measured_question, measured_decision)
+rel contain(measured_decision, measured_question)
+rel gap_x(end, measured_decision)
+rel align_center_y(end, measured_decision)
+arrow measured_flow(end.e, measured_decision.w) { route: curved }
+label measured_result(measured_flow, "fit") { near: end, side: above }
+assert contain(measured_decision, measured_question)
+assert measured_decision.width > 0 and measured_decision.height > 0

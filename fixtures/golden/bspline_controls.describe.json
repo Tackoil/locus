@@ -9,9 +9,9 @@
         "line": 9,
         "col": 1,
         "byte_start": 263,
-        "byte_end": 303
+        "byte_end": 296
       },
-      "definition": "rect(8, 4)",
+      "definition": "rect frame(8, 4)",
       "resolved": {
         "kind": "rect",
         "area": 32.0,
@@ -24,8 +24,8 @@
       "span": {
         "line": 10,
         "col": 1,
-        "byte_start": 304,
-        "byte_end": 323
+        "byte_start": 297,
+        "byte_end": 316
       },
       "definition": "frame.sw",
       "resolved": {
@@ -39,8 +39,8 @@
       "span": {
         "line": 11,
         "col": 1,
-        "byte_start": 324,
-        "byte_end": 343
+        "byte_start": 317,
+        "byte_end": 336
       },
       "definition": "frame.nw",
       "resolved": {
@@ -54,8 +54,8 @@
       "span": {
         "line": 12,
         "col": 1,
-        "byte_start": 344,
-        "byte_end": 362
+        "byte_start": 337,
+        "byte_end": 355
       },
       "definition": "frame.n",
       "resolved": {
@@ -69,8 +69,8 @@
       "span": {
         "line": 13,
         "col": 1,
-        "byte_start": 363,
-        "byte_end": 382
+        "byte_start": 356,
+        "byte_end": 375
       },
       "definition": "frame.se",
       "resolved": {
@@ -84,8 +84,8 @@
       "span": {
         "line": 14,
         "col": 1,
-        "byte_start": 383,
-        "byte_end": 401
+        "byte_start": 376,
+        "byte_end": 394
       },
       "definition": "frame.e",
       "resolved": {
@@ -99,10 +99,10 @@
       "span": {
         "line": 16,
         "col": 1,
-        "byte_start": 403,
-        "byte_end": 460
+        "byte_start": 396,
+        "byte_end": 443
       },
-      "definition": "bspline(P0, P1, P2, P3, P4)",
+      "definition": "bspline curve(P0, P1, P2, P3, P4)",
       "resolved": {
         "kind": "bspline",
         "degree": 3,
@@ -126,10 +126,10 @@
       "span": {
         "line": 17,
         "col": 1,
-        "byte_start": 461,
-        "byte_end": 506
+        "byte_start": 444,
+        "byte_end": 483
       },
-      "definition": "seg(P0, P1)",
+      "definition": "segment control01(P0, P1)",
       "resolved": {
         "kind": "segment",
         "length": 4.0
@@ -141,10 +141,10 @@
       "span": {
         "line": 18,
         "col": 1,
-        "byte_start": 507,
-        "byte_end": 552
+        "byte_start": 484,
+        "byte_end": 523
       },
-      "definition": "seg(P1, P2)",
+      "definition": "segment control12(P1, P2)",
       "resolved": {
         "kind": "segment",
         "length": 4.0
@@ -156,10 +156,10 @@
       "span": {
         "line": 19,
         "col": 1,
-        "byte_start": 553,
-        "byte_end": 598
+        "byte_start": 524,
+        "byte_end": 563
       },
-      "definition": "seg(P2, P3)",
+      "definition": "segment control23(P2, P3)",
       "resolved": {
         "kind": "segment",
         "length": 5.656854249492381
@@ -171,10 +171,10 @@
       "span": {
         "line": 20,
         "col": 1,
-        "byte_start": 599,
-        "byte_end": 644
+        "byte_start": 564,
+        "byte_end": 603
       },
-      "definition": "seg(P3, P4)",
+      "definition": "segment control34(P3, P4)",
       "resolved": {
         "kind": "segment",
         "length": 2.0
@@ -186,8 +186,8 @@
       "span": {
         "line": 23,
         "col": 1,
-        "byte_start": 720,
-        "byte_end": 743
+        "byte_start": 679,
+        "byte_end": 702
       },
       "definition": "curve.at(0.5)",
       "resolved": {
@@ -201,8 +201,8 @@
       "span": {
         "line": 24,
         "col": 1,
-        "byte_start": 744,
-        "byte_end": 768
+        "byte_start": 703,
+        "byte_end": 727
       },
       "definition": "curve.at(0.25)",
       "resolved": {
@@ -216,10 +216,10 @@
       "span": {
         "line": 27,
         "col": 1,
-        "byte_start": 833,
-        "byte_end": 875
+        "byte_start": 792,
+        "byte_end": 826
       },
-      "definition": "label(P0, $P_0$)",
+      "definition": "label lP0(P0, $P_0$)",
       "resolved": {
         "kind": "annotation"
       }
@@ -230,10 +230,10 @@
       "span": {
         "line": 28,
         "col": 1,
-        "byte_start": 876,
-        "byte_end": 918
+        "byte_start": 827,
+        "byte_end": 861
       },
-      "definition": "label(P1, $P_1$)",
+      "definition": "label lP1(P1, $P_1$)",
       "resolved": {
         "kind": "annotation"
       }
@@ -244,10 +244,10 @@
       "span": {
         "line": 29,
         "col": 1,
-        "byte_start": 919,
-        "byte_end": 960
+        "byte_start": 862,
+        "byte_end": 895
       },
-      "definition": "label(P2, $P_2$)",
+      "definition": "label lP2(P2, $P_2$)",
       "resolved": {
         "kind": "annotation"
       }
@@ -258,10 +258,10 @@
       "span": {
         "line": 30,
         "col": 1,
-        "byte_start": 961,
-        "byte_end": 1003
+        "byte_start": 896,
+        "byte_end": 930
       },
-      "definition": "label(P3, $P_3$)",
+      "definition": "label lP3(P3, $P_3$)",
       "resolved": {
         "kind": "annotation"
       }
@@ -272,10 +272,10 @@
       "span": {
         "line": 31,
         "col": 1,
-        "byte_start": 1004,
-        "byte_end": 1045
+        "byte_start": 931,
+        "byte_end": 964
       },
-      "definition": "label(P4, $P_4$)",
+      "definition": "label lP4(P4, $P_4$)",
       "resolved": {
         "kind": "annotation"
       }
@@ -286,10 +286,10 @@
       "span": {
         "line": 32,
         "col": 1,
-        "byte_start": 1046,
-        "byte_end": 1091
+        "byte_start": 965,
+        "byte_end": 1002
       },
-      "definition": "label(M, \"$t = 0.5$\")",
+      "definition": "label lM(M, \"$t = 0.5$\")",
       "resolved": {
         "kind": "annotation"
       }
@@ -300,13 +300,355 @@
       "span": {
         "line": 33,
         "col": 1,
-        "byte_start": 1092,
-        "byte_end": 1138
+        "byte_start": 1003,
+        "byte_end": 1041
       },
-      "definition": "label(Q, \"$t = 0.25$\")",
+      "definition": "label lQ(Q, \"$t = 0.25$\")",
       "resolved": {
         "kind": "annotation"
       }
+    }
+  ],
+  "diagram": [
+    {
+      "accepted": {
+        "automatic_dimensions": false,
+        "height": 4.0,
+        "width": 8.0
+      },
+      "definition": {
+        "source": "rect(8, 4)",
+        "tree": {
+          "args": [
+            {
+              "dimension": "length",
+              "kind": "number",
+              "source": "8",
+              "value": 8.0
+            },
+            {
+              "dimension": "length",
+              "kind": "number",
+              "source": "4",
+              "value": 4.0
+            }
+          ],
+          "kind": "call",
+          "name": "rect"
+        }
+      },
+      "id": "frame",
+      "properties": []
+    },
+    {
+      "accepted": {
+        "height": 0.24491359375000002,
+        "role": "normal",
+        "width": 0.20359171875
+      },
+      "definition": {
+        "source": "label(P0, $P_0$)",
+        "tree": {
+          "args": [
+            {
+              "id": "P0",
+              "kind": "ref"
+            },
+            {
+              "kind": "text",
+              "segments": [
+                {
+                  "kind": "tex",
+                  "source": "P_0"
+                }
+              ]
+            }
+          ],
+          "kind": "call",
+          "name": "label"
+        }
+      },
+      "id": "lP0",
+      "properties": [
+        {
+          "name": "dir",
+          "value": {
+            "expr": {
+              "id": "SW",
+              "kind": "ref"
+            },
+            "kind": "expr"
+          }
+        }
+      ]
+    },
+    {
+      "accepted": {
+        "height": 0.24276000000000003,
+        "role": "normal",
+        "width": 0.20359171875
+      },
+      "definition": {
+        "source": "label(P1, $P_1$)",
+        "tree": {
+          "args": [
+            {
+              "id": "P1",
+              "kind": "ref"
+            },
+            {
+              "kind": "text",
+              "segments": [
+                {
+                  "kind": "tex",
+                  "source": "P_1"
+                }
+              ]
+            }
+          ],
+          "kind": "call",
+          "name": "label"
+        }
+      },
+      "id": "lP1",
+      "properties": [
+        {
+          "name": "dir",
+          "value": {
+            "expr": {
+              "id": "NW",
+              "kind": "ref"
+            },
+            "kind": "expr"
+          }
+        }
+      ]
+    },
+    {
+      "accepted": {
+        "height": 0.24276000000000003,
+        "role": "normal",
+        "width": 0.20359171875
+      },
+      "definition": {
+        "source": "label(P2, $P_2$)",
+        "tree": {
+          "args": [
+            {
+              "id": "P2",
+              "kind": "ref"
+            },
+            {
+              "kind": "text",
+              "segments": [
+                {
+                  "kind": "tex",
+                  "source": "P_2"
+                }
+              ]
+            }
+          ],
+          "kind": "call",
+          "name": "label"
+        }
+      },
+      "id": "lP2",
+      "properties": [
+        {
+          "name": "dir",
+          "value": {
+            "expr": {
+              "id": "N",
+              "kind": "ref"
+            },
+            "kind": "expr"
+          }
+        }
+      ]
+    },
+    {
+      "accepted": {
+        "height": 0.24530515625000002,
+        "role": "normal",
+        "width": 0.20359171875
+      },
+      "definition": {
+        "source": "label(P3, $P_3$)",
+        "tree": {
+          "args": [
+            {
+              "id": "P3",
+              "kind": "ref"
+            },
+            {
+              "kind": "text",
+              "segments": [
+                {
+                  "kind": "tex",
+                  "source": "P_3"
+                }
+              ]
+            }
+          ],
+          "kind": "call",
+          "name": "label"
+        }
+      },
+      "id": "lP3",
+      "properties": [
+        {
+          "name": "dir",
+          "value": {
+            "expr": {
+              "id": "SE",
+              "kind": "ref"
+            },
+            "kind": "expr"
+          }
+        }
+      ]
+    },
+    {
+      "accepted": {
+        "height": 0.24276000000000003,
+        "role": "normal",
+        "width": 0.20359171875
+      },
+      "definition": {
+        "source": "label(P4, $P_4$)",
+        "tree": {
+          "args": [
+            {
+              "id": "P4",
+              "kind": "ref"
+            },
+            {
+              "kind": "text",
+              "segments": [
+                {
+                  "kind": "tex",
+                  "source": "P_4"
+                }
+              ]
+            }
+          ],
+          "kind": "call",
+          "name": "label"
+        }
+      },
+      "id": "lP4",
+      "properties": [
+        {
+          "name": "dir",
+          "value": {
+            "expr": {
+              "id": "E",
+              "kind": "ref"
+            },
+            "kind": "expr"
+          }
+        }
+      ]
+    },
+    {
+      "accepted": {
+        "height": 0.38136,
+        "role": "normal",
+        "width": 0.8289859375000002
+      },
+      "definition": {
+        "source": "label(M, \"$t = 0.5$\")",
+        "tree": {
+          "args": [
+            {
+              "id": "M",
+              "kind": "ref"
+            },
+            {
+              "kind": "text",
+              "segments": [
+                {
+                  "kind": "plain",
+                  "source": ""
+                },
+                {
+                  "kind": "tex",
+                  "source": "t = 0.5"
+                },
+                {
+                  "kind": "plain",
+                  "source": ""
+                }
+              ]
+            }
+          ],
+          "kind": "call",
+          "name": "label"
+        }
+      },
+      "id": "lM",
+      "properties": [
+        {
+          "name": "dir",
+          "value": {
+            "expr": {
+              "id": "N",
+              "kind": "ref"
+            },
+            "kind": "expr"
+          }
+        }
+      ]
+    },
+    {
+      "accepted": {
+        "height": 0.38136,
+        "role": "normal",
+        "width": 0.9675859375000001
+      },
+      "definition": {
+        "source": "label(Q, \"$t = 0.25$\")",
+        "tree": {
+          "args": [
+            {
+              "id": "Q",
+              "kind": "ref"
+            },
+            {
+              "kind": "text",
+              "segments": [
+                {
+                  "kind": "plain",
+                  "source": ""
+                },
+                {
+                  "kind": "tex",
+                  "source": "t = 0.25"
+                },
+                {
+                  "kind": "plain",
+                  "source": ""
+                }
+              ]
+            }
+          ],
+          "kind": "call",
+          "name": "label"
+        }
+      },
+      "id": "lQ",
+      "properties": [
+        {
+          "name": "dir",
+          "value": {
+            "expr": {
+              "id": "E",
+              "kind": "ref"
+            },
+            "kind": "expr"
+          }
+        }
+      ]
     }
   ],
   "solve": {
@@ -314,6 +656,9 @@
     "equations": 0,
     "rank": 0,
     "attempts": 0,
+    "outer_search_attempts": 1,
+    "measurement_passes": 1,
+    "routing_attempts": 0,
     "accepted_steps": 0,
     "max_normalized_residual": 0.0,
     "final_damping": 0.001,
@@ -321,12 +666,13 @@
       "global_remaining": 2,
       "objects": [
         {
+          "class": "geometric",
           "id": "frame",
           "span": {
             "line": 9,
             "col": 1,
             "byte_start": 263,
-            "byte_end": 303
+            "byte_end": 296
           },
           "hint_settled_dofs": 2,
           "suggestion": "add a relation if unintended, e.g. on(frame, …) or vdist(…) == …"

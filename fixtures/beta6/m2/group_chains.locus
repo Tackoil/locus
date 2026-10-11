@@ -1,0 +1,11 @@
+locus 0 beta 6
+rect first(2, 1)
+rect second(3, 2)
+rect third(1, 1)
+group line(first, second, third)
+rel row(line)
+rect bottom(2, 1)
+group stack(first, bottom)
+rel column(stack)
+assert row(line)
+assert column(stack)

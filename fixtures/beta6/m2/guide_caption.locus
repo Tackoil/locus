@@ -1,0 +1,13 @@
+locus 0 beta 6
+point left()
+point right()
+rect panel()
+label caption("Caption expands the distance between two guides")
+rel center(panel, caption)
+rel contain(panel, caption)
+rel inset_left(left, panel) { padding: none }
+rel inset_right(right, panel) { padding: none }
+rel row(left, caption, right)
+assert contain(panel, caption)
+assert row(left, caption, right)
+assert hdist(left, right) >= caption.width + 0.5

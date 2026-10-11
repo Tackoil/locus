@@ -1,0 +1,7 @@
+locus 0 beta 6
+rect panel()
+label caption("A long measured caption")
+rel center(panel, caption)
+rel contain(panel, caption)
+assert center(panel, caption)
+assert contain(panel, caption)

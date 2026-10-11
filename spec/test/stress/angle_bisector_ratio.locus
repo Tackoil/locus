@@ -1,4 +1,4 @@
-locus 0 beta 5
+locus 0 beta 6
 
 meta title = "Angle bisector theorem: BD/DC = AB/AC"
 
@@ -6,35 +6,35 @@ style textbook
 
 // ---- objects ----------------------------------------------
 // A scalene triangle defined by signed side offsets; Locus owns translation.
-point A = point()
-point B = point() where { hdist(A, B) == -3, vdist(A, B) == -4.5 }
-point C = point() where { hdist(A, C) == 4, vdist(A, C) == -4.5 }
+point A()
+point B() where { hdist(A, B) == -3, vdist(A, B) == -4.5 }
+point C() where { hdist(A, C) == 4, vdist(A, C) == -4.5 }
 
-polygon tri = polygon(A, B, C)
+polygon tri(A, B, C)
 
 line bis = angle_bisector(B, A, C)   [construction]
 
 // Solve on supporting lines; the independent between assertion enforces the
 // segment domain. Three simultaneous closed-segment constraints can stall;
 // known_limits/closed_segment_bisectors.locus preserves that regression.
-point D = point() where { on(D, bis), on(D, line(B, C)) }
+point D() where { on(D, bis), on(D, line(B, C)) }
 
-segment ad = seg(A, D)               [auxiliary]
+segment ad(A, D)               [auxiliary]
 
 // equal-angle marks at vertex A (n: multiplicity — finding F2 resolved)
 arc m1 = angle_arc(B, A, D, 0.5)  { n: 1 }
 arc m2 = angle_arc(D, A, C, 0.5)  { n: 1 }
 
 // ---- annotation ------------------------------------------
-label lA = label(A, $A$)
-label lB = label(B, $B$)
-label lC = label(C, $C$)
-label lD = label(D, $D$)  { dir: S }
+label lA(A, $A$)
+label lB(B, $B$)
+label lC(C, $C$)
+label lD(D, $D$)  { dir: S }
 
-label lbd = label(seg(B, D).midpoint, $m$)  { dir: S, gap: 0.35 }
-label ldc = label(seg(D, C).midpoint, $n$)  { dir: S, gap: 0.35 }
+label lbd(seg(B, D).midpoint, $m$)  { dir: S, gap: 0.35 }
+label ldc(seg(D, C).midpoint, $n$)  { dir: S, gap: 0.35 }
 
-text_block eq = text_block($\dfrac{m}{n} = \dfrac{AB}{AC}$)  { place: below }
+text_block eq($\dfrac{m}{n} = \dfrac{AB}{AC}$)  { place: below }
 
 // ---- intent ----------------------------------------------
 assert between(B, D, C)
@@ -44,19 +44,19 @@ assert ratio(dist(B, D), dist(D, C)) == ratio(dist(A, B), dist(A, C))
 // ---- stress construction network ----
 // All three cevians share an incenter and obey the multiplicative Ceva identity.
 line bis_e = angle_bisector(A, B, C) [construction]
-point cev_e = point() where { on(cev_e, bis_e), on(cev_e, line(A, C)) }
-segment cevian_e = seg(B, cev_e) [highlight]
+point cev_e() where { on(cev_e, bis_e), on(cev_e, line(A, C)) }
+segment cevian_e(B, cev_e) [highlight]
 assert between(A, cev_e, C)
 assert angle(A, B, cev_e) == angle(cev_e, B, C)
 line bis_f = angle_bisector(A, C, B) [construction]
-point cev_f = point() where { on(cev_f, bis_f), on(cev_f, line(A, B)) }
-segment cevian_f = seg(C, cev_f) [highlight]
+point cev_f() where { on(cev_f, bis_f), on(cev_f, line(A, B)) }
+segment cevian_f(C, cev_f) [highlight]
 assert between(A, cev_f, B)
 assert angle(A, C, cev_f) == angle(cev_f, C, B)
 point shared_i = incenter(A, B, C)
 assert on(shared_i, bis) and on(shared_i, bis_e) and on(shared_i, bis_f)
 assert ratio(dist(B, D), dist(D, C)) * ratio(dist(C, cev_e), dist(cev_e, A)) * ratio(dist(A, cev_f), dist(cev_f, B)) == 1
-polygon b0_tri = polygon(A, B, D) [construction]
+polygon b0_tri(A, B, D) [construction]
 point b0_o = circumcenter(A, B, D) { mark: none }
 point b0_g = centroid(A, B, D) { mark: none }
 point b0_h = orthocenter(A, B, D) { mark: none }
@@ -74,7 +74,7 @@ assert radius(b0_nine) == radius(b0_circ) / 2
 assert on(b0_fa, b0_nine) and on(b0_fb, b0_nine) and on(b0_fc, b0_nine)
 assert internally_tangent(b0_nine, b0_inc)
 assert inside(center(b0_inc), b0_tri)
-polygon b1_tri = polygon(A, D, C) [construction]
+polygon b1_tri(A, D, C) [construction]
 point b1_o = circumcenter(A, D, C) { mark: none }
 point b1_g = centroid(A, D, C) { mark: none }
 point b1_h = orthocenter(A, D, C) { mark: none }
@@ -92,7 +92,7 @@ assert radius(b1_nine) == radius(b1_circ) / 2
 assert on(b1_fa, b1_nine) and on(b1_fb, b1_nine) and on(b1_fc, b1_nine)
 assert internally_tangent(b1_nine, b1_inc)
 assert inside(center(b1_inc), b1_tri)
-polygon b2_tri = polygon(B, cev_e, C) [construction]
+polygon b2_tri(B, cev_e, C) [construction]
 point b2_o = circumcenter(B, cev_e, C) { mark: none }
 point b2_g = centroid(B, cev_e, C) { mark: none }
 point b2_h = orthocenter(B, cev_e, C) { mark: none }
@@ -110,7 +110,7 @@ assert radius(b2_nine) == radius(b2_circ) / 2
 assert on(b2_fa, b2_nine) and on(b2_fb, b2_nine) and on(b2_fc, b2_nine)
 assert internally_tangent(b2_nine, b2_inc)
 assert inside(center(b2_inc), b2_tri)
-polygon b3_tri = polygon(C, cev_f, B) [construction]
+polygon b3_tri(C, cev_f, B) [construction]
 point b3_o = circumcenter(C, cev_f, B) { mark: none }
 point b3_g = centroid(C, cev_f, B) { mark: none }
 point b3_h = orthocenter(C, cev_f, B) { mark: none }

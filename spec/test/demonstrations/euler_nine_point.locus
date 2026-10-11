@@ -1,4 +1,4 @@
-locus 0 beta 5
+locus 0 beta 6
 
 meta title = "Euler line and the nine-point circle"
 meta note = "Almost entirely derived-tier: construct when you can, relate when you must"
@@ -7,18 +7,18 @@ style textbook
 
 // ---- objects ----------------------------------------------
 // A scalene triangle on its circumcircle; all points are derived.
-circle circ = circle(3.5)   [auxiliary]
+circle circ(3.5)   [auxiliary]
 point A = circ.at(90deg)
 point B = circ.at(210deg)
 point C = circ.at(340deg)
 
-polygon tri = polygon(A, B, C)
+polygon tri(A, B, C)
 
 point O = circ.center
 point G = centroid(A, B, C)
 point H = orthocenter(A, B, C)
 
-line   euler = line(O, H)                [highlight]
+line euler(O, H)                [highlight]
 
 // side midpoints
 point M_a = midpoint(B, C)
@@ -42,20 +42,20 @@ point  N    = center(nine)
 point H' = reflect(H, line(B, C))           [construction]
 
 // ---- annotation ------------------------------------------
-label lO = label(O, $O$)
-label lG = label(G, $G$)
-label lH = label(H, $H$)
-label lN = label(N, $N$)  { dir: NE }
-label lA = label(A, $A$)
-label lB = label(B, $B$)
-label lC = label(C, $C$)
+label lO(O, $O$)
+label lG(G, $G$)
+label lH(H, $H$)
+label lN(N, $N$)  { dir: NE }
+label lA(A, $A$)
+label lB(B, $B$)
+label lC(C, $C$)
 
 // ---- intent ----------------------------------------------
-assert coincident(O, circumcenter(A, B, C))
+assert center(O, circumcenter(A, B, C))
 assert collinear(O, G, H)
 assert collinear(O, N, H)
 assert ratio(dist(H, G), dist(G, O)) == 2
-assert coincident(N, midpoint(O, H))           // was finding F4 — now a predicate
+assert center(N, midpoint(O, H))           // was finding F4 — now a predicate
 assert radius(nine) == radius(circ) / 2
 assert concyclic(M_a, M_b, M_c, H_a, H_b, H_c, E_a, E_b, E_c)
 assert on(H', circ)

@@ -41,9 +41,9 @@
         "line": 12,
         "col": 1,
         "byte_start": 328,
-        "byte_end": 351
+        "byte_end": 342
       },
-      "definition": "circle(r_1)",
+      "definition": "circle c1(r_1)",
       "resolved": {
         "kind": "circle",
         "radius": 2.0
@@ -55,10 +55,10 @@
       "span": {
         "line": 13,
         "col": 1,
-        "byte_start": 352,
-        "byte_end": 418
+        "byte_start": 343,
+        "byte_end": 404
       },
-      "definition": "circle(r_2)",
+      "definition": "circle c2(r_2)",
       "resolved": {
         "kind": "circle",
         "radius": 3.0
@@ -70,8 +70,8 @@
       "span": {
         "line": 14,
         "col": 1,
-        "byte_start": 419,
-        "byte_end": 440
+        "byte_start": 405,
+        "byte_end": 426
       },
       "definition": "c1.center",
       "resolved": {
@@ -85,8 +85,8 @@
       "span": {
         "line": 15,
         "col": 1,
-        "byte_start": 441,
-        "byte_end": 462
+        "byte_start": 427,
+        "byte_end": 448
       },
       "definition": "c2.center",
       "resolved": {
@@ -100,8 +100,8 @@
       "span": {
         "line": 21,
         "col": 1,
-        "byte_start": 642,
-        "byte_end": 685
+        "byte_start": 628,
+        "byte_end": 671
       },
       "definition": "lerp(O_1, O_2, r_1 / (r_1 + r_2))",
       "resolved": {
@@ -115,8 +115,8 @@
       "span": {
         "line": 24,
         "col": 1,
-        "byte_start": 719,
-        "byte_end": 778
+        "byte_start": 705,
+        "byte_end": 764
       },
       "definition": "perpendicular(T, line(O_1, O_2))",
       "resolved": {
@@ -129,8 +129,8 @@
       "span": {
         "line": 27,
         "col": 1,
-        "byte_start": 859,
-        "byte_end": 902
+        "byte_start": 845,
+        "byte_end": 888
       },
       "definition": "lerp(O_1, O_2, r_1 / (r_1 - r_2))",
       "resolved": {
@@ -144,8 +144,8 @@
       "span": {
         "line": 30,
         "col": 1,
-        "byte_start": 979,
-        "byte_end": 1028
+        "byte_start": 965,
+        "byte_end": 1014
       },
       "definition": "tangent_line(E, c1, 0)",
       "resolved": {
@@ -158,8 +158,8 @@
       "span": {
         "line": 31,
         "col": 1,
-        "byte_start": 1029,
-        "byte_end": 1057
+        "byte_start": 1015,
+        "byte_end": 1043
       },
       "definition": "foot(O_1, t_ext)",
       "resolved": {
@@ -173,8 +173,8 @@
       "span": {
         "line": 34,
         "col": 1,
-        "byte_start": 1125,
-        "byte_end": 1153
+        "byte_start": 1111,
+        "byte_end": 1139
       },
       "definition": "foot(O_2, t_ext)",
       "resolved": {
@@ -188,10 +188,10 @@
       "span": {
         "line": 36,
         "col": 1,
-        "byte_start": 1155,
-        "byte_end": 1195
+        "byte_start": 1141,
+        "byte_end": 1175
       },
-      "definition": "seg(O_1, P_1)",
+      "definition": "segment s1(O_1, P_1)",
       "resolved": {
         "kind": "segment",
         "length": 2.0
@@ -203,13 +203,13 @@
       "span": {
         "line": 37,
         "col": 1,
-        "byte_start": 1196,
-        "byte_end": 1236
+        "byte_start": 1176,
+        "byte_end": 1210
       },
-      "definition": "seg(O_2, P_2)",
+      "definition": "segment s2(O_2, P_2)",
       "resolved": {
         "kind": "segment",
-        "length": 3.0
+        "length": 3.0000000000000004
       }
     },
     {
@@ -218,10 +218,10 @@
       "span": {
         "line": 39,
         "col": 1,
-        "byte_start": 1238,
-        "byte_end": 1279
+        "byte_start": 1212,
+        "byte_end": 1239
       },
-      "definition": "right_angle(P_1, O_1, E)",
+      "definition": "right_angle q1(P_1, O_1, E)",
       "resolved": {
         "kind": "annotation"
       }
@@ -232,10 +232,10 @@
       "span": {
         "line": 40,
         "col": 1,
-        "byte_start": 1280,
-        "byte_end": 1321
+        "byte_start": 1240,
+        "byte_end": 1267
       },
-      "definition": "right_angle(P_2, O_2, E)",
+      "definition": "right_angle q2(P_2, O_2, E)",
       "resolved": {
         "kind": "annotation"
       }
@@ -246,10 +246,10 @@
       "span": {
         "line": 43,
         "col": 1,
-        "byte_start": 1385,
-        "byte_end": 1426
+        "byte_start": 1331,
+        "byte_end": 1364
       },
-      "definition": "label(O_1, $O_1$)",
+      "definition": "label lO1(O_1, $O_1$)",
       "resolved": {
         "kind": "annotation"
       }
@@ -260,10 +260,10 @@
       "span": {
         "line": 44,
         "col": 1,
-        "byte_start": 1427,
-        "byte_end": 1468
+        "byte_start": 1365,
+        "byte_end": 1398
       },
-      "definition": "label(O_2, $O_2$)",
+      "definition": "label lO2(O_2, $O_2$)",
       "resolved": {
         "kind": "annotation"
       }
@@ -274,10 +274,10 @@
       "span": {
         "line": 45,
         "col": 1,
-        "byte_start": 1469,
-        "byte_end": 1511
+        "byte_start": 1399,
+        "byte_end": 1432
       },
-      "definition": "label(T, $T$)",
+      "definition": "label lT(T, $T$)",
       "resolved": {
         "kind": "annotation"
       }
@@ -288,10 +288,10 @@
       "span": {
         "line": 46,
         "col": 1,
-        "byte_start": 1512,
-        "byte_end": 1553
+        "byte_start": 1433,
+        "byte_end": 1465
       },
-      "definition": "label(E, $E$)",
+      "definition": "label lE(E, $E$)",
       "resolved": {
         "kind": "annotation"
       }
@@ -302,10 +302,10 @@
       "span": {
         "line": 47,
         "col": 1,
-        "byte_start": 1554,
-        "byte_end": 1583
+        "byte_start": 1466,
+        "byte_end": 1487
       },
-      "definition": "label(P_1, $P_1$)",
+      "definition": "label lP1(P_1, $P_1$)",
       "resolved": {
         "kind": "annotation"
       }
@@ -316,10 +316,10 @@
       "span": {
         "line": 48,
         "col": 1,
-        "byte_start": 1584,
-        "byte_end": 1613
+        "byte_start": 1488,
+        "byte_end": 1509
       },
-      "definition": "label(P_2, $P_2$)",
+      "definition": "label lP2(P_2, $P_2$)",
       "resolved": {
         "kind": "annotation"
       }
@@ -330,13 +330,307 @@
       "span": {
         "line": 50,
         "col": 1,
-        "byte_start": 1615,
-        "byte_end": 1687
+        "byte_start": 1511,
+        "byte_end": 1575
       },
-      "definition": "arrow(E, T)",
+      "definition": "arrow homothety(E, T)",
       "resolved": {
         "kind": "annotation"
       }
+    }
+  ],
+  "diagram": [
+    {
+      "accepted": {
+        "height": 0.24612000000000003,
+        "role": "normal",
+        "width": 0.28479171875000003
+      },
+      "definition": {
+        "source": "label(O_1, $O_1$)",
+        "tree": {
+          "args": [
+            {
+              "id": "O_1",
+              "kind": "ref"
+            },
+            {
+              "kind": "text",
+              "segments": [
+                {
+                  "kind": "tex",
+                  "source": "O_1"
+                }
+              ]
+            }
+          ],
+          "kind": "call",
+          "name": "label"
+        }
+      },
+      "id": "lO1",
+      "properties": [
+        {
+          "name": "dir",
+          "value": {
+            "expr": {
+              "id": "S",
+              "kind": "ref"
+            },
+            "kind": "expr"
+          }
+        }
+      ]
+    },
+    {
+      "accepted": {
+        "height": 0.24612000000000003,
+        "role": "normal",
+        "width": 0.28479171875000003
+      },
+      "definition": {
+        "source": "label(O_2, $O_2$)",
+        "tree": {
+          "args": [
+            {
+              "id": "O_2",
+              "kind": "ref"
+            },
+            {
+              "kind": "text",
+              "segments": [
+                {
+                  "kind": "tex",
+                  "source": "O_2"
+                }
+              ]
+            }
+          ],
+          "kind": "call",
+          "name": "label"
+        }
+      },
+      "id": "lO2",
+      "properties": [
+        {
+          "name": "dir",
+          "value": {
+            "expr": {
+              "id": "S",
+              "kind": "ref"
+            },
+            "kind": "expr"
+          }
+        }
+      ]
+    },
+    {
+      "accepted": {
+        "height": 0.18396,
+        "role": "normal",
+        "width": 0.1708
+      },
+      "definition": {
+        "source": "label(T, $T$)",
+        "tree": {
+          "args": [
+            {
+              "id": "T",
+              "kind": "ref"
+            },
+            {
+              "kind": "text",
+              "segments": [
+                {
+                  "kind": "tex",
+                  "source": "T"
+                }
+              ]
+            }
+          ],
+          "kind": "call",
+          "name": "label"
+        }
+      },
+      "id": "lT",
+      "properties": [
+        {
+          "name": "dir",
+          "value": {
+            "expr": {
+              "id": "SE",
+              "kind": "ref"
+            },
+            "kind": "expr"
+          }
+        }
+      ]
+    },
+    {
+      "accepted": {
+        "height": 0.18396,
+        "role": "normal",
+        "width": 0.18004000000000003
+      },
+      "definition": {
+        "source": "label(E, $E$)",
+        "tree": {
+          "args": [
+            {
+              "id": "E",
+              "kind": "ref"
+            },
+            {
+              "kind": "text",
+              "segments": [
+                {
+                  "kind": "tex",
+                  "source": "E"
+                }
+              ]
+            }
+          ],
+          "kind": "call",
+          "name": "label"
+        }
+      },
+      "id": "lE",
+      "properties": [
+        {
+          "name": "dir",
+          "value": {
+            "expr": {
+              "id": "S",
+              "kind": "ref"
+            },
+            "kind": "expr"
+          }
+        }
+      ]
+    },
+    {
+      "accepted": {
+        "height": 0.24276000000000003,
+        "role": "normal",
+        "width": 0.20359171875
+      },
+      "definition": {
+        "source": "label(P_1, $P_1$)",
+        "tree": {
+          "args": [
+            {
+              "id": "P_1",
+              "kind": "ref"
+            },
+            {
+              "kind": "text",
+              "segments": [
+                {
+                  "kind": "tex",
+                  "source": "P_1"
+                }
+              ]
+            }
+          ],
+          "kind": "call",
+          "name": "label"
+        }
+      },
+      "id": "lP1",
+      "properties": []
+    },
+    {
+      "accepted": {
+        "height": 0.24276000000000003,
+        "role": "normal",
+        "width": 0.20359171875
+      },
+      "definition": {
+        "source": "label(P_2, $P_2$)",
+        "tree": {
+          "args": [
+            {
+              "id": "P_2",
+              "kind": "ref"
+            },
+            {
+              "kind": "text",
+              "segments": [
+                {
+                  "kind": "tex",
+                  "source": "P_2"
+                }
+              ]
+            }
+          ],
+          "kind": "call",
+          "name": "label"
+        }
+      },
+      "id": "lP2",
+      "properties": []
+    },
+    {
+      "accepted": {
+        "clipped": false,
+        "logical_length": 12.421699105985544,
+        "route": "direct"
+      },
+      "definition": {
+        "source": "arrow(E, T)",
+        "tree": {
+          "args": [
+            {
+              "id": "E",
+              "kind": "ref"
+            },
+            {
+              "id": "T",
+              "kind": "ref"
+            }
+          ],
+          "kind": "call",
+          "name": "arrow"
+        }
+      },
+      "id": "homothety",
+      "properties": [
+        {
+          "name": "head",
+          "value": {
+            "kind": "head",
+            "value": "forward"
+          }
+        },
+        {
+          "name": "bend",
+          "value": {
+            "expr": {
+              "dimension": "angle",
+              "kind": "number",
+              "source": "25deg",
+              "value": 25.0
+            },
+            "kind": "expr"
+          }
+        }
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "kind": "call",
+      "name": "tangent",
+      "args": [
+        {
+          "kind": "ref",
+          "id": "c1"
+        },
+        {
+          "kind": "ref",
+          "id": "c2"
+        }
+      ]
     }
   ],
   "solve": {
@@ -344,30 +638,35 @@
     "equations": 2,
     "rank": 2,
     "attempts": 3,
+    "outer_search_attempts": 1,
+    "measurement_passes": 1,
+    "routing_attempts": 0,
     "accepted_steps": 3,
-    "max_normalized_residual": 7.61926852747098e-15,
+    "max_normalized_residual": 1.1577809476730824e-14,
     "final_damping": 1.0000000000000002e-6,
     "dof": {
       "global_remaining": 2,
       "objects": [
         {
+          "class": "geometric",
           "id": "c1",
           "span": {
             "line": 12,
             "col": 1,
             "byte_start": 328,
-            "byte_end": 351
+            "byte_end": 342
           },
           "hint_settled_dofs": 2,
           "suggestion": "add a relation if unintended, e.g. on(c1, …) or vdist(…) == …"
         },
         {
+          "class": "geometric",
           "id": "c2",
           "span": {
             "line": 13,
             "col": 1,
-            "byte_start": 352,
-            "byte_end": 418
+            "byte_start": 343,
+            "byte_end": 404
           },
           "hint_settled_dofs": 2,
           "suggestion": "add a relation if unintended, e.g. on(c2, …) or vdist(…) == …"
@@ -379,8 +678,8 @@
         "span": {
           "line": 18,
           "col": 5,
-          "byte_start": 550,
-          "byte_end": 565
+          "byte_start": 536,
+          "byte_end": 551
         },
         "choice": "external circle tangency"
       }
@@ -391,9 +690,9 @@
       {
         "span": {
           "line": 13,
-          "col": 33,
-          "byte_start": 384,
-          "byte_end": 416
+          "col": 24,
+          "byte_start": 366,
+          "byte_end": 402
         },
         "max_normalized_residual": 0.0,
         "implicated_unknowns": [
@@ -405,10 +704,10 @@
         "span": {
           "line": 18,
           "col": 5,
-          "byte_start": 550,
-          "byte_end": 565
+          "byte_start": 536,
+          "byte_end": 551
         },
-        "max_normalized_residual": 7.61926852747098e-15,
+        "max_normalized_residual": 1.1577809476730824e-14,
         "implicated_unknowns": [
           "c1",
           "c2"

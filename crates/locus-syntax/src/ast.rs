@@ -1,4 +1,4 @@
-//! Serializable source AST for Locus 0 beta 5.
+//! Serializable source AST for Locus 0 beta 6.
 #![allow(
     missing_docs,
     reason = "AST fields mirror the normative grammar directly"
@@ -22,6 +22,12 @@ pub struct File {
 pub enum Statement {
     /// Object or annotation declaration.
     Op(OpStmt),
+    /// A reusable statement block.
+    Fn(FnStmt),
+    /// An ordered alias collection.
+    Group(GroupStmt),
+    /// A named invocation of a local function.
+    Call(CallStmt),
     /// Solver relation.
     Rel(RelStmt),
     /// Post-solve assertion.
@@ -38,13 +44,29 @@ impl Statement {
     /// Returns this statement's source span.
     #[must_use]
     pub const fn span(&self) -> Span {
+        if let Self::Fn(value) = self {
+            return value.span;
+        }
+        if let Self::Group(value) = self {
+            return value.span;
+        }
+        if let Self::Call(value) = self {
+            return value.span;
+        }
+        if let Self::Class(value) = self {
+            return value.span;
+        }
+        if let Self::Meta(value) = self {
+            return value.span;
+        }
+        if let Self::Style(value) = self {
+            return value.span;
+        }
         match self {
             Self::Op(value) => value.span,
             Self::Rel(value) => value.span,
             Self::Assert(value) => value.span,
-            Self::Meta(value) => value.span,
-            Self::Style(value) => value.span,
-            Self::Class(value) => value.span,
+            _ => unreachable!(),
         }
     }
 }
@@ -130,6 +152,41 @@ pub struct OpStmt {
     pub span: Span,
 }
 
+impl OpStmt {
+    /// Whether the source used `kind id(args)` rather than `kind id = rhs`.
+    #[must_use]
+    pub fn is_constructor_declaration(&self) -> bool {
+        matches!(&self.ctor, Constructor::Call { name, .. } if name.span.byte_start < self.id.span.byte_start)
+    }
+}
+
+/// A reusable file-local statement block.
+#[derive(Clone, Debug, PartialEq, Serialize)]
+pub struct FnStmt {
+    pub name: Ident,
+    pub params: Vec<Ident>,
+    pub body: Vec<Statement>,
+    pub span: Span,
+}
+
+/// An ordered collection of existing object or collection references.
+#[derive(Clone, Debug, PartialEq, Serialize)]
+pub struct GroupStmt {
+    pub name: Ident,
+    pub members: Vec<Expr>,
+    pub span: Span,
+}
+
+/// A named invocation, retaining editable arguments and fallback style.
+#[derive(Clone, Debug, PartialEq, Serialize)]
+pub struct CallStmt {
+    pub function: Ident,
+    pub id: Ident,
+    pub args: Vec<Expr>,
+    pub attr: Option<StyleAttr>,
+    pub span: Span,
+}
+
 /// The right-hand side of an object declaration.
 #[derive(Clone, Debug, PartialEq, Serialize)]
 #[serde(tag = "type", rename_all = "snake_case")]
@@ -159,6 +216,7 @@ impl Constructor {
 #[derive(Clone, Debug, PartialEq, Serialize)]
 pub struct RelStmt {
     pub expr: Expr,
+    pub props: Props,
     pub span: Span,
 }
 

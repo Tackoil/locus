@@ -9,11 +9,11 @@ use std::path::Path;
 use std::time::Duration;
 
 use criterion::{Criterion, criterion_group, criterion_main};
-use locus_core::{evaluate_assertions, solve};
-use locus_layout::{LayoutOptions, boxes::measure_scene, layout};
+use locus_core::{evaluate_assertions_with_inputs, solve_with_inputs};
+use locus_layout::{LayoutOptions, measurement::measure_file, solve_layout};
 use locus_render::{RenderOptions, render_svg, style::StyleSheet};
 use locus_syntax::{File, parse};
-use locus_tex::{FontSize, PlaintextEngine, RexEngine};
+use locus_tex::{PlaintextEngine, RexEngine};
 
 const SOURCE: &str = include_str!("../../../spec/test/stress/tangent_internal_branches.locus");
 
@@ -32,28 +32,25 @@ fn parse_source(source: &str) -> Result<File, Box<dyn Error>> {
 
 fn render_source(source: &str) -> Result<String, Box<dyn Error>> {
     let file = parse_source(source)?;
-    let solved = solve(&file)?;
-    let assertions = evaluate_assertions(&file, &solved.scene)?;
+    let (inputs, measured) = measure_file(
+        &file,
+        &PlaintextEngine::new(),
+        &RexEngine,
+        locus_core::preset::LayoutMetrics::default(),
+    )?;
+    let options = LayoutOptions {
+        em_size: inputs.metrics.em_size,
+        ..LayoutOptions::default()
+    };
+    let (scene, placed) = solve_layout(&file, inputs, &measured, options)?;
+    let resolved = scene.resolved().ok_or("accepted benchmark scene")?;
+    let assertions = evaluate_assertions_with_inputs(&file, resolved, &scene.inputs)?;
     if !assertions.passed {
         return Err("benchmark fixture failed its assertions".into());
     }
-    let measured = measure_scene(
-        &solved.scene,
-        &PlaintextEngine::new(),
-        &RexEngine,
-        FontSize::DEFAULT,
-    )?;
-    let placed = layout(
-        &solved.scene,
-        &measured,
-        LayoutOptions {
-            em_size: 0.28,
-            ..LayoutOptions::default()
-        },
-    )?;
-    let styles = StyleSheet::from_file(&file)?;
+    let styles = StyleSheet::from_file(&scene.file)?;
     Ok(render_svg(
-        &solved.scene,
+        resolved,
         &placed,
         &styles,
         RenderOptions::default(),
@@ -68,6 +65,17 @@ fn benchmark_pipeline(criterion: &mut Criterion) {
         parsed.diagnostics
     );
     let file = parsed.file;
+    let measured = measure_file(
+        &file,
+        &PlaintextEngine::new(),
+        &RexEngine,
+        locus_core::preset::LayoutMetrics::default(),
+    );
+    assert!(
+        measured.is_ok(),
+        "benchmark text measurements: {measured:?}"
+    );
+    let Ok((inputs, _)) = measured else { return };
     assert!(
         render_source(SOURCE).is_ok(),
         "benchmark fixture must complete the rendering pipeline"
@@ -78,7 +86,7 @@ fn benchmark_pipeline(criterion: &mut Criterion) {
         bencher.iter(|| parse(black_box(SOURCE)));
     });
     group.bench_function("solve", |bencher| {
-        bencher.iter(|| solve(black_box(&file)));
+        bencher.iter(|| solve_with_inputs(black_box(&file), black_box(&inputs)));
     });
     group.bench_function("end_to_end_svg", |bencher| {
         bencher.iter(|| render_source(black_box(SOURCE)));

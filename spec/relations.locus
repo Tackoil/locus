@@ -1,0 +1,662 @@
+locus 0 beta 6
+
+meta title = "Locus relations"
+meta note = "All 32 reference entries. Layout is specified entirely by relations; numeric values describe sample geometry, never positions."
+
+style textbook
+
+class box_style { accent: #20252B, weight: 1, fill: #FFFFFF }
+class blue_box { accent: #20252B, weight: 1, fill: #E7EDF5 }
+class guide { accent: #737C87, weight: 0.75 }
+class dashed_guide { accent: #737C87, weight: 0.75, stroke: dashed }
+class path_style { accent: #20252B, weight: 1.25 }
+class muted { accent: #737C87 }
+class cell_frame { accent: #D5DEE8, weight: 0.75, fill: none }
+
+fn block(text, width, height, appearance) {
+    rect shape(width, height) [appearance]
+    label caption(shape.center, text) { dir: center }
+}
+
+fn sample_segment(text, size) {
+    point A() { mark: none }
+    point B() { mark: none }
+    segment path(A, B) [guide]
+    rel length(path) == size
+    rel align_center_y(A, B)
+    rel gap_x(A, B)
+    label caption(text)
+    rel align_center_x(caption, path.midpoint)
+    rel gap_y(caption, path.midpoint)
+}
+
+fn panel_text(drawing, name, description) {
+    rect frame() [cell_frame]
+    label heading(name)
+    label caption(description)
+    rel gap_y(heading, drawing, caption)
+    rel contain(frame, heading, drawing, caption)
+    rel inset_top(heading, frame)
+    rel inset_left(heading, frame)
+    rel inset_bottom(caption, frame)
+    rel inset_left(caption, frame)
+    rel align_center_x(drawing, frame)
+}
+
+// expr == expr: Equal numeric measurements; length(s) == length(t) expresses segment congruence.
+fn equality_example() {
+    sample_segment s("length(s)", 2)
+    sample_segment t("length(t)", 2)
+    label equal_sign("=")
+    rel row(s, equal_sign, t)
+    group drawing(s, equal_sign, t)
+    assert length(s.path) == length(t.path)
+    panel_text text(drawing, "expr == expr", "Equal numeric measurements; length(s) ==\nlength(t) expresses segment congruence.")
+}
+
+// a < b / a > b / a <= b / a >= b: Compare numeric measurements with matching dimensions, strictly or inclusively.
+fn comparisons_example() {
+    sample_segment a("a", 1)
+    sample_segment b("b", 3)
+    rel column(a, b)
+    label comparison("a < b")
+    group segments(a, b)
+    rel gap_x(segments, comparison)
+    rel align_center_y(segments, comparison)
+    group drawing(segments, comparison)
+    assert length(a.path) < length(b.path)
+    assert length(b.path) > length(a.path)
+    assert length(a.path) <= length(b.path)
+    assert length(b.path) >= length(a.path)
+    panel_text text(drawing, "a < b / a > b / a <= b / a >= b", "Compare numeric measurements with matching\ndimensions, strictly or inclusively.")
+}
+
+// center(A, B): Align both measured centers; two points coincide. Sizing stays independent.
+fn centering_example() {
+    rect B(3, 2) [box_style]
+    label name_B("B")
+    rel inset_right(name_B, B)
+    rel inset_top(name_B, B)
+    block A("A", 1, 1, blue_box)
+    rel center(A.shape, B)
+    group drawing(B, name_B, A.shape)
+    panel_text text(drawing, "center(A, B)", "Align both measured centers; two points\ncoincide. Sizing stays independent.")
+}
+
+// align_center_x(A, B): Shared horizontal center; points share an x position. No ordering or separation.
+fn center_x_example() {
+    block A("A", 1, 1, box_style)
+    block B("B", 2, 1, box_style)
+    rel align_center_x(A.shape, B.shape)
+    rel gap_y(A.shape, B.shape)
+    group drawing(A.shape, B.shape)
+    panel_text text(drawing, "align_center_x(A, B)", "Shared horizontal center; points share an x\nposition. No ordering or separation.")
+}
+
+// align_center_y(A, B): Shared vertical center; points share a y position. No ordering or separation.
+fn center_y_example() {
+    block A("A", 1, 2, box_style)
+    block B("B", 2, 1, box_style)
+    rel align_center_y(A.shape, B.shape)
+    rel gap_x(A.shape, B.shape)
+    group drawing(A.shape, B.shape)
+    panel_text text(drawing, "align_center_y(A, B)", "Shared vertical center; points share a y\nposition. No ordering or separation.")
+}
+
+// align_left(A, B): Align left bounds; other placement stays free.
+fn left_example() {
+    block A("A", 1, 1, box_style)
+    block B("B", 3, 1, box_style)
+    rel align_left(A.shape, B.shape)
+    rel gap_y(A.shape, B.shape)
+    group drawing(A.shape, B.shape)
+    panel_text text(drawing, "align_left(A, B)", "Align left bounds; other placement stays\nfree.")
+}
+
+// align_right(A, B): Align right bounds; other placement stays free.
+fn right_example() {
+    block A("A", 1, 1, box_style)
+    block B("B", 3, 1, box_style)
+    rel align_right(A.shape, B.shape)
+    rel gap_y(A.shape, B.shape)
+    group drawing(A.shape, B.shape)
+    panel_text text(drawing, "align_right(A, B)", "Align right bounds; other placement stays\nfree.")
+}
+
+// align_top(A, B): Align top bounds; other placement stays free.
+fn top_example() {
+    block A("A", 1, 1, box_style)
+    block B("B", 1, 2, box_style)
+    rel align_top(A.shape, B.shape)
+    rel gap_x(A.shape, B.shape)
+    group drawing(A.shape, B.shape)
+    panel_text text(drawing, "align_top(A, B)", "Align top bounds; other placement stays free.")
+}
+
+// align_bottom(A, B): Align bottom bounds; other placement stays free.
+fn bottom_example() {
+    block A("A", 1, 1, box_style)
+    block B("B", 1, 2, box_style)
+    rel align_bottom(A.shape, B.shape)
+    rel gap_x(A.shape, B.shape)
+    group drawing(A.shape, B.shape)
+    panel_text text(drawing, "align_bottom(A, B)", "Align bottom bounds; other placement stays\nfree.")
+}
+
+// gap_x(A, B): Left-to-right bounds separation with an automatic gap; no alignment.
+fn horizontal_gap_example() {
+    block A("A", 1, 1, box_style)
+    block B("B", 1, 1, box_style)
+    rel gap_x(A.shape, B.shape)
+    rel gap_y(A.shape, B.shape)
+    group drawing(A.shape, B.shape)
+    panel_text text(drawing, "gap_x(A, B)", "Left-to-right bounds separation with an\nautomatic gap; no alignment.")
+}
+
+// gap_y(A, B, C): Top-to-bottom bounds separation with automatic gaps; no alignment.
+fn vertical_gap_example() {
+    block A("A", 1, 1, box_style)
+    block B("B", 1, 1, box_style)
+    block C("C", 1, 1, box_style)
+    rel gap_y(A.shape, B.shape, C.shape)
+    rel gap_x(A.shape, B.shape, C.shape)
+    group drawing(A.shape, B.shape, C.shape)
+    panel_text text(drawing, "gap_y(A, B, C)", "Top-to-bottom bounds separation with\nautomatic gaps; no alignment.")
+}
+
+// row(A, B, C): Left-to-right order with shared vertical center.
+fn ordered_row_example() {
+    block A("A", 1, 1, box_style)
+    block B("B", 1, 2, box_style)
+    block C("C", 1, 1, box_style)
+    rel row(A.shape, B.shape, C.shape)
+    group drawing(A.shape, B.shape, C.shape)
+    panel_text text(drawing, "row(A, B, C)", "Left-to-right order with shared vertical\ncenter.")
+}
+
+// column(A, B, C): Top-to-bottom order with shared horizontal center.
+fn ordered_column_example() {
+    block A("A", 1, 1, box_style)
+    block B("B", 2, 1, box_style)
+    block C("C", 1, 1, box_style)
+    rel column(A.shape, B.shape, C.shape)
+    group drawing(A.shape, B.shape, C.shape)
+    panel_text text(drawing, "column(A, B, C)", "Top-to-bottom order with shared horizontal\ncenter.")
+}
+
+// inset_left(A, B): Inner left margin, or shared border with padding: none; y stays free.
+fn left_inset_example() {
+    rect B(3, 2) [box_style]
+    label name_B("B")
+    rel inset_right(name_B, B)
+    rel inset_top(name_B, B)
+    block A("A", 1, 1, blue_box)
+    rel inset_left(A.shape, B)
+    rel align_center_y(A.shape, B)
+    group drawing(B, name_B, A.shape)
+    panel_text text(drawing, "inset_left(A, B)", "Inner left margin, or shared border with\npadding: none; y stays free.")
+}
+
+// inset_right(A, B): Inner right margin, or shared border with padding: none; y stays free.
+fn right_inset_example() {
+    rect B(3, 2) [box_style]
+    label name_B("B")
+    rel inset_left(name_B, B)
+    rel inset_top(name_B, B)
+    block A("A", 1, 1, blue_box)
+    rel inset_right(A.shape, B)
+    rel align_center_y(A.shape, B)
+    group drawing(B, name_B, A.shape)
+    panel_text text(drawing, "inset_right(A, B)", "Inner right margin, or shared border with\npadding: none; y stays free.")
+}
+
+// inset_top(A, B): Inner top margin, or shared border with padding: none; x stays free.
+fn top_inset_example() {
+    rect B(3, 2) [box_style]
+    label name_B("B")
+    rel inset_right(name_B, B)
+    rel inset_bottom(name_B, B)
+    block A("A", 1, 1, blue_box)
+    rel inset_top(A.shape, B)
+    rel align_center_x(A.shape, B)
+    group drawing(B, name_B, A.shape)
+    panel_text text(drawing, "inset_top(A, B)", "Inner top margin, or shared border with\npadding: none; x stays free.")
+}
+
+// inset_bottom(A, B): Inner bottom margin, or shared border with padding: none; x stays free.
+fn bottom_inset_example() {
+    rect B(3, 2) [box_style]
+    label name_B("B")
+    rel inset_right(name_B, B)
+    rel inset_top(name_B, B)
+    block A("A", 1, 1, blue_box)
+    rel inset_bottom(A.shape, B)
+    rel align_center_x(A.shape, B)
+    group drawing(B, name_B, A.shape)
+    panel_text text(drawing, "inset_bottom(A, B)", "Inner bottom margin, or shared border with\npadding: none; x stays free.")
+}
+
+// cover_x(A, B, C): A covers their horizontal extent; height and y stay free.
+fn horizontal_cover_example() {
+    rect A(4, 1) [blue_box]
+    label name_A(A.center, "A") { dir: center }
+    block B("B", 1, 1, box_style)
+    block C("C", 2, 1, box_style)
+    rel row(B.shape, C.shape)
+    rel cover_x(A, B.shape, C.shape)
+    group content(B.shape, C.shape)
+    rel gap_y(A, content)
+    group drawing(A, content)
+    panel_text text(drawing, "cover_x(A, B, C)", "A covers their horizontal extent; height and\ny stay free.")
+}
+
+// cover_y(A, B, C): A covers their vertical extent; width and x stay free.
+fn vertical_cover_example() {
+    rect A(1, 3) [blue_box]
+    label name_A(A.center, "A") { dir: center }
+    block B("B", 1, 1, box_style)
+    block C("C", 2, 1, box_style)
+    rel column(B.shape, C.shape)
+    rel inset_top(B.shape, A)
+    rel inset_bottom(C.shape, A)
+    assert cover_y(A, B.shape, C.shape)
+    group content(B.shape, C.shape)
+    rel gap_x(A, content)
+    group drawing(A, content)
+    panel_text text(drawing, "cover_y(A, B, C)", "A covers their vertical extent; width and x\nstay free.")
+}
+
+// contain(B, A): Enclose all of A’s measured bounds in B’s actual interior, with style padding.
+fn containment_example() {
+    rect B(3, 3) [box_style]
+    label name_B("B")
+    rel inset_left(name_B, B)
+    rel inset_top(name_B, B)
+    block A("A", 1, 1, blue_box)
+    rel contain(B, A.shape)
+    rel gap_y(name_B, A.shape)
+    rel inset_left(name_B, B)
+    rel inset_top(name_B, B)
+    rel inset_right(A.shape, B)
+    rel inset_bottom(A.shape, B)
+    group drawing(B, name_B, A.shape)
+    panel_text text(drawing, "contain(B, A)", "Enclose all of A’s measured bounds in B’s\nactual interior, with style padding.")
+}
+
+// inside(P, obj): P is strictly inside a circle, ellipse, or simple polygon; boundary points are excluded.
+fn interior_example() {
+    circle obj(1)
+    point P = midpoint(obj.center, obj.at(0deg))
+    label name_P("P")
+    rel gap_y(name_P, P)
+    rel align_center_x(name_P, P)
+    label name_obj("obj")
+    rel align_center_x(name_obj, obj.at(90deg))
+    rel gap_y(name_obj, obj.at(90deg))
+    group drawing(obj, P, name_P, name_obj)
+    assert inside(P, obj)
+    panel_text text(drawing, "inside(P, obj)", "P is strictly inside a circle, ellipse, or\nsimple polygon; boundary points are excluded.")
+}
+
+// on(P, obj): P lies on supported geometry; closed endpoints count. Ellipses are supported.
+fn incidence_example() {
+    sample_segment linear("linear", 1.5)
+    point P = linear.path.midpoint
+    label name_P("P")
+    rel align_center_x(name_P, P)
+    rel gap_y(P, name_P)
+    group linear_sample(linear, P, name_P)
+    circle c(0.75)
+    point Q = c.at(90deg)
+    label name_Q("P")
+    rel align_center_x(name_Q, Q)
+    rel gap_y(name_Q, Q)
+    label name_c("circle")
+    rel align_center_x(name_c, c.at(270deg))
+    rel gap_y(c.at(270deg), name_c)
+    group circle_sample(c, Q, name_Q, name_c)
+    ellipse e(0.75, 0.5)
+    point R = e.at(90deg)
+    label name_R("P")
+    rel align_center_x(name_R, R)
+    rel gap_y(name_R, R)
+    label name_e("ellipse")
+    rel align_center_x(name_e, e.at(270deg))
+    rel gap_y(e.at(270deg), name_e)
+    group ellipse_sample(e, R, name_R, name_e)
+    rel gap_x(linear_sample, circle_sample, ellipse_sample)
+    rel align_center_y(linear.path, c, e)
+    group drawing(linear_sample, circle_sample, ellipse_sample)
+    assert on(P, linear.path) and on(Q, c) and on(R, e)
+    panel_text text(drawing, "on(P, obj)", "P lies on supported geometry; closed\nendpoints count. Ellipses are supported.")
+}
+
+// avoid(path, obstacle): Keep listed geometry clear with automatic clearance.
+fn avoidance_example() {
+    block obstacle("obstacle", 2, 1, box_style)
+    point start() { mark: none }
+    point end() { mark: none }
+    rel align_center_y(start, obstacle.shape.center, end)
+    rel gap_x(start, obstacle.shape, end)
+    rel dist(start, end) == 4
+    rel align_center_x(obstacle.shape, seg(start, end))
+    arrow path(start, end) [path_style] { bend: 45deg }
+    label name_path("path")
+    rel align_center_x(name_path, obstacle.shape)
+    rel gap_y(name_path, path)
+    assert avoid(path, obstacle.shape)
+    group drawing(obstacle.shape, start, end, path, name_path)
+    panel_text text(drawing, "avoid(path, obstacle)", "Keep listed geometry clear with automatic\nclearance.")
+}
+
+// trim_endpoints(path, B): Clip interior path ends to B; retain original points.
+fn endpoint_trimming_example() {
+    rect B(2, 2) [box_style]
+    label name_B("B")
+    rel inset_right(name_B, B)
+    rel inset_top(name_B, B)
+    point start() { mark: none }
+    point end = B.center
+    rel align_center_y(start, end)
+    rel gap_x(start, B)
+    arrow path(start, end) [path_style]
+    rel path.length == 4
+    rel trim_endpoints(path, B)
+    segment hidden_tail(B.w, end) [dashed_guide]
+    label note("dot = original endpoint")
+    rel align_center_x(note, B.s)
+    rel gap_y(B.s, note)
+    group drawing(B, name_B, start, end, path, hidden_tail, note)
+    panel_text text(drawing, "trim_endpoints(path, B)", "Clip interior path ends to B; retain original\npoints.")
+}
+
+// tangent(c, obj): Circle touches a linear object or another circle externally; closed endpoint contact counts.
+fn external_tangency_example() {
+    point A() { mark: none }
+    point B() { mark: none }
+    segment linear(A, B) [guide]
+    rel length(linear) == 3
+    rel align_center_y(A, B)
+    rel gap_x(A, B)
+    label name_linear("linear object")
+    rel align_center_x(name_linear, linear)
+    rel gap_y(linear, name_linear)
+    circle c(1)
+    rel center(c.at(270deg), linear.midpoint)
+    label name_c(c.center, "c") { dir: center }
+    point contact = foot(c.center, linear)
+    group linear_sample(linear, name_linear, c, contact)
+    circle c1(0.75)
+    circle c2(0.5)
+    rel center(c1.at(0deg), c2.at(180deg))
+    label name_c1(c1.center, "c") { dir: center }
+    label name_c2(c2.center, "c2") { dir: center }
+    point contact_circles = c1.at(0deg)
+    group circle_sample(c1, c2, contact_circles)
+    rel gap_x(linear_sample, circle_sample)
+    rel align_center_y(linear_sample, circle_sample)
+    group drawing(linear_sample, circle_sample)
+    assert tangent(c, linear)
+    assert tangent(c1, c2)
+    panel_text text(drawing, "tangent(c, obj)", "Circle touches a linear object or another\ncircle externally; closed endpoint contact\ncounts.")
+}
+
+// internally_tangent(outer, inner): Inner circle touches outer internally; outer radius must be strictly larger.
+fn internal_tangency_example() {
+    circle outer(1.5)
+    circle inner(0.75)
+    rel center(outer.at(0deg), inner.at(0deg))
+    point contact = outer.at(0deg)
+    label name_inner(inner.center, "inner") { dir: center }
+    label name_outer("outer")
+    rel gap_y(name_outer, outer.at(135deg))
+    rel gap_x(name_outer, outer.at(135deg))
+    group drawing(outer, inner, contact, name_outer)
+    assert internally_tangent(outer, inner)
+    panel_text text(drawing, "internally_tangent(outer, inner)", "Inner circle touches outer internally; outer\nradius must be strictly larger.")
+}
+
+// parallel(l1, l2): Linear objects have parallel directions; both directions must be nonzero.
+fn parallel_lines_example() {
+    sample_segment l1("l1", 3)
+    sample_segment l2("l2", 3)
+    rel column(l1, l2)
+    group drawing(l1, l2)
+    assert parallel(l1.path, l2.path)
+    panel_text text(drawing, "parallel(l1, l2)", "Linear objects have parallel directions; both\ndirections must be nonzero.")
+}
+
+// perpendicular(l1, l2): Linear objects meet at a right angle; both directions must be nonzero.
+fn perpendicular_lines_example() {
+    point O() { mark: none }
+    point A() { mark: none }
+    point B() { mark: none }
+    segment l1(O, A) [guide]
+    segment l2(O, B) [guide]
+    rel length(l1) == 2 and length(l2) == 2
+    rel align_center_y(O, A)
+    rel gap_x(O, A)
+    rel gap_y(B, O)
+    rel perpendicular(l1, l2)
+    right_angle corner(O, A, B)
+    label name_l1("l1")
+    rel align_center_x(name_l1, l1.midpoint)
+    rel gap_y(l1.midpoint, name_l1)
+    label name_l2("l2")
+    rel align_center_y(name_l2, l2.midpoint)
+    rel gap_x(name_l2, l2.midpoint)
+    group drawing(l1, l2, name_l1, name_l2)
+    assert perpendicular(l1, l2)
+    panel_text text(drawing, "perpendicular(l1, l2)", "Linear objects meet at a right angle; both\ndirections must be nonzero.")
+}
+
+// collinear(A, B, C, ...): All points share the line through distinct A and B; their order is unrestricted.
+fn collinearity_example() {
+    point A()
+    point B()
+    segment path(A, B) [guide]
+    rel length(path) == 3
+    rel align_center_y(A, B)
+    rel gap_x(A, B)
+    point C = midpoint(A, B)
+    label name_A("A")
+    rel align_center_x(name_A, A)
+    rel gap_y(name_A, A)
+    label name_B("B")
+    rel align_center_x(name_B, B)
+    rel gap_y(name_B, B)
+    label name_C("C")
+    rel align_center_x(name_C, C)
+    rel gap_y(name_C, C)
+    group drawing(A, B, C, path, name_A, name_B, name_C)
+    assert collinear(A, B, C)
+    panel_text text(drawing, "collinear(A, B, C, ...)", "All points share the line through distinct A\nand B; their order is unrestricted.")
+}
+
+// concyclic(A, B, C, D, ...): All points share the circumcircle of three distinct, non-collinear initial points.
+fn concyclicity_example() {
+    circle c(1)
+    point A = c.at(180deg)
+    point B = c.at(90deg)
+    point C = c.at(0deg)
+    point D = c.at(270deg)
+    label name_A("A")
+    rel align_center_y(name_A, A)
+    rel gap_x(name_A, A)
+    label name_B("B")
+    rel align_center_x(name_B, B)
+    rel gap_y(name_B, B)
+    label name_C("C")
+    rel align_center_y(name_C, C)
+    rel gap_x(C, name_C)
+    label name_D("D")
+    rel align_center_x(name_D, D)
+    rel gap_y(D, name_D)
+    group drawing(c, A, B, C, D, name_A, name_B, name_C, name_D)
+    assert concyclic(A, B, C, D)
+    panel_text text(drawing, "concyclic(A, B, C, D, ...)", "All points share the circumcircle of three\ndistinct, non-collinear initial points.")
+}
+
+// midpoint(M, A, B): M is halfway between A and B; A–M and M–B have equal lengths.
+fn midpoint_relation_example() {
+    point A()
+    point B()
+    segment path(A, B) [guide]
+    rel length(path) == 3
+    rel align_center_y(A, B)
+    rel gap_x(A, B)
+    point M = midpoint(A, B)
+    segment AM(A, M) [guide]
+    segment MB(M, B) [guide]
+    tick first_half(AM, 1)
+    tick second_half(MB, 1)
+    label name_A("A")
+    rel align_center_x(name_A, A)
+    rel gap_y(name_A, A)
+    label name_M("M")
+    rel align_center_x(name_M, M)
+    rel gap_y(name_M, M)
+    label name_B("B")
+    rel align_center_x(name_B, B)
+    rel gap_y(name_B, B)
+    group drawing(A, M, B, path, AM, MB, name_A, name_M, name_B)
+    assert midpoint(M, A, B)
+    panel_text text(drawing, "midpoint(M, A, B)", "M is halfway between A and B; A–M and M–B\nhave equal lengths.")
+}
+
+// between(A, B, C): B lies strictly between distinct A and C on their line; endpoints are excluded.
+fn betweenness_example() {
+    point A()
+    point C()
+    segment path(A, C) [guide]
+    rel length(path) == 3
+    rel align_center_y(A, C)
+    rel gap_x(A, C)
+    point B = midpoint(A, C)
+    label name_A("A")
+    rel align_center_x(name_A, A)
+    rel gap_y(name_A, A)
+    label name_B("B")
+    rel align_center_x(name_B, B)
+    rel gap_y(name_B, B)
+    label name_C("C")
+    rel align_center_x(name_C, C)
+    rel gap_y(name_C, C)
+    group drawing(A, B, C, path, name_A, name_B, name_C)
+    assert between(A, B, C)
+    panel_text text(drawing, "between(A, B, C)", "B lies strictly between distinct A and C on\ntheir line; endpoints are excluded.")
+}
+
+// The page is a four-column grid of automatically sized cells.
+label title("Locus relations") { role: title }
+equality_example equality()
+comparisons_example comparisons()
+centering_example centering()
+center_x_example center_x()
+center_y_example center_y()
+left_example left()
+right_example right()
+top_example top()
+bottom_example bottom()
+horizontal_gap_example horizontal_gap()
+vertical_gap_example vertical_gap()
+ordered_row_example ordered_row()
+ordered_column_example ordered_column()
+left_inset_example left_inset()
+right_inset_example right_inset()
+top_inset_example top_inset()
+bottom_inset_example bottom_inset()
+horizontal_cover_example horizontal_cover()
+vertical_cover_example vertical_cover()
+containment_example containment()
+interior_example interior()
+incidence_example incidence()
+avoidance_example avoidance()
+endpoint_trimming_example endpoint_trimming()
+external_tangency_example external_tangency()
+internal_tangency_example internal_tangency()
+parallel_lines_example parallel_lines()
+perpendicular_lines_example perpendicular_lines()
+collinearity_example collinearity()
+concyclicity_example concyclicity()
+midpoint_relation_example midpoint_relation()
+betweenness_example betweenness()
+group row_1(equality.text.frame, comparisons.text.frame, centering.text.frame, center_x.text.frame)
+rel row(equality.text.frame, comparisons.text.frame, centering.text.frame, center_x.text.frame)
+rel comparisons.text.frame.height == equality.text.frame.height
+rel centering.text.frame.height == equality.text.frame.height
+rel center_x.text.frame.height == equality.text.frame.height
+group row_2(center_y.text.frame, left.text.frame, right.text.frame, top.text.frame)
+rel row(center_y.text.frame, left.text.frame, right.text.frame, top.text.frame)
+rel left.text.frame.height == center_y.text.frame.height
+rel right.text.frame.height == center_y.text.frame.height
+rel top.text.frame.height == center_y.text.frame.height
+group row_3(bottom.text.frame, horizontal_gap.text.frame, vertical_gap.text.frame, ordered_row.text.frame)
+rel row(bottom.text.frame, horizontal_gap.text.frame, vertical_gap.text.frame, ordered_row.text.frame)
+rel horizontal_gap.text.frame.height == bottom.text.frame.height
+rel vertical_gap.text.frame.height == bottom.text.frame.height
+rel ordered_row.text.frame.height == bottom.text.frame.height
+group row_4(ordered_column.text.frame, left_inset.text.frame, right_inset.text.frame, top_inset.text.frame)
+rel row(ordered_column.text.frame, left_inset.text.frame, right_inset.text.frame, top_inset.text.frame)
+rel left_inset.text.frame.height == ordered_column.text.frame.height
+rel right_inset.text.frame.height == ordered_column.text.frame.height
+rel top_inset.text.frame.height == ordered_column.text.frame.height
+group row_5(bottom_inset.text.frame, horizontal_cover.text.frame, vertical_cover.text.frame, containment.text.frame)
+rel row(bottom_inset.text.frame, horizontal_cover.text.frame, vertical_cover.text.frame, containment.text.frame)
+rel horizontal_cover.text.frame.height == bottom_inset.text.frame.height
+rel vertical_cover.text.frame.height == bottom_inset.text.frame.height
+rel containment.text.frame.height == bottom_inset.text.frame.height
+group row_6(interior.text.frame, incidence.text.frame, avoidance.text.frame, endpoint_trimming.text.frame)
+rel row(interior.text.frame, incidence.text.frame, avoidance.text.frame, endpoint_trimming.text.frame)
+rel incidence.text.frame.height == interior.text.frame.height
+rel avoidance.text.frame.height == interior.text.frame.height
+rel endpoint_trimming.text.frame.height == interior.text.frame.height
+group row_7(external_tangency.text.frame, internal_tangency.text.frame, parallel_lines.text.frame, perpendicular_lines.text.frame)
+rel row(external_tangency.text.frame, internal_tangency.text.frame, parallel_lines.text.frame, perpendicular_lines.text.frame)
+rel internal_tangency.text.frame.height == external_tangency.text.frame.height
+rel parallel_lines.text.frame.height == external_tangency.text.frame.height
+rel perpendicular_lines.text.frame.height == external_tangency.text.frame.height
+group row_8(collinearity.text.frame, concyclicity.text.frame, midpoint_relation.text.frame, betweenness.text.frame)
+rel row(collinearity.text.frame, concyclicity.text.frame, midpoint_relation.text.frame, betweenness.text.frame)
+rel concyclicity.text.frame.height == collinearity.text.frame.height
+rel midpoint_relation.text.frame.height == collinearity.text.frame.height
+rel betweenness.text.frame.height == collinearity.text.frame.height
+rel column(equality.text.frame, center_y.text.frame, bottom.text.frame, ordered_column.text.frame, bottom_inset.text.frame, interior.text.frame, external_tangency.text.frame, collinearity.text.frame)
+rel column(comparisons.text.frame, left.text.frame, horizontal_gap.text.frame, left_inset.text.frame, horizontal_cover.text.frame, incidence.text.frame, internal_tangency.text.frame, concyclicity.text.frame)
+rel column(centering.text.frame, right.text.frame, vertical_gap.text.frame, right_inset.text.frame, vertical_cover.text.frame, avoidance.text.frame, parallel_lines.text.frame, midpoint_relation.text.frame)
+rel column(center_x.text.frame, top.text.frame, ordered_row.text.frame, top_inset.text.frame, containment.text.frame, endpoint_trimming.text.frame, perpendicular_lines.text.frame, betweenness.text.frame)
+rel comparisons.text.frame.width == equality.text.frame.width
+rel centering.text.frame.width == equality.text.frame.width
+rel center_x.text.frame.width == equality.text.frame.width
+rel center_y.text.frame.width == equality.text.frame.width
+rel left.text.frame.width == equality.text.frame.width
+rel right.text.frame.width == equality.text.frame.width
+rel top.text.frame.width == equality.text.frame.width
+rel bottom.text.frame.width == equality.text.frame.width
+rel horizontal_gap.text.frame.width == equality.text.frame.width
+rel vertical_gap.text.frame.width == equality.text.frame.width
+rel ordered_row.text.frame.width == equality.text.frame.width
+rel ordered_column.text.frame.width == equality.text.frame.width
+rel left_inset.text.frame.width == equality.text.frame.width
+rel right_inset.text.frame.width == equality.text.frame.width
+rel top_inset.text.frame.width == equality.text.frame.width
+rel bottom_inset.text.frame.width == equality.text.frame.width
+rel horizontal_cover.text.frame.width == equality.text.frame.width
+rel vertical_cover.text.frame.width == equality.text.frame.width
+rel containment.text.frame.width == equality.text.frame.width
+rel interior.text.frame.width == equality.text.frame.width
+rel incidence.text.frame.width == equality.text.frame.width
+rel avoidance.text.frame.width == equality.text.frame.width
+rel endpoint_trimming.text.frame.width == equality.text.frame.width
+rel external_tangency.text.frame.width == equality.text.frame.width
+rel internal_tangency.text.frame.width == equality.text.frame.width
+rel parallel_lines.text.frame.width == equality.text.frame.width
+rel perpendicular_lines.text.frame.width == equality.text.frame.width
+rel collinearity.text.frame.width == equality.text.frame.width
+rel concyclicity.text.frame.width == equality.text.frame.width
+rel midpoint_relation.text.frame.width == equality.text.frame.width
+rel betweenness.text.frame.width == equality.text.frame.width
+label footer("Combine conditions with and, or, and not. Insets accept padding: none for shared borders.") [muted]
+rel gap_y(title, row_1)
+rel gap_y(row_8, footer)
+rel align_left(title, row_1, footer)

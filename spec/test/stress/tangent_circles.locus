@@ -1,7 +1,7 @@
-locus 0 beta 5
+locus 0 beta 6
 
 meta title = "Externally tangent circles with a common external tangent"
-meta note = "0 beta 5 showcase: tangency is stated once as a relation; the tangent point, center distance, and common tangent follow"
+meta note = "0 beta 6 showcase: tangency is stated once as a relation; the tangent point, center distance, and common tangent follow"
 
 style textbook
 
@@ -9,9 +9,9 @@ style textbook
 num r_1 = 2
 num r_2 = 3
 
-circle c1 = circle(r_1)
+circle c1(r_1)
 point O_1 = c1.center
-circle c2 = circle(r_2) where { horizontal(O_1, c2.center), hdist(O_1, c2.center) == r_1 + r_2 }
+circle c2(r_2) where { align_center_y(O_1, c2.center), hdist(O_1, c2.center) == r_1 + r_2 }
 point O_2 = c2.center
 
 // External tangency is explicit; the signed separation orders the centers.
@@ -35,21 +35,21 @@ point P_1 = foot(O_1, t_ext)
 // its touch point on the second circle — exact, so constructed
 point P_2 = foot(O_2, t_ext)
 
-segment s1 = seg(O_1, P_1)   [auxiliary]
-segment s2 = seg(O_2, P_2)   [auxiliary]
+segment s1(O_1, P_1)   [auxiliary]
+segment s2(O_2, P_2)   [auxiliary]
 
-right_angle q1 = right_angle(P_1, O_1, E)
-right_angle q2 = right_angle(P_2, O_2, E)
+right_angle q1(P_1, O_1, E)
+right_angle q2(P_2, O_2, E)
 
 // ---- annotation ------------------------------------------
-label lO1 = label(O_1, $O_1$)  { dir: S }
-label lO2 = label(O_2, $O_2$)  { dir: S }
-label lT  = label(T, $T$)      { dir: SE }
-label lE  = label(E, $E$)      { dir: S }
-label lP1 = label(P_1, $P_1$)
-label lP2 = label(P_2, $P_2$)
+label lO1(O_1, $O_1$)  { dir: S }
+label lO2(O_2, $O_2$)  { dir: S }
+label lT(T, $T$)      { dir: SE }
+label lE(E, $E$)      { dir: S }
+label lP1(P_1, $P_1$)
+label lP2(P_2, $P_2$)
 
-arrow hint = arrow(E, T)  [construction]  { head: ->, bend: 25deg }
+arrow hint(E, T)  [construction]  { head: ->, bend: 25deg }
 
 // ---- intent ----------------------------------------------
 // (no assert tangent(c1, c2): restating a rel is a no-op test, §7.4)
@@ -62,7 +62,7 @@ assert ratio(dist(E, O_1), dist(E, O_2)) == r_1 / r_2
 
 // ---- stress construction network ----
 // A noncollinear circle is solved against both original circles, then feeds a contact chain.
-circle chainc0 = circle(1.25) [highlight]
+circle chainc0(1.25) [highlight]
 point chain0 = chainc0.center
 rel tangent(chainc0, c1)
 rel tangent(chainc0, c2)
@@ -72,7 +72,7 @@ assert on(chain_touch1, c1) and on(chain_touch1, chainc0)
 assert on(chain_touch2, c2) and on(chain_touch2, chainc0)
 num chainr1 = 0.470
 point chain1 = offset(chain0, 1.720, 0) { mark: none }
-circle chainc1 = circle(chain1, chainr1) [auxiliary]
+circle chainc1(chain1, chainr1) [auxiliary]
 point ct1 = lerp(chain0, chain1, 1.250 / (1.250 + chainr1)) { mark: none }
 line ctl1 = perpendicular(ct1, line(chain0, chain1)) [construction]
 point ce1 = lerp(chain0, chain1, 1.250 / (1.250 - chainr1)) { mark: none }
@@ -84,7 +84,7 @@ assert tangent(chainc0, cet1)
 assert perpendicular(seg(chain1, cf1), cet1)
 num chainr2 = 0.540
 point chain2 = offset(chain1, 1.010, 0) { mark: none }
-circle chainc2 = circle(chain2, chainr2) [auxiliary]
+circle chainc2(chain2, chainr2) [auxiliary]
 point ct2 = lerp(chain1, chain2, 0.470 / (0.470 + chainr2)) { mark: none }
 line ctl2 = perpendicular(ct2, line(chain1, chain2)) [construction]
 point ce2 = lerp(chain1, chain2, 0.470 / (0.470 - chainr2)) { mark: none }
@@ -96,7 +96,7 @@ assert tangent(chainc1, cet2)
 assert perpendicular(seg(chain2, cf2), cet2)
 num chainr3 = 0.610
 point chain3 = offset(chain2, 1.150, 0) { mark: none }
-circle chainc3 = circle(chain3, chainr3) [auxiliary]
+circle chainc3(chain3, chainr3) [auxiliary]
 point ct3 = lerp(chain2, chain3, 0.540 / (0.540 + chainr3)) { mark: none }
 line ctl3 = perpendicular(ct3, line(chain2, chain3)) [construction]
 point ce3 = lerp(chain2, chain3, 0.540 / (0.540 - chainr3)) { mark: none }
@@ -108,7 +108,7 @@ assert tangent(chainc2, cet3)
 assert perpendicular(seg(chain3, cf3), cet3)
 num chainr4 = 0.680
 point chain4 = offset(chain3, 1.290, 0) { mark: none }
-circle chainc4 = circle(chain4, chainr4) [auxiliary]
+circle chainc4(chain4, chainr4) [auxiliary]
 point ct4 = lerp(chain3, chain4, 0.610 / (0.610 + chainr4)) { mark: none }
 line ctl4 = perpendicular(ct4, line(chain3, chain4)) [construction]
 point ce4 = lerp(chain3, chain4, 0.610 / (0.610 - chainr4)) { mark: none }
@@ -120,7 +120,7 @@ assert tangent(chainc3, cet4)
 assert perpendicular(seg(chain4, cf4), cet4)
 num chainr5 = 0.750
 point chain5 = offset(chain4, 1.430, 0) { mark: none }
-circle chainc5 = circle(chain5, chainr5) [auxiliary]
+circle chainc5(chain5, chainr5) [auxiliary]
 point ct5 = lerp(chain4, chain5, 0.680 / (0.680 + chainr5)) { mark: none }
 line ctl5 = perpendicular(ct5, line(chain4, chain5)) [construction]
 point ce5 = lerp(chain4, chain5, 0.680 / (0.680 - chainr5)) { mark: none }
@@ -132,7 +132,7 @@ assert tangent(chainc4, cet5)
 assert perpendicular(seg(chain5, cf5), cet5)
 num chainr6 = 0.820
 point chain6 = offset(chain5, 1.570, 0) { mark: none }
-circle chainc6 = circle(chain6, chainr6) [auxiliary]
+circle chainc6(chain6, chainr6) [auxiliary]
 point ct6 = lerp(chain5, chain6, 0.750 / (0.750 + chainr6)) { mark: none }
 line ctl6 = perpendicular(ct6, line(chain5, chain6)) [construction]
 point ce6 = lerp(chain5, chain6, 0.750 / (0.750 - chainr6)) { mark: none }
@@ -144,7 +144,7 @@ assert tangent(chainc5, cet6)
 assert perpendicular(seg(chain6, cf6), cet6)
 num chainr7 = 0.890
 point chain7 = offset(chain6, 1.710, 0) { mark: none }
-circle chainc7 = circle(chain7, chainr7) [auxiliary]
+circle chainc7(chain7, chainr7) [auxiliary]
 point ct7 = lerp(chain6, chain7, 0.820 / (0.820 + chainr7)) { mark: none }
 line ctl7 = perpendicular(ct7, line(chain6, chain7)) [construction]
 point ce7 = lerp(chain6, chain7, 0.820 / (0.820 - chainr7)) { mark: none }

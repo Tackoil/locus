@@ -34,8 +34,8 @@ fn segment(a: Point, b: Point) -> ResolvedObject {
 }
 fn styles(source: &str) -> StyleSheet {
     let source = source.replacen(
-        "locus 0 beta 5\n",
-        "locus 0 beta 5\npoint a = point()\npoint b = point()\npoint c = point()\n",
+        "locus 0 beta 6\n",
+        "locus 0 beta 6\npoint a()\npoint b()\npoint c()\n",
         1,
     );
     let parsed = locus_syntax::parse(&source);
@@ -44,6 +44,7 @@ fn styles(source: &str) -> StyleSheet {
 }
 fn empty_layout() -> LayoutScene {
     LayoutScene {
+        visible_paths: std::collections::BTreeMap::default(),
         annotations: IndexMap::new(),
         geometry_bbox: bounds(p(0.0, 0.0), p(6.0, 4.0)),
         bbox: bounds(p(-100.0, -100.0), p(100.0, 100.0)),
@@ -89,6 +90,7 @@ fn label(name: &str, bbox: BBox, measured: TexBox) -> PlacedAnnotation {
     PlacedAnnotation {
         id: id(name),
         spec: AnnotationSpec::Label {
+            path: None,
             anchor: AnchorSpec::Point(p(0.0, 0.0)),
             text: TextValue {
                 segments: Vec::new(),
@@ -96,6 +98,7 @@ fn label(name: &str, bbox: BBox, measured: TexBox) -> PlacedAnnotation {
             },
             direction: LabelDirection::Center,
             gap: None,
+            bounds: None,
         },
         bounds: bbox,
         text: Some(LabelBox {
@@ -156,7 +159,7 @@ fn triangle() -> (ResolvedScene, LayoutScene, StyleSheet) {
     });
     layout.annotations.insert("caption".into(), annotation);
     let sheet = styles(
-        "locus 0 beta 5\nclass region { fill: tint, accent: #0F766E, opacity: 0.85, join: round }\nclass signal { weight: 1.5, stroke: dash(6, 3, 2), accent: #2563EB, cap: square }\npolygon face = polygon(a, b, c) [region]\nsegment ab = seg(a, b) [signal]\nlabel caption = label(a, \"A\") [highlight]\n",
+        "locus 0 beta 6\nclass region { fill: tint, accent: #0F766E, opacity: 0.85, join: round }\nclass signal { weight: 1.5, stroke: dash(6, 3, 2), accent: #2563EB, cap: square }\npolygon face(a, b, c) [region]\nsegment ab(a, b) [signal]\nlabel caption(a, \"A\") [highlight]\n",
     );
     (scene, layout, sheet)
 }
@@ -215,6 +218,8 @@ fn circles() -> (ResolvedScene, LayoutScene, StyleSheet) {
     let mut arrow = label("arrow", bounds(p(0.0, -1.0), p(4.0, 1.0)), TexBox::empty());
     arrow.text = None;
     arrow.spec = AnnotationSpec::Arrow {
+        label_bounds: None,
+        route: None,
         from: AnchorSpec::Point(p(0.0, 0.0)),
         to: AnchorSpec::Point(p(4.0, 0.0)),
         head: HeadKind::Both,
@@ -233,7 +238,7 @@ fn circles() -> (ResolvedScene, LayoutScene, StyleSheet) {
     layout.annotations.insert("arrow".into(), arrow);
     layout.annotations.insert("formula".into(),label("formula",bounds(p(1.0,4.5),p(3.0,5.5)),TexBox::new("<g transform=\"translate(0 -0.5)\"><rect x=\"0\" y=\"0\" width=\"2\" height=\"0.05\"/><path d=\"M0 0 C0.5 -0.5 1.5 -0.5 2 0\"/></g>",BoxMetrics::new(2.0,1.0,0.0))));
     let sheet = styles(
-        "locus 0 beta 5\nline axis = line(a, b) [construction]\nray ray = ray(a, b) [auxiliary]\narc ccw = arc(c, a, b) [highlight]\n",
+        "locus 0 beta 6\nline axis(a, b) [construction]\nray ray(a, b) [auxiliary]\narc ccw(c, a, b, true) [highlight]\n",
     );
     (scene, layout, sheet)
 }
@@ -513,7 +518,7 @@ fn optional_background_covers_the_viewport_before_content() {
 fn alpha_scene(alpha: &str) -> (ResolvedScene, LayoutScene, StyleSheet) {
     let (scene, layout, _) = triangle();
     let parsed = locus_syntax::parse(&format!(
-        "locus 0 beta 5\nclass transparent {{ accent: #FF0000{alpha}, fill: #0000FF80, opacity: 0.5 }}\npoint a = point() [transparent]\npoint b = point() [transparent]\npoint c = point()\npolygon face = polygon(a, b, c) [transparent]\nsegment ab = seg(a, b) [transparent]\nlabel caption = label(a, \"A\") [transparent]\n"
+        "locus 0 beta 6\nclass transparent {{ accent: #FF0000{alpha}, fill: #0000FF80, opacity: 0.5 }}\npoint a() [transparent]\npoint b() [transparent]\npoint c()\npolygon face(a, b, c) [transparent]\nsegment ab(a, b) [transparent]\nlabel caption(a, \"A\") [transparent]\n"
     ));
     assert!(parsed.diagnostics.is_empty(), "{:?}", parsed.diagnostics);
     let sheet = StyleSheet::from_file(&parsed.file).expect("styles");
@@ -578,4 +583,156 @@ fn png_composes_color_alpha_with_object_opacity() {
             .any(|p| p.alpha() == 64 && p.blue() == 64 && p.red() == 0)
     );
     assert!(pixmap.pixels().iter().any(|p| p.alpha() == 0));
+}
+
+#[test]
+fn automatic_routes_export_accepted_spans_and_controls_on_all_backends() {
+    for kind in ["orthogonal", "curved"] {
+        let parsed = locus_syntax::parse(&format!(
+            "locus 0 beta 6\npoint start()\npoint finish = offset(start, 0, 3)\narrow path(start, finish) {{ route: {kind}, side: right }}\nrel path.length == 7\n"
+        ));
+        assert!(parsed.diagnostics.is_empty());
+        let sheet = StyleSheet::from_file(&parsed.file).expect("route style");
+        let scene = locus_core::Scene::new(parsed.file).expect("solved route");
+        let resolved = scene.resolved().expect("accepted route");
+        let placed = locus_layout::layout(
+            resolved,
+            &locus_layout::TextBoxes::new(),
+            locus_layout::LayoutOptions::default(),
+        )
+        .expect("accepted route layout");
+        let svg =
+            render_svg(resolved, &placed, &sheet, RenderOptions::default()).expect("routed SVG");
+        let tikz =
+            render_tikz(resolved, &placed, &sheet, RenderOptions::default()).expect("routed TikZ");
+        assert_route_export_commands(&svg, &tikz, kind);
+        if kind == "orthogonal" {
+            assert!(matches!(
+                placed.annotations["path"].leader,
+                Leader::Routed { .. }
+            ));
+        } else {
+            assert!(matches!(
+                placed.annotations["path"].leader,
+                Leader::Arrow {
+                    control: Some(_),
+                    ..
+                }
+            ));
+        }
+        #[cfg(feature = "png")]
+        assert!(
+            !locus_render::png::render(resolved, &placed, &sheet, RenderOptions::default())
+                .expect("routed PNG")
+                .is_empty()
+        );
+    }
+}
+
+fn assert_route_export_commands(svg: &str, tikz: &str, kind: &str) {
+    let document = roxmltree::Document::parse(svg).expect("valid routed SVG");
+    let group = document
+        .descendants()
+        .find(|node| node.attribute("id") == Some("path"))
+        .expect("SVG route group");
+    let centerline = group
+        .children()
+        .find(|node| node.has_tag_name("path"))
+        .expect("SVG logical centerline");
+    let commands: Vec<_> =
+        svgtypes::PathParser::from(centerline.attribute("d").expect("centerline path"))
+            .collect::<Result<_, _>>()
+            .expect("valid route commands");
+    if kind == "orthogonal" {
+        assert_eq!(commands.len(), 4);
+        assert_eq!(
+            commands
+                .iter()
+                .filter(|command| matches!(command, svgtypes::PathSegment::LineTo { .. }))
+                .count(),
+            3
+        );
+        assert!(tikz.lines().any(|line| line.contains("\\path[")
+            && line.matches("--").count() == 3
+            && !line.contains("cycle")));
+    } else {
+        assert_eq!(commands.len(), 2);
+        assert!(matches!(commands[1], svgtypes::PathSegment::CurveTo { .. }));
+        assert!(tikz.contains(".. controls "));
+    }
+}
+
+#[test]
+fn clipped_arrow_and_segment_export_the_same_visible_endpoints_on_all_backends() {
+    let parsed = locus_syntax::parse(
+        "locus 0 beta 6\nclass hidden { opacity: 0 }\npoint start() [hidden]\npoint finish = offset(start, 4, 0) [hidden]\ncircle source(start, 1)\ncircle target(finish, 1)\narrow path(start, finish)\nsegment stroke(start, finish)\ngroup paths(path, stroke)\nrel trim_endpoints(paths, source)\nrel trim_endpoints(paths, target)\n",
+    );
+    assert!(parsed.diagnostics.is_empty(), "{:?}", parsed.diagnostics);
+    let sheet = StyleSheet::from_file(&parsed.file).expect("clipping style");
+    let (scene, placed) = locus_layout::solve_layout(
+        &parsed.file,
+        locus_core::EvaluationInputs::default(),
+        &locus_layout::TextBoxes::new(),
+        locus_layout::LayoutOptions::default(),
+    )
+    .expect("clipping feedback");
+    let resolved = scene.resolved().expect("clipped scene");
+    let viewport = Viewport::fit(resolved, &placed, &sheet, RenderOptions::default())
+        .expect("clipped viewport");
+    let retained = &placed.visible_paths["stroke"];
+    let start = viewport.to_svg(retained.from.clone().into());
+    let end = viewport.to_svg(retained.to.clone().into());
+    let svg = render_svg(resolved, &placed, &sheet, RenderOptions::default()).expect("clipped SVG");
+    let document = roxmltree::Document::parse(&svg).expect("clipped XML");
+    for name in ["path", "stroke"] {
+        let group = document
+            .descendants()
+            .find(|node| node.attribute("id") == Some(name))
+            .expect("clipped path group");
+        let centerline = group
+            .children()
+            .find(|node| node.has_tag_name("path"))
+            .expect("clipped centerline");
+        let commands =
+            svgtypes::PathParser::from(centerline.attribute("d").expect("path commands"))
+                .collect::<Result<Vec<_>, _>>()
+                .expect("valid commands");
+        assert_eq!(
+            commands,
+            vec![
+                svgtypes::PathSegment::MoveTo {
+                    abs: true,
+                    x: serialized(start.x),
+                    y: serialized(start.y)
+                },
+                svgtypes::PathSegment::LineTo {
+                    abs: true,
+                    x: serialized(end.x),
+                    y: serialized(end.y)
+                }
+            ]
+        );
+    }
+    let tikz =
+        render_tikz(resolved, &placed, &sheet, RenderOptions::default()).expect("clipped TikZ");
+    let endpoints = format!(
+        "({},{}) -- ({},{})",
+        locus_render::svg::format_float(start.x),
+        locus_render::svg::format_float(start.y),
+        locus_render::svg::format_float(end.x),
+        locus_render::svg::format_float(end.y)
+    );
+    assert_eq!(tikz.matches(&endpoints).count(), 2);
+    #[cfg(feature = "png")]
+    assert!(
+        !locus_render::png::render(resolved, &placed, &sheet, RenderOptions::default())
+            .expect("clipped PNG")
+            .is_empty()
+    );
+}
+
+fn serialized(value: f64) -> f64 {
+    locus_render::svg::format_float(value)
+        .parse()
+        .expect("serialized coordinate")
 }

@@ -1,0 +1,8 @@
+locus 0 beta 6
+
+point start()
+point finish()
+arrow path(start, finish)
+rel align_center_y(start, finish)
+rel path.length == style_metric("short_length")
+assert path.length == style_metric("short_length")

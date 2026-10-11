@@ -1,9 +1,12 @@
 //! Open-document snapshots and analysis results.
 
 use std::collections::BTreeMap;
+use std::sync::{
+    Arc,
+    atomic::{AtomicBool, Ordering},
+};
 
-use locus_core::evaluate;
-use locus_syntax::{File, Statement, parse};
+use locus_syntax::{File, parse};
 use lsp_types::{ClientCapabilities, Diagnostic, MarkupKind, TextDocumentContentChangeEvent, Uri};
 
 use crate::diagnostics;
@@ -13,6 +16,8 @@ use crate::document::Document;
 pub(crate) struct Analysis {
     uri: Uri,
     version: i32,
+    cancelled: Arc<AtomicBool>,
+    prefix: File,
     pub(crate) file: File,
     pub(crate) diagnostics: Vec<Diagnostic>,
 }
@@ -20,26 +25,40 @@ pub(crate) struct Analysis {
 impl Analysis {
     pub(crate) fn new(document: &Document) -> Self {
         let parsed = parse(document.text());
-        let mut lsp_diagnostics = parsed
+        let lsp_diagnostics = parsed
             .diagnostics
             .iter()
             .map(|value| diagnostics::syntax(document, value))
             .collect::<Vec<_>>();
         let prefix = evaluable_prefix(&parsed.file, &parsed.diagnostics);
-        if let Err(error) = evaluate(&prefix) {
-            lsp_diagnostics.push(diagnostics::evaluation(document, &error));
+        Self {
+            uri: document.uri().clone(),
+            version: document.version(),
+            cancelled: Arc::default(),
+            prefix,
+            file: parsed.file,
+            diagnostics: lsp_diagnostics,
         }
-        lsp_diagnostics.sort_by(|left, right| {
+    }
+
+    pub(crate) fn validate(mut self, document: &Document) -> Self {
+        if let Some(diagnostic) = crate::validation::evaluate(document, &self.prefix) {
+            self.diagnostics.push(diagnostic);
+        }
+        self.diagnostics.sort_by(|left, right| {
             (left.range.start.line, left.range.start.character)
                 .cmp(&(right.range.start.line, right.range.start.character))
                 .then_with(|| diagnostic_code(left).cmp(diagnostic_code(right)))
         });
-        Self {
-            uri: document.uri().clone(),
-            version: document.version(),
-            file: parsed.file,
-            diagnostics: lsp_diagnostics,
-        }
+        self
+    }
+
+    fn cancel(&self) {
+        self.cancelled.store(true, Ordering::Relaxed);
+    }
+
+    pub(crate) fn cancelled(&self) -> bool {
+        self.cancelled.load(Ordering::Relaxed)
     }
 
     pub(crate) const fn uri(&self) -> &Uri {
@@ -101,6 +120,7 @@ impl State {
     }
 
     pub(crate) fn open(&mut self, uri: Uri, version: i32, text: String) -> Analysis {
+        self.close(&uri);
         let document = Document::new(uri.clone(), version, text);
         let analysis = Analysis::new(&document);
         self.documents.insert(
@@ -125,18 +145,22 @@ impl State {
         if !open.document.apply_changes(version, changes) {
             return false;
         }
+        open.analysis.cancel();
         true
     }
 
     pub(crate) fn analyze_current(&mut self, uri: &Uri) -> Option<Analysis> {
         let open = self.documents.get_mut(uri)?;
+        open.analysis.cancel();
         let analysis = Analysis::new(&open.document);
         open.analysis = analysis.clone();
         Some(analysis)
     }
 
     pub(crate) fn close(&mut self, uri: &Uri) -> Option<Document> {
-        self.documents.remove(uri).map(|open| open.document)
+        let open = self.documents.remove(uri)?;
+        open.analysis.cancel();
+        Some(open.document)
     }
 
     pub(crate) fn document(&self, uri: &Uri) -> Option<&Document> {
@@ -148,8 +172,10 @@ impl State {
     }
 
     pub(crate) fn is_current(&self, analysis: &Analysis) -> bool {
-        self.document(analysis.uri())
-            .is_some_and(|document| document.version() == analysis.version())
+        !analysis.cancelled()
+            && self
+                .document(analysis.uri())
+                .is_some_and(|document| document.version() == analysis.version())
     }
 
     pub(crate) const fn hierarchical_symbols(&self) -> bool {
@@ -180,13 +206,4 @@ fn diagnostic_code(value: &Diagnostic) -> &str {
         Some(lsp_types::NumberOrString::String(code)) => code,
         Some(lsp_types::NumberOrString::Number(_)) | None => "",
     }
-}
-
-pub(crate) fn defined_ops(file: &File) -> impl Iterator<Item = &locus_syntax::OpStmt> {
-    file.statements
-        .iter()
-        .filter_map(|statement| match statement {
-            Statement::Op(op) => Some(op),
-            _ => None,
-        })
 }

@@ -1,4 +1,4 @@
-locus 0 beta 5
+locus 0 beta 6
 
 meta title = "Parameterless points: a triangle defined by relationships"
 meta note = "Points have no coordinate arguments; relative distances define a 3-4-5 triangle"
@@ -6,20 +6,20 @@ meta note = "Points have no coordinate arguments; relative distances define a 3-
 style textbook
 
 // ---- independently placed points --------------------------
-point A = point()
-point B = point() where { horizontal(A, B), hdist(A, B) == 4 }
-point C = point() where { vertical(A, C), vdist(A, C) == 3 }
+point A()
+point B() where { align_center_y(A, B), hdist(A, B) == 4 }
+point C() where { align_center_x(A, C), vdist(A, C) == 3 }
 
 // ---- derived geometry -------------------------------------
-polygon tri = polygon(A, B, C)
+polygon tri(A, B, C)
 point M = midpoint(B, C)
-circle circum = circle(M, dist(M, A))   [construction]
-right_angle corner = right_angle(A, B, C)
+circle circum(M, dist(M, A))   [construction]
+right_angle corner(A, B, C)
 
-label lA = label(A, $A$)   { dir: SW }
-label lB = label(B, $B$)   { dir: SE }
-label lC = label(C, $C$)   { dir: NW }
-label lM = label(M, $M$)   { dir: NE }
+label lA(A, $A$)   { dir: SW }
+label lB(B, $B$)   { dir: SE }
+label lC(C, $C$)   { dir: NW }
+label lM(M, $M$)   { dir: NE }
 
 // ---- intent -----------------------------------------------
 assert dist(B, C) == 5

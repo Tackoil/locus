@@ -1,9 +1,15 @@
 //! Top-to-bottom derived-tier evaluation.
 
+pub(crate) mod automatic;
 pub mod deps;
 pub mod env;
 pub mod error;
 pub mod expr;
+pub(crate) mod path_label;
+mod prepare;
+pub(crate) mod routing;
+
+pub(crate) use prepare::PreparedEvaluation;
 
 pub use deps::{
     DependencyError, DependencyGraph, RemovalImpact, StatementDependency, StatementDependencyKind,
@@ -14,7 +20,7 @@ pub use expr::Value;
 use std::collections::BTreeSet;
 
 use locus_syntax::json::{
-    Dimension as SyntaxDimension, ExprNode, Hint, inferred_expression_dimensions,
+    Dimension as SyntaxDimension, ExprNode, Hint, inferred_expression_dimensions_by_node,
 };
 use locus_syntax::{
     BinOp, Constructor, Expr, File, HeadKind, Kind, OpStmt, PropValue, Span, Statement, TextValue,
@@ -39,15 +45,39 @@ use self::expr::{
 
 /// Evaluates a parsed file in source order.
 pub fn evaluate(file: &File) -> Result<Evaluation, EvalError> {
-    let prepared = PreparedEvaluation::new(file)?;
-    if has_solver_work(file, &prepared.dimensions) {
+    evaluate_with_inputs(file, &crate::inputs::EvaluationInputs::default())
+}
+
+/// Evaluates a source program with immutable renderer measurements.
+pub fn evaluate_with_inputs(
+    file: &File,
+    inputs: &crate::inputs::EvaluationInputs,
+) -> Result<Evaluation, EvalError> {
+    let expanded = crate::program::expand_program(file)?;
+    evaluate_flat_with_inputs(&expanded.file, inputs, &expanded.collections)
+        .map_err(|error| crate::program::annotate_error(error, &expanded))
+}
+
+pub(crate) fn evaluate_flat_with_inputs(
+    file: &File,
+    inputs: &crate::inputs::EvaluationInputs,
+    collections: &std::collections::BTreeMap<String, locus_syntax::Collection>,
+) -> Result<Evaluation, EvalError> {
+    let prepared = PreparedEvaluation::with_inputs(file, inputs, collections)?;
+    if has_solver_work(file, prepared.dimensions()) {
         let solved = crate::solve::solve_prepared(&prepared)?;
         return Ok(Evaluation::Solved {
             scene: solved.scene,
             summary: solved.summary,
         });
     }
-    let mut evaluator = FileEvaluator::new(prepared.dimensions.clone());
+    let mut evaluator = FileEvaluator::with_inputs(
+        prepared.dimensions().clone(),
+        inputs.clone(),
+        collections.clone(),
+    );
+    evaluator.aliases = crate::program::alias_identities(file);
+    evaluator.env.set_aliases(&evaluator.aliases);
     // `rel` statements belong to the solver tier and `assert` statements to the post-solve
     // checker. Dimension inference still visits both, while this direct pass resolves only ops.
     for statement in &file.statements {
@@ -59,60 +89,29 @@ pub fn evaluate(file: &File) -> Result<Evaluation, EvalError> {
     Ok(Evaluation::Resolved(evaluator.finish_scene()))
 }
 
-pub(crate) struct PreparedEvaluation<'a> {
-    file: &'a File,
-    dimensions: DimensionMap,
-}
-
-impl<'a> PreparedEvaluation<'a> {
-    pub(crate) fn new(file: &'a File) -> Result<Self, EvalError> {
-        DependencyGraph::extract(file).map_err(dependency_eval_error)?;
-        Ok(Self {
-            file,
-            dimensions: infer_dimensions(file)?,
-        })
-    }
-
-    pub(crate) const fn file(&self) -> &'a File {
-        self.file
-    }
-
-    pub(crate) const fn dimensions(&self) -> &DimensionMap {
-        &self.dimensions
-    }
-
-    pub(crate) fn evaluate_trial(
-        &self,
-        unknowns: Option<&[f64]>,
-    ) -> Result<TrialEvaluation, EvalError> {
-        let mut evaluator = FileEvaluator::new(self.dimensions.clone());
-        let mut cursor = UnknownCursor::new(unknowns);
-        for statement in &self.file.statements {
-            let Statement::Op(op) = statement else {
-                continue;
-            };
-            evaluator.evaluate_op_with_unknowns(op, &mut cursor)?;
-        }
-        cursor.finish()?;
-        Ok(evaluator.finish_trial())
-    }
-}
-
 fn has_solver_work(file: &File, dimensions: &DimensionMap) -> bool {
     file.statements.iter().any(|statement| match statement {
         Statement::Rel(_) => true,
         Statement::Op(op) => {
             free_span(&op.ctor).is_some()
                 || is_placed_op(op, dimensions)
+                || routing::route_kind(op).is_some()
+                || path_label::owns_parameters(op, file)
                 || !op.where_clauses.is_empty()
         }
-        Statement::Assert(_) | Statement::Meta(_) | Statement::Style(_) | Statement::Class(_) => {
-            false
-        }
+        Statement::Assert(_)
+        | Statement::Meta(_)
+        | Statement::Style(_)
+        | Statement::Class(_)
+        | Statement::Fn(_)
+        | Statement::Group(_)
+        | Statement::Call(_) => false,
     })
 }
 
 pub(crate) struct TrialEvaluation {
+    inputs: crate::inputs::EvaluationInputs,
+    collections: std::collections::BTreeMap<String, locus_syntax::Collection>,
     env: Environment,
     bbox: BBox,
     length_fallbacks: Vec<f64>,
@@ -132,13 +131,28 @@ impl TrialEvaluation {
         expression: &Expr,
         dimensions: &DimensionMap,
     ) -> Result<(), EvalError> {
-        let mut evaluator = ExpressionEvaluator::new(&self.env, self.tolerance(), dimensions);
+        let mut evaluator = ExpressionEvaluator::new(&self.env, self.tolerance(), dimensions)
+            .with_metrics(self.inputs.metrics);
         match expression {
             Expr::Group { expr, .. } => self.validate_relation_expression(expr, dimensions),
             Expr::Binary { op: BinOp::Eq, .. } => evaluator.eval(expression).map(|_| ()),
-            Expr::Call { args, .. } => validate_relation_arguments(&mut evaluator, args),
+            Expr::Call { args, .. } => self.validate_relation_arguments(&mut evaluator, args),
             _ => evaluator.eval(expression).map(|_| ()),
         }
+    }
+
+    fn validate_relation_arguments(
+        &self,
+        evaluator: &mut ExpressionEvaluator<'_>,
+        args: &[Expr],
+    ) -> Result<(), EvalError> {
+        for argument in args {
+            if matches!(argument, Expr::Ref(id) if self.collections.contains_key(&id.name)) {
+                continue;
+            }
+            evaluator.eval(argument)?;
+        }
+        Ok(())
     }
 
     pub(crate) fn into_scene(self) -> ResolvedScene {
@@ -147,16 +161,6 @@ impl TrialEvaluation {
             bbox: self.bbox,
         }
     }
-}
-
-fn validate_relation_arguments(
-    evaluator: &mut ExpressionEvaluator<'_>,
-    args: &[Expr],
-) -> Result<(), EvalError> {
-    for argument in args {
-        evaluator.eval(argument)?;
-    }
-    Ok(())
 }
 
 struct UnknownCursor<'a> {
@@ -202,34 +206,56 @@ impl<'a> UnknownCursor<'a> {
 }
 
 struct FileEvaluator {
+    aliases: std::collections::BTreeMap<String, String>,
+    route_choices: std::collections::BTreeMap<String, crate::geom::route::RouteChoice>,
+    center_partners: std::collections::BTreeMap<String, String>,
+    placement_seeds: std::collections::BTreeMap<String, Point>,
+    content_extents: std::collections::BTreeMap<String, (f64, f64)>,
+    inputs: crate::inputs::EvaluationInputs,
+    collections: std::collections::BTreeMap<String, locus_syntax::Collection>,
     env: Environment,
     bbox: Option<BBox>,
     dimensions: DimensionMap,
     length_fallbacks: Vec<f64>,
     placement_index: usize,
+    placement_scale: f64,
 }
 
 impl FileEvaluator {
-    fn new(dimensions: DimensionMap) -> Self {
+    fn with_inputs(
+        dimensions: DimensionMap,
+        inputs: crate::inputs::EvaluationInputs,
+        collections: std::collections::BTreeMap<String, locus_syntax::Collection>,
+    ) -> Self {
         Self {
+            aliases: std::collections::BTreeMap::new(),
+            route_choices: std::collections::BTreeMap::new(),
+            center_partners: std::collections::BTreeMap::new(),
+            placement_seeds: std::collections::BTreeMap::new(),
+            content_extents: std::collections::BTreeMap::new(),
+            inputs,
+            collections,
             env: Environment::new(),
             bbox: None,
             dimensions,
             length_fallbacks: Vec::new(),
             placement_index: 0,
+            placement_scale: 1.0,
         }
     }
 
     fn evaluate_op(&mut self, op: &OpStmt) -> Result<(), EvalError> {
         let tolerance = tolerance_for(self.bbox, &self.length_fallbacks);
         let additions = {
-            let mut expressions = ExpressionEvaluator::new(&self.env, tolerance, &self.dimensions);
+            let mut expressions = ExpressionEvaluator::new(&self.env, tolerance, &self.dimensions)
+                .with_metrics(self.inputs.metrics);
             evaluated_length_fallbacks(&mut expressions, op)?
         };
         self.length_fallbacks
             .extend(additions.into_iter().filter(|value| *value > 0.0));
         let tolerance = tolerance_for(self.bbox, &self.length_fallbacks);
-        let mut expressions = ExpressionEvaluator::new(&self.env, tolerance, &self.dimensions);
+        let mut expressions = ExpressionEvaluator::new(&self.env, tolerance, &self.dimensions)
+            .with_metrics(self.inputs.metrics);
         let object = evaluate_op_value(&mut expressions, op)
             .map_err(|error| attach_object(error, &op.id.name))?;
         validate_kind(op.kind, &object, op.ctor.span())?;
@@ -246,8 +272,23 @@ impl FileEvaluator {
         op: &OpStmt,
         unknowns: &mut UnknownCursor<'_>,
     ) -> Result<(), EvalError> {
+        if path_label::path_name(op)
+            .is_some_and(|name| self.env.get(name).is_some_and(path_label::is_route))
+        {
+            return self.evaluate_path_label(op, unknowns);
+        }
+        if routing::route_kind(op).is_some() {
+            return self.evaluate_routed_op(op, unknowns);
+        }
+        if automatic::is_automatic_box(op) || automatic::is_standalone_label(op) {
+            return self
+                .evaluate_automatic_op(op, unknowns)
+                .map_err(|error| attach_object(error, &op.id.name));
+        }
         if matches!(op.ctor, Constructor::FreeNum { .. }) || is_placed_op(op, &self.dimensions) {
-            return self.evaluate_free_op(op, unknowns);
+            return self
+                .evaluate_free_op(op, unknowns)
+                .map_err(|error| attach_object(error, &op.id.name));
         }
         self.evaluate_op(op)
     }
@@ -258,8 +299,13 @@ impl FileEvaluator {
         unknowns: &mut UnknownCursor<'_>,
     ) -> Result<(), EvalError> {
         let tolerance = tolerance_for(self.bbox, &self.length_fallbacks);
-        let mut expressions = ExpressionEvaluator::new(&self.env, tolerance, &self.dimensions);
-        let placement_seed = deterministic_placement(self.placement_index);
+        let mut expressions = ExpressionEvaluator::new(&self.env, tolerance, &self.dimensions)
+            .with_metrics(self.inputs.metrics);
+        let placement = deterministic_placement(self.placement_index);
+        let placement_seed = Point::new(
+            placement.x * self.placement_scale,
+            placement.y * self.placement_scale,
+        );
         let (object, fallbacks) = evaluate_free_value(
             &mut expressions,
             op,
@@ -280,15 +326,19 @@ impl FileEvaluator {
             .map_err(|error| EvalError::new("E302", op.id.span, error.to_string()))
     }
 
-    fn finish_scene(self) -> ResolvedScene {
+    fn finish_scene(mut self) -> ResolvedScene {
+        self.env.include_path_label_bounds(&self.aliases);
         ResolvedScene {
             objects: self.env.into_objects(),
             bbox: self.bbox.unwrap_or_else(origin_bbox),
         }
     }
 
-    fn finish_trial(self) -> TrialEvaluation {
+    fn finish_trial(mut self) -> TrialEvaluation {
+        self.env.include_path_label_bounds(&self.aliases);
         TrialEvaluation {
+            inputs: self.inputs,
+            collections: self.collections,
             env: self.env,
             bbox: self.bbox.unwrap_or_else(origin_bbox),
             length_fallbacks: self.length_fallbacks,
@@ -333,6 +383,12 @@ pub(crate) fn is_placed_op(op: &OpStmt, dimensions: &DimensionMap) -> bool {
     matches!(
         (op.kind, name.name.as_str(), args.len()),
         (Kind::Point, "point", 0)
+            | (
+                Kind::Rect | Kind::Diamond | Kind::RoundedRect,
+                "rect" | "diamond" | "rounded_rect",
+                0
+            )
+            | (Kind::Label, "label", 1)
             | (Kind::Circle, "circle", 1)
             | (Kind::Ellipse, "ellipse", 2)
             | (Kind::Rect | Kind::Diamond, "rect" | "diamond", 2)
@@ -608,6 +664,9 @@ fn eval_constructor_object(
     props: &locus_syntax::Props,
     span: Span,
 ) -> Result<ResolvedObject, EvalError> {
+    if name == "edge" {
+        return evaluator.eval_edge_object(args, span);
+    }
     if is_point_constructor(name) {
         let object = eval_point_constructor(evaluator, name, args, span)?;
         return apply_point_props(&object, props);
@@ -1334,6 +1393,11 @@ fn eval_label(
     span: Span,
 ) -> Result<AnnotationSpec, EvalError> {
     expect_arity("label", args, 2, span)?;
+    path_label::validate_overload_props(
+        props,
+        &["near", "side"],
+        "point labels accept dir/gap, not near/side",
+    )?;
     let anchor = evaluator.eval_anchor(&args[0])?;
     let text = eval_text(&args[1])?;
     let direction = label_direction(props)?;
@@ -1346,6 +1410,8 @@ fn eval_label(
         ));
     }
     Ok(AnnotationSpec::Label {
+        path: None,
+        bounds: None,
         anchor,
         text,
         direction,
@@ -1381,6 +1447,8 @@ fn eval_arrow(
         EvalError::construction(bend_span, error).with_measurement("arrow bend", actual, Some(unit))
     })?;
     Ok(AnnotationSpec::Arrow {
+        label_bounds: None,
+        route: None,
         from,
         to,
         head,
@@ -1885,8 +1953,8 @@ fn interchange_dimensions(file: &File) -> DimensionMap {
             .unwrap_or(SyntaxDimension::Scalar);
         dimensions.insert(op.id, inferred_syntax_dimension(dimension));
     }
-    for (range, dimension) in inferred_expression_dimensions(file) {
-        dimensions.insert_expression_range(range, inferred_syntax_dimension(dimension));
+    for (node, dimension) in inferred_expression_dimensions_by_node(file) {
+        dimensions.insert_expression_node(node, inferred_syntax_dimension(dimension));
     }
     dimensions
 }
@@ -1941,6 +2009,11 @@ fn infer_statement(
         Statement::Assert(assertion) => {
             infer_expr(&assertion.expr, None, numeric_ids, dimensions).map(|_| ())
         }
+        Statement::Fn(_) | Statement::Group(_) | Statement::Call(_) => Err(EvalError::new(
+            "E401",
+            statement.span(),
+            "function and group statements must be expanded before evaluation",
+        )),
         Statement::Meta(_) | Statement::Style(_) | Statement::Class(_) => Ok(()),
     }
 }
@@ -2184,7 +2257,7 @@ fn infer_property(
     for arg in args {
         infer_expr(arg, None, numeric_ids, dimensions)?;
     }
-    if matches!(name, "width" | "height") {
+    if matches!(name, "width" | "height" | "length") {
         Ok(Some(InferredDimension::Number(Dimension::Length)))
     } else {
         Ok(expected)
@@ -2613,826 +2686,7 @@ fn include_bbox(current: &mut Option<BBox>, bounds: BBox) {
 
 fn attach_object(mut error: EvalError, id: &str) -> EvalError {
     if error.object_id.is_none() {
-        error.object_id = Some(id.to_owned());
+        error.object_id = Some(id.into());
     }
     error
-}
-
-#[cfg(test)]
-#[allow(clippy::expect_used)]
-mod tests {
-    use std::fs;
-    use std::path::PathBuf;
-
-    use locus_syntax::{Ident, parse};
-
-    use super::*;
-    use crate::scene::NumericValue;
-
-    fn op_from(source: &str) -> OpStmt {
-        let parsed = parse(source);
-        parsed
-            .file
-            .statements
-            .into_iter()
-            .find_map(|statement| match statement {
-                Statement::Op(op) => Some(op),
-                _ => None,
-            })
-            .expect("source contains an op")
-    }
-
-    fn test_evaluator(env: &Environment) -> ExpressionEvaluator<'_> {
-        let bbox = BBox::from_points([Point::new(-10.0, -10.0), Point::new(10.0, 10.0)])
-            .expect("finite bbox");
-        let dimensions = Box::leak(Box::new(DimensionMap::new()));
-        ExpressionEvaluator::new(env, Tolerance::from_bbox(&bbox), dimensions)
-    }
-
-    fn insert(env: &mut Environment, name: &str, object: ResolvedObject) {
-        env.insert(
-            Ident {
-                name: name.to_owned(),
-                span: Span::default(),
-            },
-            object,
-        )
-        .expect("unique test id");
-    }
-
-    #[test]
-    fn evaluates_hand_computed_rotation_and_typed_angle_product() {
-        let mut env = Environment::new();
-        insert(&mut env, "P", resolved_point(Point::new(1.0, 0.0)));
-        insert(&mut env, "O", resolved_point(Point::new(0.0, 0.0)));
-        let op = op_from("locus 0 beta 5\npoint R = rotate(P, O, 2 * 30deg)\n");
-        let mut evaluator = test_evaluator(&env);
-        let object = evaluate_op_value(&mut evaluator, &op).expect("typed rotation");
-        let ResolvedObject::Point(point) = object else {
-            unreachable!("rotate returns a point");
-        };
-        assert!((point.geometry.x - 0.5).abs() < 1.0e-12);
-        assert!((point.geometry.y - libm::sqrt(3.0) * 0.5).abs() < 1.0e-12);
-    }
-
-    #[test]
-    fn rejects_bare_scalar_in_angle_position() {
-        let mut env = Environment::new();
-        insert(&mut env, "P", resolved_point(Point::new(1.0, 0.0)));
-        insert(&mut env, "O", resolved_point(Point::new(0.0, 0.0)));
-        let op = op_from("locus 0 beta 5\npoint R = rotate(P, O, 60)\n");
-        let mut evaluator = test_evaluator(&env);
-        let error = evaluate_op_value(&mut evaluator, &op).expect_err("unit is mandatory");
-        assert_eq!(error.code, "E209");
-        assert!(error.message.contains("explicit `deg` or `rad`"));
-    }
-
-    #[test]
-    fn infers_named_length_from_a_later_constructor_use() {
-        let parsed = parse(
-            "locus 0 beta 5\nnum radius = 3\npoint O = point()\ncircle c = circle(O, radius)\n",
-        );
-        let Evaluation::Solved { scene, .. } = evaluate(&parsed.file).expect("free scene solves")
-        else {
-            unreachable!("free point is solved");
-        };
-        let (_, object) = scene.objects.first().expect("derived numeric value");
-        assert_eq!(
-            object,
-            &ResolvedObject::Num(NumericValue {
-                value: 3.0,
-                dimension: Dimension::Length,
-            })
-        );
-    }
-
-    #[test]
-    fn detects_conflicting_whole_file_numeric_dimensions() {
-        let parsed = parse(
-            "locus 0 beta 5\nnum x = 2\npoint P = point()\ncircle c = circle(P, x)\npoint Q = rotate(P, P, x)\n",
-        );
-        let error = evaluate(&parsed.file).expect_err("x cannot be both length and angle");
-        assert_eq!(error.code, "E209");
-        assert!(error.message.contains("conflicting dimensions"));
-    }
-
-    #[test]
-    fn infers_area_and_sqrt_dimensions_across_named_values() {
-        let parsed = parse(
-            "locus 0 beta 5\nnum w = 3\nnum h = 4\nnum a = w * h\nnum side = sqrt(a)\npoint P = point()\nrect r = rect(P, w, h)\nassert area(r) == a\n",
-        );
-        let Evaluation::Solved { scene, .. } = evaluate(&parsed.file).expect("valid solve") else {
-            unreachable!("free point is solved");
-        };
-        let dimensions = scene
-            .objects
-            .values()
-            .filter_map(|object| match object {
-                ResolvedObject::Num(number) => Some(number.dimension),
-                _ => None,
-            })
-            .collect::<Vec<_>>();
-        assert_eq!(
-            dimensions,
-            [
-                Dimension::Length,
-                Dimension::Length,
-                Dimension::Area,
-                Dimension::Length,
-            ]
-        );
-    }
-
-    #[test]
-    fn infers_area_divided_by_length_as_length() {
-        let parsed = parse(
-            "locus 0 beta 5\npoint A = point()\npoint B = point()\npoint C = point()\npolygon t = polygon(A, B, C)\nnum h = area(t) / dist(A, B)\n",
-        );
-        let dimensions = infer_dimensions(&parsed.file).expect("spec-valid quotient");
-        assert_eq!(
-            dimensions.get("h"),
-            Some(&InferredDimension::Number(Dimension::Length))
-        );
-    }
-
-    #[test]
-    fn contextual_literals_propagate_through_groups_sums_and_either_comparison_side() {
-        for expression in ["(3)", "2 + 1", "sqrt(9)", "min(3, 4)", "abs(-3)"] {
-            let source = format!(
-                "locus 0 beta 5\nnum w = {expression}\npoint P = point()\ncircle c = circle(P, w)\n"
-            );
-            let parsed = parse(&source);
-            let Evaluation::Solved { scene, .. } =
-                evaluate(&parsed.file).expect("contextual length literal")
-            else {
-                unreachable!("free point is solved");
-            };
-            let (_, ResolvedObject::Num(value)) = scene.objects.first().expect("w") else {
-                unreachable!("w is numeric");
-            };
-            assert_eq!(value.dimension, Dimension::Length);
-            assert!((value.value - 3.0).abs() < f64::EPSILON);
-        }
-
-        let mut env = Environment::new();
-        insert(&mut env, "A", resolved_point(Point::new(0.0, 0.0)));
-        insert(&mut env, "B", resolved_point(Point::new(6.0, 0.0)));
-        let parsed = parse("locus 0 beta 5\nassert 6 == dist(A, B)\nassert dist(A, B) == 6\n");
-        let mut evaluator = test_evaluator(&env);
-        for statement in &parsed.file.statements {
-            let Statement::Assert(assertion) = statement else {
-                unreachable!("assertion expected");
-            };
-            assert_eq!(
-                evaluator.eval(&assertion.expr).expect("unified comparison"),
-                Value::Bool(true)
-            );
-        }
-    }
-
-    #[test]
-    fn contextual_lengths_propagate_through_products_and_quotients() {
-        let mut env = Environment::new();
-        insert(&mut env, "O", resolved_point(Point::new(0.0, 0.0)));
-        for expression in ["2 * 3", "12 / 2"] {
-            let op = op_from(&format!(
-                "locus 0 beta 5\ncircle c = circle(O, {expression})\n"
-            ));
-            let mut evaluator = test_evaluator(&env);
-            let ResolvedObject::Circle(circle) =
-                evaluate_op_value(&mut evaluator, &op).expect("contextual length product")
-            else {
-                unreachable!("circle expected");
-            };
-            assert!((circle.radius - 6.0).abs() < f64::EPSILON);
-        }
-    }
-
-    #[test]
-    fn unconstrained_products_resolve_after_scalar_operand_defaults() {
-        let angle_file = parse("locus 0 beta 5\nnum t = 2 * 30deg\n").file;
-        let dimensions = infer_dimensions(&angle_file).expect("unconstrained angle product");
-        assert_eq!(dimensions.get("t"), Some(&InferredDimension::Angle));
-        let Evaluation::Resolved(scene) = evaluate(&angle_file).expect("angle product evaluates")
-        else {
-            unreachable!("derived file resolves directly");
-        };
-        let ResolvedObject::Angle(angle) = scene.objects.first().expect("t exists").1 else {
-            unreachable!("t is an angle");
-        };
-        assert!((*angle - core::f64::consts::PI / 3.0).abs() < 1.0e-12);
-
-        let length_file = parse(
-            "locus 0 beta 5\npoint O = point()\ncircle c = circle(O, 6)\nnum divisor = 2\nnum d = radius(c) / divisor\n",
-        )
-        .file;
-        let dimensions = infer_dimensions(&length_file).expect("unconstrained length quotient");
-        assert_eq!(
-            dimensions.get("d"),
-            Some(&InferredDimension::Number(Dimension::Length))
-        );
-        evaluate(&length_file).expect("length quotient evaluates");
-    }
-
-    #[test]
-    fn deferred_completion_preserves_context_in_sums_and_extrema() {
-        for expression in ["d + 1", "min(d, 1)"] {
-            let parsed = parse(&format!(
-                "locus 0 beta 5\npoint O = point()\ncircle c = circle(O, 4)\nnum d = radius(c) / 2\nnum e = {expression}\n"
-            ));
-            let dimensions = infer_dimensions(&parsed.file).expect("deferred length expression");
-            for name in ["d", "e"] {
-                assert_eq!(
-                    dimensions.get(name),
-                    Some(&InferredDimension::Number(Dimension::Length))
-                );
-            }
-            evaluate(&parsed.file).expect("deferred expression evaluates");
-        }
-    }
-
-    #[test]
-    fn contextual_dimensions_propagate_through_compound_expressions() {
-        for expression in ["radius(c) / 2 + (1 + 1)", "min(radius(c) / 2, abs(1))"] {
-            let parsed = parse(&format!(
-                "locus 0 beta 5\npoint O = point()\ncircle c = circle(O, 4)\nnum d = {expression}\n"
-            ));
-            let dimensions = infer_dimensions(&parsed.file).expect("compound length expression");
-            assert_eq!(
-                dimensions.get("d"),
-                Some(&InferredDimension::Number(Dimension::Length))
-            );
-            evaluate(&parsed.file).expect("compound expression evaluates");
-        }
-    }
-
-    #[test]
-    fn repeated_product_operand_uses_later_area_constraint() {
-        let parsed = parse(
-            "locus 0 beta 5\npoint O = point()\nrect r = rect(O, 3, 3)\nnum side = 3\nnum a = side * side\nassert a == area(r)\n",
-        );
-        let dimensions = infer_dimensions(&parsed.file).expect("later area constraint");
-        assert_eq!(
-            dimensions.get("side"),
-            Some(&InferredDimension::Number(Dimension::Length))
-        );
-        assert_eq!(
-            dimensions.get("a"),
-            Some(&InferredDimension::Number(Dimension::Area))
-        );
-        evaluate(&parsed.file).expect("later area constraint evaluates");
-    }
-
-    #[test]
-    fn dimension_inference_scales_to_many_independent_numbers() {
-        use std::fmt::Write as _;
-
-        let mut source = String::from("locus 0 beta 5\n");
-        for index in 0..640 {
-            writeln!(source, "num n{index} = {index}").expect("write to string");
-        }
-        let parsed = parse(&source);
-        let dimensions = infer_dimensions(&parsed.file).expect("independent numbers infer");
-        assert_eq!(dimensions.len(), 640);
-        assert!(
-            dimensions
-                .values()
-                .all(|dimension| { *dimension == InferredDimension::Number(Dimension::Scalar) })
-        );
-    }
-
-    #[test]
-    fn ambiguous_product_waits_for_later_operand_constraint() {
-        let parsed = parse(
-            "locus 0 beta 5\nnum scale = 2\nnum width = 3\npoint O = point()\ncircle c = circle(O, scale * width)\npoint P = lerp(O, O, scale)\n",
-        );
-        let dimensions = infer_dimensions(&parsed.file).expect("later constraint disambiguates");
-        assert_eq!(
-            dimensions.get("scale"),
-            Some(&InferredDimension::Number(Dimension::Scalar))
-        );
-        assert_eq!(
-            dimensions.get("width"),
-            Some(&InferredDimension::Number(Dimension::Length))
-        );
-        evaluate(&parsed.file).expect("statement order does not change validity");
-    }
-
-    #[test]
-    fn contextual_multiplication_uses_the_known_scalar_operand() {
-        let parsed = parse(
-            "locus 0 beta 5\nnum scale = ratio(2, 1)\npoint O = point()\ncircle lhs = circle(O, scale * 3)\ncircle rhs = circle(O, 3 * scale)\n",
-        );
-        let Evaluation::Solved { scene, .. } =
-            evaluate(&parsed.file).expect("both operand orders evaluate")
-        else {
-            unreachable!("free point is solved");
-        };
-        let radii = scene
-            .objects
-            .values()
-            .filter_map(|object| match object {
-                ResolvedObject::Circle(circle) => Some(circle.radius),
-                _ => None,
-            })
-            .collect::<Vec<_>>();
-        assert_eq!(radii, [6.0, 6.0]);
-    }
-
-    #[test]
-    fn scalar_quotients_accept_equal_length_and_area_dimensions() {
-        let parsed = parse(
-            "locus 0 beta 5\npoint O = point()\ncircle c = circle(O, 6)\nrect r = rect(O, 2, 3)\nnum length_scale = radius(c) / 3\nnum area_scale = area(r) / 3\npoint P = lerp(O, O, length_scale)\npoint Q = lerp(O, O, area_scale)\n",
-        );
-        let dimensions = infer_dimensions(&parsed.file).expect("equal-dimension quotients");
-        for name in ["length_scale", "area_scale"] {
-            assert_eq!(
-                dimensions.get(name),
-                Some(&InferredDimension::Number(Dimension::Scalar))
-            );
-        }
-        evaluate(&parsed.file).expect("scalar quotients evaluate");
-    }
-
-    #[test]
-    fn contextual_scalar_quotients_accept_nested_angle_operands() {
-        let mut env = Environment::new();
-        insert(
-            &mut env,
-            "c",
-            ResolvedObject::Circle(Circle::new(Point::new(0.0, 0.0), 6.0).expect("circle")),
-        );
-        let op = op_from("locus 0 beta 5\nnum q = (30deg * (radius(c) / 3)) / 60deg\n");
-        let mut evaluator = test_evaluator(&env);
-        let ResolvedObject::Num(value) =
-            evaluate_op_value(&mut evaluator, &op).expect("angle quotient evaluates as scalar")
-        else {
-            unreachable!("scalar expected");
-        };
-        assert_eq!(value.dimension, Dimension::Scalar);
-        assert!((value.value - 1.0).abs() < 1.0e-12);
-    }
-
-    #[test]
-    fn inline_angle_relations_use_contextual_solver_evaluation() {
-        let parsed = parse(
-            "locus 0 beta 5\npoint O = point()\ncircle c = circle(O, 6)\nrel 30deg * (radius(c) / 3) == 60deg\nrel 30deg / (radius(c) / 3) == 15deg\n",
-        );
-        let Evaluation::Solved { summary, .. } =
-            evaluate(&parsed.file).expect("inline angle relations solve")
-        else {
-            unreachable!("free point requires the solver");
-        };
-        assert_eq!(summary.equations, 2);
-        assert!(summary.max_normalized_residual < 1.0e-12);
-    }
-
-    #[test]
-    fn solver_relations_prefer_inferred_length_over_scalar_tolerance() {
-        let parsed = parse(
-            "locus 0 beta 5\npoint O = point()\npoint Far = offset(O, 1000000, 0)\ncircle c = circle(O, 6)\nrel radius(c) / 2 == 3.000001\n",
-        );
-        let Evaluation::Solved { summary, .. } =
-            evaluate(&parsed.file).expect("length-scaled relation is within tolerance")
-        else {
-            unreachable!("free points require the solver");
-        };
-        assert!(summary.max_normalized_residual < 1.0e-12);
-    }
-
-    #[test]
-    fn assertions_and_ratio_arguments_contextually_evaluate_nested_angles() {
-        let parsed = parse(
-            "locus 0 beta 5\npoint O = point()\ncircle c = circle(O, 6)\nnum q = ratio(30deg * (radius(c) / 3), 60deg)\nassert 30deg * (radius(c) / 3) == 60deg\n",
-        );
-        let Evaluation::Solved { scene, .. } =
-            evaluate(&parsed.file).expect("ratio arguments evaluate")
-        else {
-            unreachable!("free point requires the solver");
-        };
-        let ResolvedObject::Num(value) = scene
-            .objects
-            .iter()
-            .find_map(|(id, object)| (id.name == "q").then_some(object))
-            .expect("q exists")
-        else {
-            unreachable!("q is scalar");
-        };
-        assert_eq!(value.dimension, Dimension::Scalar);
-        assert!((value.value - 1.0).abs() < 1.0e-12);
-        assert!(
-            crate::evaluate_assertions(&parsed.file, &scene)
-                .expect("assertion evaluates")
-                .passed
-        );
-    }
-
-    #[test]
-    fn inferred_dimensions_contextualize_both_numeric_operands() {
-        let parsed = parse(
-            "locus 0 beta 5\npoint O = point()\ncircle c = circle(O, 6)\nnum q = ratio(30deg * (radius(c) / 3), 15deg * (radius(c) / 1.5))\nassert 30deg * (radius(c) / 3) == 15deg * (radius(c) / 1.5)\n",
-        );
-        let Evaluation::Solved { scene, .. } =
-            evaluate(&parsed.file).expect("both ratio operands use inferred angle context")
-        else {
-            unreachable!("free point requires the solver");
-        };
-        let ResolvedObject::Num(value) = scene
-            .objects
-            .iter()
-            .find_map(|(id, object)| (id.name == "q").then_some(object))
-            .expect("q exists")
-        else {
-            unreachable!("q is scalar");
-        };
-        assert_eq!(value.dimension, Dimension::Scalar);
-        assert!((value.value - 1.0).abs() < 1.0e-12);
-        assert!(
-            crate::evaluate_assertions(&parsed.file, &scene)
-                .expect("both assertion operands use inferred angle context")
-                .passed
-        );
-    }
-
-    #[test]
-    fn solver_relations_use_inferred_dimensions_for_both_sqrt_operands() {
-        let parsed = parse(
-            "locus 0 beta 5\npoint O = point()\ncircle c = circle(O, 6)\nrel sqrt(radius(c) * 3) == sqrt(18)\n",
-        );
-        let Evaluation::Solved { summary, .. } =
-            evaluate(&parsed.file).expect("both square roots use inferred length context")
-        else {
-            unreachable!("free point requires the solver");
-        };
-        assert!(summary.max_normalized_residual < 1.0e-12);
-    }
-
-    #[test]
-    fn offset_coordinates_use_contextual_length_evaluation() {
-        let parsed = parse(
-            "locus 0 beta 5\npoint O = point()\ncircle c = circle(O, 6)\npoint P = offset(O, sqrt(radius(c) * 3), 0)\n",
-        );
-        let Evaluation::Solved { scene, summary } =
-            evaluate(&parsed.file).expect("compound offset coordinate solves")
-        else {
-            unreachable!("free points require the solver");
-        };
-        let ResolvedObject::Point(point) = scene
-            .objects
-            .iter()
-            .find_map(|(id, object)| (id.name == "P").then_some(object))
-            .expect("P exists")
-        else {
-            unreachable!("P is a point");
-        };
-        assert!((point.geometry.x - libm::sqrt(18.0)).abs() < 1.0e-9);
-        assert!(point.geometry.y.abs() < 1.0e-12);
-        assert!(summary.max_normalized_residual < 1.0e-9);
-    }
-
-    #[test]
-    fn product_inference_waits_for_both_operand_dimensions() {
-        let parsed = parse(
-            "locus 0 beta 5\nnum w = 2\npoint O = point()\ncircle c = circle(O, w)\nnum h = 3\nnum a = w * h\nrect r = rect(O, w, h)\n",
-        );
-        let dimensions = infer_dimensions(&parsed.file).expect("order-independent inference");
-        assert_eq!(
-            dimensions.get("a"),
-            Some(&InferredDimension::Number(Dimension::Area))
-        );
-        let Evaluation::Solved { scene, .. } = evaluate(&parsed.file).expect("valid area product")
-        else {
-            unreachable!("free point is solved");
-        };
-        let ResolvedObject::Num(area) = scene
-            .objects
-            .iter()
-            .find_map(|(id, object)| (id.name == "a").then_some(object))
-            .expect("a exists")
-        else {
-            unreachable!("a is numeric");
-        };
-        assert_eq!(area.dimension, Dimension::Area);
-        assert!((area.value - 6.0).abs() < f64::EPSILON);
-    }
-
-    #[test]
-    fn text_block_anchor_constrains_nested_constructor_arguments() {
-        let parsed = parse(
-            "locus 0 beta 5\nnum r = 2\npoint O = point()\ntext_block note = text_block(\"test\") { anchor: circle(O, r).center }\n",
-        );
-        let dimensions = infer_dimensions(&parsed.file).expect("text-block anchor inference");
-        assert_eq!(
-            dimensions.get("r"),
-            Some(&InferredDimension::Number(Dimension::Length))
-        );
-        evaluate(&parsed.file).expect("text-block anchor evaluates");
-    }
-
-    #[test]
-    fn angle_products_infer_named_angle_in_either_operand_order() {
-        let mut env = Environment::new();
-        insert(&mut env, "P", resolved_point(Point::new(1.0, 0.0)));
-        insert(&mut env, "O", resolved_point(Point::new(0.0, 0.0)));
-        insert(
-            &mut env,
-            "t",
-            ResolvedObject::Angle(core::f64::consts::PI / 6.0),
-        );
-        for expression in ["2 * t", "t * 2"] {
-            let source = format!(
-                "locus 0 beta 5\nnum t = 30deg\npoint P = point()\npoint O = point()\npoint R = rotate(P, O, {expression})\n"
-            );
-            let parsed = parse(&source);
-            let dimensions = infer_dimensions(&parsed.file).expect("angle product inference");
-            assert_eq!(dimensions.get("t"), Some(&InferredDimension::Angle));
-
-            let op = op_from(&format!(
-                "locus 0 beta 5\npoint R = rotate(P, O, {expression})\n"
-            ));
-            let mut evaluator = test_evaluator(&env);
-            let ResolvedObject::Point(point) =
-                evaluate_op_value(&mut evaluator, &op).expect("angle product evaluation")
-            else {
-                unreachable!("rotation returns a point");
-            };
-            assert!((point.geometry.x - 0.5).abs() < 1.0e-12);
-            assert!((point.geometry.y - libm::sqrt(3.0) * 0.5).abs() < 1.0e-12);
-        }
-    }
-
-    #[test]
-    fn nested_angle_products_use_known_scalar_and_angle_sides() {
-        for (expression, expected) in [
-            (
-                "ratio(2, 1) * (30deg * 2)",
-                2.0 * core::f64::consts::PI / 3.0,
-            ),
-            (
-                "(30deg * 2) * ratio(2, 1)",
-                2.0 * core::f64::consts::PI / 3.0,
-            ),
-            ("(2 * 3) * (30deg * 2)", 2.0 * core::f64::consts::PI),
-            ("(30deg * 2) * (2 * 3)", 2.0 * core::f64::consts::PI),
-        ] {
-            let parsed = parse(&format!("locus 0 beta 5\nnum t = {expression}\n"));
-            let dimensions = infer_dimensions(&parsed.file).expect("nested angle inference");
-            assert_eq!(dimensions.get("t"), Some(&InferredDimension::Angle));
-
-            let Evaluation::Resolved(scene) = evaluate(&parsed.file).expect("nested angle product")
-            else {
-                unreachable!("derived file resolves directly");
-            };
-            let ResolvedObject::Angle(angle) = scene.objects.first().expect("t exists").1 else {
-                unreachable!("t is an angle");
-            };
-            assert!((*angle - expected).abs() < 1.0e-12);
-        }
-    }
-
-    #[test]
-    fn solver_contextually_evaluates_compound_scalar_angle_operands() {
-        for (operator, expected) in [
-            ("*", core::f64::consts::PI / 3.0),
-            ("/", core::f64::consts::PI / 12.0),
-        ] {
-            let parsed = parse(&format!(
-                "locus 0 beta 5\npoint O = point()\ncircle c = circle(O, 6)\nnum t = 30deg {operator} (radius(c) / 3)\n"
-            ));
-            let Evaluation::Solved { scene, .. } =
-                evaluate(&parsed.file).expect("complete scene evaluates through solver")
-            else {
-                unreachable!("free point requires the solver");
-            };
-            let ResolvedObject::Angle(angle) = scene
-                .objects
-                .iter()
-                .find_map(|(id, object)| (id.name == "t").then_some(object))
-                .expect("t exists")
-            else {
-                unreachable!("t is an angle");
-            };
-            assert!((*angle - expected).abs() < 1.0e-12);
-        }
-    }
-
-    #[test]
-    fn nested_constructor_calls_impose_argument_dimensions() {
-        let parsed = parse(
-            "locus 0 beta 5\nnum r = 2\npoint P = point()\npoint O = point()\nrel on(P, circle(O, r))\n",
-        );
-        let dimensions = infer_dimensions(&parsed.file).expect("nested circle inference");
-        assert_eq!(
-            dimensions.get("r"),
-            Some(&InferredDimension::Number(Dimension::Length))
-        );
-    }
-
-    #[test]
-    fn resolved_points_and_angle_arcs_retain_validated_props() {
-        let mut env = Environment::new();
-        insert(&mut env, "A", resolved_point(Point::new(1.0, 0.0)));
-        insert(&mut env, "B", resolved_point(Point::new(0.0, 0.0)));
-        insert(&mut env, "C", resolved_point(Point::new(0.0, 1.0)));
-        let point = op_from("locus 0 beta 5\npoint M = midpoint(A, B) { mark: cross }\n");
-        let arc = op_from("locus 0 beta 5\narc a = angle_arc(A, B, C, 0.5) { n: 3 }\n");
-        let mut evaluator = test_evaluator(&env);
-        let ResolvedObject::Point(point) =
-            evaluate_op_value(&mut evaluator, &point).expect("marked point")
-        else {
-            unreachable!("point expected");
-        };
-        assert_eq!(point.mark, PointMark::Cross);
-        let ResolvedObject::Arc(arc) =
-            evaluate_op_value(&mut evaluator, &arc).expect("marked angle arc")
-        else {
-            unreachable!("arc expected");
-        };
-        assert_eq!(arc.angle_mark_count, Some(3));
-
-        let invalid = op_from("locus 0 beta 5\narc a = angle_arc(A, B, C, 0.5) { n: 5 }\n");
-        let error = evaluate_op_value(&mut evaluator, &invalid).expect_err("count range");
-        assert_eq!(error.code, "E204");
-        assert!(error.message.contains("1..=4"));
-    }
-
-    #[test]
-    fn num_only_file_resolves_and_scene_recomputes() {
-        let parsed = parse("locus 0 beta 5\nnum phi = (1 + sqrt(5)) / 2\n");
-        let mut scene = crate::Scene::new(parsed.file).expect("derived scene");
-        let resolved = scene.resolved().expect("complete scene");
-        let (_, ResolvedObject::Num(phi)) = resolved.objects.first().expect("phi") else {
-            unreachable!("phi is numeric");
-        };
-        assert!((phi.value - (1.0 + libm::sqrt(5.0)) * 0.5).abs() < 1.0e-12);
-        assert!(matches!(
-            scene.recompute().expect("recompute"),
-            Evaluation::Resolved(_)
-        ));
-    }
-
-    #[test]
-    fn resolves_annotation_spec_without_layout_position() {
-        let mut env = Environment::new();
-        insert(&mut env, "P", resolved_point(Point::new(2.0, 3.0)));
-        let op =
-            op_from("locus 0 beta 5\nlabel note = label(P, \"hello\") { dir: NE, gap: 0.25 }\n");
-        let mut evaluator = test_evaluator(&env);
-        let object = evaluate_op_value(&mut evaluator, &op).expect("annotation spec");
-        let ResolvedObject::Annotation(AnnotationSpec::Label {
-            anchor,
-            direction,
-            gap,
-            ..
-        }) = object
-        else {
-            unreachable!("label resolves to an annotation");
-        };
-        assert_eq!(
-            anchor,
-            crate::scene::AnchorSpec::Point(Point::new(2.0, 3.0))
-        );
-        assert_eq!(direction, LabelDirection::Compass(CompassDirection::Ne));
-        assert_eq!(gap, Some(0.25));
-    }
-
-    #[test]
-    fn snapshots_measured_circle_intersection_error() {
-        let mut env = Environment::new();
-        insert(
-            &mut env,
-            "c1",
-            ResolvedObject::Circle(Circle::new(Point::new(0.0, 0.0), 1.0).expect("circle")),
-        );
-        insert(
-            &mut env,
-            "c2",
-            ResolvedObject::Circle(Circle::new(Point::new(4.0, 0.0), 0.9).expect("circle")),
-        );
-        let op = op_from("locus 0 beta 5\npoint X = intersect(c1, c2)\n");
-        let mut evaluator = test_evaluator(&env);
-        let error = evaluate_op_value(&mut evaluator, &op)
-            .map_err(|error| attach_object(error, "X"))
-            .expect_err("circles are disjoint");
-        insta::assert_debug_snapshot!(
-            (
-                error.code,
-                error.span.line,
-                error.object_id.as_deref(),
-                error.message.as_str(),
-                error.measured_note(),
-            ),
-            @r###"
-        (
-            "E201",
-            2,
-            Some(
-                "X",
-            ),
-            "objects do not intersect",
-            Some(
-                "first radius 1.000000 scene units, second radius 0.900000 scene units, center distance 4.000000 scene units, radii sum 1.900000 scene units",
-            ),
-        )
-        "###
-        );
-    }
-
-    #[test]
-    fn snapshots_measured_division_domain_error() {
-        let parsed = parse("locus 0 beta 5\nnum bad = 3 / 0\n");
-        let error = evaluate(&parsed.file).expect_err("zero denominator");
-        insta::assert_debug_snapshot!(
-            (
-                error.code,
-                error.span.line,
-                error.object_id.as_deref(),
-                error.message.as_str(),
-                error.measured_note(),
-            ),
-            @r###"
-        (
-            "E204",
-            2,
-            Some(
-                "bad",
-            ),
-            "division denominator is zero under construction tolerance",
-            Some(
-                "denominator 0.000000",
-            ),
-        )
-        "###
-        );
-    }
-
-    #[test]
-    fn every_spec_fixture_solves_relationally() -> Result<(), Box<dyn std::error::Error>> {
-        let corpus = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../spec/test");
-        let mut paths = Vec::new();
-        for group in ["demonstrations", "stress"] {
-            paths.extend(
-                fs::read_dir(corpus.join(group))?
-                    .filter_map(Result::ok)
-                    .map(|entry| entry.path())
-                    .filter(|path| {
-                        path.extension()
-                            .is_some_and(|extension| extension == "locus")
-                    }),
-            );
-        }
-        paths.sort();
-        for path in paths {
-            let source = fs::read_to_string(&path)?;
-            let parsed = parse(&source);
-            let evaluation = evaluate(&parsed.file)
-                .map_err(|error| format!("{} failed relational solve: {error}", path.display()))?;
-            assert!(
-                matches!(evaluation, Evaluation::Solved { .. }),
-                "{} should solve",
-                path.display()
-            );
-        }
-        Ok(())
-    }
-
-    #[test]
-    fn current_format_resolves_derived_ellipse_overload_and_object_aliases() {
-        let parsed = parse(
-            "locus 0 beta 5\npoint O = point()\nellipse e = ellipse(O, 3, 2)\nellipse alias = e\npoint P = e.at(0deg)\n",
-        );
-        assert!(parsed.diagnostics.is_empty(), "{:#?}", parsed.diagnostics);
-        let evaluation = evaluate(&parsed.file).expect("format-three curves");
-        assert!(
-            matches!(&evaluation, Evaluation::Solved { .. }),
-            "placed point must enter solver"
-        );
-        let scene = match evaluation {
-            Evaluation::Resolved(scene) | Evaluation::Solved { scene, .. } => scene,
-        };
-        let object = |name: &str| {
-            scene
-                .objects
-                .iter()
-                .find_map(|(id, object)| (id.name == name).then_some(object))
-                .expect("named object")
-        };
-        let ellipse = object("e");
-        assert_eq!(ellipse, object("alias"));
-        assert!(
-            matches!(ellipse, ResolvedObject::Ellipse(_)),
-            "ellipse kind"
-        );
-        let ResolvedObject::Ellipse(ellipse) = ellipse else {
-            return;
-        };
-        assert!(
-            matches!(object("P"), ResolvedObject::Point(_)),
-            "point kind"
-        );
-        let ResolvedObject::Point(point) = object("P") else {
-            return;
-        };
-        assert_eq!(point.geometry, ellipse.at(0.0).expect("major endpoint"));
-    }
 }

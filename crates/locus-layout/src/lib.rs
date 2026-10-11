@@ -1,14 +1,24 @@
-//! Deterministic annotation placement, strictly after geometry evaluation.
+//! Deterministic measured annotation placement and bounded solve feedback.
 //!
-//! Measure text with [`boxes::measure_scene`], then call [`layout`]. Measurements
-//! are in ems; [`LayoutOptions::em_size`] converts them to scene units. Geometry
-//! is borrowed, never changed. Output retains the original annotation and spans.
+//! Measure expanded text with [`measurement::measure_file`] before evaluation,
+//! then use [`solve_layout`] to agree on continuous and discrete placement.
+//! [`boxes::measure_scene`] and [`layout`] also support already resolved scenes.
+//! Measurements are in ems; [`LayoutOptions::em_size`] converts them to scene
+//! units. Output retains the original annotations and source spans.
 
 pub mod assign;
 pub mod boxes;
 pub mod candidates;
+mod clipping;
+pub mod discrete;
+pub mod measurement;
+mod path_labels;
 pub mod report;
+mod routing;
 pub mod score;
+pub use discrete::{LayoutFeedback, layout_program};
+mod feedback;
+pub use feedback::{SolveLayoutError, solve_layout};
 
 use indexmap::IndexMap;
 use locus_core::{AnnotationSpec, BBox, InspectDiagnostic, Point, ResolvedScene, Segment};
@@ -38,13 +48,14 @@ pub struct LayoutOptions {
 
 impl Default for LayoutOptions {
     fn default() -> Self {
+        let metrics = locus_core::preset::LayoutMetrics::default();
         Self {
             em_size: 1.0,
-            gap: 0.25,
+            gap: metrics.gap,
             label_connectors: false,
-            margin: 2.0,
-            stroke_width: 0.04,
-            mark_size: 0.2,
+            margin: metrics.margin,
+            stroke_width: metrics.stroke_width,
+            mark_size: metrics.mark_size,
         }
     }
 }
@@ -83,6 +94,13 @@ pub enum Leader {
     None,
     /// Connector from the anchor to the nearest edge of the text box.
     Segment(Segment),
+    /// Accepted orthogonal arrow centerline.
+    Routed {
+        /// Shared logical route geometry.
+        route: locus_core::geom::route::Route,
+        /// Original arrow-head style.
+        head: locus_syntax::HeadKind,
+    },
     /// Arrow path; `control` is a quadratic Bézier control point when bent.
     Arrow {
         /// Resolved start anchor.
@@ -118,6 +136,8 @@ pub struct PlacedAnnotation {
 /// Layout output, retaining declaration order independently of assignment order.
 #[derive(Clone, Debug, PartialEq)]
 pub struct LayoutScene {
+    /// Render-only retained paths, preserving logical object measurements.
+    pub visible_paths: std::collections::BTreeMap<String, locus_core::geom::route::Route>,
     /// Every annotation, keyed by name in declaration order.
     pub annotations: IndexMap<String, PlacedAnnotation>,
     /// Unchanged geometry-only bounds.
@@ -158,6 +178,16 @@ pub enum LayoutError {
     /// Global style options violate their domains.
     #[error("E413: layout options must be finite and in their documented domains")]
     Options,
+    /// Unsatisfied route, clipping, or measurement feedback requirement.
+    #[error("E413: {message}")]
+    Conflict {
+        /// Original requirement source span.
+        span: Span,
+        /// Implicated route or label identifiers.
+        measurements: Vec<String>,
+        /// Concrete conflict explanation.
+        message: String,
+    },
     /// Actual text renderer failure, anchored to its text value.
     #[error("E414: text measurement failed for {id}: {source}")]
     Measurement {
@@ -178,7 +208,7 @@ impl LayoutError {
             Self::MissingMeasurement { .. } => "E410",
             Self::Anchor { .. } => "E411",
             Self::Invalid { .. } => "E412",
-            Self::Options => "E413",
+            Self::Options | Self::Conflict { .. } => "E413",
             Self::Measurement { .. } => "E414",
         }
     }

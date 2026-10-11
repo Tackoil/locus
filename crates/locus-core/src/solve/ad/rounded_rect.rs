@@ -6,10 +6,10 @@ use super::{
 
 #[derive(Clone, Debug)]
 pub(crate) struct DRoundedRect {
-    center: DPoint,
-    width: Jet,
-    height: Jet,
-    radius: Jet,
+    pub(super) center: DPoint,
+    pub(super) width: Jet,
+    pub(super) height: Jet,
+    pub(super) radius: Jet,
 }
 
 impl RelationEvaluator<'_> {
@@ -30,6 +30,14 @@ impl RelationEvaluator<'_> {
 }
 
 impl DRoundedRect {
+    pub(super) fn automatic(center: DPoint, width: Jet, height: Jet, radius: Jet) -> Self {
+        Self {
+            center,
+            width,
+            height,
+            radius,
+        }
+    }
     pub(super) fn measure(&self, name: &str) -> DValue {
         let (value, dimension) = if name == "area" {
             (
@@ -77,19 +85,24 @@ impl DRoundedRect {
 
     pub(crate) fn signed_distance(&self, point: &DPoint, span: Span) -> Result<Jet, EvalError> {
         let offset = point.sub(&self.center);
-        let x = offset.x.abs().sub(&self.width.scale(0.5).sub(&self.radius));
+        let x = offset
+            .x
+            .abs_live()
+            .sub(&self.width.scale(0.5).sub(&self.radius));
         let y = offset
             .y
-            .abs()
+            .abs_live()
             .sub(&self.height.scale(0.5).sub(&self.radius));
         let zero = Jet::constant(0.0, x.gradient.len());
         let outside = DVector {
-            x: x.max(&zero),
-            y: y.max(&zero),
+            x: x.max_live(&zero),
+            y: y.max_live(&zero),
         };
         let distance = outside
             .norm()
             .map_err(|()| solver_error(span, "undefined rounded rectangle distance"))?;
-        Ok(distance.add(&x.max(&y).min(&zero)).sub(&self.radius))
+        Ok(distance
+            .add(&x.max_live(&y).min_live(&zero))
+            .sub(&self.radius))
     }
 }

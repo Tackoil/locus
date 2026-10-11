@@ -6,8 +6,8 @@ E110
 
   × the first statement must be a `locus` header
    ╭─[fixtures/errors/missing_header.locus:1:1]
- 1 │ point A = point()
-   · ────────┬────────
-   ·         ╰── the first statement must be a `locus` header
+ 1 │ point A()
+   · ────┬────
+   ·     ╰── the first statement must be a `locus` header
    ╰────
-  help: locus 0 beta 5
+  help: locus 0 beta 6

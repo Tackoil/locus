@@ -77,7 +77,10 @@ pub(crate) fn prepare(
             continue;
         }
         let style = styles.for_object(&id.name);
-        let shapes = geometry(object, viewport);
+        let shapes = layout.visible_paths.get(&id.name).map_or_else(
+            || geometry(object, viewport),
+            |route| routed_arrow(route, HeadKind::None, viewport, style.weight),
+        );
         push(&mut ops, id, style, shapes)?;
     }
     for annotation in layout.annotations.values() {
@@ -191,9 +194,12 @@ fn annotation_shapes(
         .iter()
         .map(|s| segment_shape(*s, view))
         .collect();
-    match annotation.leader {
+    match &annotation.leader {
         Leader::None => {}
-        Leader::Segment(segment) => result.push(segment_shape(segment, view)),
+        Leader::Segment(segment) => result.push(segment_shape(*segment, view)),
+        Leader::Routed { route, head } => {
+            result.extend(routed_arrow(route, *head, view, style.weight));
+        }
         Leader::Arrow {
             from,
             to,
@@ -201,10 +207,10 @@ fn annotation_shapes(
             head,
         } => {
             result.extend(arrow(
-                view.to_svg(from),
-                view.to_svg(to),
+                view.to_svg(*from),
+                view.to_svg(*to),
                 control.map(|p| view.to_svg(p)),
-                head,
+                *head,
                 style.weight,
             ));
         }
@@ -213,6 +219,39 @@ fn annotation_shapes(
         result.extend(crate::text::outlines(label, view, annotation.id.span)?);
     }
     Ok(result)
+}
+
+fn routed_arrow(
+    route: &locus_core::geom::route::Route,
+    head: HeadKind,
+    view: Viewport,
+    weight: f64,
+) -> Vec<Shape> {
+    let points: Vec<Point> = core::iter::once(&route.from)
+        .chain(route.via.iter())
+        .chain(core::iter::once(&route.to))
+        .cloned()
+        .map(|point| view.to_svg(point.into()))
+        .collect();
+    let mut commands = vec![Command::Move(points[0])];
+    commands.extend(points.iter().skip(1).copied().map(Command::Line));
+    let mut result = vec![Shape::Path {
+        commands,
+        closed: false,
+        ink: false,
+    }];
+    if head != HeadKind::None {
+        let last = points.len() - 1;
+        result.push(arrowhead(
+            points[last],
+            points[last] - points[last - 1],
+            weight,
+        ));
+    }
+    if head == HeadKind::Both {
+        result.push(arrowhead(points[0], points[0] - points[1], weight));
+    }
+    result
 }
 
 fn arrow(

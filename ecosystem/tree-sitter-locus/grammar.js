@@ -19,19 +19,39 @@ module.exports = grammar({
       $.meta_statement,
       $.style_statement,
       $.class_declaration,
+      $.function_declaration,
+      $.group_declaration,
+      $.instance_declaration,
       $.object_declaration,
       $.relation_statement,
       $.assert_statement,
     ),
 
-    header: _ => seq("locus", "0", "beta", "5"),
+    header: _ => seq("locus", "0", "beta", "6"),
     meta_statement: $ => seq("meta", field("key", $.identifier), "=", field("value", $.string)),
     style_statement: $ => seq("style", field("name", $.identifier)),
     class_declaration: $ => seq("class", field("name", $.identifier), $.properties),
+    function_declaration: $ => seq(
+      "fn", field("name", $.identifier), $.parameters, "{", $._newline,
+      repeat(choice($._newline, seq($._function_statement, $._newline))), "}",
+    ),
+    parameters: $ => seq("(", optional(commaSeparated1($.identifier)), ")"),
+    _function_statement: $ => choice(
+      $.object_declaration, $.group_declaration, $.instance_declaration,
+      $.relation_statement, $.assert_statement,
+    ),
+    group_declaration: $ => seq("group", field("name", $.identifier), $.arguments),
+    instance_declaration: $ => seq(
+      field("function", $.identifier), field("name", $.identifier),
+      $.arguments, optional($.attribute),
+    ),
 
     object_declaration: $ => seq(
-      field("kind", $.kind), field("name", $.identifier), "=",
-      field("value", choice($.free_expression, $._expression)),
+      field("kind", $.kind), field("name", $.identifier),
+      choice(
+        seq("=", field("value", choice($.free_expression, $._expression))),
+        field("arguments", $.arguments),
+      ),
       optional($.where_clause), optional($.attribute), optional($.properties),
     ),
     kind: _ => choice(
@@ -50,7 +70,7 @@ module.exports = grammar({
     arrow_head: _ => choice("->", "<->", "-"),
     hex_color: _ => /#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?/,
 
-    relation_statement: $ => seq("rel", $._expression),
+    relation_statement: $ => seq("rel", $._expression, optional($.properties)),
     assert_statement: $ => seq("assert", $._expression, optional($.tolerance)),
     tolerance: $ => seq("tol", $.number),
 

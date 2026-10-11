@@ -1,4 +1,4 @@
-locus 0 beta 5
+locus 0 beta 6
 
 meta title = "Sequence: agent runs locus check"
 meta note = "Rows step down lifeline A via offset; other endpoints via foot() — same y by construction"
@@ -15,22 +15,22 @@ num hp = 4.0         // participant pitch
 num rp = 0.85        // message row pitch
 
 // ---- participant heads ---------------------------------------
-rect boxA = rect(bw, bh)
+rect boxA(bw, bh)
 point Ac = boxA.center { mark: none }
-label hA = label(boxA.center, "Agent")  { dir: center }
+label hA(boxA.center, "Agent")  { dir: center }
 
-rect boxB = rect(bw, bh) where { horizontal(Ac, boxB.center), hdist(Ac, boxB.center) == hp }
+rect boxB(bw, bh) where { align_center_y(Ac, boxB.center), hdist(Ac, boxB.center) == hp }
 point Bc = boxB.center { mark: none }
-label hB = label(boxB.center, "locus CLI")  { dir: center }
+label hB(boxB.center, "locus CLI")  { dir: center }
 
-rect boxC = rect(bw, bh) where { horizontal(Bc, boxC.center), hdist(Bc, boxC.center) == hp }
+rect boxC(bw, bh) where { align_center_y(Bc, boxC.center), hdist(Bc, boxC.center) == hp }
 point Cc = boxC.center { mark: none }
-label hC = label(boxC.center, "Kernel")  { dir: center }
+label hC(boxC.center, "Kernel")  { dir: center }
 
 // ---- lifelines (exact dash, weight, color, and cap via a declared class)
-segment lifeA = seg(boxA.s, offset(boxA.s, 0, -25))  [lifeline]
-segment lifeB = seg(boxB.s, offset(boxB.s, 0, -25))  [lifeline]
-segment lifeC = seg(boxC.s, offset(boxC.s, 0, -25))  [lifeline]
+segment lifeA(boxA.s, offset(boxA.s, 0, -25))  [lifeline]
+segment lifeB(boxB.s, offset(boxB.s, 0, -25))  [lifeline]
+segment lifeC(boxC.s, offset(boxC.s, 0, -25))  [lifeline]
 
 // ---- message rows (chained offsets → equal pitch by construction)
 point r1 = offset(boxA.s, 0, -rp)  { mark: none }
@@ -42,182 +42,290 @@ point r6 = offset(r5, 0, -rp)      { mark: none }
 
 // ---- messages --------------------------------------------------
 point p1b = foot(r1, lifeB)  { mark: none }
-arrow m1 = arrow(r1, p1b)  { head: -> }
-label l1 = label(seg(r1, p1b).midpoint, "check fig.locus")  { dir: N, gap: 0.12 }
+arrow m1(r1, p1b)  { head: -> }
+label l1(seg(r1, p1b).midpoint, "check fig.locus")  { dir: N, gap: 0.12 }
 
 point p2b = foot(r2, lifeB)  { mark: none }
 point p2c = foot(r2, lifeC)  { mark: none }
-arrow m2 = arrow(p2b, p2c)  { head: -> }
-label l2 = label(seg(p2b, p2c).midpoint, "parse + solve + evaluate")  { dir: N, gap: 0.12 }
+arrow m2(p2b, p2c)  { head: -> }
+label l2(seg(p2b, p2c).midpoint, "parse + solve + evaluate")  { dir: N, gap: 0.12 }
 
 point p3b = foot(r3, lifeB)  { mark: none }
 point p3c = foot(r3, lifeC)  { mark: none }
-arrow m3 = arrow(p3c, p3b)  [ret]  { head: -> }   // return
-label l3 = label(seg(p3b, p3c).midpoint, "resolved scene + DOF report")  { dir: N, gap: 0.12 }
+arrow m3(p3c, p3b)  [ret]  { head: -> }   // return
+label l3(seg(p3b, p3c).midpoint, "resolved scene + DOF report")  { dir: N, gap: 0.12 }
 
 point p4b = foot(r4, lifeB)  { mark: none }
 point p4c = foot(r4, lifeC)  { mark: none }
-arrow m4 = arrow(p4b, p4c)  { head: -> }
-label l4 = label(seg(p4b, p4c).midpoint, "run asserts")  { dir: N, gap: 0.12 }
+arrow m4(p4b, p4c)  { head: -> }
+label l4(seg(p4b, p4c).midpoint, "run asserts")  { dir: N, gap: 0.12 }
 
 point p5b = foot(r5, lifeB)  { mark: none }
 point p5c = foot(r5, lifeC)  { mark: none }
-arrow m5 = arrow(p5c, p5b)  [ret]  { head: -> }
-label l5 = label(seg(p5b, p5c).midpoint, "$a_3$ failed: got 1.618")  { dir: N, gap: 0.12 }
+arrow m5(p5c, p5b)  [ret]  { head: -> }
+label l5(seg(p5b, p5c).midpoint, "$a_3$ failed: got 1.618")  { dir: N, gap: 0.12 }
 
 point p6b = foot(r6, lifeB)  { mark: none }
-arrow m6 = arrow(p6b, r6)  [ret]  { head: -> }
-label l6 = label(seg(r6, p6b).midpoint, "exit 1 + JSON report")  { dir: N, gap: 0.12 }
+arrow m6(p6b, r6)  [ret]  { head: -> }
+label l6(seg(r6, p6b).midpoint, "exit 1 + JSON report")  { dir: N, gap: 0.12 }
 
 // ---- invariants -------------------------------------------------
 assert parallel(lifeA, lifeB) and parallel(lifeB, lifeC)
-assert horizontal(r1, p1b)                         // messages horizontal
-assert congruent(seg(r1, r2), seg(r2, r3))         // uniform rhythm
+assert align_center_y(r1, p1b)                         // messages horizontal
+assert (length(seg(r1, r2)) == length(seg(r2, r3)))         // uniform rhythm
 assert on(p2b, lifeB) and on(p2c, lifeC)
 
 // ---- stress construction network ----
 point Dc = offset(Cc, hp, 0) { mark: none }
-rect boxD = rect(Dc, bw, bh)
-label hD = label(boxD.center, "Audit / storage") { dir: center }
-segment lifeD = seg(boxD.s, offset(boxD.s, 0, -25)) [lifeline]
+rect boxD(Dc, bw, bh)
+label hD(boxD.center, "Audit / storage") { dir: center }
+segment lifeD(boxD.s, offset(boxD.s, 0, -25)) [lifeline]
 point sr7 = offset(boxA.s, 0, -7 * rp) { mark: none }
 point ss7 = foot(sr7, lifeA) { mark: none }
 point se7 = foot(sr7, lifeB) { mark: none }
-arrow sm7 = arrow(ss7, se7) [main]
-label sl7 = label(seg(ss7, se7).midpoint, "retry with corrected constraints") { dir: N, gap: 0.08 }
-assert horizontal(ss7, se7)
+arrow sm7(ss7, se7) [main]
+label sl7(seg(ss7, se7).midpoint, "retry with corrected constraints") { dir: N, gap: 0.08 }
+assert align_center_y(ss7, se7)
 assert on(ss7, lifeA) and on(se7, lifeB)
 point sr8 = offset(boxA.s, 0, -8 * rp) { mark: none }
 point ss8 = foot(sr8, lifeB) { mark: none }
 point se8 = foot(sr8, lifeC) { mark: none }
-arrow sm8 = arrow(ss8, se8) [main]
-label sl8 = label(seg(ss8, se8).midpoint, "solve shared geometry") { dir: N, gap: 0.08 }
-assert horizontal(ss8, se8)
+arrow sm8(ss8, se8) [main]
+label sl8(seg(ss8, se8).midpoint, "solve shared geometry") { dir: N, gap: 0.08 }
+assert align_center_y(ss8, se8)
 assert on(ss8, lifeB) and on(se8, lifeC)
 point sr9 = offset(boxA.s, 0, -9 * rp) { mark: none }
 point ss9 = foot(sr9, lifeC) { mark: none }
 point se9 = foot(sr9, lifeD) { mark: none }
-arrow sm9 = arrow(ss9, se9) [main]
-label sl9 = label(seg(ss9, se9).midpoint, "read cached measurements") { dir: N, gap: 0.08 }
-assert horizontal(ss9, se9)
+arrow sm9(ss9, se9) [main]
+label sl9(seg(ss9, se9).midpoint, "read cached measurements") { dir: N, gap: 0.08 }
+assert align_center_y(ss9, se9)
 assert on(ss9, lifeC) and on(se9, lifeD)
 point sr10 = offset(boxA.s, 0, -10 * rp) { mark: none }
 point ss10 = foot(sr10, lifeD) { mark: none }
 point se10 = foot(sr10, lifeC) { mark: none }
-arrow sm10 = arrow(ss10, se10) [ret]
-label sl10 = label(seg(ss10, se10).midpoint, "cache miss") { dir: N, gap: 0.08 }
-assert horizontal(ss10, se10)
+arrow sm10(ss10, se10) [ret]
+label sl10(seg(ss10, se10).midpoint, "cache miss") { dir: N, gap: 0.08 }
+assert align_center_y(ss10, se10)
 assert on(ss10, lifeD) and on(se10, lifeC)
 point sr11 = offset(boxA.s, 0, -11 * rp) { mark: none }
 point ss11 = foot(sr11, lifeC) { mark: none }
 point se11 = foot(sr11, lifeB) { mark: none }
-arrow sm11 = arrow(ss11, se11) [ret]
-label sl11 = label(seg(ss11, se11).midpoint, "candidate violates domain") { dir: N, gap: 0.08 }
-assert horizontal(ss11, se11)
+arrow sm11(ss11, se11) [ret]
+label sl11(seg(ss11, se11).midpoint, "candidate violates domain") { dir: N, gap: 0.08 }
+assert align_center_y(ss11, se11)
 assert on(ss11, lifeC) and on(se11, lifeB)
 point sr12 = offset(boxA.s, 0, -12 * rp) { mark: none }
 point ss12 = foot(sr12, lifeB) { mark: none }
 point se12 = foot(sr12, lifeC) { mark: none }
-arrow sm12 = arrow(ss12, se12) [main]
-label sl12 = label(seg(ss12, se12).midpoint, "reject trial; increase damping") { dir: N, gap: 0.08 }
-assert horizontal(ss12, se12)
+arrow sm12(ss12, se12) [main]
+label sl12(seg(ss12, se12).midpoint, "reject trial; increase damping") { dir: N, gap: 0.08 }
+assert align_center_y(ss12, se12)
 assert on(ss12, lifeB) and on(se12, lifeC)
 point sr13 = offset(boxA.s, 0, -13 * rp) { mark: none }
 point ss13 = foot(sr13, lifeC) { mark: none }
 point se13 = foot(sr13, lifeB) { mark: none }
-arrow sm13 = arrow(ss13, se13) [ret]
-label sl13 = label(seg(ss13, se13).midpoint, "accepted state and rank") { dir: N, gap: 0.08 }
-assert horizontal(ss13, se13)
+arrow sm13(ss13, se13) [ret]
+label sl13(seg(ss13, se13).midpoint, "accepted state and rank") { dir: N, gap: 0.08 }
+assert align_center_y(ss13, se13)
 assert on(ss13, lifeC) and on(se13, lifeB)
 point sr14 = offset(boxA.s, 0, -14 * rp) { mark: none }
 point ss14 = foot(sr14, lifeB) { mark: none }
 point se14 = foot(sr14, lifeD) { mark: none }
-arrow sm14 = arrow(ss14, se14) [main]
-label sl14 = label(seg(ss14, se14).midpoint, "persist solved report") { dir: N, gap: 0.08 }
-assert horizontal(ss14, se14)
+arrow sm14(ss14, se14) [main]
+label sl14(seg(ss14, se14).midpoint, "persist solved report") { dir: N, gap: 0.08 }
+assert align_center_y(ss14, se14)
 assert on(ss14, lifeB) and on(se14, lifeD)
 point sr15 = offset(boxA.s, 0, -15 * rp) { mark: none }
 point ss15 = foot(sr15, lifeD) { mark: none }
 point se15 = foot(sr15, lifeB) { mark: none }
-arrow sm15 = arrow(ss15, se15) [ret]
-label sl15 = label(seg(ss15, se15).midpoint, "commit acknowledged") { dir: N, gap: 0.08 }
-assert horizontal(ss15, se15)
+arrow sm15(ss15, se15) [ret]
+label sl15(seg(ss15, se15).midpoint, "commit acknowledged") { dir: N, gap: 0.08 }
+assert align_center_y(ss15, se15)
 assert on(ss15, lifeD) and on(se15, lifeB)
 point sr16 = offset(boxA.s, 0, -16 * rp) { mark: none }
 point ss16 = foot(sr16, lifeB) { mark: none }
 point se16 = foot(sr16, lifeC) { mark: none }
-arrow sm16 = arrow(ss16, se16) [main]
-label sl16 = label(seg(ss16, se16).midpoint, "evaluate derived assertions") { dir: N, gap: 0.08 }
-assert horizontal(ss16, se16)
+arrow sm16(ss16, se16) [main]
+label sl16(seg(ss16, se16).midpoint, "evaluate derived assertions") { dir: N, gap: 0.08 }
+assert align_center_y(ss16, se16)
 assert on(ss16, lifeB) and on(se16, lifeC)
 point sr17 = offset(boxA.s, 0, -17 * rp) { mark: none }
 point ss17 = foot(sr17, lifeC) { mark: none }
 point se17 = foot(sr17, lifeB) { mark: none }
-arrow sm17 = arrow(ss17, se17) [ret]
-label sl17 = label(seg(ss17, se17).midpoint, "all assertions pass") { dir: N, gap: 0.08 }
-assert horizontal(ss17, se17)
+arrow sm17(ss17, se17) [ret]
+label sl17(seg(ss17, se17).midpoint, "all assertions pass") { dir: N, gap: 0.08 }
+assert align_center_y(ss17, se17)
 assert on(ss17, lifeC) and on(se17, lifeB)
 point sr18 = offset(boxA.s, 0, -18 * rp) { mark: none }
 point ss18 = foot(sr18, lifeB) { mark: none }
 point se18 = foot(sr18, lifeA) { mark: none }
-arrow sm18 = arrow(ss18, se18) [ret]
-label sl18 = label(seg(ss18, se18).midpoint, "check exit 0") { dir: N, gap: 0.08 }
-assert horizontal(ss18, se18)
+arrow sm18(ss18, se18) [ret]
+label sl18(seg(ss18, se18).midpoint, "check exit 0") { dir: N, gap: 0.08 }
+assert align_center_y(ss18, se18)
 assert on(ss18, lifeB) and on(se18, lifeA)
 point sr19 = offset(boxA.s, 0, -19 * rp) { mark: none }
 point ss19 = foot(sr19, lifeA) { mark: none }
 point se19 = foot(sr19, lifeB) { mark: none }
-arrow sm19 = arrow(ss19, se19) [main]
-label sl19 = label(seg(ss19, se19).midpoint, "render SVG and TikZ") { dir: N, gap: 0.08 }
-assert horizontal(ss19, se19)
+arrow sm19(ss19, se19) [main]
+label sl19(seg(ss19, se19).midpoint, "render SVG and TikZ") { dir: N, gap: 0.08 }
+assert align_center_y(ss19, se19)
 assert on(ss19, lifeA) and on(se19, lifeB)
 point sr20 = offset(boxA.s, 0, -20 * rp) { mark: none }
 point ss20 = foot(sr20, lifeB) { mark: none }
 point se20 = foot(sr20, lifeC) { mark: none }
-arrow sm20 = arrow(ss20, se20) [main]
-label sl20 = label(seg(ss20, se20).midpoint, "measure and place labels") { dir: N, gap: 0.08 }
-assert horizontal(ss20, se20)
+arrow sm20(ss20, se20) [main]
+label sl20(seg(ss20, se20).midpoint, "measure and place labels") { dir: N, gap: 0.08 }
+assert align_center_y(ss20, se20)
 assert on(ss20, lifeB) and on(se20, lifeC)
 point sr21 = offset(boxA.s, 0, -21 * rp) { mark: none }
 point ss21 = foot(sr21, lifeC) { mark: none }
 point se21 = foot(sr21, lifeB) { mark: none }
-arrow sm21 = arrow(ss21, se21) [ret]
-label sl21 = label(seg(ss21, se21).midpoint, "layout and collisions") { dir: N, gap: 0.08 }
-assert horizontal(ss21, se21)
+arrow sm21(ss21, se21) [ret]
+label sl21(seg(ss21, se21).midpoint, "layout and collisions") { dir: N, gap: 0.08 }
+assert align_center_y(ss21, se21)
 assert on(ss21, lifeC) and on(se21, lifeB)
 point sr22 = offset(boxA.s, 0, -22 * rp) { mark: none }
 point ss22 = foot(sr22, lifeB) { mark: none }
 point se22 = foot(sr22, lifeD) { mark: none }
-arrow sm22 = arrow(ss22, se22) [main]
-label sl22 = label(seg(ss22, se22).midpoint, "write SVG artifact") { dir: N, gap: 0.08 }
-assert horizontal(ss22, se22)
+arrow sm22(ss22, se22) [main]
+label sl22(seg(ss22, se22).midpoint, "write SVG artifact") { dir: N, gap: 0.08 }
+assert align_center_y(ss22, se22)
 assert on(ss22, lifeB) and on(se22, lifeD)
 point sr23 = offset(boxA.s, 0, -23 * rp) { mark: none }
 point ss23 = foot(sr23, lifeD) { mark: none }
 point se23 = foot(sr23, lifeB) { mark: none }
-arrow sm23 = arrow(ss23, se23) [ret]
-label sl23 = label(seg(ss23, se23).midpoint, "artifact hash") { dir: N, gap: 0.08 }
-assert horizontal(ss23, se23)
+arrow sm23(ss23, se23) [ret]
+label sl23(seg(ss23, se23).midpoint, "artifact hash") { dir: N, gap: 0.08 }
+assert align_center_y(ss23, se23)
 assert on(ss23, lifeD) and on(se23, lifeB)
 point sr24 = offset(boxA.s, 0, -24 * rp) { mark: none }
 point ss24 = foot(sr24, lifeB) { mark: none }
 point se24 = foot(sr24, lifeD) { mark: none }
-arrow sm24 = arrow(ss24, se24) [main]
-label sl24 = label(seg(ss24, se24).midpoint, "write TikZ artifact") { dir: N, gap: 0.08 }
-assert horizontal(ss24, se24)
+arrow sm24(ss24, se24) [main]
+label sl24(seg(ss24, se24).midpoint, "write TikZ artifact") { dir: N, gap: 0.08 }
+assert align_center_y(ss24, se24)
 assert on(ss24, lifeB) and on(se24, lifeD)
 point sr25 = offset(boxA.s, 0, -25 * rp) { mark: none }
 point ss25 = foot(sr25, lifeD) { mark: none }
 point se25 = foot(sr25, lifeB) { mark: none }
-arrow sm25 = arrow(ss25, se25) [ret]
-label sl25 = label(seg(ss25, se25).midpoint, "artifact hash") { dir: N, gap: 0.08 }
-assert horizontal(ss25, se25)
+arrow sm25(ss25, se25) [ret]
+label sl25(seg(ss25, se25).midpoint, "artifact hash") { dir: N, gap: 0.08 }
+assert align_center_y(ss25, se25)
 assert on(ss25, lifeD) and on(se25, lifeB)
 point sr26 = offset(boxA.s, 0, -26 * rp) { mark: none }
 point ss26 = foot(sr26, lifeB) { mark: none }
 point se26 = foot(sr26, lifeA) { mark: none }
-arrow sm26 = arrow(ss26, se26) [ret]
-label sl26 = label(seg(ss26, se26).midpoint, "render complete") { dir: N, gap: 0.08 }
-assert horizontal(ss26, se26)
+arrow sm26(ss26, se26) [ret]
+label sl26(seg(ss26, se26).midpoint, "render complete") { dir: N, gap: 0.08 }
+assert align_center_y(ss26, se26)
 assert on(ss26, lifeB) and on(se26, lifeA)
 assert vdist(sr26, sr7) == 19 * rp
+
+// ---- beta 6 specification acceptance: generic sequence composition ----
+fn beta6_header(text) {
+    rect shape()
+    label caption(text)
+    rel center(caption, shape)
+    rel contain(shape, caption)
+}
+
+fn beta6_guide(start) {
+    point finish() { mark: none }
+    rel align_center_x(start, finish)
+    rel gap_y(start, finish)
+    segment path(start, finish) [lifeline]
+}
+
+fn beta6_message(source, target, text) {
+    point tail() { mark: none }
+    point tip() { mark: none }
+    rel on(tail, source)
+    rel on(tip, target)
+    rel align_center_y(tail, tip)
+    arrow path(tail, tip)
+    label caption(path, text) { near: middle, side: above }
+    rel avoid(caption, source, target)
+    assert on(tail, source) and on(tip, target)
+    assert path.length == dist(tail, tip)
+}
+
+fn beta6_loop(guide, text) {
+    point tail() { mark: none }
+    point tip() { mark: none }
+    rel on(tail, guide)
+    rel on(tip, guide)
+    rel gap_y(tail, tip)
+    arrow path(tail, tip) { route: orthogonal, side: right }
+    label caption(path, text) { near: middle, side: right }
+    rel avoid(caption, guide)
+    assert on(tail, guide) and on(tip, guide)
+    assert path.length > dist(tail, tip)
+}
+
+fn beta6_overlay(guide, paths) {
+    rect shape() [highlight]
+    rel align_center_x(shape, guide)
+    rel shape.width == style_metric("narrow_width")
+    rel cover_y(shape, paths)
+    rel trim_endpoints(paths, shape)
+    assert shape.width == style_metric("narrow_width")
+    assert shape.height > 0
+}
+
+fn beta6_key(text, appearance) {
+    point tail() { mark: none }
+    point tip() { mark: none }
+    rel align_center_y(tail, tip)
+    rel gap_x(tail, tip)
+    arrow sample(tail, tip) [appearance]
+    rel sample.length == style_metric("short_length")
+    label caption(text) [appearance]
+    rel row(sample, caption)
+    assert sample.length == style_metric("short_length")
+}
+
+beta6_header beta6_agent("Caller")
+beta6_header beta6_kernel("Measured service endpoint")
+group beta6_headers(beta6_agent, beta6_kernel)
+rel row(beta6_headers)
+rel gap_y(lifeA, beta6_headers)
+rel align_left(boxA, beta6_headers)
+beta6_guide beta6_source(beta6_agent.shape.s)
+beta6_guide beta6_target(beta6_kernel.shape.s)
+beta6_message beta6_request(beta6_source.path, beta6_target.path, "A long request caption determines the guide spacing")
+beta6_loop beta6_work(beta6_target.path, "Local processing")
+beta6_message beta6_reply(beta6_target.path, beta6_source.path, "Measured response") [ret]
+group beta6_events(beta6_request, beta6_work, beta6_reply)
+rect beta6_frame() [auxiliary]
+rel contain(beta6_frame, beta6_events)
+rel gap_y(beta6_headers, beta6_frame)
+rect beta6_tab()
+label beta6_tab_text("generic block")
+rel center(beta6_tab_text, beta6_tab)
+rel contain(beta6_tab, beta6_tab_text)
+rel inset_left(beta6_tab, beta6_frame) { padding: none }
+rel inset_top(beta6_tab, beta6_frame) { padding: none }
+rel gap_y(beta6_tab, beta6_events)
+
+point beta6_divider_left() { mark: none }
+point beta6_divider_right() { mark: none }
+rel on(beta6_divider_left, edge(beta6_frame, W))
+rel on(beta6_divider_right, edge(beta6_frame, E))
+rel align_center_y(beta6_divider_left, beta6_divider_right)
+segment beta6_divider(beta6_divider_left, beta6_divider_right) [auxiliary]
+rel gap_y(beta6_request, beta6_divider, beta6_work, beta6_reply)
+rel align_center_y(beta6_source.finish, beta6_target.finish)
+rel gap_y(beta6_events, beta6_source.finish)
+
+// Pass an existing group into a function; original guides are not copied.
+group beta6_clipped(beta6_request.path, beta6_reply.path)
+beta6_overlay beta6_band(beta6_target.path, beta6_clipped)
+rel gap_x(beta6_source.path, beta6_band.shape)
+beta6_key beta6_legend("Dashed return", ret)
+rel gap_y(beta6_frame, beta6_legend)
+rel align_left(beta6_frame, beta6_legend)
+assert align_center_y(beta6_agent.shape, beta6_kernel.shape)
+assert contain(beta6_frame, beta6_events)
+assert contain(beta6_tab, beta6_tab_text)
+assert on(beta6_divider_left, edge(beta6_frame, W)) and on(beta6_divider_right, edge(beta6_frame, E))

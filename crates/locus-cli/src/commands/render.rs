@@ -5,8 +5,8 @@ use locus_render::{RenderError, RenderOptions, render_svg, render_tikz, style::S
 use locus_syntax::Span;
 
 use super::{
-    LoadedScene, dependency_failure, inspection_diagnostics, io_failure, load_scene, path_string,
-    resolved_scene, success,
+    LoadedScene, dependency_failure, inspection_diagnostics, io_failure, load_scene_with_engine,
+    path_string, resolved_scene, success,
 };
 use crate::output::{CommandOutput, Execution, RenderResult};
 use crate::{Background, RenderArgs};
@@ -19,13 +19,13 @@ pub(super) fn execute(args: &RenderArgs) -> Execution {
 }
 
 fn run(args: &RenderArgs) -> Result<Execution, Box<Execution>> {
-    let loaded = load_scene("render", &args.file)?;
-    let placed = super::layout::place(&loaded, args.tex_engine)
-        .map_err(|error| Box::new(super::layout::failure("render", &loaded, &error)))?;
-    let bytes = render(&loaded, &placed, args)
-        .map_err(|error| Box::new(render_failure(&loaded, &error)))?;
+    let _file = locus_core::metrics::span(args.file.to_string_lossy());
+    let loaded = load_scene_with_engine("render", &args.file, args.tex_engine)?;
+    let placed = &loaded.placed;
+    let bytes =
+        render(&loaded, placed, args).map_err(|error| Box::new(render_failure(&loaded, &error)))?;
     if let Some(path) = &args.output {
-        std::fs::write(path, &bytes)
+        locus_core::metrics::measure("write_output", || std::fs::write(path, &bytes))
             .map_err(|error| Box::new(io_failure("render", path, &error)))?;
     }
     let result = RenderResult {
@@ -44,7 +44,7 @@ fn render(
     placed: &LayoutScene,
     args: &RenderArgs,
 ) -> Result<Vec<u8>, RenderError> {
-    let styles = StyleSheet::from_file(&loaded.file)?;
+    let styles = locus_core::metrics::measure("styles", || StyleSheet::from_file(&loaded.file))?;
     let scene = resolved_scene(&loaded.scene);
     let options = RenderOptions {
         background: match args.background {
@@ -55,6 +55,7 @@ fn render(
     };
     #[cfg(feature = "png")]
     if args.png {
+        let _render = locus_core::metrics::span("render_png");
         return locus_render::png::render_with_dpi(
             scene,
             placed,
@@ -64,9 +65,11 @@ fn render(
         );
     }
     let text = if args.tikz {
-        render_tikz(scene, placed, &styles, options)?
+        locus_core::metrics::measure("render_tikz", || {
+            render_tikz(scene, placed, &styles, options)
+        })?
     } else {
-        render_svg(scene, placed, &styles, options)?
+        locus_core::metrics::measure("render_svg", || render_svg(scene, placed, &styles, options))?
     };
     Ok(text.into_bytes())
 }

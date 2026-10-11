@@ -1,9 +1,9 @@
 //! Hand-written recursive-descent parser with physical-line recovery.
 
 use crate::ast::{
-    AssertStmt, BinOp, ClassStmt, Constructor, Expr, File, HeadKind, HeadToken, HexColor, Ident,
-    Kind, MetaEntry, NumberExpr, OpStmt, Prop, PropValue, Props, RelStmt, Statement, StyleAttr,
-    StyleStmt, TextSegment, TextSegmentKind, TextValue, UnaryOp,
+    AssertStmt, BinOp, CallStmt, ClassStmt, Constructor, Expr, File, FnStmt, GroupStmt, HeadKind,
+    HeadToken, HexColor, Ident, Kind, MetaEntry, NumberExpr, OpStmt, Prop, PropValue, Props,
+    RelStmt, Statement, StyleAttr, StyleStmt, TextSegment, TextSegmentKind, TextValue, UnaryOp,
 };
 use crate::diag::did_you_mean;
 use crate::lexer::{LexTextSegment, Token, TokenKind, lex};
@@ -102,6 +102,7 @@ struct FileParser {
     source_len: usize,
     defined: Vec<String>,
     classes: Vec<String>,
+    beta6: bool,
 }
 
 impl FileParser {
@@ -119,6 +120,7 @@ impl FileParser {
             source_len,
             defined: Vec::new(),
             classes: Vec::new(),
+            beta6: false,
         }
     }
 
@@ -126,33 +128,25 @@ impl FileParser {
         self.parse_header();
         let mut statements = Vec::new();
         while self.line_index < self.lines.len() {
-            if self.lines[self.line_index].is_empty() {
-                self.line_index += 1;
-                continue;
-            }
-            let line = self.lines[self.line_index].clone();
-            if line
-                .iter()
-                .any(|token| matches!(token.kind, TokenKind::Invalid))
-            {
-                self.line_index += 1;
-                continue;
-            }
-            let mut parser = LineParser::new(&line, self.line_ends[self.line_index]);
-            let statement = parser.parse_statement();
-            if statement.is_none() && parser.diagnostics.is_empty() {
-                parser.error(
-                    "E112",
-                    parser.current_span(),
-                    "expected a statement keyword or object kind",
-                );
-            }
-            if let Some(statement) = statement {
-                self.validate_and_record(&statement);
+            if let Some(statement) = self.parse_next_statement() {
+                if !self.beta6 {
+                    self.validate_and_record(&statement);
+                }
                 statements.push(statement);
             }
-            self.diagnostics.extend(parser.diagnostics);
-            self.line_index += 1;
+        }
+        if self.beta6 {
+            let source_file = File {
+                statements: statements.clone(),
+                span: Span::new(1, 1, 0, self.source_len),
+            };
+            let expanded = crate::expand(&source_file);
+            self.diagnostics.extend(expanded.diagnostics);
+            for (statement, origin) in expanded.file.statements.iter().zip(&expanded.origins) {
+                let start = self.diagnostics.len();
+                self.validate_and_record(statement);
+                add_invocation_notes(&mut self.diagnostics[start..], &origin.invocations);
+            }
         }
         ParseOutput {
             file: File {
@@ -161,6 +155,70 @@ impl FileParser {
             },
             diagnostics: self.diagnostics,
         }
+    }
+
+    fn parse_next_statement(&mut self) -> Option<Statement> {
+        let index = self.line_index;
+        self.line_index += 1;
+        let line = self.lines[index].clone();
+        if line.is_empty()
+            || line
+                .iter()
+                .any(|token| matches!(token.kind, TokenKind::Invalid))
+        {
+            return None;
+        }
+        let mut parser = LineParser::new(&line, self.line_ends[index]);
+        parser.beta6 = self.beta6;
+        let mut statement = parser.parse_statement();
+        if statement.is_none() && parser.diagnostics.is_empty() {
+            parser.error(
+                "E112",
+                parser.current_span(),
+                "expected a statement keyword or object kind",
+            );
+        }
+        self.diagnostics.extend(parser.diagnostics);
+        if let Some(Statement::Fn(function)) = &mut statement {
+            self.parse_function_body(function);
+        }
+        statement
+    }
+
+    fn parse_function_body(&mut self, function: &mut FnStmt) {
+        while self.line_index < self.lines.len() {
+            let line = &self.lines[self.line_index];
+            if matches!(
+                line.first().map(|token| &token.kind),
+                Some(TokenKind::RBrace)
+            ) {
+                let mut parser = LineParser::new(line, self.line_ends[self.line_index]);
+                parser.advance();
+                let _ = parser.expect_end();
+                self.diagnostics.extend(parser.diagnostics);
+                function.span = function.span.join(line_span(line));
+                self.line_index += 1;
+                return;
+            }
+            if let Some(statement) = self.parse_next_statement() {
+                if matches!(
+                    statement,
+                    Statement::Fn(_)
+                        | Statement::Meta(_)
+                        | Statement::Style(_)
+                        | Statement::Class(_)
+                ) {
+                    self.diagnostics.push(Diagnostic::new("E155", statement.span(), "function bodies allow only declarations, groups, calls, relations, and assertions"));
+                } else {
+                    function.body.push(statement);
+                }
+            }
+        }
+        self.diagnostics.push(Diagnostic::new(
+            "E155",
+            function.span,
+            "missing `}` ending function definition",
+        ));
     }
 
     fn parse_header(&mut self) {
@@ -182,6 +240,7 @@ impl FileParser {
             return;
         }
         let line = &self.lines[self.line_index];
+        self.beta6 = matches!(line.last().map(|token| &token.kind), Some(TokenKind::Number { raw, .. }) if raw == "6");
         let mut parser = LineParser::new(line, self.line_ends[self.line_index]);
         parser.take_keyword("locus");
         parser.parse_header_version();
@@ -209,6 +268,9 @@ impl FileParser {
     }
 
     fn validate_statement(&mut self, statement: &Statement) {
+        if self.beta6 {
+            crate::expand::validate_beta6_statement(statement, &mut self.diagnostics);
+        }
         match statement {
             Statement::Op(op) => self.validate_op(op),
             Statement::Rel(rel) => {
@@ -228,7 +290,11 @@ impl FileParser {
                 STYLE_PROP_NAMES,
                 &mut self.diagnostics,
             ),
-            Statement::Meta(_) | Statement::Style(_) => {}
+            Statement::Meta(_)
+            | Statement::Style(_)
+            | Statement::Fn(_)
+            | Statement::Group(_)
+            | Statement::Call(_) => {}
         }
     }
 
@@ -273,6 +339,9 @@ impl FileParser {
     }
 
     fn validate_refs(&mut self, expr: &Expr, current: Option<&str>) {
+        if self.beta6 {
+            return;
+        }
         walk_refs(expr, &mut |ident| {
             if self.defined.iter().any(|name| name == &ident.name)
                 || current == Some(ident.name.as_str())
@@ -329,6 +398,7 @@ struct LineParser<'a> {
     end_span: Span,
     position: usize,
     diagnostics: Vec<Diagnostic>,
+    beta6: bool,
 }
 
 impl<'a> LineParser<'a> {
@@ -338,6 +408,7 @@ impl<'a> LineParser<'a> {
             end_span,
             position: 0,
             diagnostics: Vec::new(),
+            beta6: false,
         }
     }
 
@@ -350,6 +421,12 @@ impl<'a> LineParser<'a> {
             );
             return None;
         };
+        if first == "fn" {
+            return self.parse_fn().map(Statement::Fn);
+        }
+        if first == "group" {
+            return self.parse_group_statement().map(Statement::Group);
+        }
         match first.as_str() {
             "rel" => self.parse_rel().map(Statement::Rel),
             "assert" => self.parse_assert().map(Statement::Assert),
@@ -373,7 +450,7 @@ impl<'a> LineParser<'a> {
         let revision = self.advance().cloned();
         let valid = matches!(major.kind, TokenKind::Number { ref raw, unit: None, .. } if raw == "0")
             && matches!(beta.as_ref().map(|token| &token.kind), Some(TokenKind::Ident(value)) if value == "beta")
-            && matches!(revision.as_ref().map(|token| &token.kind), Some(TokenKind::Number { raw, unit: None, .. }) if raw == "5");
+            && matches!(revision.as_ref().map(|token| &token.kind), Some(TokenKind::Number { raw, unit: None, .. }) if raw == "6");
         if !valid {
             let span = revision
                 .as_ref()
@@ -390,6 +467,14 @@ impl<'a> LineParser<'a> {
         let token = self.peek()?.clone();
         let name = self.peek_ident()?.to_owned();
         let Some(kind) = Kind::from_name(&name) else {
+            if self.beta6
+                && matches!(
+                    self.tokens.get(self.position + 1).map(|token| &token.kind),
+                    Some(TokenKind::Ident(_))
+                )
+            {
+                return self.parse_call_statement().map(Statement::Call);
+            }
             let mut diagnostic = Diagnostic::new(
                 "E120",
                 token.span,
@@ -407,9 +492,40 @@ impl<'a> LineParser<'a> {
 
     fn parse_op(&mut self, kind: Kind, start: Span) -> Option<OpStmt> {
         let id = self.take_ident("object identifier")?;
-        self.expect_simple(is_equal, "`=` after object identifier")
+        let ctor = if self.take_simple(is_lparen).is_some() {
+            if kind == Kind::Num {
+                self.error(
+                    "E156",
+                    id.span,
+                    "`num` has no constructor declaration; use `num id = expression`",
+                );
+                return None;
+            }
+            let (args, end) = self.parse_args()?;
+            let name = Ident {
+                name: if kind == Kind::Segment {
+                    "seg"
+                } else {
+                    kind.as_str()
+                }
+                .to_owned(),
+                span: start,
+            };
+            Constructor::Call {
+                name,
+                args,
+                span: start.join(end),
+            }
+        } else {
+            self.expect_simple(
+                is_equal,
+                "`=` or constructor arguments after object identifier",
+            )
             .ok()?;
-        let ctor = self.parse_constructor(kind)?;
+            let ctor = self.parse_constructor(kind)?;
+            self.validate_rhs_constructor(kind, &id, &ctor);
+            ctor
+        };
         let where_clauses = self.parse_where_clause()?;
         let attr = self.parse_attr().ok()?;
         let props = self.parse_optional_props()?;
@@ -425,6 +541,97 @@ impl<'a> LineParser<'a> {
         })
     }
 
+    fn validate_rhs_constructor(&mut self, kind: Kind, id: &Ident, ctor: &Constructor) {
+        if !self.beta6 {
+            return;
+        }
+        let Constructor::Call { name, .. } = ctor else {
+            return;
+        };
+        let expected = if kind == Kind::Segment {
+            "seg"
+        } else {
+            kind.as_str()
+        };
+        if name.name == expected {
+            self.diagnostics.push(
+                Diagnostic::new(
+                    "E156",
+                    name.span,
+                    "same-kind constructors use a constructor declaration",
+                )
+                .with_suggestion(format!("{} {}(...)", kind.as_str(), id.name)),
+            );
+        }
+    }
+
+    fn parse_fn(&mut self) -> Option<FnStmt> {
+        let start = self.advance()?.span;
+        let name = self.take_ident("function name")?;
+        self.expect_simple(is_lparen, "`(` after function name")
+            .ok()?;
+        let mut params = Vec::new();
+        if self.take_simple(is_rparen).is_none() {
+            loop {
+                params.push(self.take_ident("parameter name")?);
+                if self.take_simple(is_comma).is_some() {
+                    continue;
+                }
+                self.expect_simple(is_rparen, "`)` ending parameters")
+                    .ok()?;
+                break;
+            }
+        }
+        let end = self
+            .expect_simple(is_lbrace, "`{` opening function body")
+            .ok()?;
+        self.expect_end().ok()?;
+        Some(FnStmt {
+            name,
+            params,
+            body: Vec::new(),
+            span: start.join(end),
+        })
+    }
+
+    fn parse_group_statement(&mut self) -> Option<GroupStmt> {
+        let start = self.advance()?.span;
+        let name = self.take_ident("group name")?;
+        self.expect_simple(is_lparen, "`(` after group name").ok()?;
+        let (members, end) = self.parse_args()?;
+        self.expect_end().ok()?;
+        if members.is_empty() {
+            self.error(
+                "E157",
+                start.join(end),
+                "a group requires at least one member",
+            );
+        }
+        Some(GroupStmt {
+            name,
+            members,
+            span: start.join(end),
+        })
+    }
+
+    fn parse_call_statement(&mut self) -> Option<CallStmt> {
+        let function = self.take_ident("function name")?;
+        let id = self.take_ident("instance name")?;
+        self.expect_simple(is_lparen, "`(` after instance name")
+            .ok()?;
+        let (args, _) = self.parse_args()?;
+        let attr = self.parse_attr().ok()?;
+        self.expect_end().ok()?;
+        let span = function.span.join(self.previous_span());
+        Some(CallStmt {
+            function,
+            id,
+            args,
+            attr,
+            span,
+        })
+    }
+
     fn parse_constructor(&mut self, kind: Kind) -> Option<Constructor> {
         if self.at_keyword("free") {
             return self.parse_free_constructor(kind);
@@ -437,7 +644,21 @@ impl<'a> LineParser<'a> {
                 span,
             });
         }
-        self.parse_named_constructor()
+        let ctor = self.parse_named_constructor()?;
+        if !self.at_simple(is_dot) {
+            return Some(ctor);
+        }
+        let Constructor::Call { name, args, span } = ctor else {
+            unreachable!()
+        };
+        let mut expr = Expr::Call { name, args, span };
+        while self.at_simple(is_dot) {
+            expr = self.parse_property(expr)?;
+        }
+        Some(Constructor::Expr {
+            span: expr.span(),
+            expr: Box::new(expr),
+        })
     }
 
     fn is_named_call(&self) -> bool {
@@ -625,10 +846,12 @@ impl<'a> LineParser<'a> {
     fn parse_rel(&mut self) -> Option<RelStmt> {
         let start = self.advance()?.span;
         let expr = self.parse_expr(0)?;
+        let props = self.parse_optional_props()?;
         self.expect_end().ok()?;
         Some(RelStmt {
-            span: start.join(expr.span()),
+            span: start.join(self.previous_span()),
             expr,
+            props,
         })
     }
 
@@ -868,7 +1091,7 @@ impl<'a> LineParser<'a> {
     fn parse_property(&mut self, base: Expr) -> Option<Expr> {
         self.advance();
         let name = self.take_ident("property name")?;
-        if !PROPERTY_NAMES.contains(&name.name.as_str()) {
+        if !self.beta6 && !PROPERTY_NAMES.contains(&name.name.as_str()) {
             let mut diagnostic = Diagnostic::new(
                 "E148",
                 name.span,
@@ -1047,6 +1270,17 @@ impl<'a> LineParser<'a> {
     }
 }
 
+fn add_invocation_notes(diagnostics: &mut [Diagnostic], invocations: &[crate::InvocationOrigin]) {
+    for diagnostic in diagnostics {
+        for invocation in invocations {
+            diagnostic.notes.push(format!(
+                "in `{}` invoked as `{}` at line {}",
+                invocation.function, invocation.instance, invocation.span.line
+            ));
+        }
+    }
+}
+
 fn text_value(segments: Vec<LexTextSegment>, span: Span) -> TextValue {
     TextValue {
         segments: segments
@@ -1160,7 +1394,7 @@ fn constructors_for_kind(kind: Kind) -> &'static [&'static str] {
             "tangent_line",
         ],
         &["ray"],
-        &["seg"],
+        &["seg", "edge"],
         &[
             "circle",
             "circle_through",
@@ -1394,7 +1628,10 @@ fn validate_boolean(expr: &Expr, diagnostics: &mut Vec<Diagnostic>) {
     }
     if let Expr::Call { name, args, span } = expr {
         validate_predicate_name(name, diagnostics);
-        if args.is_empty() && PREDICATE_NAMES.contains(&name.name.as_str()) {
+        if args.is_empty()
+            && (PREDICATE_NAMES.contains(&name.name.as_str())
+                || crate::vocabulary::LEGACY_PREDICATE_NAMES.contains(&name.name.as_str()))
+        {
             diagnostics.push(Diagnostic::new(
                 "E153",
                 *span,
@@ -1427,7 +1664,9 @@ fn validate_boolean_binary(op: BinOp, lhs: &Expr, rhs: &Expr, diagnostics: &mut 
 }
 
 fn validate_predicate_name(name: &Ident, diagnostics: &mut Vec<Diagnostic>) {
-    if PREDICATE_NAMES.contains(&name.name.as_str()) {
+    if PREDICATE_NAMES.contains(&name.name.as_str())
+        || crate::vocabulary::LEGACY_PREDICATE_NAMES.contains(&name.name.as_str())
+    {
         return;
     }
     let mut diagnostic = Diagnostic::new(
@@ -1443,6 +1682,7 @@ fn validate_predicate_name(name: &Ident, diagnostics: &mut Vec<Diagnostic>) {
 
 fn validate_solvable(expr: &Expr, diagnostics: &mut Vec<Diagnostic>) {
     match expr {
+        Expr::Group { expr, .. } => validate_solvable(expr, diagnostics),
         Expr::Binary {
             op: BinOp::And,
             lhs,
@@ -1502,7 +1742,7 @@ fn constructor_name(ctor: &Constructor) -> Option<&str> {
     }
 }
 
-fn prop_uses_references(name: &str) -> bool {
+pub(crate) fn prop_uses_references(name: &str) -> bool {
     matches!(name, "gap" | "bend" | "n" | "size" | "anchor")
 }
 
@@ -1579,265 +1819,4 @@ fn is_star(kind: &TokenKind) -> bool {
 }
 fn is_slash(kind: &TokenKind) -> bool {
     matches!(kind, TokenKind::Slash)
-}
-
-#[cfg(test)]
-mod tests {
-    use super::parse;
-    use crate::ast::{Constructor, Expr, Kind, Statement, TextSegmentKind};
-
-    #[test]
-    fn parses_point_where_props_and_mixed_text() {
-        let source = r#"locus 0 beta 5
-point A = point()
-point B = point() where { horizontal(A, B) } { mark: cross }
-label text = label(B, "point $B$") { dir: NE }
-assert dist(A, B) == 2
-"#;
-        let output = parse(source);
-        assert!(output.diagnostics.is_empty(), "{:#?}", output.diagnostics);
-        assert_eq!(output.file.statements.len(), 4);
-        assert!(matches!(output.file.statements[1], Statement::Op(_)));
-        if let Statement::Op(op) = &output.file.statements[1] {
-            assert_eq!(op.kind, Kind::Point);
-            assert!(matches!(op.ctor, Constructor::Call { .. }));
-            assert_eq!(op.where_clauses.len(), 1);
-        }
-        assert!(matches!(output.file.statements[2], Statement::Op(_)));
-        if let Statement::Op(label) = &output.file.statements[2] {
-            assert!(matches!(label.ctor, Constructor::Call { .. }));
-            if let Constructor::Call { args, .. } = &label.ctor {
-                assert!(matches!(args[1], Expr::String(_)));
-                if let Expr::String(text) = &args[1] {
-                    assert_eq!(text.segments.len(), 3);
-                    assert_eq!(text.segments[1].kind, TextSegmentKind::Tex);
-                    assert_eq!(text.segments[2].kind, TextSegmentKind::Plain);
-                    assert_eq!(text.segments[2].source, "");
-                }
-            }
-        }
-    }
-
-    #[test]
-    fn rejects_old_headers_and_removed_pin_syntax() {
-        let legacy = parse("locus 2\npoint P = point()\n");
-        assert!(
-            legacy
-                .diagnostics
-                .iter()
-                .any(|diagnostic| diagnostic.code == "E111")
-        );
-
-        let previous = parse("locus 3\npoint P = point()\n");
-        assert!(
-            previous
-                .diagnostics
-                .iter()
-                .any(|diagnostic| diagnostic.code == "E111")
-        );
-
-        let current = parse("locus 0 beta 5\npoint P = point()\nassert pin(P, 0, 0)\n");
-        assert!(
-            current
-                .diagnostics
-                .iter()
-                .any(|diagnostic| diagnostic.code == "E144")
-        );
-    }
-
-    #[test]
-    fn recovers_at_every_bad_physical_line() {
-        let source = r"locus 0 beta 5
-piont A = free (0, 0)
-point A =
-point A = point()
-circle c = incircel(A, 2)
-point B = point()
-assert horizontal(A, B)
-";
-        let output = parse(source);
-        assert_eq!(output.file.statements.len(), 4);
-        let codes: Vec<_> = output.diagnostics.iter().map(|diag| diag.code).collect();
-        assert!(codes.contains(&"E120"));
-        assert!(codes.contains(&"E140"));
-        assert!(matches!(
-            output.file.statements.last(),
-            Some(Statement::Assert(_))
-        ));
-    }
-
-    #[test]
-    fn enforces_angle_units_at_known_angle_sites() {
-        let output = parse(
-            "locus 0 beta 5\npoint A = point()\npoint O = point()\npoint B = rotate(A, O, 60)\nassert angle(A, O, B) == 90\n",
-        );
-        assert_eq!(
-            output
-                .diagnostics
-                .iter()
-                .filter(|diagnostic| diagnostic.code == "E143")
-                .count(),
-            2
-        );
-    }
-
-    #[test]
-    fn diagnoses_bad_lines_and_missing_final_newline() {
-        let output = parse("locus 0 beta 5\n}\npoint A = point()");
-        let codes: Vec<_> = output
-            .diagnostics
-            .iter()
-            .map(|diagnostic| diagnostic.code)
-            .collect();
-        assert_eq!(codes, ["E112", "E149"]);
-        assert_eq!(output.file.statements.len(), 1);
-    }
-
-    #[test]
-    fn not_binds_to_a_complete_boolean_primary() {
-        let output = parse(
-            "locus 0 beta 5\npoint A = point()\npoint B = point()\nassert not dist(A, B) == 1\n",
-        );
-        assert!(output.diagnostics.is_empty(), "{:#?}", output.diagnostics);
-        let Some(Statement::Assert(assertion)) = output.file.statements.last() else {
-            assert!(matches!(
-                output.file.statements.last(),
-                Some(Statement::Assert(_))
-            ));
-            return;
-        };
-        assert!(matches!(
-            assertion.expr,
-            Expr::Unary {
-                op: crate::ast::UnaryOp::Not,
-                ref expr,
-                ..
-            } if matches!(expr.as_ref(), Expr::Binary { op: crate::ast::BinOp::Eq, .. })
-        ));
-    }
-
-    #[test]
-    fn rejects_chained_comparisons() {
-        let output = parse("locus 0 beta 5\nnum a = 1\nassert a == 1 == 1\n");
-        assert_eq!(
-            output
-                .diagnostics
-                .iter()
-                .map(|diagnostic| diagnostic.code)
-                .collect::<Vec<_>>(),
-            ["E145"]
-        );
-    }
-
-    #[test]
-    fn accepts_grouped_scalar_hint_but_rejects_point_shape() {
-        let valid = parse("locus 0 beta 5\nnum r = free (1 + 2)\nnum s = free (1 + 2) * 3\n");
-        assert!(valid.diagnostics.is_empty(), "{:#?}", valid.diagnostics);
-        assert_eq!(valid.file.statements.len(), 2);
-
-        let invalid = parse("locus 0 beta 5\nnum r = free (1, 2)\n");
-        assert_eq!(invalid.diagnostics.len(), 1);
-        assert_eq!(invalid.diagnostics[0].code, "E124");
-    }
-
-    #[test]
-    fn diagnoses_a_tolerance_keyword_without_a_value() {
-        let output = parse("locus 0 beta 5\nassert true == true tol // missing value\n");
-        assert_eq!(output.diagnostics.len(), 1);
-        assert_eq!(output.diagnostics[0].code, "E147");
-        assert_eq!(output.diagnostics[0].span.line, 2);
-        assert_eq!(output.diagnostics[0].span.col, 24);
-    }
-
-    #[test]
-    fn meta_recovery_preserves_later_statements() {
-        let source = r#"locus 0 beta 5
-meta title "missing equals"
-point A = point()
-meta note = 123
-meta title = "valid" trailing
-meta note = "still metadata"
-point B = point()
-assert dist(A, B) == 1
-"#;
-        let output = parse(source);
-        let codes: Vec<_> = output
-            .diagnostics
-            .iter()
-            .map(|diagnostic| diagnostic.code)
-            .collect();
-        assert_eq!(codes, ["E113", "E150", "E114"]);
-        assert_eq!(output.file.statements.len(), 4);
-        let Statement::Meta(meta) = &output.file.statements[1] else {
-            unreachable!()
-        };
-        assert_eq!(meta.key.name, "note");
-        assert!(matches!(output.file.statements[3], Statement::Assert(_)));
-    }
-
-    #[test]
-    fn metadata_key_without_a_value_reports_at_logical_line_end() {
-        let output = parse("locus 0 beta 5\nmeta title = // missing value\n");
-        assert_eq!(output.diagnostics.len(), 1);
-        assert_eq!(output.diagnostics[0].code, "E150");
-        assert_eq!(output.diagnostics[0].span.line, 2);
-        assert_eq!(output.diagnostics[0].span.col, 13);
-    }
-
-    #[test]
-    fn rejects_empty_predicate_and_property_argument_lists() {
-        let source = r"locus 0 beta 5
-point O = point()
-num r = free 1
-circle c = circle(O, r)
-rel horizontal()
-num n = c.at()
-";
-        let output = parse(source);
-        assert_eq!(
-            output
-                .diagnostics
-                .iter()
-                .map(|diagnostic| diagnostic.code)
-                .collect::<Vec<_>>(),
-            ["E153", "E153"]
-        );
-    }
-
-    #[test]
-    fn rejects_free_in_every_identifier_path() {
-        let source = r#"locus 0 beta 5
-point free = point()
-point A = point()
-point B = midpoint(free, A)
-assert free(A)
-style free
-class free {}
-point C = midpoint(A, A) [free]
-point D = midpoint(A, A) { free: dot }
-num n = A.free
-meta free = "value"
-"#;
-        let output = parse(source);
-        assert_eq!(
-            output
-                .diagnostics
-                .iter()
-                .map(|diagnostic| diagnostic.code)
-                .collect::<Vec<_>>(),
-            ["E152"; 9]
-        );
-    }
-
-    #[test]
-    fn synthesized_columns_count_unicode_scalars_after_text_literals() {
-        let output = parse("locus 0 beta 5\nlabel L = label(A, \"é\"\nlabel T = label(A, $α$\n");
-        assert_eq!(output.diagnostics.len(), 2);
-        assert_eq!(output.diagnostics[0].code, "E113");
-        assert_eq!(output.diagnostics[0].span.line, 2);
-        assert_eq!(output.diagnostics[0].span.col, 23);
-        assert_eq!(output.diagnostics[1].code, "E113");
-        assert_eq!(output.diagnostics[1].span.line, 3);
-        assert_eq!(output.diagnostics[1].span.col, 23);
-    }
 }

@@ -190,6 +190,10 @@ fn include_leader(
             include(bounds, BBox::for_segment(*segment), span)?;
             Ok(0.0)
         }
+        Leader::Routed { route, head } => {
+            include(bounds, route.bbox(), span)?;
+            Ok(arrow_margin(*head, weight))
+        }
         Leader::Arrow {
             from,
             to,
@@ -204,11 +208,15 @@ fn include_leader(
             let bbox =
                 BBox::from_points(points).map_err(|e| RenderError::invalid(span, e.to_string()))?;
             include(bounds, bbox, span)?;
-            Ok(if *head == locus_syntax::HeadKind::None {
-                0.0
-            } else {
-                9.0 + weight * 1.5
-            })
+            Ok(arrow_margin(*head, weight))
         }
+    }
+}
+
+fn arrow_margin(head: locus_syntax::HeadKind, weight: f64) -> f64 {
+    if head == locus_syntax::HeadKind::None {
+        0.0
+    } else {
+        9.0 + weight * 1.5
     }
 }

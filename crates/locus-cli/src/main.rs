@@ -4,6 +4,7 @@ mod assertions;
 mod commands;
 mod compact;
 mod exit;
+mod metrics;
 mod output;
 #[cfg(debug_assertions)]
 mod rejected_requests;
@@ -30,6 +31,10 @@ struct Cli {
     /// Emit concise single-line JSON, with check summaries and failed assertions only.
     #[arg(long, global = true, requires = "json")]
     compact: bool,
+
+    /// Report step timings on stderr; use --timings=json for machine-readable metrics.
+    #[arg(long, global = true, value_enum, num_args = 0..=1, default_missing_value = "human", require_equals = true)]
+    timings: Option<metrics::Format>,
 
     #[command(subcommand)]
     command: Command,
@@ -141,7 +146,7 @@ struct CheckArgs {
     #[arg(long)]
     layout: bool,
     /// Select the TeX engine; mock is reserved for deterministic tests.
-    #[arg(long, value_enum, default_value_t, hide = true, requires = "layout")]
+    #[arg(long, value_enum, default_value_t, hide = true)]
     tex_engine: TextEngine,
 }
 
@@ -193,12 +198,25 @@ fn main() -> std::process::ExitCode {
         Ok(cli) => cli,
         Err(error) => return clap_exit(&error),
     };
+    if let Some(format) = cli.timings {
+        let (exit, report) = locus_core::metrics::collect(|| run(cli));
+        metrics::emit(&report, format);
+        return exit;
+    }
+    run(cli)
+}
+
+fn run(cli: Cli) -> std::process::ExitCode {
     #[cfg(debug_assertions)]
     rejected_requests::begin(&cli.command);
-    let execution = execute(cli.command);
+    let execution = locus_core::metrics::measure("command", || execute(cli.command));
     #[cfg(debug_assertions)]
-    rejected_requests::save(&execution);
-    output::emit(&execution, cli.json, cli.compact).into()
+    locus_core::metrics::measure("archive_rejected_request", || {
+        rejected_requests::save(&execution);
+    });
+    locus_core::metrics::measure("output", || {
+        output::emit(&execution, cli.json, cli.compact).into()
+    })
 }
 
 fn clap_exit(error: &clap::Error) -> std::process::ExitCode {

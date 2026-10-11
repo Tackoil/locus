@@ -1,39 +1,39 @@
-locus 0 beta 5
+locus 0 beta 6
 
 meta title = "Inscribed angle theorem"
 
 style textbook
 
 // ---- objects ----------------------------------------------
-circle c = circle(3)
+circle c(3)
 point O = c.center
 
 point P = on_circle(c, 110deg)
 point A = on_circle(c, 200deg)
 point B = on_circle(c, 340deg)
 
-segment pa = seg(P, A)
-segment pb = seg(P, B)
-segment oa = seg(O, A)   [auxiliary]
-segment ob = seg(O, B)   [auxiliary]
+segment pa(P, A)
+segment pb(P, B)
+segment oa(O, A)   [auxiliary]
+segment ob(O, B)   [auxiliary]
 
-arc sub = arc(c, A, B, false)   [highlight]    // the subtended arc, CW side
+arc sub(c, A, B, false)   [highlight]    // the subtended arc, CW side
 
 arc inscribed = angle_arc(A, P, B, 0.55)
 arc central   = angle_arc(A, O, B, 0.4)
 
 // ---- annotation ------------------------------------------
-label lP = label(P, $P$)
-label lA = label(A, $A$)
-label lB = label(B, $B$)
-label lO = label(O, $O$)  { dir: N }
+label lP(P, $P$)
+label lA(A, $A$)
+label lB(B, $B$)
+label lO(O, $O$)  { dir: N }
 
-label li = label(P, $\theta$)             { dir: S,  gap: 0.8 }
-label lc = label(O, $2\theta$)            { dir: S,  gap: 0.6 }
+label li(P, $\theta$)             { dir: S,  gap: 0.8 }
+label lc(O, $2\theta$)            { dir: S,  gap: 0.6 }
 
-arrow  see = arrow(li.center, lc.center)  [construction]  { head: ->, bend: -30deg }
+arrow see(li.center, lc.center)  [construction]  { head: ->, bend: -30deg }
 
-text_block thm = text_block($\angle AOB = 2\,\angle APB$)  { place: below }
+text_block thm($\angle AOB = 2\,\angle APB$)  { place: below }
 
 // ---- intent ----------------------------------------------
 assert on(P, c) and on(A, c) and on(B, c)
@@ -42,145 +42,145 @@ assert angle(A, O, B) == 2 * angle(A, P, B)   tol 1e-9
 // ---- stress construction network ----
 // A chord fan shares endpoints; opposite arcs test supplementary angles.
 point fan0 = on_circle(c, 5deg) { mark: none }
-segment fa0 = seg(A, fan0) [construction]
-segment fb0 = seg(B, fan0) [construction]
+segment fa0(A, fan0) [construction]
+segment fb0(B, fan0) [construction]
 point fm0 = midpoint(A, fan0) { mark: none }
-segment fr0 = seg(O, fm0) [auxiliary]
+segment fr0(O, fm0) [auxiliary]
 arc fan_angle0 = angle_arc(A, fan0, B, 0.16)
 assert angle(A, fan0, B) == 70deg
 assert perpendicular(fr0, fa0)
 assert dist(O, fm0) * dist(O, fm0) + dist(A, fm0) * dist(A, fm0) == radius(c) * radius(c)
 point fan1 = on_circle(c, 25deg) { mark: none }
-segment fa1 = seg(A, fan1) [construction]
-segment fb1 = seg(B, fan1) [construction]
+segment fa1(A, fan1) [construction]
+segment fb1(B, fan1) [construction]
 point fm1 = midpoint(A, fan1) { mark: none }
-segment fr1 = seg(O, fm1) [auxiliary]
+segment fr1(O, fm1) [auxiliary]
 arc fan_angle1 = angle_arc(A, fan1, B, 0.16)
 assert angle(A, fan1, B) == 70deg
 assert perpendicular(fr1, fa1)
 assert dist(O, fm1) * dist(O, fm1) + dist(A, fm1) * dist(A, fm1) == radius(c) * radius(c)
 point fan2 = on_circle(c, 35deg) { mark: none }
-segment fa2 = seg(A, fan2) [construction]
-segment fb2 = seg(B, fan2) [construction]
+segment fa2(A, fan2) [construction]
+segment fb2(B, fan2) [construction]
 point fm2 = midpoint(A, fan2) { mark: none }
-segment fr2 = seg(O, fm2) [auxiliary]
+segment fr2(O, fm2) [auxiliary]
 arc fan_angle2 = angle_arc(A, fan2, B, 0.16)
 assert angle(A, fan2, B) == 70deg
 assert perpendicular(fr2, fa2)
 assert dist(O, fm2) * dist(O, fm2) + dist(A, fm2) * dist(A, fm2) == radius(c) * radius(c)
 point fan3 = on_circle(c, 50deg) { mark: none }
-segment fa3 = seg(A, fan3) [construction]
-segment fb3 = seg(B, fan3) [construction]
+segment fa3(A, fan3) [construction]
+segment fb3(B, fan3) [construction]
 point fm3 = midpoint(A, fan3) { mark: none }
-segment fr3 = seg(O, fm3) [auxiliary]
+segment fr3(O, fm3) [auxiliary]
 arc fan_angle3 = angle_arc(A, fan3, B, 0.16)
 assert angle(A, fan3, B) == 70deg
 assert perpendicular(fr3, fa3)
 assert dist(O, fm3) * dist(O, fm3) + dist(A, fm3) * dist(A, fm3) == radius(c) * radius(c)
 point fan4 = on_circle(c, 65deg) { mark: none }
-segment fa4 = seg(A, fan4) [construction]
-segment fb4 = seg(B, fan4) [construction]
+segment fa4(A, fan4) [construction]
+segment fb4(B, fan4) [construction]
 point fm4 = midpoint(A, fan4) { mark: none }
-segment fr4 = seg(O, fm4) [auxiliary]
+segment fr4(O, fm4) [auxiliary]
 arc fan_angle4 = angle_arc(A, fan4, B, 0.16)
 assert angle(A, fan4, B) == 70deg
 assert perpendicular(fr4, fa4)
 assert dist(O, fm4) * dist(O, fm4) + dist(A, fm4) * dist(A, fm4) == radius(c) * radius(c)
 point fan5 = on_circle(c, 80deg) { mark: none }
-segment fa5 = seg(A, fan5) [construction]
-segment fb5 = seg(B, fan5) [construction]
+segment fa5(A, fan5) [construction]
+segment fb5(B, fan5) [construction]
 point fm5 = midpoint(A, fan5) { mark: none }
-segment fr5 = seg(O, fm5) [auxiliary]
+segment fr5(O, fm5) [auxiliary]
 arc fan_angle5 = angle_arc(A, fan5, B, 0.16)
 assert angle(A, fan5, B) == 70deg
 assert perpendicular(fr5, fa5)
 assert dist(O, fm5) * dist(O, fm5) + dist(A, fm5) * dist(A, fm5) == radius(c) * radius(c)
 point fan6 = on_circle(c, 95deg) { mark: none }
-segment fa6 = seg(A, fan6) [construction]
-segment fb6 = seg(B, fan6) [construction]
+segment fa6(A, fan6) [construction]
+segment fb6(B, fan6) [construction]
 point fm6 = midpoint(A, fan6) { mark: none }
-segment fr6 = seg(O, fm6) [auxiliary]
+segment fr6(O, fm6) [auxiliary]
 arc fan_angle6 = angle_arc(A, fan6, B, 0.16)
 assert angle(A, fan6, B) == 70deg
 assert perpendicular(fr6, fa6)
 assert dist(O, fm6) * dist(O, fm6) + dist(A, fm6) * dist(A, fm6) == radius(c) * radius(c)
 point fan7 = on_circle(c, 125deg) { mark: none }
-segment fa7 = seg(A, fan7) [construction]
-segment fb7 = seg(B, fan7) [construction]
+segment fa7(A, fan7) [construction]
+segment fb7(B, fan7) [construction]
 point fm7 = midpoint(A, fan7) { mark: none }
-segment fr7 = seg(O, fm7) [auxiliary]
+segment fr7(O, fm7) [auxiliary]
 arc fan_angle7 = angle_arc(A, fan7, B, 0.16)
 assert angle(A, fan7, B) == 70deg
 assert perpendicular(fr7, fa7)
 assert dist(O, fm7) * dist(O, fm7) + dist(A, fm7) * dist(A, fm7) == radius(c) * radius(c)
 point fan8 = on_circle(c, 140deg) { mark: none }
-segment fa8 = seg(A, fan8) [construction]
-segment fb8 = seg(B, fan8) [construction]
+segment fa8(A, fan8) [construction]
+segment fb8(B, fan8) [construction]
 point fm8 = midpoint(A, fan8) { mark: none }
-segment fr8 = seg(O, fm8) [auxiliary]
+segment fr8(O, fm8) [auxiliary]
 arc fan_angle8 = angle_arc(A, fan8, B, 0.16)
 assert angle(A, fan8, B) == 70deg
 assert perpendicular(fr8, fa8)
 assert dist(O, fm8) * dist(O, fm8) + dist(A, fm8) * dist(A, fm8) == radius(c) * radius(c)
 point fan9 = on_circle(c, 155deg) { mark: none }
-segment fa9 = seg(A, fan9) [construction]
-segment fb9 = seg(B, fan9) [construction]
+segment fa9(A, fan9) [construction]
+segment fb9(B, fan9) [construction]
 point fm9 = midpoint(A, fan9) { mark: none }
-segment fr9 = seg(O, fm9) [auxiliary]
+segment fr9(O, fm9) [auxiliary]
 arc fan_angle9 = angle_arc(A, fan9, B, 0.16)
 assert angle(A, fan9, B) == 70deg
 assert perpendicular(fr9, fa9)
 assert dist(O, fm9) * dist(O, fm9) + dist(A, fm9) * dist(A, fm9) == radius(c) * radius(c)
 point fan10 = on_circle(c, 170deg) { mark: none }
-segment fa10 = seg(A, fan10) [construction]
-segment fb10 = seg(B, fan10) [construction]
+segment fa10(A, fan10) [construction]
+segment fb10(B, fan10) [construction]
 point fm10 = midpoint(A, fan10) { mark: none }
-segment fr10 = seg(O, fm10) [auxiliary]
+segment fr10(O, fm10) [auxiliary]
 arc fan_angle10 = angle_arc(A, fan10, B, 0.16)
 assert angle(A, fan10, B) == 70deg
 assert perpendicular(fr10, fa10)
 assert dist(O, fm10) * dist(O, fm10) + dist(A, fm10) * dist(A, fm10) == radius(c) * radius(c)
 point fan11 = on_circle(c, 185deg) { mark: none }
-segment fa11 = seg(A, fan11) [construction]
-segment fb11 = seg(B, fan11) [construction]
+segment fa11(A, fan11) [construction]
+segment fb11(B, fan11) [construction]
 point fm11 = midpoint(A, fan11) { mark: none }
-segment fr11 = seg(O, fm11) [auxiliary]
+segment fr11(O, fm11) [auxiliary]
 arc fan_angle11 = angle_arc(A, fan11, B, 0.16)
 assert angle(A, fan11, B) == 70deg
 assert perpendicular(fr11, fa11)
 assert dist(O, fm11) * dist(O, fm11) + dist(A, fm11) * dist(A, fm11) == radius(c) * radius(c)
 point fan12 = on_circle(c, 235deg) { mark: none }
-segment fa12 = seg(A, fan12) [construction]
-segment fb12 = seg(B, fan12) [construction]
+segment fa12(A, fan12) [construction]
+segment fb12(B, fan12) [construction]
 point fm12 = midpoint(A, fan12) { mark: none }
-segment fr12 = seg(O, fm12) [auxiliary]
+segment fr12(O, fm12) [auxiliary]
 arc fan_angle12 = angle_arc(A, fan12, B, 0.16)
 assert angle(A, fan12, B) == 110deg
 assert perpendicular(fr12, fa12)
 assert dist(O, fm12) * dist(O, fm12) + dist(A, fm12) * dist(A, fm12) == radius(c) * radius(c)
 point fan13 = on_circle(c, 255deg) { mark: none }
-segment fa13 = seg(A, fan13) [construction]
-segment fb13 = seg(B, fan13) [construction]
+segment fa13(A, fan13) [construction]
+segment fb13(B, fan13) [construction]
 point fm13 = midpoint(A, fan13) { mark: none }
-segment fr13 = seg(O, fm13) [auxiliary]
+segment fr13(O, fm13) [auxiliary]
 arc fan_angle13 = angle_arc(A, fan13, B, 0.16)
 assert angle(A, fan13, B) == 110deg
 assert perpendicular(fr13, fa13)
 assert dist(O, fm13) * dist(O, fm13) + dist(A, fm13) * dist(A, fm13) == radius(c) * radius(c)
 point fan14 = on_circle(c, 275deg) { mark: none }
-segment fa14 = seg(A, fan14) [construction]
-segment fb14 = seg(B, fan14) [construction]
+segment fa14(A, fan14) [construction]
+segment fb14(B, fan14) [construction]
 point fm14 = midpoint(A, fan14) { mark: none }
-segment fr14 = seg(O, fm14) [auxiliary]
+segment fr14(O, fm14) [auxiliary]
 arc fan_angle14 = angle_arc(A, fan14, B, 0.16)
 assert angle(A, fan14, B) == 110deg
 assert perpendicular(fr14, fa14)
 assert dist(O, fm14) * dist(O, fm14) + dist(A, fm14) * dist(A, fm14) == radius(c) * radius(c)
 point fan15 = on_circle(c, 305deg) { mark: none }
-segment fa15 = seg(A, fan15) [construction]
-segment fb15 = seg(B, fan15) [construction]
+segment fa15(A, fan15) [construction]
+segment fb15(B, fan15) [construction]
 point fm15 = midpoint(A, fan15) { mark: none }
-segment fr15 = seg(O, fm15) [auxiliary]
+segment fr15(O, fm15) [auxiliary]
 arc fan_angle15 = angle_arc(A, fan15, B, 0.16)
 assert angle(A, fan15, B) == 110deg
 assert perpendicular(fr15, fa15)

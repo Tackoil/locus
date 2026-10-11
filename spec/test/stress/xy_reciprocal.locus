@@ -1,4 +1,4 @@
-locus 0 beta 5
+locus 0 beta 6
 
 meta title = "X-Y stress plot: reciprocal branches, fixed points, and tangent lines"
 meta note = "130 samples on [-4, -0.25] and [0.25, 4]; nonlinear fixed points and secant slopes are checked. No segment crosses x = 0."
@@ -6,12 +6,12 @@ meta note = "130 samples on [-4, -0.25] and [0.25, 4]; nonlinear fixed points an
 style textbook
 class curve { accent: teal, weight: 2, cap: round }
 
-point O = point() { mark: none }
+point O() { mark: none }
 num unit = 1
-arrow x_axis = arrow(offset(O, -4.5 * unit, 0), offset(O, 4.5 * unit, 0))
-arrow y_axis = arrow(offset(O, 0, -4.5 * unit), offset(O, 0, 4.5 * unit))
-label lx = label(offset(O, 4.5 * unit, 0), "x") { dir: E }
-label ly = label(offset(O, 0, 4.5 * unit), "y") { dir: N }
+arrow x_axis(offset(O, -4.5 * unit, 0), offset(O, 4.5 * unit, 0))
+arrow y_axis(offset(O, 0, -4.5 * unit), offset(O, 0, 4.5 * unit))
+label lx(offset(O, 4.5 * unit, 0), "x") { dir: E }
+label ly(offset(O, 0, 4.5 * unit), "y") { dir: N }
 
 point P1 = offset(O, 0.25 * unit, unit / 0.25) { mark: none }
 point P2 = offset(O, 0.5 * unit, unit / 0.5) { mark: none }
@@ -23,9 +23,9 @@ point N2 = reflect(P2, O) { mark: none }
 point N3 = reflect(P3, O) { mark: none }
 point N4 = reflect(P4, O) { mark: none }
 point N5 = reflect(P5, O) { mark: none }
-label lp = label(P3, "(1, 1)") { dir: NE }
-label ln = label(N3, "(-1, -1)") { dir: SW }
-text_block caption = text_block("y = 1 / x (sampled); x = 0 excluded") { place: below }
+label lp(P3, "(1, 1)") { dir: NE }
+label ln(N3, "(-1, -1)") { dir: SW }
+text_block caption("y = 1 / x (sampled); x = 0 excluded") { place: below }
 
 assert hdist(O, P1) * vdist(O, P1) == unit * unit
 assert hdist(O, P2) * vdist(O, P2) == unit * unit
@@ -34,7 +34,7 @@ assert hdist(O, P4) * vdist(O, P4) == unit * unit
 assert hdist(O, P5) * vdist(O, P5) == unit * unit
 assert hdist(O, N2) * vdist(O, N2) == unit * unit
 assert hdist(O, N5) * vdist(O, N5) == unit * unit
-assert coincident(midpoint(P1, N1), O)
+assert center(midpoint(P1, N1), O)
 assert hdist(O, P1) > 0 and hdist(O, N1) < 0
 assert vdist(O, P1) > vdist(O, P2) and vdist(O, P4) > vdist(O, P5)
 
@@ -48,515 +48,515 @@ point rp1 = offset(O, 0.3085937500 * unit, unit / 0.3085937500) { mark: none }
 point rn1 = reflect(rp1, O) { mark: none }
 assert hdist(O, rp1) > 0 and hdist(O, rn1) < 0
 assert hdist(O, rp1) * vdist(O, rp1) == unit * unit
-segment rps1 = seg(rp0, rp1) [curve]
-segment rns1 = seg(rn0, rn1) [curve]
+segment rps1(rp0, rp1) [curve]
+segment rns1(rn0, rn1) [curve]
 assert vdist(O, rp1) < vdist(O, rp0)
 assert vdist(rp0, rp1) / hdist(rp0, rp1) == -unit * unit / (hdist(O, rp0) * hdist(O, rp1))
 point rp2 = offset(O, 0.3671875000 * unit, unit / 0.3671875000) { mark: none }
 point rn2 = reflect(rp2, O) { mark: none }
 assert hdist(O, rp2) > 0 and hdist(O, rn2) < 0
 assert hdist(O, rp2) * vdist(O, rp2) == unit * unit
-segment rps2 = seg(rp1, rp2) [curve]
-segment rns2 = seg(rn1, rn2) [curve]
+segment rps2(rp1, rp2) [curve]
+segment rns2(rn1, rn2) [curve]
 assert vdist(O, rp2) < vdist(O, rp1)
 assert vdist(rp1, rp2) / hdist(rp1, rp2) == -unit * unit / (hdist(O, rp1) * hdist(O, rp2))
 point rp3 = offset(O, 0.4257812500 * unit, unit / 0.4257812500) { mark: none }
 point rn3 = reflect(rp3, O) { mark: none }
 assert hdist(O, rp3) > 0 and hdist(O, rn3) < 0
 assert hdist(O, rp3) * vdist(O, rp3) == unit * unit
-segment rps3 = seg(rp2, rp3) [curve]
-segment rns3 = seg(rn2, rn3) [curve]
+segment rps3(rp2, rp3) [curve]
+segment rns3(rn2, rn3) [curve]
 assert vdist(O, rp3) < vdist(O, rp2)
 assert vdist(rp2, rp3) / hdist(rp2, rp3) == -unit * unit / (hdist(O, rp2) * hdist(O, rp3))
 point rp4 = offset(O, 0.4843750000 * unit, unit / 0.4843750000) { mark: none }
 point rn4 = reflect(rp4, O) { mark: none }
 assert hdist(O, rp4) > 0 and hdist(O, rn4) < 0
 assert hdist(O, rp4) * vdist(O, rp4) == unit * unit
-segment rps4 = seg(rp3, rp4) [curve]
-segment rns4 = seg(rn3, rn4) [curve]
+segment rps4(rp3, rp4) [curve]
+segment rns4(rn3, rn4) [curve]
 assert vdist(O, rp4) < vdist(O, rp3)
 assert vdist(rp3, rp4) / hdist(rp3, rp4) == -unit * unit / (hdist(O, rp3) * hdist(O, rp4))
 point rp5 = offset(O, 0.5429687500 * unit, unit / 0.5429687500) { mark: none }
 point rn5 = reflect(rp5, O) { mark: none }
 assert hdist(O, rp5) > 0 and hdist(O, rn5) < 0
 assert hdist(O, rp5) * vdist(O, rp5) == unit * unit
-segment rps5 = seg(rp4, rp5) [curve]
-segment rns5 = seg(rn4, rn5) [curve]
+segment rps5(rp4, rp5) [curve]
+segment rns5(rn4, rn5) [curve]
 assert vdist(O, rp5) < vdist(O, rp4)
 assert vdist(rp4, rp5) / hdist(rp4, rp5) == -unit * unit / (hdist(O, rp4) * hdist(O, rp5))
 point rp6 = offset(O, 0.6015625000 * unit, unit / 0.6015625000) { mark: none }
 point rn6 = reflect(rp6, O) { mark: none }
 assert hdist(O, rp6) > 0 and hdist(O, rn6) < 0
 assert hdist(O, rp6) * vdist(O, rp6) == unit * unit
-segment rps6 = seg(rp5, rp6) [curve]
-segment rns6 = seg(rn5, rn6) [curve]
+segment rps6(rp5, rp6) [curve]
+segment rns6(rn5, rn6) [curve]
 assert vdist(O, rp6) < vdist(O, rp5)
 assert vdist(rp5, rp6) / hdist(rp5, rp6) == -unit * unit / (hdist(O, rp5) * hdist(O, rp6))
 point rp7 = offset(O, 0.6601562500 * unit, unit / 0.6601562500) { mark: none }
 point rn7 = reflect(rp7, O) { mark: none }
 assert hdist(O, rp7) > 0 and hdist(O, rn7) < 0
 assert hdist(O, rp7) * vdist(O, rp7) == unit * unit
-segment rps7 = seg(rp6, rp7) [curve]
-segment rns7 = seg(rn6, rn7) [curve]
+segment rps7(rp6, rp7) [curve]
+segment rns7(rn6, rn7) [curve]
 assert vdist(O, rp7) < vdist(O, rp6)
 assert vdist(rp6, rp7) / hdist(rp6, rp7) == -unit * unit / (hdist(O, rp6) * hdist(O, rp7))
 point rp8 = offset(O, 0.7187500000 * unit, unit / 0.7187500000) { mark: none }
 point rn8 = reflect(rp8, O) { mark: none }
 assert hdist(O, rp8) > 0 and hdist(O, rn8) < 0
 assert hdist(O, rp8) * vdist(O, rp8) == unit * unit
-segment rps8 = seg(rp7, rp8) [curve]
-segment rns8 = seg(rn7, rn8) [curve]
+segment rps8(rp7, rp8) [curve]
+segment rns8(rn7, rn8) [curve]
 assert vdist(O, rp8) < vdist(O, rp7)
 assert vdist(rp7, rp8) / hdist(rp7, rp8) == -unit * unit / (hdist(O, rp7) * hdist(O, rp8))
 point rp9 = offset(O, 0.7773437500 * unit, unit / 0.7773437500) { mark: none }
 point rn9 = reflect(rp9, O) { mark: none }
 assert hdist(O, rp9) > 0 and hdist(O, rn9) < 0
 assert hdist(O, rp9) * vdist(O, rp9) == unit * unit
-segment rps9 = seg(rp8, rp9) [curve]
-segment rns9 = seg(rn8, rn9) [curve]
+segment rps9(rp8, rp9) [curve]
+segment rns9(rn8, rn9) [curve]
 assert vdist(O, rp9) < vdist(O, rp8)
 assert vdist(rp8, rp9) / hdist(rp8, rp9) == -unit * unit / (hdist(O, rp8) * hdist(O, rp9))
 point rp10 = offset(O, 0.8359375000 * unit, unit / 0.8359375000) { mark: none }
 point rn10 = reflect(rp10, O) { mark: none }
 assert hdist(O, rp10) > 0 and hdist(O, rn10) < 0
 assert hdist(O, rp10) * vdist(O, rp10) == unit * unit
-segment rps10 = seg(rp9, rp10) [curve]
-segment rns10 = seg(rn9, rn10) [curve]
+segment rps10(rp9, rp10) [curve]
+segment rns10(rn9, rn10) [curve]
 assert vdist(O, rp10) < vdist(O, rp9)
 assert vdist(rp9, rp10) / hdist(rp9, rp10) == -unit * unit / (hdist(O, rp9) * hdist(O, rp10))
 point rp11 = offset(O, 0.8945312500 * unit, unit / 0.8945312500) { mark: none }
 point rn11 = reflect(rp11, O) { mark: none }
 assert hdist(O, rp11) > 0 and hdist(O, rn11) < 0
 assert hdist(O, rp11) * vdist(O, rp11) == unit * unit
-segment rps11 = seg(rp10, rp11) [curve]
-segment rns11 = seg(rn10, rn11) [curve]
+segment rps11(rp10, rp11) [curve]
+segment rns11(rn10, rn11) [curve]
 assert vdist(O, rp11) < vdist(O, rp10)
 assert vdist(rp10, rp11) / hdist(rp10, rp11) == -unit * unit / (hdist(O, rp10) * hdist(O, rp11))
 point rp12 = offset(O, 0.9531250000 * unit, unit / 0.9531250000) { mark: none }
 point rn12 = reflect(rp12, O) { mark: none }
 assert hdist(O, rp12) > 0 and hdist(O, rn12) < 0
 assert hdist(O, rp12) * vdist(O, rp12) == unit * unit
-segment rps12 = seg(rp11, rp12) [curve]
-segment rns12 = seg(rn11, rn12) [curve]
+segment rps12(rp11, rp12) [curve]
+segment rns12(rn11, rn12) [curve]
 assert vdist(O, rp12) < vdist(O, rp11)
 assert vdist(rp11, rp12) / hdist(rp11, rp12) == -unit * unit / (hdist(O, rp11) * hdist(O, rp12))
 point rp13 = offset(O, 1.0117187500 * unit, unit / 1.0117187500) { mark: none }
 point rn13 = reflect(rp13, O) { mark: none }
 assert hdist(O, rp13) > 0 and hdist(O, rn13) < 0
 assert hdist(O, rp13) * vdist(O, rp13) == unit * unit
-segment rps13 = seg(rp12, rp13) [curve]
-segment rns13 = seg(rn12, rn13) [curve]
+segment rps13(rp12, rp13) [curve]
+segment rns13(rn12, rn13) [curve]
 assert vdist(O, rp13) < vdist(O, rp12)
 assert vdist(rp12, rp13) / hdist(rp12, rp13) == -unit * unit / (hdist(O, rp12) * hdist(O, rp13))
 point rp14 = offset(O, 1.0703125000 * unit, unit / 1.0703125000) { mark: none }
 point rn14 = reflect(rp14, O) { mark: none }
 assert hdist(O, rp14) > 0 and hdist(O, rn14) < 0
 assert hdist(O, rp14) * vdist(O, rp14) == unit * unit
-segment rps14 = seg(rp13, rp14) [curve]
-segment rns14 = seg(rn13, rn14) [curve]
+segment rps14(rp13, rp14) [curve]
+segment rns14(rn13, rn14) [curve]
 assert vdist(O, rp14) < vdist(O, rp13)
 assert vdist(rp13, rp14) / hdist(rp13, rp14) == -unit * unit / (hdist(O, rp13) * hdist(O, rp14))
 point rp15 = offset(O, 1.1289062500 * unit, unit / 1.1289062500) { mark: none }
 point rn15 = reflect(rp15, O) { mark: none }
 assert hdist(O, rp15) > 0 and hdist(O, rn15) < 0
 assert hdist(O, rp15) * vdist(O, rp15) == unit * unit
-segment rps15 = seg(rp14, rp15) [curve]
-segment rns15 = seg(rn14, rn15) [curve]
+segment rps15(rp14, rp15) [curve]
+segment rns15(rn14, rn15) [curve]
 assert vdist(O, rp15) < vdist(O, rp14)
 assert vdist(rp14, rp15) / hdist(rp14, rp15) == -unit * unit / (hdist(O, rp14) * hdist(O, rp15))
 point rp16 = offset(O, 1.1875000000 * unit, unit / 1.1875000000) { mark: none }
 point rn16 = reflect(rp16, O) { mark: none }
 assert hdist(O, rp16) > 0 and hdist(O, rn16) < 0
 assert hdist(O, rp16) * vdist(O, rp16) == unit * unit
-segment rps16 = seg(rp15, rp16) [curve]
-segment rns16 = seg(rn15, rn16) [curve]
+segment rps16(rp15, rp16) [curve]
+segment rns16(rn15, rn16) [curve]
 assert vdist(O, rp16) < vdist(O, rp15)
 assert vdist(rp15, rp16) / hdist(rp15, rp16) == -unit * unit / (hdist(O, rp15) * hdist(O, rp16))
 point rp17 = offset(O, 1.2460937500 * unit, unit / 1.2460937500) { mark: none }
 point rn17 = reflect(rp17, O) { mark: none }
 assert hdist(O, rp17) > 0 and hdist(O, rn17) < 0
 assert hdist(O, rp17) * vdist(O, rp17) == unit * unit
-segment rps17 = seg(rp16, rp17) [curve]
-segment rns17 = seg(rn16, rn17) [curve]
+segment rps17(rp16, rp17) [curve]
+segment rns17(rn16, rn17) [curve]
 assert vdist(O, rp17) < vdist(O, rp16)
 assert vdist(rp16, rp17) / hdist(rp16, rp17) == -unit * unit / (hdist(O, rp16) * hdist(O, rp17))
 point rp18 = offset(O, 1.3046875000 * unit, unit / 1.3046875000) { mark: none }
 point rn18 = reflect(rp18, O) { mark: none }
 assert hdist(O, rp18) > 0 and hdist(O, rn18) < 0
 assert hdist(O, rp18) * vdist(O, rp18) == unit * unit
-segment rps18 = seg(rp17, rp18) [curve]
-segment rns18 = seg(rn17, rn18) [curve]
+segment rps18(rp17, rp18) [curve]
+segment rns18(rn17, rn18) [curve]
 assert vdist(O, rp18) < vdist(O, rp17)
 assert vdist(rp17, rp18) / hdist(rp17, rp18) == -unit * unit / (hdist(O, rp17) * hdist(O, rp18))
 point rp19 = offset(O, 1.3632812500 * unit, unit / 1.3632812500) { mark: none }
 point rn19 = reflect(rp19, O) { mark: none }
 assert hdist(O, rp19) > 0 and hdist(O, rn19) < 0
 assert hdist(O, rp19) * vdist(O, rp19) == unit * unit
-segment rps19 = seg(rp18, rp19) [curve]
-segment rns19 = seg(rn18, rn19) [curve]
+segment rps19(rp18, rp19) [curve]
+segment rns19(rn18, rn19) [curve]
 assert vdist(O, rp19) < vdist(O, rp18)
 assert vdist(rp18, rp19) / hdist(rp18, rp19) == -unit * unit / (hdist(O, rp18) * hdist(O, rp19))
 point rp20 = offset(O, 1.4218750000 * unit, unit / 1.4218750000) { mark: none }
 point rn20 = reflect(rp20, O) { mark: none }
 assert hdist(O, rp20) > 0 and hdist(O, rn20) < 0
 assert hdist(O, rp20) * vdist(O, rp20) == unit * unit
-segment rps20 = seg(rp19, rp20) [curve]
-segment rns20 = seg(rn19, rn20) [curve]
+segment rps20(rp19, rp20) [curve]
+segment rns20(rn19, rn20) [curve]
 assert vdist(O, rp20) < vdist(O, rp19)
 assert vdist(rp19, rp20) / hdist(rp19, rp20) == -unit * unit / (hdist(O, rp19) * hdist(O, rp20))
 point rp21 = offset(O, 1.4804687500 * unit, unit / 1.4804687500) { mark: none }
 point rn21 = reflect(rp21, O) { mark: none }
 assert hdist(O, rp21) > 0 and hdist(O, rn21) < 0
 assert hdist(O, rp21) * vdist(O, rp21) == unit * unit
-segment rps21 = seg(rp20, rp21) [curve]
-segment rns21 = seg(rn20, rn21) [curve]
+segment rps21(rp20, rp21) [curve]
+segment rns21(rn20, rn21) [curve]
 assert vdist(O, rp21) < vdist(O, rp20)
 assert vdist(rp20, rp21) / hdist(rp20, rp21) == -unit * unit / (hdist(O, rp20) * hdist(O, rp21))
 point rp22 = offset(O, 1.5390625000 * unit, unit / 1.5390625000) { mark: none }
 point rn22 = reflect(rp22, O) { mark: none }
 assert hdist(O, rp22) > 0 and hdist(O, rn22) < 0
 assert hdist(O, rp22) * vdist(O, rp22) == unit * unit
-segment rps22 = seg(rp21, rp22) [curve]
-segment rns22 = seg(rn21, rn22) [curve]
+segment rps22(rp21, rp22) [curve]
+segment rns22(rn21, rn22) [curve]
 assert vdist(O, rp22) < vdist(O, rp21)
 assert vdist(rp21, rp22) / hdist(rp21, rp22) == -unit * unit / (hdist(O, rp21) * hdist(O, rp22))
 point rp23 = offset(O, 1.5976562500 * unit, unit / 1.5976562500) { mark: none }
 point rn23 = reflect(rp23, O) { mark: none }
 assert hdist(O, rp23) > 0 and hdist(O, rn23) < 0
 assert hdist(O, rp23) * vdist(O, rp23) == unit * unit
-segment rps23 = seg(rp22, rp23) [curve]
-segment rns23 = seg(rn22, rn23) [curve]
+segment rps23(rp22, rp23) [curve]
+segment rns23(rn22, rn23) [curve]
 assert vdist(O, rp23) < vdist(O, rp22)
 assert vdist(rp22, rp23) / hdist(rp22, rp23) == -unit * unit / (hdist(O, rp22) * hdist(O, rp23))
 point rp24 = offset(O, 1.6562500000 * unit, unit / 1.6562500000) { mark: none }
 point rn24 = reflect(rp24, O) { mark: none }
 assert hdist(O, rp24) > 0 and hdist(O, rn24) < 0
 assert hdist(O, rp24) * vdist(O, rp24) == unit * unit
-segment rps24 = seg(rp23, rp24) [curve]
-segment rns24 = seg(rn23, rn24) [curve]
+segment rps24(rp23, rp24) [curve]
+segment rns24(rn23, rn24) [curve]
 assert vdist(O, rp24) < vdist(O, rp23)
 assert vdist(rp23, rp24) / hdist(rp23, rp24) == -unit * unit / (hdist(O, rp23) * hdist(O, rp24))
 point rp25 = offset(O, 1.7148437500 * unit, unit / 1.7148437500) { mark: none }
 point rn25 = reflect(rp25, O) { mark: none }
 assert hdist(O, rp25) > 0 and hdist(O, rn25) < 0
 assert hdist(O, rp25) * vdist(O, rp25) == unit * unit
-segment rps25 = seg(rp24, rp25) [curve]
-segment rns25 = seg(rn24, rn25) [curve]
+segment rps25(rp24, rp25) [curve]
+segment rns25(rn24, rn25) [curve]
 assert vdist(O, rp25) < vdist(O, rp24)
 assert vdist(rp24, rp25) / hdist(rp24, rp25) == -unit * unit / (hdist(O, rp24) * hdist(O, rp25))
 point rp26 = offset(O, 1.7734375000 * unit, unit / 1.7734375000) { mark: none }
 point rn26 = reflect(rp26, O) { mark: none }
 assert hdist(O, rp26) > 0 and hdist(O, rn26) < 0
 assert hdist(O, rp26) * vdist(O, rp26) == unit * unit
-segment rps26 = seg(rp25, rp26) [curve]
-segment rns26 = seg(rn25, rn26) [curve]
+segment rps26(rp25, rp26) [curve]
+segment rns26(rn25, rn26) [curve]
 assert vdist(O, rp26) < vdist(O, rp25)
 assert vdist(rp25, rp26) / hdist(rp25, rp26) == -unit * unit / (hdist(O, rp25) * hdist(O, rp26))
 point rp27 = offset(O, 1.8320312500 * unit, unit / 1.8320312500) { mark: none }
 point rn27 = reflect(rp27, O) { mark: none }
 assert hdist(O, rp27) > 0 and hdist(O, rn27) < 0
 assert hdist(O, rp27) * vdist(O, rp27) == unit * unit
-segment rps27 = seg(rp26, rp27) [curve]
-segment rns27 = seg(rn26, rn27) [curve]
+segment rps27(rp26, rp27) [curve]
+segment rns27(rn26, rn27) [curve]
 assert vdist(O, rp27) < vdist(O, rp26)
 assert vdist(rp26, rp27) / hdist(rp26, rp27) == -unit * unit / (hdist(O, rp26) * hdist(O, rp27))
 point rp28 = offset(O, 1.8906250000 * unit, unit / 1.8906250000) { mark: none }
 point rn28 = reflect(rp28, O) { mark: none }
 assert hdist(O, rp28) > 0 and hdist(O, rn28) < 0
 assert hdist(O, rp28) * vdist(O, rp28) == unit * unit
-segment rps28 = seg(rp27, rp28) [curve]
-segment rns28 = seg(rn27, rn28) [curve]
+segment rps28(rp27, rp28) [curve]
+segment rns28(rn27, rn28) [curve]
 assert vdist(O, rp28) < vdist(O, rp27)
 assert vdist(rp27, rp28) / hdist(rp27, rp28) == -unit * unit / (hdist(O, rp27) * hdist(O, rp28))
 point rp29 = offset(O, 1.9492187500 * unit, unit / 1.9492187500) { mark: none }
 point rn29 = reflect(rp29, O) { mark: none }
 assert hdist(O, rp29) > 0 and hdist(O, rn29) < 0
 assert hdist(O, rp29) * vdist(O, rp29) == unit * unit
-segment rps29 = seg(rp28, rp29) [curve]
-segment rns29 = seg(rn28, rn29) [curve]
+segment rps29(rp28, rp29) [curve]
+segment rns29(rn28, rn29) [curve]
 assert vdist(O, rp29) < vdist(O, rp28)
 assert vdist(rp28, rp29) / hdist(rp28, rp29) == -unit * unit / (hdist(O, rp28) * hdist(O, rp29))
 point rp30 = offset(O, 2.0078125000 * unit, unit / 2.0078125000) { mark: none }
 point rn30 = reflect(rp30, O) { mark: none }
 assert hdist(O, rp30) > 0 and hdist(O, rn30) < 0
 assert hdist(O, rp30) * vdist(O, rp30) == unit * unit
-segment rps30 = seg(rp29, rp30) [curve]
-segment rns30 = seg(rn29, rn30) [curve]
+segment rps30(rp29, rp30) [curve]
+segment rns30(rn29, rn30) [curve]
 assert vdist(O, rp30) < vdist(O, rp29)
 assert vdist(rp29, rp30) / hdist(rp29, rp30) == -unit * unit / (hdist(O, rp29) * hdist(O, rp30))
 point rp31 = offset(O, 2.0664062500 * unit, unit / 2.0664062500) { mark: none }
 point rn31 = reflect(rp31, O) { mark: none }
 assert hdist(O, rp31) > 0 and hdist(O, rn31) < 0
 assert hdist(O, rp31) * vdist(O, rp31) == unit * unit
-segment rps31 = seg(rp30, rp31) [curve]
-segment rns31 = seg(rn30, rn31) [curve]
+segment rps31(rp30, rp31) [curve]
+segment rns31(rn30, rn31) [curve]
 assert vdist(O, rp31) < vdist(O, rp30)
 assert vdist(rp30, rp31) / hdist(rp30, rp31) == -unit * unit / (hdist(O, rp30) * hdist(O, rp31))
 point rp32 = offset(O, 2.1250000000 * unit, unit / 2.1250000000) { mark: none }
 point rn32 = reflect(rp32, O) { mark: none }
 assert hdist(O, rp32) > 0 and hdist(O, rn32) < 0
 assert hdist(O, rp32) * vdist(O, rp32) == unit * unit
-segment rps32 = seg(rp31, rp32) [curve]
-segment rns32 = seg(rn31, rn32) [curve]
+segment rps32(rp31, rp32) [curve]
+segment rns32(rn31, rn32) [curve]
 assert vdist(O, rp32) < vdist(O, rp31)
 assert vdist(rp31, rp32) / hdist(rp31, rp32) == -unit * unit / (hdist(O, rp31) * hdist(O, rp32))
 point rp33 = offset(O, 2.1835937500 * unit, unit / 2.1835937500) { mark: none }
 point rn33 = reflect(rp33, O) { mark: none }
 assert hdist(O, rp33) > 0 and hdist(O, rn33) < 0
 assert hdist(O, rp33) * vdist(O, rp33) == unit * unit
-segment rps33 = seg(rp32, rp33) [curve]
-segment rns33 = seg(rn32, rn33) [curve]
+segment rps33(rp32, rp33) [curve]
+segment rns33(rn32, rn33) [curve]
 assert vdist(O, rp33) < vdist(O, rp32)
 assert vdist(rp32, rp33) / hdist(rp32, rp33) == -unit * unit / (hdist(O, rp32) * hdist(O, rp33))
 point rp34 = offset(O, 2.2421875000 * unit, unit / 2.2421875000) { mark: none }
 point rn34 = reflect(rp34, O) { mark: none }
 assert hdist(O, rp34) > 0 and hdist(O, rn34) < 0
 assert hdist(O, rp34) * vdist(O, rp34) == unit * unit
-segment rps34 = seg(rp33, rp34) [curve]
-segment rns34 = seg(rn33, rn34) [curve]
+segment rps34(rp33, rp34) [curve]
+segment rns34(rn33, rn34) [curve]
 assert vdist(O, rp34) < vdist(O, rp33)
 assert vdist(rp33, rp34) / hdist(rp33, rp34) == -unit * unit / (hdist(O, rp33) * hdist(O, rp34))
 point rp35 = offset(O, 2.3007812500 * unit, unit / 2.3007812500) { mark: none }
 point rn35 = reflect(rp35, O) { mark: none }
 assert hdist(O, rp35) > 0 and hdist(O, rn35) < 0
 assert hdist(O, rp35) * vdist(O, rp35) == unit * unit
-segment rps35 = seg(rp34, rp35) [curve]
-segment rns35 = seg(rn34, rn35) [curve]
+segment rps35(rp34, rp35) [curve]
+segment rns35(rn34, rn35) [curve]
 assert vdist(O, rp35) < vdist(O, rp34)
 assert vdist(rp34, rp35) / hdist(rp34, rp35) == -unit * unit / (hdist(O, rp34) * hdist(O, rp35))
 point rp36 = offset(O, 2.3593750000 * unit, unit / 2.3593750000) { mark: none }
 point rn36 = reflect(rp36, O) { mark: none }
 assert hdist(O, rp36) > 0 and hdist(O, rn36) < 0
 assert hdist(O, rp36) * vdist(O, rp36) == unit * unit
-segment rps36 = seg(rp35, rp36) [curve]
-segment rns36 = seg(rn35, rn36) [curve]
+segment rps36(rp35, rp36) [curve]
+segment rns36(rn35, rn36) [curve]
 assert vdist(O, rp36) < vdist(O, rp35)
 assert vdist(rp35, rp36) / hdist(rp35, rp36) == -unit * unit / (hdist(O, rp35) * hdist(O, rp36))
 point rp37 = offset(O, 2.4179687500 * unit, unit / 2.4179687500) { mark: none }
 point rn37 = reflect(rp37, O) { mark: none }
 assert hdist(O, rp37) > 0 and hdist(O, rn37) < 0
 assert hdist(O, rp37) * vdist(O, rp37) == unit * unit
-segment rps37 = seg(rp36, rp37) [curve]
-segment rns37 = seg(rn36, rn37) [curve]
+segment rps37(rp36, rp37) [curve]
+segment rns37(rn36, rn37) [curve]
 assert vdist(O, rp37) < vdist(O, rp36)
 assert vdist(rp36, rp37) / hdist(rp36, rp37) == -unit * unit / (hdist(O, rp36) * hdist(O, rp37))
 point rp38 = offset(O, 2.4765625000 * unit, unit / 2.4765625000) { mark: none }
 point rn38 = reflect(rp38, O) { mark: none }
 assert hdist(O, rp38) > 0 and hdist(O, rn38) < 0
 assert hdist(O, rp38) * vdist(O, rp38) == unit * unit
-segment rps38 = seg(rp37, rp38) [curve]
-segment rns38 = seg(rn37, rn38) [curve]
+segment rps38(rp37, rp38) [curve]
+segment rns38(rn37, rn38) [curve]
 assert vdist(O, rp38) < vdist(O, rp37)
 assert vdist(rp37, rp38) / hdist(rp37, rp38) == -unit * unit / (hdist(O, rp37) * hdist(O, rp38))
 point rp39 = offset(O, 2.5351562500 * unit, unit / 2.5351562500) { mark: none }
 point rn39 = reflect(rp39, O) { mark: none }
 assert hdist(O, rp39) > 0 and hdist(O, rn39) < 0
 assert hdist(O, rp39) * vdist(O, rp39) == unit * unit
-segment rps39 = seg(rp38, rp39) [curve]
-segment rns39 = seg(rn38, rn39) [curve]
+segment rps39(rp38, rp39) [curve]
+segment rns39(rn38, rn39) [curve]
 assert vdist(O, rp39) < vdist(O, rp38)
 assert vdist(rp38, rp39) / hdist(rp38, rp39) == -unit * unit / (hdist(O, rp38) * hdist(O, rp39))
 point rp40 = offset(O, 2.5937500000 * unit, unit / 2.5937500000) { mark: none }
 point rn40 = reflect(rp40, O) { mark: none }
 assert hdist(O, rp40) > 0 and hdist(O, rn40) < 0
 assert hdist(O, rp40) * vdist(O, rp40) == unit * unit
-segment rps40 = seg(rp39, rp40) [curve]
-segment rns40 = seg(rn39, rn40) [curve]
+segment rps40(rp39, rp40) [curve]
+segment rns40(rn39, rn40) [curve]
 assert vdist(O, rp40) < vdist(O, rp39)
 assert vdist(rp39, rp40) / hdist(rp39, rp40) == -unit * unit / (hdist(O, rp39) * hdist(O, rp40))
 point rp41 = offset(O, 2.6523437500 * unit, unit / 2.6523437500) { mark: none }
 point rn41 = reflect(rp41, O) { mark: none }
 assert hdist(O, rp41) > 0 and hdist(O, rn41) < 0
 assert hdist(O, rp41) * vdist(O, rp41) == unit * unit
-segment rps41 = seg(rp40, rp41) [curve]
-segment rns41 = seg(rn40, rn41) [curve]
+segment rps41(rp40, rp41) [curve]
+segment rns41(rn40, rn41) [curve]
 assert vdist(O, rp41) < vdist(O, rp40)
 assert vdist(rp40, rp41) / hdist(rp40, rp41) == -unit * unit / (hdist(O, rp40) * hdist(O, rp41))
 point rp42 = offset(O, 2.7109375000 * unit, unit / 2.7109375000) { mark: none }
 point rn42 = reflect(rp42, O) { mark: none }
 assert hdist(O, rp42) > 0 and hdist(O, rn42) < 0
 assert hdist(O, rp42) * vdist(O, rp42) == unit * unit
-segment rps42 = seg(rp41, rp42) [curve]
-segment rns42 = seg(rn41, rn42) [curve]
+segment rps42(rp41, rp42) [curve]
+segment rns42(rn41, rn42) [curve]
 assert vdist(O, rp42) < vdist(O, rp41)
 assert vdist(rp41, rp42) / hdist(rp41, rp42) == -unit * unit / (hdist(O, rp41) * hdist(O, rp42))
 point rp43 = offset(O, 2.7695312500 * unit, unit / 2.7695312500) { mark: none }
 point rn43 = reflect(rp43, O) { mark: none }
 assert hdist(O, rp43) > 0 and hdist(O, rn43) < 0
 assert hdist(O, rp43) * vdist(O, rp43) == unit * unit
-segment rps43 = seg(rp42, rp43) [curve]
-segment rns43 = seg(rn42, rn43) [curve]
+segment rps43(rp42, rp43) [curve]
+segment rns43(rn42, rn43) [curve]
 assert vdist(O, rp43) < vdist(O, rp42)
 assert vdist(rp42, rp43) / hdist(rp42, rp43) == -unit * unit / (hdist(O, rp42) * hdist(O, rp43))
 point rp44 = offset(O, 2.8281250000 * unit, unit / 2.8281250000) { mark: none }
 point rn44 = reflect(rp44, O) { mark: none }
 assert hdist(O, rp44) > 0 and hdist(O, rn44) < 0
 assert hdist(O, rp44) * vdist(O, rp44) == unit * unit
-segment rps44 = seg(rp43, rp44) [curve]
-segment rns44 = seg(rn43, rn44) [curve]
+segment rps44(rp43, rp44) [curve]
+segment rns44(rn43, rn44) [curve]
 assert vdist(O, rp44) < vdist(O, rp43)
 assert vdist(rp43, rp44) / hdist(rp43, rp44) == -unit * unit / (hdist(O, rp43) * hdist(O, rp44))
 point rp45 = offset(O, 2.8867187500 * unit, unit / 2.8867187500) { mark: none }
 point rn45 = reflect(rp45, O) { mark: none }
 assert hdist(O, rp45) > 0 and hdist(O, rn45) < 0
 assert hdist(O, rp45) * vdist(O, rp45) == unit * unit
-segment rps45 = seg(rp44, rp45) [curve]
-segment rns45 = seg(rn44, rn45) [curve]
+segment rps45(rp44, rp45) [curve]
+segment rns45(rn44, rn45) [curve]
 assert vdist(O, rp45) < vdist(O, rp44)
 assert vdist(rp44, rp45) / hdist(rp44, rp45) == -unit * unit / (hdist(O, rp44) * hdist(O, rp45))
 point rp46 = offset(O, 2.9453125000 * unit, unit / 2.9453125000) { mark: none }
 point rn46 = reflect(rp46, O) { mark: none }
 assert hdist(O, rp46) > 0 and hdist(O, rn46) < 0
 assert hdist(O, rp46) * vdist(O, rp46) == unit * unit
-segment rps46 = seg(rp45, rp46) [curve]
-segment rns46 = seg(rn45, rn46) [curve]
+segment rps46(rp45, rp46) [curve]
+segment rns46(rn45, rn46) [curve]
 assert vdist(O, rp46) < vdist(O, rp45)
 assert vdist(rp45, rp46) / hdist(rp45, rp46) == -unit * unit / (hdist(O, rp45) * hdist(O, rp46))
 point rp47 = offset(O, 3.0039062500 * unit, unit / 3.0039062500) { mark: none }
 point rn47 = reflect(rp47, O) { mark: none }
 assert hdist(O, rp47) > 0 and hdist(O, rn47) < 0
 assert hdist(O, rp47) * vdist(O, rp47) == unit * unit
-segment rps47 = seg(rp46, rp47) [curve]
-segment rns47 = seg(rn46, rn47) [curve]
+segment rps47(rp46, rp47) [curve]
+segment rns47(rn46, rn47) [curve]
 assert vdist(O, rp47) < vdist(O, rp46)
 assert vdist(rp46, rp47) / hdist(rp46, rp47) == -unit * unit / (hdist(O, rp46) * hdist(O, rp47))
 point rp48 = offset(O, 3.0625000000 * unit, unit / 3.0625000000) { mark: none }
 point rn48 = reflect(rp48, O) { mark: none }
 assert hdist(O, rp48) > 0 and hdist(O, rn48) < 0
 assert hdist(O, rp48) * vdist(O, rp48) == unit * unit
-segment rps48 = seg(rp47, rp48) [curve]
-segment rns48 = seg(rn47, rn48) [curve]
+segment rps48(rp47, rp48) [curve]
+segment rns48(rn47, rn48) [curve]
 assert vdist(O, rp48) < vdist(O, rp47)
 assert vdist(rp47, rp48) / hdist(rp47, rp48) == -unit * unit / (hdist(O, rp47) * hdist(O, rp48))
 point rp49 = offset(O, 3.1210937500 * unit, unit / 3.1210937500) { mark: none }
 point rn49 = reflect(rp49, O) { mark: none }
 assert hdist(O, rp49) > 0 and hdist(O, rn49) < 0
 assert hdist(O, rp49) * vdist(O, rp49) == unit * unit
-segment rps49 = seg(rp48, rp49) [curve]
-segment rns49 = seg(rn48, rn49) [curve]
+segment rps49(rp48, rp49) [curve]
+segment rns49(rn48, rn49) [curve]
 assert vdist(O, rp49) < vdist(O, rp48)
 assert vdist(rp48, rp49) / hdist(rp48, rp49) == -unit * unit / (hdist(O, rp48) * hdist(O, rp49))
 point rp50 = offset(O, 3.1796875000 * unit, unit / 3.1796875000) { mark: none }
 point rn50 = reflect(rp50, O) { mark: none }
 assert hdist(O, rp50) > 0 and hdist(O, rn50) < 0
 assert hdist(O, rp50) * vdist(O, rp50) == unit * unit
-segment rps50 = seg(rp49, rp50) [curve]
-segment rns50 = seg(rn49, rn50) [curve]
+segment rps50(rp49, rp50) [curve]
+segment rns50(rn49, rn50) [curve]
 assert vdist(O, rp50) < vdist(O, rp49)
 assert vdist(rp49, rp50) / hdist(rp49, rp50) == -unit * unit / (hdist(O, rp49) * hdist(O, rp50))
 point rp51 = offset(O, 3.2382812500 * unit, unit / 3.2382812500) { mark: none }
 point rn51 = reflect(rp51, O) { mark: none }
 assert hdist(O, rp51) > 0 and hdist(O, rn51) < 0
 assert hdist(O, rp51) * vdist(O, rp51) == unit * unit
-segment rps51 = seg(rp50, rp51) [curve]
-segment rns51 = seg(rn50, rn51) [curve]
+segment rps51(rp50, rp51) [curve]
+segment rns51(rn50, rn51) [curve]
 assert vdist(O, rp51) < vdist(O, rp50)
 assert vdist(rp50, rp51) / hdist(rp50, rp51) == -unit * unit / (hdist(O, rp50) * hdist(O, rp51))
 point rp52 = offset(O, 3.2968750000 * unit, unit / 3.2968750000) { mark: none }
 point rn52 = reflect(rp52, O) { mark: none }
 assert hdist(O, rp52) > 0 and hdist(O, rn52) < 0
 assert hdist(O, rp52) * vdist(O, rp52) == unit * unit
-segment rps52 = seg(rp51, rp52) [curve]
-segment rns52 = seg(rn51, rn52) [curve]
+segment rps52(rp51, rp52) [curve]
+segment rns52(rn51, rn52) [curve]
 assert vdist(O, rp52) < vdist(O, rp51)
 assert vdist(rp51, rp52) / hdist(rp51, rp52) == -unit * unit / (hdist(O, rp51) * hdist(O, rp52))
 point rp53 = offset(O, 3.3554687500 * unit, unit / 3.3554687500) { mark: none }
 point rn53 = reflect(rp53, O) { mark: none }
 assert hdist(O, rp53) > 0 and hdist(O, rn53) < 0
 assert hdist(O, rp53) * vdist(O, rp53) == unit * unit
-segment rps53 = seg(rp52, rp53) [curve]
-segment rns53 = seg(rn52, rn53) [curve]
+segment rps53(rp52, rp53) [curve]
+segment rns53(rn52, rn53) [curve]
 assert vdist(O, rp53) < vdist(O, rp52)
 assert vdist(rp52, rp53) / hdist(rp52, rp53) == -unit * unit / (hdist(O, rp52) * hdist(O, rp53))
 point rp54 = offset(O, 3.4140625000 * unit, unit / 3.4140625000) { mark: none }
 point rn54 = reflect(rp54, O) { mark: none }
 assert hdist(O, rp54) > 0 and hdist(O, rn54) < 0
 assert hdist(O, rp54) * vdist(O, rp54) == unit * unit
-segment rps54 = seg(rp53, rp54) [curve]
-segment rns54 = seg(rn53, rn54) [curve]
+segment rps54(rp53, rp54) [curve]
+segment rns54(rn53, rn54) [curve]
 assert vdist(O, rp54) < vdist(O, rp53)
 assert vdist(rp53, rp54) / hdist(rp53, rp54) == -unit * unit / (hdist(O, rp53) * hdist(O, rp54))
 point rp55 = offset(O, 3.4726562500 * unit, unit / 3.4726562500) { mark: none }
 point rn55 = reflect(rp55, O) { mark: none }
 assert hdist(O, rp55) > 0 and hdist(O, rn55) < 0
 assert hdist(O, rp55) * vdist(O, rp55) == unit * unit
-segment rps55 = seg(rp54, rp55) [curve]
-segment rns55 = seg(rn54, rn55) [curve]
+segment rps55(rp54, rp55) [curve]
+segment rns55(rn54, rn55) [curve]
 assert vdist(O, rp55) < vdist(O, rp54)
 assert vdist(rp54, rp55) / hdist(rp54, rp55) == -unit * unit / (hdist(O, rp54) * hdist(O, rp55))
 point rp56 = offset(O, 3.5312500000 * unit, unit / 3.5312500000) { mark: none }
 point rn56 = reflect(rp56, O) { mark: none }
 assert hdist(O, rp56) > 0 and hdist(O, rn56) < 0
 assert hdist(O, rp56) * vdist(O, rp56) == unit * unit
-segment rps56 = seg(rp55, rp56) [curve]
-segment rns56 = seg(rn55, rn56) [curve]
+segment rps56(rp55, rp56) [curve]
+segment rns56(rn55, rn56) [curve]
 assert vdist(O, rp56) < vdist(O, rp55)
 assert vdist(rp55, rp56) / hdist(rp55, rp56) == -unit * unit / (hdist(O, rp55) * hdist(O, rp56))
 point rp57 = offset(O, 3.5898437500 * unit, unit / 3.5898437500) { mark: none }
 point rn57 = reflect(rp57, O) { mark: none }
 assert hdist(O, rp57) > 0 and hdist(O, rn57) < 0
 assert hdist(O, rp57) * vdist(O, rp57) == unit * unit
-segment rps57 = seg(rp56, rp57) [curve]
-segment rns57 = seg(rn56, rn57) [curve]
+segment rps57(rp56, rp57) [curve]
+segment rns57(rn56, rn57) [curve]
 assert vdist(O, rp57) < vdist(O, rp56)
 assert vdist(rp56, rp57) / hdist(rp56, rp57) == -unit * unit / (hdist(O, rp56) * hdist(O, rp57))
 point rp58 = offset(O, 3.6484375000 * unit, unit / 3.6484375000) { mark: none }
 point rn58 = reflect(rp58, O) { mark: none }
 assert hdist(O, rp58) > 0 and hdist(O, rn58) < 0
 assert hdist(O, rp58) * vdist(O, rp58) == unit * unit
-segment rps58 = seg(rp57, rp58) [curve]
-segment rns58 = seg(rn57, rn58) [curve]
+segment rps58(rp57, rp58) [curve]
+segment rns58(rn57, rn58) [curve]
 assert vdist(O, rp58) < vdist(O, rp57)
 assert vdist(rp57, rp58) / hdist(rp57, rp58) == -unit * unit / (hdist(O, rp57) * hdist(O, rp58))
 point rp59 = offset(O, 3.7070312500 * unit, unit / 3.7070312500) { mark: none }
 point rn59 = reflect(rp59, O) { mark: none }
 assert hdist(O, rp59) > 0 and hdist(O, rn59) < 0
 assert hdist(O, rp59) * vdist(O, rp59) == unit * unit
-segment rps59 = seg(rp58, rp59) [curve]
-segment rns59 = seg(rn58, rn59) [curve]
+segment rps59(rp58, rp59) [curve]
+segment rns59(rn58, rn59) [curve]
 assert vdist(O, rp59) < vdist(O, rp58)
 assert vdist(rp58, rp59) / hdist(rp58, rp59) == -unit * unit / (hdist(O, rp58) * hdist(O, rp59))
 point rp60 = offset(O, 3.7656250000 * unit, unit / 3.7656250000) { mark: none }
 point rn60 = reflect(rp60, O) { mark: none }
 assert hdist(O, rp60) > 0 and hdist(O, rn60) < 0
 assert hdist(O, rp60) * vdist(O, rp60) == unit * unit
-segment rps60 = seg(rp59, rp60) [curve]
-segment rns60 = seg(rn59, rn60) [curve]
+segment rps60(rp59, rp60) [curve]
+segment rns60(rn59, rn60) [curve]
 assert vdist(O, rp60) < vdist(O, rp59)
 assert vdist(rp59, rp60) / hdist(rp59, rp60) == -unit * unit / (hdist(O, rp59) * hdist(O, rp60))
 point rp61 = offset(O, 3.8242187500 * unit, unit / 3.8242187500) { mark: none }
 point rn61 = reflect(rp61, O) { mark: none }
 assert hdist(O, rp61) > 0 and hdist(O, rn61) < 0
 assert hdist(O, rp61) * vdist(O, rp61) == unit * unit
-segment rps61 = seg(rp60, rp61) [curve]
-segment rns61 = seg(rn60, rn61) [curve]
+segment rps61(rp60, rp61) [curve]
+segment rns61(rn60, rn61) [curve]
 assert vdist(O, rp61) < vdist(O, rp60)
 assert vdist(rp60, rp61) / hdist(rp60, rp61) == -unit * unit / (hdist(O, rp60) * hdist(O, rp61))
 point rp62 = offset(O, 3.8828125000 * unit, unit / 3.8828125000) { mark: none }
 point rn62 = reflect(rp62, O) { mark: none }
 assert hdist(O, rp62) > 0 and hdist(O, rn62) < 0
 assert hdist(O, rp62) * vdist(O, rp62) == unit * unit
-segment rps62 = seg(rp61, rp62) [curve]
-segment rns62 = seg(rn61, rn62) [curve]
+segment rps62(rp61, rp62) [curve]
+segment rns62(rn61, rn62) [curve]
 assert vdist(O, rp62) < vdist(O, rp61)
 assert vdist(rp61, rp62) / hdist(rp61, rp62) == -unit * unit / (hdist(O, rp61) * hdist(O, rp62))
 point rp63 = offset(O, 3.9414062500 * unit, unit / 3.9414062500) { mark: none }
 point rn63 = reflect(rp63, O) { mark: none }
 assert hdist(O, rp63) > 0 and hdist(O, rn63) < 0
 assert hdist(O, rp63) * vdist(O, rp63) == unit * unit
-segment rps63 = seg(rp62, rp63) [curve]
-segment rns63 = seg(rn62, rn63) [curve]
+segment rps63(rp62, rp63) [curve]
+segment rns63(rn62, rn63) [curve]
 assert vdist(O, rp63) < vdist(O, rp62)
 assert vdist(rp62, rp63) / hdist(rp62, rp63) == -unit * unit / (hdist(O, rp62) * hdist(O, rp63))
 point rp64 = offset(O, 4.0000000000 * unit, unit / 4.0000000000) { mark: none }
 point rn64 = reflect(rp64, O) { mark: none }
 assert hdist(O, rp64) > 0 and hdist(O, rn64) < 0
 assert hdist(O, rp64) * vdist(O, rp64) == unit * unit
-segment rps64 = seg(rp63, rp64) [curve]
-segment rns64 = seg(rn63, rn64) [curve]
+segment rps64(rp63, rp64) [curve]
+segment rns64(rn63, rn64) [curve]
 assert vdist(O, rp64) < vdist(O, rp63)
 assert vdist(rp63, rp64) / hdist(rp63, rp64) == -unit * unit / (hdist(O, rp63) * hdist(O, rp64))
-line diagonal = line(offset(O, -4 * unit, -4 * unit), offset(O, 4 * unit, 4 * unit)) [construction]
+line diagonal(offset(O, -4 * unit, -4 * unit), offset(O, 4 * unit, 4 * unit)) [construction]
 // Positive radial magnitudes select the two branches on opposite rays.
 num positive_span = free 1.1
 num negative_span = free 0.9
@@ -564,10 +564,10 @@ point fixed_positive = offset(O, sqrt(positive_span * positive_span) * unit, sqr
 point fixed_negative = offset(O, -sqrt(negative_span * negative_span) * unit, -sqrt(negative_span * negative_span) * unit)
 rel hdist(O, fixed_positive) * vdist(O, fixed_positive) == unit * unit
 rel hdist(O, fixed_negative) * vdist(O, fixed_negative) == unit * unit
-assert coincident(fixed_positive, P3)
-assert coincident(fixed_negative, N3)
-line tangent_positive = line(offset(O, 0, 2 * unit), offset(O, 2 * unit, 0)) [auxiliary]
-line tangent_negative = line(offset(O, 0, -2 * unit), offset(O, -2 * unit, 0)) [auxiliary]
+assert center(fixed_positive, P3)
+assert center(fixed_negative, N3)
+line tangent_positive(offset(O, 0, 2 * unit), offset(O, 2 * unit, 0)) [auxiliary]
+line tangent_negative(offset(O, 0, -2 * unit), offset(O, -2 * unit, 0)) [auxiliary]
 assert on(fixed_positive, tangent_positive) and on(fixed_negative, tangent_negative)
 assert perpendicular(tangent_positive, diagonal)
 assert parallel(tangent_positive, tangent_negative)

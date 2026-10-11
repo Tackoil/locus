@@ -9,9 +9,9 @@
         "line": 9,
         "col": 1,
         "byte_start": 240,
-        "byte_end": 280
+        "byte_end": 271
       },
-      "definition": "circle(3)",
+      "definition": "circle circ(3)",
       "resolved": {
         "kind": "circle",
         "radius": 3.0
@@ -23,8 +23,8 @@
       "span": {
         "line": 10,
         "col": 1,
-        "byte_start": 281,
-        "byte_end": 302
+        "byte_start": 272,
+        "byte_end": 293
       },
       "definition": "circ.center",
       "resolved": {
@@ -38,8 +38,8 @@
       "span": {
         "line": 11,
         "col": 1,
-        "byte_start": 303,
-        "byte_end": 327
+        "byte_start": 294,
+        "byte_end": 318
       },
       "definition": "circ.at(90deg)",
       "resolved": {
@@ -53,8 +53,8 @@
       "span": {
         "line": 13,
         "col": 1,
-        "byte_start": 329,
-        "byte_end": 358
+        "byte_start": 320,
+        "byte_end": 349
       },
       "definition": "rotate(A, O, 72deg)",
       "resolved": {
@@ -68,8 +68,8 @@
       "span": {
         "line": 14,
         "col": 1,
-        "byte_start": 359,
-        "byte_end": 389
+        "byte_start": 350,
+        "byte_end": 380
       },
       "definition": "rotate(A, O, 144deg)",
       "resolved": {
@@ -83,8 +83,8 @@
       "span": {
         "line": 15,
         "col": 1,
-        "byte_start": 390,
-        "byte_end": 420
+        "byte_start": 381,
+        "byte_end": 411
       },
       "definition": "rotate(A, O, 216deg)",
       "resolved": {
@@ -98,8 +98,8 @@
       "span": {
         "line": 16,
         "col": 1,
-        "byte_start": 421,
-        "byte_end": 451
+        "byte_start": 412,
+        "byte_end": 442
       },
       "definition": "rotate(A, O, 288deg)",
       "resolved": {
@@ -113,10 +113,10 @@
       "span": {
         "line": 18,
         "col": 1,
-        "byte_start": 453,
-        "byte_end": 490
+        "byte_start": 444,
+        "byte_end": 471
       },
-      "definition": "polygon(A, B, C, D, E)",
+      "definition": "polygon pent(A, B, C, D, E)",
       "resolved": {
         "kind": "polygon",
         "area": 21.398771616640953,
@@ -129,10 +129,10 @@
       "span": {
         "line": 20,
         "col": 1,
-        "byte_start": 492,
-        "byte_end": 528
+        "byte_start": 473,
+        "byte_end": 503
       },
-      "definition": "seg(A, C)",
+      "definition": "segment d1(A, C)",
       "resolved": {
         "kind": "segment",
         "length": 5.706339097770921
@@ -144,10 +144,10 @@
       "span": {
         "line": 21,
         "col": 1,
-        "byte_start": 529,
-        "byte_end": 565
+        "byte_start": 504,
+        "byte_end": 534
       },
-      "definition": "seg(B, E)",
+      "definition": "segment d2(B, E)",
       "resolved": {
         "kind": "segment",
         "length": 5.706339097770922
@@ -159,8 +159,8 @@
       "span": {
         "line": 24,
         "col": 1,
-        "byte_start": 645,
-        "byte_end": 672
+        "byte_start": 614,
+        "byte_end": 641
       },
       "definition": "intersect(d1, d2)",
       "resolved": {
@@ -174,10 +174,10 @@
       "span": {
         "line": 27,
         "col": 1,
-        "byte_start": 694,
-        "byte_end": 722
+        "byte_start": 663,
+        "byte_end": 684
       },
-      "definition": "tick(seg(A, B), 1)",
+      "definition": "tick t1(seg(A, B), 1)",
       "resolved": {
         "kind": "annotation"
       }
@@ -188,10 +188,10 @@
       "span": {
         "line": 28,
         "col": 1,
-        "byte_start": 723,
-        "byte_end": 751
+        "byte_start": 685,
+        "byte_end": 706
       },
-      "definition": "tick(seg(B, C), 1)",
+      "definition": "tick t2(seg(B, C), 1)",
       "resolved": {
         "kind": "annotation"
       }
@@ -202,10 +202,10 @@
       "span": {
         "line": 31,
         "col": 1,
-        "byte_start": 815,
-        "byte_end": 839
+        "byte_start": 770,
+        "byte_end": 786
       },
-      "definition": "label(A, $A$)",
+      "definition": "label lA(A, $A$)",
       "resolved": {
         "kind": "annotation"
       }
@@ -216,10 +216,10 @@
       "span": {
         "line": 32,
         "col": 1,
-        "byte_start": 840,
-        "byte_end": 864
+        "byte_start": 787,
+        "byte_end": 803
       },
-      "definition": "label(B, $B$)",
+      "definition": "label lB(B, $B$)",
       "resolved": {
         "kind": "annotation"
       }
@@ -230,10 +230,10 @@
       "span": {
         "line": 33,
         "col": 1,
-        "byte_start": 865,
-        "byte_end": 889
+        "byte_start": 804,
+        "byte_end": 820
       },
-      "definition": "label(C, $C$)",
+      "definition": "label lC(C, $C$)",
       "resolved": {
         "kind": "annotation"
       }
@@ -244,10 +244,10 @@
       "span": {
         "line": 34,
         "col": 1,
-        "byte_start": 890,
-        "byte_end": 914
+        "byte_start": 821,
+        "byte_end": 837
       },
-      "definition": "label(D, $D$)",
+      "definition": "label lD(D, $D$)",
       "resolved": {
         "kind": "annotation"
       }
@@ -258,10 +258,10 @@
       "span": {
         "line": 35,
         "col": 1,
-        "byte_start": 915,
-        "byte_end": 939
+        "byte_start": 838,
+        "byte_end": 854
       },
-      "definition": "label(E, $E$)",
+      "definition": "label lE(E, $E$)",
       "resolved": {
         "kind": "annotation"
       }
@@ -272,10 +272,10 @@
       "span": {
         "line": 36,
         "col": 1,
-        "byte_start": 940,
-        "byte_end": 976
+        "byte_start": 855,
+        "byte_end": 883
       },
-      "definition": "label(P, $P$)",
+      "definition": "label lP(P, $P$)",
       "resolved": {
         "kind": "annotation"
       }
@@ -286,13 +286,212 @@
       "span": {
         "line": 38,
         "col": 1,
-        "byte_start": 978,
-        "byte_end": 1073
+        "byte_start": 885,
+        "byte_end": 967
       },
-      "definition": "text_block($\\dfrac{AC}{AB} = \\varphi = \\dfrac{1+\\sqrt5}{2}$)",
+      "definition": "text_block phi($\\dfrac{AC}{AB} = \\varphi = \\dfrac{1+\\sqrt5}{2}$)",
       "resolved": {
         "kind": "annotation"
       }
+    }
+  ],
+  "diagram": [
+    {
+      "accepted": {
+        "height": 0.18508000000000002,
+        "role": "normal",
+        "width": 0.20636000000000002
+      },
+      "definition": {
+        "source": "label(A, $A$)",
+        "tree": {
+          "args": [
+            {
+              "id": "A",
+              "kind": "ref"
+            },
+            {
+              "kind": "text",
+              "segments": [
+                {
+                  "kind": "tex",
+                  "source": "A"
+                }
+              ]
+            }
+          ],
+          "kind": "call",
+          "name": "label"
+        }
+      },
+      "id": "lA",
+      "properties": []
+    },
+    {
+      "accepted": {
+        "height": 0.18396,
+        "role": "normal",
+        "width": 0.17612000000000003
+      },
+      "definition": {
+        "source": "label(B, $B$)",
+        "tree": {
+          "args": [
+            {
+              "id": "B",
+              "kind": "ref"
+            },
+            {
+              "kind": "text",
+              "segments": [
+                {
+                  "kind": "tex",
+                  "source": "B"
+                }
+              ]
+            }
+          ],
+          "kind": "call",
+          "name": "label"
+        }
+      },
+      "id": "lB",
+      "properties": []
+    },
+    {
+      "accepted": {
+        "height": 0.19068000000000004,
+        "role": "normal",
+        "width": 0.18256000000000003
+      },
+      "definition": {
+        "source": "label(C, $C$)",
+        "tree": {
+          "args": [
+            {
+              "id": "C",
+              "kind": "ref"
+            },
+            {
+              "kind": "text",
+              "segments": [
+                {
+                  "kind": "tex",
+                  "source": "C"
+                }
+              ]
+            }
+          ],
+          "kind": "call",
+          "name": "label"
+        }
+      },
+      "id": "lC",
+      "properties": []
+    },
+    {
+      "accepted": {
+        "height": 0.18396,
+        "role": "normal",
+        "width": 0.19964
+      },
+      "definition": {
+        "source": "label(D, $D$)",
+        "tree": {
+          "args": [
+            {
+              "id": "D",
+              "kind": "ref"
+            },
+            {
+              "kind": "text",
+              "segments": [
+                {
+                  "kind": "tex",
+                  "source": "D"
+                }
+              ]
+            }
+          ],
+          "kind": "call",
+          "name": "label"
+        }
+      },
+      "id": "lD",
+      "properties": []
+    },
+    {
+      "accepted": {
+        "height": 0.18396,
+        "role": "normal",
+        "width": 0.18004000000000003
+      },
+      "definition": {
+        "source": "label(E, $E$)",
+        "tree": {
+          "args": [
+            {
+              "id": "E",
+              "kind": "ref"
+            },
+            {
+              "kind": "text",
+              "segments": [
+                {
+                  "kind": "tex",
+                  "source": "E"
+                }
+              ]
+            }
+          ],
+          "kind": "call",
+          "name": "label"
+        }
+      },
+      "id": "lE",
+      "properties": []
+    },
+    {
+      "accepted": {
+        "height": 0.18396,
+        "role": "normal",
+        "width": 0.168
+      },
+      "definition": {
+        "source": "label(P, $P$)",
+        "tree": {
+          "args": [
+            {
+              "id": "P",
+              "kind": "ref"
+            },
+            {
+              "kind": "text",
+              "segments": [
+                {
+                  "kind": "tex",
+                  "source": "P"
+                }
+              ]
+            }
+          ],
+          "kind": "call",
+          "name": "label"
+        }
+      },
+      "id": "lP",
+      "properties": [
+        {
+          "name": "dir",
+          "value": {
+            "expr": {
+              "id": "N",
+              "kind": "ref"
+            },
+            "kind": "expr"
+          }
+        }
+      ]
     }
   ],
   "solve": {
@@ -300,6 +499,9 @@
     "equations": 0,
     "rank": 0,
     "attempts": 0,
+    "outer_search_attempts": 1,
+    "measurement_passes": 1,
+    "routing_attempts": 0,
     "accepted_steps": 0,
     "max_normalized_residual": 0.0,
     "final_damping": 0.001,
@@ -307,12 +509,13 @@
       "global_remaining": 2,
       "objects": [
         {
+          "class": "geometric",
           "id": "circ",
           "span": {
             "line": 9,
             "col": 1,
             "byte_start": 240,
-            "byte_end": 280
+            "byte_end": 271
           },
           "hint_settled_dofs": 2,
           "suggestion": "add a relation if unintended, e.g. on(circ, …) or vdist(…) == …"

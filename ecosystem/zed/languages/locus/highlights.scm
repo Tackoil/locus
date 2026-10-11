@@ -1,11 +1,11 @@
 (identifier) @variable
 (kind) @type
-["locus" "beta" "meta" "style" "class" "rel" "assert" "where" "free" "tol"] @keyword
+["locus" "beta" "meta" "style" "class" "fn" "group" "rel" "assert" "where" "free" "tol"] @keyword
 ["and" "or" "not"] @operator
 ["=" "==" "<" ">" "<=" ">=" "+" "-" "*" "/"] @operator
 (boolean) @boolean
 (number) @number
-["0" "5"] @number
+["0" "6"] @number
 (hex_color) @string.special
 (arrow_head) @operator
 (comment) @comment
@@ -20,6 +20,8 @@
 (property name: (identifier) @property)
 (meta_statement key: (identifier) @property)
 (class_declaration name: (identifier) @type)
+(function_declaration name: (identifier) @function)
+(instance_declaration function: (identifier) @function)
 (attribute name: (identifier) @attribute)
 (style_statement name: (identifier) @attribute)
 

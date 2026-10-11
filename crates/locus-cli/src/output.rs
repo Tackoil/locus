@@ -63,6 +63,16 @@ pub(crate) struct DescribeResult {
     pub command: &'static str,
     pub path: String,
     pub objects: Vec<ObjectReport>,
+    #[serde(skip_serializing_if = "std::collections::BTreeMap::is_empty")]
+    pub collections: std::collections::BTreeMap<String, locus_syntax::Collection>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub expansion_origins: Vec<locus_syntax::ExpansionOrigin>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub diagram: Vec<serde_json::Value>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub relations: Vec<locus_syntax::json::ExprNode>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub relation_properties: Vec<locus_syntax::json::RelationProperties>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub solve: Option<SolveReport>,
 }
@@ -73,6 +83,8 @@ pub(crate) struct ObjectReport {
     pub kind: String,
     pub span: Span,
     pub definition: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub origin: Option<locus_syntax::ExpansionOrigin>,
     pub resolved: ResolvedValue,
 }
 
@@ -179,14 +191,54 @@ pub(crate) struct SolveReport {
     pub equations: usize,
     pub rank: usize,
     pub attempts: usize,
+    pub outer_search_attempts: usize,
+    pub measurement_passes: usize,
+    pub routing_attempts: usize,
     pub accepted_steps: usize,
     pub max_normalized_residual: f64,
     pub final_damping: f64,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub settling: Option<SettlingReport>,
     pub dof: DofReport,
     pub branch_resolutions: Vec<BranchReport>,
     pub hint_displacements: Vec<HintReport>,
     pub redundant_relations: Vec<RelationReport>,
     pub relation_residuals: Vec<RelationReport>,
+}
+
+#[derive(Clone, Debug, Serialize)]
+pub(crate) struct SettlingReport {
+    pub settling_complete: bool,
+    pub exit_reason: String,
+    pub projected_gradient: f64,
+    pub steps: usize,
+    pub accepted_moves: usize,
+    pub working_set_pivots: usize,
+    pub model_rebuilds: usize,
+    pub evaluations: usize,
+    pub line_search_evaluations: usize,
+    pub restoration_steps: usize,
+    pub active_layout_requirements: Vec<Span>,
+    pub active_remaining: usize,
+}
+
+impl From<&locus_core::solve::SettlingSummary> for SettlingReport {
+    fn from(s: &locus_core::solve::SettlingSummary) -> Self {
+        Self {
+            settling_complete: s.settling_complete,
+            exit_reason: s.exit_reason.clone(),
+            projected_gradient: s.projected_gradient,
+            steps: s.steps,
+            accepted_moves: s.accepted_moves,
+            working_set_pivots: s.working_set_pivots,
+            model_rebuilds: s.model_rebuilds,
+            evaluations: s.evaluations,
+            line_search_evaluations: s.line_search_evaluations,
+            restoration_steps: s.restoration_steps,
+            active_layout_requirements: s.active_layout_requirements.clone(),
+            active_remaining: s.active_remaining,
+        }
+    }
 }
 
 #[derive(Clone, Debug, Serialize)]
@@ -197,6 +249,7 @@ pub(crate) struct DofReport {
 
 #[derive(Clone, Debug, Serialize)]
 pub(crate) struct ObjectDofReport {
+    pub class: String,
     pub id: String,
     pub span: Span,
     pub hint_settled_dofs: usize,
@@ -397,6 +450,22 @@ fn human_describe(result: &DescribeResult) -> String {
             object.span.col,
             object.definition,
             resolved_summary(&object.resolved)
+        );
+    }
+    for record in &result.diagram {
+        let _ = write!(
+            output,
+            "\n  layout {}: {}",
+            record["id"].as_str().unwrap_or_default(),
+            record["accepted"]
+        );
+    }
+    for collection in result.collections.values() {
+        let _ = write!(
+            output,
+            "\n  collection {}: {}",
+            collection.id,
+            collection.members.join(", ")
         );
     }
     if let Some(solve) = &result.solve {

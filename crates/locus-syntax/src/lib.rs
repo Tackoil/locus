@@ -6,6 +6,7 @@
 
 pub mod ast;
 pub mod diag;
+pub mod expand;
 pub mod format;
 pub mod json;
 pub mod lexer;
@@ -14,10 +15,10 @@ pub mod span;
 pub mod vocabulary;
 
 /// Mandatory first line of every Locus source file.
-pub const FILE_HEADER: &str = "locus 0 beta 5";
+pub const FILE_HEADER: &str = "locus 0 beta 6";
 
 /// Version value emitted by the JSON interchange format.
-pub const FORMAT_VERSION: &str = "0 beta 5";
+pub const FORMAT_VERSION: &str = "0 beta 6";
 
 pub use ast::*;
 pub use diag::Diagnostic;
@@ -32,4 +33,8 @@ pub use vocabulary::{
     NUMERIC_FUNCTION_NAMES, PREDICATE_NAMES, PROP_NAMES, PROPERTY_NAMES, STATEMENT_NAMES,
     STYLE_PRESET_NAMES, STYLE_PROP_NAMES, UNIT_NAMES, call_names_for_property, constructor_kind,
     enum_values_for_property, prop_names_for_kind,
+};
+
+pub use expand::{
+    Collection, CollectionKind, ExpandOutput, ExpansionOrigin, InvocationOrigin, expand,
 };

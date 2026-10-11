@@ -93,7 +93,8 @@ enum Replacement {
 fn statement_replacements(file: &File, lines: &[&str]) -> BTreeMap<usize, Replacement> {
     let mut replacements = BTreeMap::new();
     if let Some(line) = header_line(lines) {
-        replacements.insert(line, Replacement::Code(FILE_HEADER.to_owned()));
+        let header = split_comment(lines[line - 1]).0.trim();
+        replacements.insert(line, Replacement::Code(header.to_owned()));
     }
     for statement in &file.statements {
         add_statement_replacements(statement, &mut replacements);
@@ -112,7 +113,20 @@ fn add_statement_replacements(
     statement: &Statement,
     replacements: &mut BTreeMap<usize, Replacement>,
 ) {
+    if let Statement::Fn(function) = statement {
+        replacements.insert(
+            function.span.line,
+            Replacement::Code(format_fn_header(function)),
+        );
+        for member in &function.body {
+            add_statement_replacements(member, replacements);
+        }
+        return;
+    }
     match statement {
+        Statement::Op(op) if op.is_constructor_declaration() => {
+            replacements.insert(op.span.line, Replacement::Code(format_op(op, None)));
+        }
         Statement::Op(op) => {
             let (prefix, suffix) = format_op_parts(op);
             replacements.insert(op.span.line, Replacement::Op { prefix, suffix });
@@ -168,9 +182,13 @@ fn format_source_line(
     replacements: &BTreeMap<usize, Replacement>,
 ) -> String {
     let (original_code, comment) = split_comment(original);
+    let indent: String = original_code
+        .chars()
+        .take_while(|ch| ch.is_whitespace())
+        .collect();
     let code = match replacements.get(&line_number) {
-        Some(Replacement::Code(code)) => code.clone(),
-        Some(Replacement::Op { prefix, suffix }) => format!("{prefix}{suffix}"),
+        Some(Replacement::Code(code)) => format!("{indent}{code}"),
+        Some(Replacement::Op { prefix, suffix }) => format!("{indent}{prefix}{suffix}"),
         None => original_code.trim_end().to_owned(),
     };
     join_comment(code, comment)
@@ -228,24 +246,99 @@ fn push_aligned_ops(statements: &[Statement], start: usize, lines: &mut Vec<Stri
 }
 
 fn format_statement(statement: &Statement, alignment: Option<usize>) -> Vec<String> {
+    if let Statement::Fn(function) = statement {
+        return format_fn(function);
+    }
+    if let Statement::Group(group) = statement {
+        return vec![format!(
+            "group {}({})",
+            group.name.name,
+            format_expr_list(&group.members)
+        )];
+    }
+    if let Statement::Call(call) = statement {
+        return vec![format_invocation(call)];
+    }
+    if let Statement::Class(class) = statement {
+        return vec![format_class(class)];
+    }
+    if let Statement::Meta(entry) = statement {
+        return vec![format_meta_entry(entry)];
+    }
+    if let Statement::Style(style) = statement {
+        return vec![format!("style {}", style.name.name)];
+    }
     match statement {
         Statement::Op(op) => vec![format_op(op, alignment)],
-        Statement::Rel(rel) => vec![format!("rel {}", format_expr(&rel.expr))],
+        Statement::Rel(rel) => vec![format_rel(rel)],
         Statement::Assert(value) => vec![format_assert(value)],
-        Statement::Meta(entry) => vec![format_meta_entry(entry)],
-        Statement::Style(style) => vec![format!("style {}", style.name.name)],
-        Statement::Class(class) => vec![format_class(class)],
+        _ => unreachable!(),
     }
+}
+
+fn format_rel(rel: &crate::ast::RelStmt) -> String {
+    let mut line = format!("rel {}", format_expr(&rel.expr));
+    if !rel.props.items.is_empty() {
+        line.push(' ');
+        line.push_str(&format_props(&rel.props));
+    }
+    line
+}
+
+fn format_fn_header(function: &crate::ast::FnStmt) -> String {
+    let params = function
+        .params
+        .iter()
+        .map(|param| param.name.as_str())
+        .collect::<Vec<_>>()
+        .join(", ");
+    format!("fn {}({params}) {{", function.name.name)
+}
+
+fn format_fn(function: &crate::ast::FnStmt) -> Vec<String> {
+    let mut lines = vec![format_fn_header(function)];
+    for statement in &function.body {
+        lines.extend(
+            format_statement(statement, None)
+                .into_iter()
+                .map(|line| format!("    {line}")),
+        );
+    }
+    lines.push("}".to_owned());
+    lines
+}
+
+fn format_invocation(call: &crate::ast::CallStmt) -> String {
+    let mut line = format!(
+        "{} {}({})",
+        call.function.name,
+        call.id.name,
+        format_expr_list(&call.args)
+    );
+    if let Some(attr) = &call.attr {
+        let _ = write!(line, " [{}]", attr.name.name);
+    }
+    line
 }
 
 fn format_op(op: &OpStmt, alignment: Option<usize>) -> String {
     let (prefix, suffix) = format_op_parts(op);
+    if op.is_constructor_declaration() {
+        return format!("{prefix}{suffix}");
+    }
     let padding = alignment.map_or(1, |width| width.saturating_sub(prefix.chars().count()) + 1);
     format!("{}{}= {}", prefix, " ".repeat(padding), suffix)
 }
 
 fn format_op_parts(op: &OpStmt) -> (String, String) {
-    let mut suffix = format_constructor(&op.ctor);
+    let mut suffix = if op.is_constructor_declaration() {
+        let Constructor::Call { args, .. } = &op.ctor else {
+            unreachable!()
+        };
+        format!("({})", format_expr_list(args))
+    } else {
+        format_constructor(&op.ctor)
+    };
     if !op.where_clauses.is_empty() {
         suffix.push_str(" where { ");
         suffix.push_str(&format_expr_list(&op.where_clauses));
@@ -468,53 +561,4 @@ fn finish_lines(mut lines: Vec<String>) -> String {
     }
     lines.push(String::new());
     lines.join("\n")
-}
-
-#[cfg(test)]
-mod tests {
-    use super::{format, header_line};
-    use crate::parse;
-
-    #[test]
-    fn aligns_ops_and_preserves_comments() {
-        let source = "// lead\nlocus 0 beta 5\npoint A=point()// hint\nsegment long_name=seg(A,A)\n\nassert true == true\n";
-        let output = format(source);
-        assert!(output.diagnostics.is_empty(), "{:#?}", output.diagnostics);
-        assert_eq!(
-            output.source,
-            "// lead\nlocus 0 beta 5\npoint A           = point()  // hint\nsegment long_name = seg(A, A)\n\nassert true == true\n"
-        );
-    }
-
-    #[test]
-    fn is_idempotent_with_tex_and_comment_markers() {
-        let source = "locus 0 beta 5\ntext_block t=text_block(\"https://x/$a$\")// keep\n";
-        let once = format(source).source;
-        let twice = format(&once).source;
-        assert_eq!(once, twice);
-    }
-
-    #[test]
-    fn header_lookup_requires_a_complete_keyword() {
-        assert_eq!(header_line(&["locusfoo 2", "locus 0 beta 5"]), Some(2));
-    }
-
-    #[test]
-    fn preserves_statements_from_bare_carriage_return_lines() {
-        let source = "locus 0 beta 5\rpoint A = point()\r";
-        let formatted = format(source);
-        assert!(
-            formatted.diagnostics.is_empty(),
-            "{:#?}",
-            formatted.diagnostics
-        );
-        assert_eq!(formatted.source, "locus 0 beta 5\npoint A = point()\n");
-        let reparsed = parse(&formatted.source);
-        assert!(
-            reparsed.diagnostics.is_empty(),
-            "{:#?}",
-            reparsed.diagnostics
-        );
-        assert_eq!(reparsed.file.statements.len(), 1);
-    }
 }

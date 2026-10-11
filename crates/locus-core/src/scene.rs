@@ -3,7 +3,7 @@
 use indexmap::IndexMap;
 use locus_syntax::{File, HeadKind, Ident, Span, TextValue};
 
-use crate::eval::{EvalError, evaluate};
+use crate::eval::EvalError;
 use crate::geom::{Arc, BBox, Bspline, Circle, Ellipse, Line, Point, Polygon, Ray, Segment};
 use crate::solve::SolveSummary;
 
@@ -136,11 +136,32 @@ pub enum TextBlockPlacement {
     },
 }
 
+/// Accepted continuous placement of text on a logical or retained route.
+#[derive(Clone, Debug, PartialEq)]
+pub struct PathLabel {
+    /// Expanded path declaration id.
+    pub path: String,
+    /// Solved route parameter within the preferred region.
+    pub parameter: f64,
+    /// Solved clearance from the route to the text box.
+    pub offset: f64,
+    /// Frozen page side.
+    pub side: crate::geom::route::RouteSide,
+    /// Allowed source, middle, or target parameter interval.
+    pub region: (f64, f64),
+    /// Preferred candidate: midpoint, lower endpoint, or upper endpoint.
+    pub candidate: usize,
+}
+
 /// A resolved annotation whose final position remains layout's responsibility.
 #[derive(Clone, Debug, PartialEq)]
 pub enum AnnotationSpec {
     /// Text attached to an anchor.
     Label {
+        /// Accepted route attachment, when this text follows a path.
+        path: Option<PathLabel>,
+        /// Solve-time measured bounds for independently placed content.
+        bounds: Option<BBox>,
         /// Geometry or deferred layout anchor.
         anchor: AnchorSpec,
         /// Segmented source text.
@@ -152,6 +173,10 @@ pub enum AnnotationSpec {
     },
     /// Directed annotation between two anchors.
     Arrow {
+        /// Combined accepted attached-caption bounds, excluded from logical length.
+        label_bounds: Option<BBox>,
+        /// Accepted logical route, including internal continuous parameters.
+        route: Option<crate::geom::route::Route>,
         /// Start anchor.
         from: AnchorSpec,
         /// End anchor.
@@ -232,7 +257,8 @@ impl ResolvedObject {
             Self::Line(line) => Some(BBox::for_line(*line)),
             Self::Ray(ray) => Some(BBox::for_ray(*ray)),
             Self::Segment(segment) => Some(BBox::for_segment(*segment)),
-            Self::Num(_) | Self::Angle(_) | Self::Annotation(_) => None,
+            Self::Annotation(annotation) => annotation_bbox(annotation),
+            Self::Num(_) | Self::Angle(_) => None,
             Self::Circle(_)
             | Self::Arc(_)
             | Self::Ellipse(_)
@@ -259,6 +285,29 @@ impl ResolvedObject {
     }
 }
 
+fn annotation_bbox(annotation: &AnnotationSpec) -> Option<BBox> {
+    match annotation {
+        AnnotationSpec::Label { bounds, .. } => *bounds,
+        AnnotationSpec::Arrow {
+            route: Some(route),
+            label_bounds,
+            ..
+        } => Some(label_bounds.map_or_else(|| route.bbox(), |bounds| route.bbox().union(bounds))),
+        AnnotationSpec::Arrow {
+            from: AnchorSpec::Point(from),
+            to: AnchorSpec::Point(to),
+            bend,
+            label_bounds,
+            ..
+        } => crate::geom::route::Route::direct(*from, *to, *bend)
+            .ok()
+            .map(|route| {
+                label_bounds.map_or_else(|| route.bbox(), |bounds| route.bbox().union(bounds))
+            }),
+        _ => None,
+    }
+}
+
 /// Complete derived-tier output in file declaration order.
 #[derive(Clone, Debug, PartialEq)]
 pub struct ResolvedScene {
@@ -270,6 +319,10 @@ pub struct ResolvedScene {
 
 /// Result of direct evaluation or relational solving.
 #[derive(Clone, Debug, PartialEq)]
+#[allow(
+    clippy::large_enum_variant,
+    reason = "retain the public evaluation variants without allocating solver metadata for every scene"
+)]
 pub enum Evaluation {
     /// All declarations were derived and resolved.
     Resolved(ResolvedScene),
@@ -285,8 +338,16 @@ pub enum Evaluation {
 /// Parsed source together with its latest evaluation state.
 #[derive(Clone, Debug, PartialEq)]
 pub struct Scene {
-    /// Parsed relational program.
+    /// Renderer measurements and pinned scene-space layout metrics.
+    pub inputs: crate::inputs::EvaluationInputs,
+    /// Editable parsed program, including function definitions and named calls.
+    pub source_file: File,
+    /// Expanded relational program in declaration order.
     pub file: File,
+    /// Normalized groups and owned instance members retained by expansion.
+    pub collections: std::collections::BTreeMap<String, locus_syntax::Collection>,
+    /// Body spans and invocation chains, aligned with the expanded statements.
+    pub origins: Vec<locus_syntax::ExpansionOrigin>,
     /// Latest direct-evaluation result.
     pub evaluation: Evaluation,
 }
@@ -294,13 +355,63 @@ pub struct Scene {
 impl Scene {
     /// Evaluates a parsed file and creates a scene.
     pub fn new(file: File) -> Result<Self, EvalError> {
-        let evaluation = evaluate(&file)?;
-        Ok(Self { file, evaluation })
+        Self::with_inputs(file, crate::inputs::EvaluationInputs::default())
+    }
+
+    /// Evaluates a source program using renderer-supplied measurements.
+    pub fn with_inputs(
+        file: File,
+        inputs: crate::inputs::EvaluationInputs,
+    ) -> Result<Self, EvalError> {
+        let _scene = crate::metrics::span("evaluate_scene");
+        let expanded = crate::program::expand_program(&file)?;
+        let evaluation =
+            crate::eval::evaluate_flat_with_inputs(&expanded.file, &inputs, &expanded.collections)
+                .map_err(|error| crate::program::annotate_error(error, &expanded))?;
+        Ok(Self {
+            inputs,
+            source_file: file,
+            file: expanded.file,
+            collections: expanded.collections,
+            origins: expanded.origins,
+            evaluation,
+        })
+    }
+
+    /// Builds relation-aware initialization geometry for discrete layout recovery.
+    ///
+    /// This scene is explicitly unsolved: it carries no solve summary, and its
+    /// geometry must never be accepted as satisfying authored relations. Consumers
+    /// may derive clipping/routing choices and then run the ordinary solver.
+    ///
+    /// # Errors
+    /// Returns source/measurement or initialization failures, without solving.
+    pub fn layout_seed_with_inputs(
+        file: File,
+        inputs: crate::inputs::EvaluationInputs,
+    ) -> Result<Self, EvalError> {
+        let expanded = crate::program::expand_program(&file)?;
+        let prepared = crate::eval::PreparedEvaluation::with_inputs(
+            &expanded.file,
+            &inputs,
+            &expanded.collections,
+        )?;
+        let resolved = crate::solve::layout_seed(&prepared)
+            .map_err(|error| crate::program::annotate_error(error, &expanded))?;
+        Ok(Self {
+            inputs,
+            source_file: file,
+            file: expanded.file,
+            collections: expanded.collections,
+            origins: expanded.origins,
+            evaluation: Evaluation::Resolved(resolved),
+        })
     }
 
     /// Recomputes the scene from the retained parsed file.
     pub fn recompute(&mut self) -> Result<&Evaluation, EvalError> {
-        self.evaluation = evaluate(&self.file)?;
+        let updated = Self::with_inputs(self.source_file.clone(), self.inputs.clone())?;
+        *self = updated;
         Ok(&self.evaluation)
     }
 

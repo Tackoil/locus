@@ -2,10 +2,11 @@
 
 use std::fmt::Write as _;
 
-use locus_syntax::CONSTRUCTOR_SIGNATURES;
+use locus_syntax::{CONSTRUCTOR_SIGNATURES, File, Statement};
 use lsp_types::{Hover, HoverContents, HoverParams, MarkupContent, MarkupKind};
 
-use super::target::{Target, at, class_definition, object_definition};
+use super::scope;
+use super::target::{Target, at, class_definition};
 use crate::state::State;
 
 pub(crate) fn handle(state: &State, params: &HoverParams) -> Option<Hover> {
@@ -17,18 +18,19 @@ pub(crate) fn handle(state: &State, params: &HoverParams) -> Option<Hover> {
     let markdown = state.hover_markup() == &MarkupKind::Markdown;
     let (contents, span) = match target {
         Target::Object(id) => {
-            let op = object_definition(&analysis.file, &id.name)?;
-            (object_hover(document, op, markdown), id.span)
+            let value = scope::resolve(&analysis.file, &id.name, byte)?;
+            (binding_hover(document, value, markdown), id.span)
         }
-        Target::Class(id) => {
-            let class = class_definition(&analysis.file, &id.name)?;
-            let source = document.source_for_span(class.span).trim();
-            (class_hover(&id.name, source, markdown), id.span)
+        Target::Member(expr, id) => {
+            let value = scope::resolve(&analysis.file, &scope::qualified_name(expr)?, byte)?;
+            (binding_hover(document, value, markdown), id.span)
         }
+        Target::Class(id) => (
+            style_hover(document, &analysis.file, id, byte, markdown)?,
+            id.span,
+        ),
         Target::Callable(id) => {
-            let signature = CONSTRUCTOR_SIGNATURES
-                .iter()
-                .find_map(|(name, signature)| (*name == id.name).then_some(*signature))?;
+            let signature = callable_signature(&analysis.file, &id.name)?;
             let value = if markdown {
                 format!("`{signature}`")
             } else {
@@ -44,6 +46,62 @@ pub(crate) fn handle(state: &State, params: &HoverParams) -> Option<Hover> {
         }),
         range: Some(document.span_to_range(span)),
     })
+}
+
+fn style_hover(
+    document: &crate::document::Document,
+    file: &File,
+    id: &locus_syntax::Ident,
+    byte: usize,
+    markdown: bool,
+) -> Option<String> {
+    if let Some(value @ scope::Binding::Parameter(_)) = scope::resolve(file, &id.name, byte) {
+        return Some(binding_hover(document, value, markdown));
+    }
+    let class = class_definition(file, &id.name)?;
+    Some(class_hover(
+        &id.name,
+        document.source_for_span(class.span).trim(),
+        markdown,
+    ))
+}
+
+fn binding_hover(
+    document: &crate::document::Document,
+    value: scope::Binding<'_>,
+    markdown: bool,
+) -> String {
+    if let scope::Binding::Object(op) = value {
+        return object_hover(document, op, markdown);
+    }
+    let signature = format!("{} {}", value.detail(), value.id().name);
+    let source = document.source_for_span(value.span()).trim();
+    if markdown {
+        format!("`{signature}`\n\n```locus\n{source}\n```")
+    } else {
+        format!("{signature}\n\n{source}")
+    }
+}
+
+fn callable_signature(file: &File, name: &str) -> Option<String> {
+    if let Some(function) = file
+        .statements
+        .iter()
+        .find_map(|statement| match statement {
+            Statement::Fn(function) if function.name.name == name => Some(function),
+            _ => None,
+        })
+    {
+        let params = function
+            .params
+            .iter()
+            .map(|id| id.name.as_str())
+            .collect::<Vec<_>>();
+        return Some(format!("fn {name}({})", params.join(", ")));
+    }
+    CONSTRUCTOR_SIGNATURES
+        .iter()
+        .find_map(|(candidate, signature)| (*candidate == name).then(|| (*signature).to_owned()))
 }
 
 fn object_hover(

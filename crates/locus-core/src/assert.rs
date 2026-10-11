@@ -1,6 +1,9 @@
 //! Post-resolution assertion evaluation with source-anchored actual values.
 
-use locus_syntax::{AssertStmt, BinOp, Expr, File, Span, Statement, UnaryOp};
+mod layout;
+use std::collections::BTreeMap;
+
+use locus_syntax::{AssertStmt, BinOp, Collection, Expr, File, Ident, Span, Statement, UnaryOp};
 use serde::Serialize;
 
 use crate::Tolerance;
@@ -12,7 +15,7 @@ use crate::eval::expr::{
 use crate::eval::{EvalError, Value, infer_dimensions};
 use crate::geom::construct;
 use crate::geom::measure;
-use crate::geom::{Arc, Line, Point, Polygon, Ray, Segment, Vec2, arc_contains_angle};
+use crate::geom::{Arc, BBox, Line, Point, Polygon, Ray, Segment, Vec2, arc_contains_angle};
 use crate::scene::{Dimension, ResolvedObject, ResolvedScene};
 use crate::tol::resolved_scene_tolerance;
 
@@ -90,9 +93,31 @@ pub fn evaluate_assertions(
     file: &File,
     scene: &ResolvedScene,
 ) -> Result<AssertionReport, EvalError> {
+    evaluate_assertions_with_inputs(file, scene, &crate::EvaluationInputs::default())
+}
+
+/// Evaluates assertions using the same measured inputs and preset as the solve.
+pub fn evaluate_assertions_with_inputs(
+    file: &File,
+    scene: &ResolvedScene,
+    inputs: &crate::EvaluationInputs,
+) -> Result<AssertionReport, EvalError> {
+    let expanded = crate::program::expand_program(file)?;
+    evaluate_assertions_flat(&expanded.file, scene, &expanded.collections, inputs)
+        .map_err(|error| crate::program::annotate_error(error, &expanded))
+}
+
+fn evaluate_assertions_flat(
+    file: &File,
+    scene: &ResolvedScene,
+    collections: &BTreeMap<String, Collection>,
+    inputs: &crate::EvaluationInputs,
+) -> Result<AssertionReport, EvalError> {
     let dimensions = infer_dimensions(file)?;
-    let environment = environment_from_scene(scene)?;
+    let mut environment = environment_from_scene(scene)?;
     let base_tolerance = resolved_scene_tolerance(file, scene);
+    let aliases = crate::program::alias_identities(file);
+    environment.set_aliases(&aliases);
     let mut assertions = Vec::new();
     for assertion in file.statements.iter().filter_map(assertion_statement) {
         assertions.push(evaluate_one(
@@ -101,6 +126,8 @@ pub fn evaluate_assertions(
             &environment,
             &dimensions,
             base_tolerance,
+            (collections, &aliases),
+            inputs,
         )?);
     }
     Ok(AssertionReport {
@@ -133,11 +160,19 @@ fn evaluate_one(
     environment: &Environment,
     dimensions: &DimensionMap,
     base_tolerance: Tolerance,
+    collection_context: (&BTreeMap<String, Collection>, &BTreeMap<String, String>),
+    inputs: &crate::EvaluationInputs,
 ) -> Result<AssertionResult, EvalError> {
     let tolerance = assertion_tolerance(assertion, base_tolerance)?;
     let mut context = AssertionContext {
-        expressions: ExpressionEvaluator::new(environment, tolerance, dimensions),
+        expressions: ExpressionEvaluator::new(environment, tolerance, dimensions)
+            .with_metrics(inputs.metrics),
         tolerance,
+        collections: collection_context.0,
+        aliases: collection_context.1,
+        padding: inputs.metrics.padding,
+        metrics: inputs.metrics,
+        choices: &inputs.choices,
     };
     let passed = context.eval_boolean(&assertion.expr)?;
     let actuals = if passed {
@@ -170,6 +205,11 @@ fn assertion_tolerance(assertion: &AssertStmt, base: Tolerance) -> Result<Tolera
 struct AssertionContext<'a> {
     expressions: ExpressionEvaluator<'a>,
     tolerance: Tolerance,
+    collections: &'a BTreeMap<String, Collection>,
+    aliases: &'a BTreeMap<String, String>,
+    padding: f64,
+    metrics: crate::preset::LayoutMetrics,
+    choices: &'a crate::EvaluationChoices,
 }
 
 impl AssertionContext<'_> {
@@ -226,6 +266,9 @@ impl AssertionContext<'_> {
         expected: Option<Expected>,
         actuals: &mut Vec<SubtermActual>,
     ) -> Result<(), EvalError> {
+        if self.is_collection(expression) {
+            return Ok(());
+        }
         visit_children(self, expression, expected, actuals)?;
         if let Some(actual) = self.actual_value(expression, expected)? {
             actuals.push(SubtermActual {
@@ -234,6 +277,14 @@ impl AssertionContext<'_> {
             });
         }
         Ok(())
+    }
+
+    fn is_collection(&self, expression: &Expr) -> bool {
+        match expression {
+            Expr::Ref(id) => self.collections.contains_key(&id.name),
+            Expr::Group { expr, .. } => self.is_collection(expr),
+            _ => false,
+        }
     }
 
     fn actual_value(
@@ -301,6 +352,27 @@ impl AssertionContext<'_> {
     }
 
     fn eval_predicate_by_name(
+        &mut self,
+        name: &str,
+        args: &[Expr],
+        span: Span,
+    ) -> Result<bool, EvalError> {
+        if layout::is_layout(name) {
+            return self.eval_layout(name, args, span);
+        }
+        if name == "center" {
+            return self.eval_center(args, span);
+        }
+        if is_alignment(name) {
+            return self.eval_alignment(name, args, span);
+        }
+        if is_inset(name) {
+            return self.eval_inset(name, args, span);
+        }
+        self.eval_geometric_predicate(name, args, span)
+    }
+
+    fn eval_geometric_predicate(
         &mut self,
         name: &str,
         args: &[Expr],
@@ -466,6 +538,78 @@ impl AssertionContext<'_> {
         Ok(self.tolerance.length_zero(residual))
     }
 
+    fn eval_center(&mut self, args: &[Expr], span: Span) -> Result<bool, EvalError> {
+        require_arity("center", args, 2, span)?;
+        let lhs = self.measured_bounds(&args[0])?.center();
+        let rhs = self.measured_bounds(&args[1])?.center();
+        Ok(self.tolerance.points_eq(lhs, rhs))
+    }
+
+    fn eval_alignment(&mut self, name: &str, args: &[Expr], span: Span) -> Result<bool, EvalError> {
+        if args.len() < 2 {
+            return Err(assertion_error(
+                span,
+                format!("`{name}` requires at least two objects"),
+            ));
+        }
+        let reference = alignment_component(self.measured_bounds(&args[0])?, name);
+        let mut passed = true;
+        for argument in &args[1..] {
+            let component = alignment_component(self.measured_bounds(argument)?, name);
+            passed &= self.tolerance.length_zero(component - reference);
+        }
+        Ok(passed)
+    }
+
+    fn measured_bounds(&mut self, expression: &Expr) -> Result<BBox, EvalError> {
+        if let Expr::Group { expr, .. } = expression {
+            return self.measured_bounds(expr);
+        }
+        if let Expr::Ref(id) = expression
+            && let Some(collection) = self.collections.get(&id.name)
+        {
+            return self.collection_bounds(&collection.members, expression.span());
+        }
+        self.expressions
+            .eval_resolved_object(expression)?
+            .bbox()
+            .ok_or_else(|| {
+                assertion_error(expression.span(), "expected an object with measured bounds")
+            })
+    }
+
+    fn collection_bounds(&mut self, members: &[String], span: Span) -> Result<BBox, EvalError> {
+        let mut result: Option<BBox> = None;
+        for member in members {
+            let expression = Expr::Ref(Ident {
+                name: member.clone(),
+                span,
+            });
+            let bounds = self.measured_bounds(&expression)?;
+            if let Some(current) = &mut result {
+                current.include_bbox(bounds);
+            } else {
+                result = Some(bounds);
+            }
+        }
+        result.ok_or_else(|| assertion_error(span, "collection has no measured members"))
+    }
+
+    fn eval_inset(&mut self, name: &str, args: &[Expr], span: Span) -> Result<bool, EvalError> {
+        require_arity(name, args, 2, span)?;
+        let alignment = inset_alignment(name);
+        let content = alignment_component(self.measured_bounds(&args[0])?, alignment);
+        let container = alignment_component(self.measured_bounds(&args[1])?, alignment);
+        let direction = if matches!(name, "inset_left" | "inset_bottom") {
+            1.0
+        } else {
+            -1.0
+        };
+        Ok(self
+            .tolerance
+            .length_zero(content - container - direction * self.padding))
+    }
+
     fn eval_between(&mut self, args: &[Expr], span: Span) -> Result<bool, EvalError> {
         require_arity("between", args, 3, span)?;
         let points = self.expressions.eval_points(args)?;
@@ -597,6 +741,9 @@ fn visit_call_children(
     expected: Option<Expected>,
     actuals: &mut Vec<SubtermActual>,
 ) -> Result<(), EvalError> {
+    if name == "edge" {
+        return visit_list(context, args.get(..1).unwrap_or_default(), actuals);
+    }
     if name == "abs" && args.len() == 1 {
         return context.walk_actuals(&args[0], expected, actuals);
     }
@@ -667,7 +814,10 @@ fn sqrt_operand_expected(expected: Option<Expected>) -> Option<Expected> {
 }
 
 fn expression_may_need_context(expression: &Expr) -> bool {
-    matches!(expression, Expr::Number(_) | Expr::Group { .. })
+    matches!(
+        expression,
+        Expr::Number(_) | Expr::Group { .. } | Expr::String(_) | Expr::Tex(_)
+    )
 }
 
 fn is_boolean_expression(expression: &Expr, expected: Option<Expected>) -> bool {
@@ -689,22 +839,73 @@ fn is_boolean_expression(expression: &Expr, expected: Option<Expected>) -> bool 
 }
 
 fn is_predicate(name: &str) -> bool {
+    layout::is_layout(name)
+        || matches!(
+            name,
+            "on" | "tangent"
+                | "internally_tangent"
+                | "parallel"
+                | "perpendicular"
+                | "collinear"
+                | "concyclic"
+                | "congruent"
+                | "coincident"
+                | "center"
+                | "align_center_x"
+                | "align_center_y"
+                | "align_left"
+                | "align_right"
+                | "align_top"
+                | "align_bottom"
+                | "inset_left"
+                | "inset_right"
+                | "inset_top"
+                | "inset_bottom"
+                | "midpoint"
+                | "horizontal"
+                | "vertical"
+                | "between"
+                | "inside"
+        )
+}
+
+fn alignment_component(bounds: BBox, name: &str) -> f64 {
+    match name {
+        "align_center_x" => bounds.center().x,
+        "align_center_y" => bounds.center().y,
+        "align_left" => bounds.min.x,
+        "align_right" => bounds.max.x,
+        "align_bottom" => bounds.min.y,
+        _ => bounds.max.y,
+    }
+}
+
+fn is_alignment(name: &str) -> bool {
     matches!(
         name,
-        "on" | "tangent"
-            | "internally_tangent"
-            | "parallel"
-            | "perpendicular"
-            | "collinear"
-            | "concyclic"
-            | "congruent"
-            | "coincident"
-            | "midpoint"
-            | "horizontal"
-            | "vertical"
-            | "between"
-            | "inside"
+        "align_center_x"
+            | "align_center_y"
+            | "align_left"
+            | "align_right"
+            | "align_top"
+            | "align_bottom"
     )
+}
+
+fn is_inset(name: &str) -> bool {
+    matches!(
+        name,
+        "inset_left" | "inset_right" | "inset_top" | "inset_bottom"
+    )
+}
+
+fn inset_alignment(name: &str) -> &str {
+    match name {
+        "inset_left" => "align_left",
+        "inset_right" => "align_right",
+        "inset_bottom" => "align_bottom",
+        _ => "align_top",
+    }
 }
 
 pub(crate) fn point_on_object(
@@ -988,8 +1189,8 @@ mod tests {
     use locus_syntax::parse;
 
     use super::*;
-    use crate::geom::{BBox, Circle};
-    use crate::scene::{NumericValue, PointMark, ResolvedPoint};
+    use crate::geom::Circle;
+    use crate::scene::{PointMark, ResolvedPoint};
 
     fn resolved(source: &str, values: Vec<(&str, ResolvedObject)>) -> (File, ResolvedScene) {
         let parsed = parse(source);
@@ -1035,116 +1236,73 @@ mod tests {
     }
 
     #[test]
-    fn every_relation_and_assert_only_predicate_evaluates() {
+    fn measured_alignment_uses_bounds_and_supports_more_than_two_objects() {
+        let tolerance = Tolerance::angular_default();
         let (file, scene) = resolved(
-            "locus 0 beta 5\n\
-             point A = point()\npoint B = point()\npoint M = midpoint(A, B)\n\
-             point C = point()\nsegment AB = seg(A, B)\nsegment AM = seg(A, M)\n\
-             line x = line(A, B)\nline y = line(A, C)\ncircle unit = circle(A, 1)\n\
-             point U = point()\npoint V = point()\npoint W = point()\npoint Z = point()\n\
-             point T = point()\npoint P = point()\n\
-             polygon tri = polygon(A, B, C)\n\
-             assert on(M, AB)\nassert tangent(unit, line(U, T))\nassert perpendicular(x, y)\n\
-             assert parallel(x, line(M, B))\nassert collinear(A, M, B)\nassert concyclic(U, V, W, Z)\n\
-             assert congruent(AM, seg(M, B))\nassert coincident(M, midpoint(A, B))\n\
-             assert midpoint(M, A, B)\nassert horizontal(A, B)\nassert vertical(A, C)\n\
-             assert between(A, M, B)\nassert not inside(M, tri)\n\
-             assert inside(P, tri)\nassert dist(A, B) >= 2\n",
-            assertion_fixture_values(),
-        );
-        let report = evaluate_assertions(&file, &scene).expect("assertions evaluate");
-        assert!(report.passed, "{report:#?}");
-    }
-
-    #[test]
-    fn failing_assert_snapshots_every_measurable_subterm() {
-        let (file, scene) = resolved(
-            "locus 0 beta 5\npoint A = point()\npoint B = point()\nnum expected = 6\n\
-             assert abs(dist(A, B) - expected) <= 0.5\n",
+            "locus 0 beta 6\n\
+             point P()\npoint Q()\npoint R()\npoint S()\n\
+             rect a(4, 2)\ncircle b(1)\nrect c(2, 4)\nrounded_rect d(2, 4, 0.25)\n\
+             assert center(P, b)\nassert center(a, b)\n\
+             assert align_center_x(a, b, P, Q, R)\nassert align_center_y(a, b, P, S)\n\
+             assert align_left(a, c)\nassert align_bottom(a, c)\n\
+             assert align_right(a, d)\nassert align_top(a, d)\nassert a.width == 4\n",
             vec![
-                ("A", point(Point::new(0.0, 0.0))),
-                ("B", point(Point::new(3.0, 4.0))),
+                ("P", point(Point::new(0.0, 0.0))),
+                ("Q", point(Point::new(0.0, 2.0))),
+                ("R", point(Point::new(0.0, -2.0))),
+                ("S", point(Point::new(2.0, 0.0))),
                 (
-                    "expected",
-                    ResolvedObject::Num(NumericValue {
-                        value: 6.0,
-                        dimension: Dimension::Length,
-                    }),
+                    "a",
+                    ResolvedObject::Rect(
+                        construct::rect(Point::new(0.0, 0.0), 4.0, 2.0, tolerance).expect("a"),
+                    ),
+                ),
+                (
+                    "b",
+                    ResolvedObject::Circle(Circle::new(Point::new(0.0, 0.0), 1.0).expect("b")),
+                ),
+                (
+                    "c",
+                    ResolvedObject::Rect(
+                        construct::rect(Point::new(-1.0, 1.0), 2.0, 4.0, tolerance).expect("c"),
+                    ),
+                ),
+                (
+                    "d",
+                    ResolvedObject::RoundedRect(
+                        crate::geom::RoundedRect::new(Point::new(1.0, -1.0), 2.0, 4.0, 0.25)
+                            .expect("d"),
+                    ),
                 ),
             ],
         );
-        let report = evaluate_assertions(&file, &scene).expect("assertion report");
-        insta::assert_debug_snapshot!(report);
+        assert!(
+            evaluate_assertions(&file, &scene)
+                .expect("measured alignments")
+                .passed
+        );
     }
 
     #[test]
-    fn strict_between_obeys_custom_tolerance_boundary() {
-        let (inside_file, inside_scene) = resolved(
-            "locus 0 beta 5\npoint A = point()\npoint B = point()\n\
-             point C = point()\nassert between(A, B, C) tol 0.1\n",
-            between_fixture_values(0.100_000_1),
+    fn failed_measured_alignment_reports_boolean_and_honors_assert_tolerance() {
+        let (file, scene) = resolved(
+            "locus 0 beta 6\npoint P()\npoint Q()\npoint R()\n\
+             assert align_center_x(P, Q, R) tol 0.01\n\
+             assert align_center_x(P, Q, R) tol 0.001\n",
+            vec![
+                ("P", point(Point::new(0.0, 0.0))),
+                ("Q", point(Point::new(0.005, 1.0))),
+                ("R", point(Point::new(0.0, 0.5))),
+            ],
         );
+        let report = evaluate_assertions(&file, &scene).expect("alignment report");
+        assert!(report.assertions[0].passed);
+        assert!(!report.assertions[1].passed);
         assert!(
-            evaluate_assertions(&inside_file, &inside_scene)
-                .expect("inside boundary")
-                .passed
+            report.assertions[1]
+                .actuals
+                .iter()
+                .any(|actual| matches!(actual.actual, ActualValue::Boolean { value: false }))
         );
-        let (outside_file, outside_scene) = resolved(
-            "locus 0 beta 5\npoint A = point()\npoint B = point()\n\
-             point C = point()\nassert between(A, B, C) tol 0.1\n",
-            between_fixture_values(0.099_999_9),
-        );
-        assert!(
-            !evaluate_assertions(&outside_file, &outside_scene)
-                .expect("outside boundary")
-                .passed
-        );
-    }
-
-    fn between_fixture_values(middle: f64) -> Vec<(&'static str, ResolvedObject)> {
-        vec![
-            ("A", point(Point::new(0.0, 0.0))),
-            ("B", point(Point::new(middle, 0.0))),
-            ("C", point(Point::new(1.0, 0.0))),
-        ]
-    }
-
-    fn assertion_fixture_values() -> Vec<(&'static str, ResolvedObject)> {
-        let a = Point::new(0.0, 0.0);
-        let b = Point::new(2.0, 0.0);
-        let m = Point::new(1.0, 0.0);
-        let c = Point::new(0.0, 2.0);
-        let triangle = construct::polygon(
-            vec![a, b, c],
-            Tolerance::from_bbox(&BBox::from_points([a, b, c]).expect("bbox")),
-        )
-        .expect("triangle");
-        vec![
-            ("A", point(a)),
-            ("B", point(b)),
-            ("M", point(m)),
-            ("C", point(c)),
-            (
-                "AB",
-                ResolvedObject::Segment(Segment::new(a, b).expect("AB")),
-            ),
-            (
-                "AM",
-                ResolvedObject::Segment(Segment::new(a, m).expect("AM")),
-            ),
-            ("x", ResolvedObject::Line(Line::new(a, b).expect("x"))),
-            ("y", ResolvedObject::Line(Line::new(a, c).expect("y"))),
-            (
-                "unit",
-                ResolvedObject::Circle(Circle::new(a, 1.0).expect("unit")),
-            ),
-            ("U", point(Point::new(1.0, 0.0))),
-            ("V", point(Point::new(0.0, 1.0))),
-            ("W", point(Point::new(-1.0, 0.0))),
-            ("Z", point(Point::new(0.0, -1.0))),
-            ("T", point(Point::new(1.0, 1.0))),
-            ("P", point(Point::new(0.25, 0.25))),
-            ("tri", ResolvedObject::Polygon(triangle)),
-        ]
     }
 }

@@ -5,8 +5,18 @@ native `locus-lsp` executable over stdin/stdout. It supports the server's
 diagnostics, completion, hover, go-to-definition, document formatting, and
 document symbols. The bundled [Tree-sitter grammar](../tree-sitter-locus/README.md)
 adds syntax highlighting, bracket matching, a declaration outline, and single-line
-metadata. Only `locus 0 beta 5` syntax is supported, including primed
+metadata. The grammar supports `locus 0 beta 6` constructors, functions, groups,
+and named calls, including primed
 identifiers, style properties, and TeX inside strings.
+
+Beta 6 language server support includes function parameters and local bindings,
+group and instance references, and completion, hover, and go-to-definition for
+qualified members such as `checkout.path` and nested instance members.
+Diagnostics use the CLI's text measurement engines and bounded layout feedback,
+including automatic labels, measured shapes, and routed paths.
+Validation runs in the background so completion and navigation remain available
+while large diagrams solve. Diagnostics from superseded document versions are
+discarded.
 
 ## Install locally
 
@@ -15,7 +25,7 @@ identifiers, style properties, and TeX inside strings.
 2. From the Locus repository root, install the server:
 
    ```sh
-   cargo install --path crates/locus-lsp --locked
+   cargo install --path crates/locus-lsp --locked --force
    ```
 
    Ensure Cargo's binary directory (usually `~/.cargo/bin`) is on the PATH seen
@@ -87,8 +97,11 @@ An explicit `binary.path` takes precedence over PATH discovery. Optional
 needs no arguments (including no `--stdio` flag). The extension does not
 download or build the server automatically.
 
-After rebuilding the server, run `editor: restart language server`. After
-editing the grammar, run `npm run generate --prefix ecosystem/tree-sitter-locus`.
+When updating an installed server, use `--force` as above even if the package
+version has not changed during beta development. After rebuilding the server,
+run `editor: restart language server`.
+
+After editing the grammar, run `npm run generate --prefix ecosystem/tree-sitter-locus`.
 After changing either the grammar, the extension, or its queries, rerun
 `python3 ecosystem/zed/prepare.py`, then rebuild Locus from Zed's Extensions page.
 Rerun preparation and reinstall the generated directory if you move the checkout.

@@ -1,0 +1,19 @@
+locus 0 beta 6
+
+point origin()
+rect a(offset(origin, -2, 0), 2, 2)
+rect b(offset(origin, 2, 0), 2, 2)
+group pair(a, b)
+rect middle(1, 1)
+rect corner(1, 1)
+rect border(1, 1)
+rel center(middle, pair)
+rel inset_left(corner, pair)
+rel inset_top(corner, pair)
+rel inset_right(border, pair) { padding: none }
+rel inset_bottom(border, pair) { padding: none }
+assert center(middle, pair)
+assert inset_left(corner, pair)
+assert inset_top(corner, pair)
+assert align_right(border, pair)
+assert align_bottom(border, pair)
