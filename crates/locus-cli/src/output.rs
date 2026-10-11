@@ -7,11 +7,12 @@
 use std::fmt::{self, Write as _};
 use std::io::{self, Write as _};
 
-use locus_core::{ActualValue, AssertionReport, Incidence, InspectionReport};
+use locus_core::{ActualValue, Incidence, InspectionReport};
 use locus_syntax::{Interchange, Span};
 use miette::{LabeledSpan, MietteDiagnostic, NamedSource, Report, Severity as MietteSeverity};
 use serde::{Serialize, Serializer};
 
+use crate::assertions::{AssertionReport, AssertionResult};
 use crate::exit::Exit;
 
 #[derive(Clone, Debug)]
@@ -779,29 +780,59 @@ pub(crate) fn assertion_diagnostics(file: &CheckFileResult) -> Vec<CliDiagnostic
             span: assertion.span,
             message: format!("assertion {} failed", assertion.index + 1),
             collision_details: Vec::new(),
-            notes: assertion
-                .actuals
-                .iter()
-                .map(|actual| {
-                    format!(
-                        "{}:{} = {}",
-                        actual.span.line,
-                        actual.span.col,
-                        actual_value(&actual.actual)
-                    )
-                })
-                .collect(),
+            notes: assertion_notes(assertion),
             suggestion: Some(
-                "inspect the measured subterms and their upstream definitions".to_owned(),
+                "compare the assertion and upstream definitions with the intended geometry"
+                    .to_owned(),
             ),
         })
         .collect()
 }
 
+fn assertion_notes(assertion: &AssertionResult) -> Vec<String> {
+    let mut notes = Vec::new();
+    if let Some(failure) = &assertion.failure {
+        notes.push(format!("expression: {}", failure.expression));
+        notes.extend(failure.comparisons.iter().map(|comparison| {
+            format!(
+                "{}: actual `{}` = {}; expected `{}` = {} (operator {})",
+                comparison.expression,
+                comparison.actual.expression,
+                actual_value(&comparison.actual.actual),
+                comparison.expected.expression,
+                actual_value(&comparison.expected.actual),
+                comparison.operator,
+            )
+        }));
+    }
+    notes.extend(assertion.actuals.iter().map(|actual| {
+        format!(
+            "measured `{}` = {}",
+            actual.expression,
+            actual_value(&actual.actual),
+        )
+    }));
+    if let Some(failure) = &assertion.failure {
+        notes.extend(failure.upstream_definitions.iter().map(|definition| {
+            format!(
+                "upstream `{}` at {}:{}: {}",
+                definition.id, definition.span.line, definition.span.col, definition.source,
+            )
+        }));
+        notes.extend(failure.upstream_relations.iter().map(|relation| {
+            format!(
+                "upstream relation at {}:{}: {}",
+                relation.span.line, relation.span.col, relation.source,
+            )
+        }));
+    }
+    notes
+}
+
 fn actual_value(actual: &ActualValue) -> String {
     match actual {
-        ActualValue::Number { value, dimension } => {
-            format!("{value:.12} {dimension:?}").to_ascii_lowercase()
+        ActualValue::Number { value, .. } => {
+            format!("{value:.12} {}", crate::assertions::unit(actual))
         }
         ActualValue::Angle { radians } => format!("{radians:.12} rad"),
         ActualValue::Boolean { value } => value.to_string(),

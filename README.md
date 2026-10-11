@@ -74,6 +74,21 @@ and retains every failed assertion's actual values and every diagnostic.
 Omit `--compact` for the full solver and assertion reports. `--compact` requires
 `--json` and is available on all commands.
 
+Failed assertions include a `failure` object with the exact source expression,
+comparisons labeled `actual` (left operand) and `expected` (right operand),
+and relevant upstream declarations and solver relations in source order. Every
+measured subterm includes its expression and unit: `unitless`, `scene units`,
+`scene units squared`, or `rad`. Angle values remain in radians even when the
+source uses degrees. Predicate and negated-predicate failures report their
+boolean result against `true`. The same context appears in human diagnostics.
+For example, `vdist(start, end) == -0.7` shows an actual value of `-0.8` together
+with the upstream `offset(start, 0, -0.8)` definition, so a mistaken expectation
+can be distinguished from an incorrect construction.
+
+Invalid annotation properties retain their type or domain diagnostic and source
+location. Conflicting `text_block` `place` and `anchor` properties return `E209`;
+they do not suggest changing solver hints.
+
 `inspect` reports diagnostics by default. Request just the measurements needed
 to investigate a specific issue:
 

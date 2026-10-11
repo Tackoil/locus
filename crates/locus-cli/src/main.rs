@@ -1,5 +1,6 @@
 //! Command-line entry point for Locus.
 
+mod assertions;
 mod commands;
 mod compact;
 mod exit;

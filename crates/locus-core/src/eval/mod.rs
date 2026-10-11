@@ -1341,7 +1341,7 @@ fn eval_label(
     if gap.is_some_and(|value| value < 0.0) {
         return Err(EvalError::new(
             "E204",
-            span,
+            prop(props, "gap").map_or(span, PropValue::span),
             "label gap must be nonnegative",
         ));
     }
@@ -1422,7 +1422,7 @@ fn eval_right_angle(
     if size.is_some_and(|value| value <= 0.0) {
         return Err(EvalError::new(
             "E204",
-            span,
+            prop(props, "size").map_or(span, PropValue::span),
             "right-angle size must be positive",
         ));
     }

@@ -2,9 +2,10 @@
 
 use std::io::Write;
 
-use locus_core::{AssertionResult, Incidence, InspectDiagnostic, MeasurementTables};
+use locus_core::{Incidence, InspectDiagnostic, MeasurementTables};
 use serde::Serialize;
 
+use crate::assertions::AssertionResult;
 use crate::output::{CheckFileResult, CheckResult, CliDiagnostic, CommandOutput, InspectResult};
 
 #[derive(Serialize)]

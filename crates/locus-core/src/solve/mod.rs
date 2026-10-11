@@ -163,10 +163,13 @@ fn solve_prepared_with_attempt_limit(
     max_attempts: usize,
 ) -> Result<Solved, EvalError> {
     let file = prepared.file();
-    let seed_trial = prepared.evaluate_trial(None).map_err(degenerate_seed)?;
+    let seed_trial = prepared
+        .evaluate_trial(None)
+        .map_err(|error| degenerate_seed(file, error))?;
     let system = UnknownSystem::from_seed(file, prepared.dimensions(), &seed_trial)?;
     let sources = relations::collect(file);
-    validate_relation_primals(&seed_trial, prepared, &sources).map_err(degenerate_seed)?;
+    validate_relation_primals(&seed_trial, prepared, &sources)
+        .map_err(|error| degenerate_seed(file, error))?;
     let seed_ad = DifferentiatedFile::evaluate(
         file,
         &system.normalized_hints,
@@ -176,10 +179,10 @@ fn solve_prepared_with_attempt_limit(
         prepared.dimensions(),
         seed_trial.tolerance(),
     )
-    .map_err(degenerate_seed)?;
+    .map_err(|error| degenerate_seed(file, error))?;
     seed_ad
         .validate_branch_sensitive_primal(file, seed_trial.objects())
-        .map_err(degenerate_seed)?;
+        .map_err(|error| degenerate_seed(file, error))?;
     let branches = relations::select_circle_branches(&sources);
     let outcome = run_lm(prepared, &system, &sources, &branches, max_attempts, true)?;
     finish_solve(prepared, &system, &sources, &branches, &outcome)
@@ -860,9 +863,15 @@ fn nonconvergence_error(
     )
 }
 
-fn degenerate_seed(mut error: EvalError) -> EvalError {
-    // Arrow-bend domains cannot be repaired by changing placement hints.
-    if error.code == "E210" {
+fn degenerate_seed(file: &File, mut error: EvalError) -> EvalError {
+    // Only geometric preconditions can describe a degenerate seed. Type,
+    // property, dependency, and branch-selection errors need source repairs.
+    if is_property_error(file, error.span)
+        || !matches!(
+            error.code,
+            "E201" | "E202" | "E203" | "E204" | "E205" | "E206"
+        )
+    {
         return error;
     }
     error.code = "E404";
@@ -871,6 +880,17 @@ fn degenerate_seed(mut error: EvalError) -> EvalError {
         error.message
     );
     error
+}
+
+fn is_property_error(file: &File, span: Span) -> bool {
+    file.statements.iter().any(|statement| {
+        let Statement::Op(op) = statement else {
+            return false;
+        };
+        !op.props.items.is_empty()
+            && op.props.span.byte_start <= span.byte_start
+            && span.byte_end <= op.props.span.byte_end
+    })
 }
 
 fn dimension_from_core(dimension: Dimension) -> NumericDimension {

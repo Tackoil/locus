@@ -294,6 +294,16 @@ fn check_file(loaded: &LoadedScene, args: &CheckArgs) -> Result<CheckFileResult,
     let diagnostics = inspection_diagnostics(&loaded.path, &inspection.diagnostics);
     let assertions = evaluate_assertions(&loaded.file, resolved_scene(&loaded.scene))
         .map_err(|error| Box::new(eval_failure("check", &loaded.as_file(), error)))?;
+    let assertions =
+        crate::assertions::report(assertions, &loaded.file, &loaded.source).map_err(|error| {
+            Box::new(dependency_failure(
+                "check",
+                &loaded.as_file(),
+                error.code,
+                error.span,
+                error.message,
+            ))
+        })?;
     let passed = assertions.passed && (!args.strict || diagnostics.is_empty());
     Ok(CheckFileResult {
         path: path_string(&loaded.path),
