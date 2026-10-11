@@ -1,0 +1,307 @@
+{
+  "files": {
+    "apache-2.0": {
+      "path": "apache-2.0.txt",
+      "origin": "https://www.apache.org/licenses/LICENSE-2.0.txt",
+      "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+    },
+    "anes-MIT": {
+      "path": "anes-MIT.txt",
+      "origin": "https://github.com/zrzka/anes-rs/blob/378ac7461ecac29fde9e10df7b08359d1315a9ad/LICENSE-MIT",
+      "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+    },
+    "auditable-MIT": {
+      "path": "auditable-MIT.txt",
+      "origin": "https://github.com/rust-secure-code/cargo-auditable/blob/ceb4475d237b0296a3ddb946e0337fb658743ccc/LICENSE-MIT",
+      "sha256": "e3a8938c0304a5d418b6f7453c2f60fd6b590d486c798879063373e3acc94bf1"
+    },
+    "wasm-LICENSE-APACHE": {
+      "path": "wasm-LICENSE-APACHE.txt",
+      "origin": "https://github.com/bytecodealliance/wasm-tools/blob/3b3e1ac6c309c807a956ffffb8276a621a0a50fa/LICENSE-APACHE",
+      "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+    },
+    "wasm-LICENSE-MIT": {
+      "path": "wasm-LICENSE-MIT.txt",
+      "origin": "https://github.com/bytecodealliance/wasm-tools/blob/3b3e1ac6c309c807a956ffffb8276a621a0a50fa/LICENSE-MIT",
+      "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+    },
+    "wasm-LICENSE-Apache-2.0_WITH_LLVM-exception": {
+      "path": "wasm-LICENSE-Apache-2.0_WITH_LLVM-exception.txt",
+      "origin": "https://github.com/bytecodealliance/wasm-tools/blob/3b3e1ac6c309c807a956ffffb8276a621a0a50fa/LICENSE-Apache-2.0_WITH_LLVM-exception",
+      "sha256": "268872b9816f90fd8e85db5a28d33f8150ebb8dd016653fb39ef1f94f2686bc5"
+    },
+    "wit-LICENSE-APACHE": {
+      "path": "wit-LICENSE-APACHE.txt",
+      "origin": "https://github.com/bytecodealliance/wit-bindgen/blob/d8994a329a74f6eb96c080b42765e42af6ef5be6/LICENSE-APACHE",
+      "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+    },
+    "wit-LICENSE-MIT": {
+      "path": "wit-LICENSE-MIT.txt",
+      "origin": "https://github.com/bytecodealliance/wit-bindgen/blob/d8994a329a74f6eb96c080b42765e42af6ef5be6/LICENSE-MIT",
+      "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+    },
+    "wit-LICENSE-Apache-2.0_WITH_LLVM-exception": {
+      "path": "wit-LICENSE-Apache-2.0_WITH_LLVM-exception.txt",
+      "origin": "https://github.com/bytecodealliance/wit-bindgen/blob/d8994a329a74f6eb96c080b42765e42af6ef5be6/LICENSE-Apache-2.0_WITH_LLVM-exception",
+      "sha256": "268872b9816f90fd8e85db5a28d33f8150ebb8dd016653fb39ef1f94f2686bc5"
+    },
+    "difflib-LICENSE": {
+      "path": "difflib-LICENSE.txt",
+      "origin": "https://github.com/DimaKudosh/difflib/blob/f035fb8e656f27119e23eca9d5b996df14f3885e/LICENSE",
+      "sha256": "6725d1437fc6c77301f2ff0e7d52914cf4f9509213e1078dc77d9356dbe6eac5"
+    },
+    "winapi-i686-LICENSE-MIT": {
+      "path": "winapi-i686-LICENSE-MIT.txt",
+      "origin": "https://github.com/retep998/winapi-rs/blob/796a8e6c2971dc2ff1bcff166e6671284f9b5b6b/i686/LICENSE-MIT",
+      "sha256": "ce7bc3499fee93d5022ef430d5e4201e79a6d9154f3974e42f41349f0569e09b"
+    },
+    "winapi-i686-LICENSE-APACHE": {
+      "path": "winapi-i686-LICENSE-APACHE.txt",
+      "origin": "https://github.com/retep998/winapi-rs/blob/796a8e6c2971dc2ff1bcff166e6671284f9b5b6b/i686/LICENSE-APACHE",
+      "sha256": "b40930bbcf80744c86c46a12bc9da056641d722716c378f5659b9e555ef833e1"
+    },
+    "winapi-x86_64-LICENSE-MIT": {
+      "path": "winapi-x86_64-LICENSE-MIT.txt",
+      "origin": "https://github.com/retep998/winapi-rs/blob/796a8e6c2971dc2ff1bcff166e6671284f9b5b6b/x86_64/LICENSE-MIT",
+      "sha256": "ce7bc3499fee93d5022ef430d5e4201e79a6d9154f3974e42f41349f0569e09b"
+    },
+    "winapi-x86_64-LICENSE-APACHE": {
+      "path": "winapi-x86_64-LICENSE-APACHE.txt",
+      "origin": "https://github.com/retep998/winapi-rs/blob/796a8e6c2971dc2ff1bcff166e6671284f9b5b6b/x86_64/LICENSE-APACHE",
+      "sha256": "b40930bbcf80744c86c46a12bc9da056641d722716c378f5659b9e555ef833e1"
+    },
+    "backtrace-ext-declaration": {
+      "path": "backtrace-ext-declaration.txt",
+      "origin": "https://crates.io/crates/backtrace-ext/0.2.1 (published Cargo.toml.orig)",
+      "sha256": "0205a3bf2c5eee4cf95ef2b8977629e6b748035f0ddc5de200479e6ed37eaeb3"
+    },
+    "fxhash-declaration": {
+      "path": "fxhash-declaration.txt",
+      "origin": "https://crates.io/crates/fxhash/0.2.1 (published Cargo.toml.orig)",
+      "sha256": "42f07fb23f8b37acf45914ccb71df077455a353850e148afeabb5c684f8ebaab"
+    },
+    "fxhash-source-notice": {
+      "path": "fxhash-source-notice.txt",
+      "origin": "https://crates.io/crates/fxhash/0.2.1 (lib.rs header)",
+      "sha256": "5d392ff1ac69a18c9beb41720ecbfd56f7792a1ec4321428e73757d4283f5a61"
+    },
+    "static_map-declaration": {
+      "path": "static_map-declaration.txt",
+      "origin": "https://crates.io/crates/static_map/0.2.0-beta (published Cargo.toml.orig)",
+      "sha256": "d5c9b0ed2c2ea2c218a4bfc81be841e035fcebbeeeb4d9ba8b0bb9931e93506b"
+    },
+    "rex-README": {
+      "path": "rex-README.txt",
+      "origin": "https://github.com/ReTeX/ReX/blob/7bd4efc0b77c6910b79668d32824b464ee0958a3/README.md",
+      "sha256": "0a4830abb6dae3bd6b1f37ef3d3751099b97c14e80889e3c8407f4cc03c97aa8"
+    },
+    "rex-borrowed-macros": {
+      "path": "rex-borrowed-macros.txt",
+      "origin": "https://github.com/ReTeX/ReX/blob/7bd4efc0b77c6910b79668d32824b464ee0958a3/src/macros.rs (borrowed macros attribution and definitions)",
+      "sha256": "f2e0d488c72341ffb46a9a15e0e994e8ac6f7ecc9433d958ebcd46c575620b6d"
+    },
+    "rex-symbols-provenance": {
+      "path": "rex-symbols-provenance.txt",
+      "origin": "https://github.com/ReTeX/ReX/blob/7bd4efc0b77c6910b79668d32824b464ee0958a3/fonts/stix2/src/symbols.rs (generated-source header)",
+      "sha256": "d257387ba17be4e59c7eca9e2d1fc59ae1ddd392aaf554e434877c24a7c2f088"
+    },
+    "unicode-math-LPPL-1.3c": {
+      "path": "unicode-math-LPPL-1.3c.txt",
+      "origin": "https://github.com/latex3/unicode-math/blob/ec953b2bf6b2584e66277291092fce1704b06e7b/LICENSE",
+      "sha256": "5f05fcf6ef25a6c31bccd2df7c0c46b23107bbeb2ce5cdba74efb5cc357f4dbb"
+    },
+    "unicode-math-README-v0.8g": {
+      "path": "unicode-math-README-v0.8g.txt",
+      "origin": "https://github.com/latex3/unicode-math/blob/ec953b2bf6b2584e66277291092fce1704b06e7b/README.md",
+      "sha256": "bfb069f1dd890ee55dc275ca987d768ce13bc6d7c629455457f5c12432d09cbe"
+    },
+    "tree-sitter-cli-LICENSE": {
+      "path": "tree-sitter-cli-LICENSE.txt",
+      "origin": "https://registry.npmjs.org/tree-sitter-cli/-/tree-sitter-cli-0.25.10.tgz (package/LICENSE; npm integrity verified)",
+      "sha256": "5f9cf9fb6acb1972b35ae29119ce563bb60ec097656bc4b69b9bac2d04c7a147"
+    },
+    "noto-cjk-name-notices": {
+      "path": "noto-cjk-name-notices.txt",
+      "origin": "https://github.com/notofonts/noto-cjk/blob/523d033d6cb47f4a80c58a35753646f5c3608a78/Sans/OTF/SimplifiedChinese/NotoSansCJKsc-Regular.otf (embedded name IDs 0, 13, 14; font SHA-256 2c76254f6fc379fddfce0a7e84fb5385bb135d3e399294f6eeb6680d0365b74b)",
+      "sha256": "1d02a08c56feeb0d9ee0f8a042246dd510e963099e0e0fec5771dd9f7acf8f30"
+    }
+  },
+  "components": {
+    "anes@0.1.6": {
+      "files": [
+        "anes-MIT"
+      ]
+    },
+    "auditable-serde@0.8.0": {
+      "files": [
+        "auditable-MIT"
+      ]
+    },
+    "wasm-encoder@0.227.1": {
+      "files": [
+        "wasm-LICENSE-APACHE",
+        "wasm-LICENSE-MIT",
+        "wasm-LICENSE-Apache-2.0_WITH_LLVM-exception"
+      ],
+      "note": "License texts recovered from the exact repository revision recorded in the published crate."
+    },
+    "wasm-metadata@0.227.1": {
+      "files": [
+        "wasm-LICENSE-APACHE",
+        "wasm-LICENSE-MIT",
+        "wasm-LICENSE-Apache-2.0_WITH_LLVM-exception"
+      ],
+      "note": "License texts recovered from the exact repository revision recorded in the published crate."
+    },
+    "wasmparser@0.227.1": {
+      "files": [
+        "wasm-LICENSE-APACHE",
+        "wasm-LICENSE-MIT",
+        "wasm-LICENSE-Apache-2.0_WITH_LLVM-exception"
+      ],
+      "note": "License texts recovered from the exact repository revision recorded in the published crate."
+    },
+    "wit-component@0.227.1": {
+      "files": [
+        "wasm-LICENSE-APACHE",
+        "wasm-LICENSE-MIT",
+        "wasm-LICENSE-Apache-2.0_WITH_LLVM-exception"
+      ],
+      "note": "License texts recovered from the exact repository revision recorded in the published crate."
+    },
+    "wit-parser@0.227.1": {
+      "files": [
+        "wasm-LICENSE-APACHE",
+        "wasm-LICENSE-MIT",
+        "wasm-LICENSE-Apache-2.0_WITH_LLVM-exception"
+      ],
+      "note": "License texts recovered from the exact repository revision recorded in the published crate."
+    },
+    "wit-bindgen@0.41.0": {
+      "files": [
+        "wit-LICENSE-APACHE",
+        "wit-LICENSE-MIT",
+        "wit-LICENSE-Apache-2.0_WITH_LLVM-exception"
+      ],
+      "note": "License texts recovered from the exact repository revision recorded in the published crate."
+    },
+    "wit-bindgen-core@0.41.0": {
+      "files": [
+        "wit-LICENSE-APACHE",
+        "wit-LICENSE-MIT",
+        "wit-LICENSE-Apache-2.0_WITH_LLVM-exception"
+      ],
+      "note": "License texts recovered from the exact repository revision recorded in the published crate."
+    },
+    "wit-bindgen-rt@0.41.0": {
+      "files": [
+        "wit-LICENSE-APACHE",
+        "wit-LICENSE-MIT",
+        "wit-LICENSE-Apache-2.0_WITH_LLVM-exception"
+      ],
+      "note": "License texts recovered from the exact repository revision recorded in the published crate."
+    },
+    "wit-bindgen-rust@0.41.0": {
+      "files": [
+        "wit-LICENSE-APACHE",
+        "wit-LICENSE-MIT",
+        "wit-LICENSE-Apache-2.0_WITH_LLVM-exception"
+      ],
+      "note": "License texts recovered from the exact repository revision recorded in the published crate."
+    },
+    "wit-bindgen-rust-macro@0.41.0": {
+      "files": [
+        "wit-LICENSE-APACHE",
+        "wit-LICENSE-MIT",
+        "wit-LICENSE-Apache-2.0_WITH_LLVM-exception"
+      ],
+      "note": "License texts recovered from the exact repository revision recorded in the published crate."
+    },
+    "difflib@0.4.0": {
+      "files": [
+        "difflib-LICENSE"
+      ],
+      "note": "License recovered from upstream commit f035fb8e656f27119e23eca9d5b996df14f3885e; all four upstream src files match the published 0.4.0 package byte for byte."
+    },
+    "winapi-i686-pc-windows-gnu@0.4.0": {
+      "files": [
+        "winapi-i686-LICENSE-MIT",
+        "winapi-i686-LICENSE-APACHE"
+      ],
+      "note": "Recovered from the upstream 0.3.9 source tree; this target subpackage declares version 0.4.0."
+    },
+    "winapi-x86_64-pc-windows-gnu@0.4.0": {
+      "files": [
+        "winapi-x86_64-LICENSE-MIT",
+        "winapi-x86_64-LICENSE-APACHE"
+      ],
+      "note": "Recovered from the upstream 0.3.9 source tree; this target subpackage declares version 0.4.0."
+    },
+    "backtrace-ext@0.2.1": {
+      "files": [
+        "backtrace-ext-declaration",
+        "apache-2.0"
+      ],
+      "note": "Published manifest grants Apache-2.0 as an alternative; this notice set supplies the standard Apache-2.0 text without inventing a missing MIT copyright notice."
+    },
+    "fxhash@0.2.1": {
+      "files": [
+        "fxhash-declaration",
+        "apache-2.0",
+        "fxhash-source-notice"
+      ],
+      "note": "Published manifest grants Apache-2.0 as an alternative; this notice set supplies the standard Apache-2.0 text without inventing a missing MIT copyright notice."
+    },
+    "static_map@0.2.0-beta": {
+      "files": [
+        "static_map-declaration",
+        "apache-2.0"
+      ],
+      "note": "Published manifest grants Apache-2.0 as an alternative; this notice set supplies the standard Apache-2.0 text without inventing a missing MIT copyright notice."
+    },
+    "rex@0.1.0": {
+      "license": "Not declared in Cargo; README states MIT and Apache-2.0 with unspecified BSD-like portions",
+      "files": [
+        "rex-README",
+        "rex-borrowed-macros",
+        "rex-symbols-provenance",
+        "unicode-math-LPPL-1.3c",
+        "unicode-math-README-v0.8g"
+      ],
+      "note": "REVIEW REQUIRED: see licenses/REX-LICENSING.md. The unicode-math v0.8g texts document historical provenance only; the exact source version and applicable obligations for ReX tables remain unverified. These supplemental texts do not resolve the absent ReX license files or identify all BSD-like portions."
+    },
+    "font_types@0.1.0": {
+      "license": "Not declared in Cargo; README states MIT and Apache-2.0 with unspecified BSD-like portions",
+      "files": [
+        "rex-README",
+        "rex-borrowed-macros",
+        "rex-symbols-provenance",
+        "unicode-math-LPPL-1.3c",
+        "unicode-math-README-v0.8g"
+      ],
+      "note": "REVIEW REQUIRED: see licenses/REX-LICENSING.md. The unicode-math v0.8g texts document historical provenance only; the exact source version and applicable obligations for ReX tables remain unverified. These supplemental texts do not resolve the absent ReX license files or identify all BSD-like portions."
+    },
+    "stix2@0.1.0": {
+      "license": "Not declared in Cargo; README states MIT and Apache-2.0 with unspecified BSD-like portions",
+      "files": [
+        "rex-README",
+        "rex-borrowed-macros",
+        "rex-symbols-provenance",
+        "unicode-math-LPPL-1.3c",
+        "unicode-math-README-v0.8g"
+      ],
+      "note": "REVIEW REQUIRED: see licenses/REX-LICENSING.md. The unicode-math v0.8g texts document historical provenance only; the exact source version and applicable obligations for ReX tables remain unverified. These supplemental texts do not resolve the absent ReX license files or identify all BSD-like portions."
+    },
+    "npm:tree-sitter-cli@0.25.10": {
+      "integrity": "sha512-KoebQguKMCIghisEOdA372TIbrUl0kdnfZ9YQIBRAeOvNSKe85XbU4LuFW7hduRUwJj0rAG7pX5wo9sZhbBF1g==",
+      "files": [
+        "tree-sitter-cli-LICENSE"
+      ]
+    },
+    "font:Noto Sans CJK SC": {
+      "files": [
+        "noto-cjk-name-notices"
+      ]
+    }
+  }
+}

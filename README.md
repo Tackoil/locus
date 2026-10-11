@@ -26,12 +26,40 @@ The project is under active development. The `locus 0 beta 6` frontend supports 
 | [`ecosystem/`](ecosystem/) | Tree-sitter grammar and Zed editor integration |
 | [`benchmarks/`](benchmarks/) | Comparison workloads used by crate-local benchmarks |
 | [`assets/`](assets/) | Project logo source and artwork |
+| [`licenses/`](licenses/) | Supplemental third-party license texts, provenance, and ReX licensing investigation |
 | [`vendor/`](vendor/) | Pinned compatibility patches for dependencies |
 
 Local development plans and generated validation output live under the ignored
 `.local/plans/` and `.local/artifacts/` directories. Build output stays in `target/`.
 Name tests and fixtures after the behavior they cover; format revisions belong in
 file headers and compatibility assertions.
+
+## License
+
+Locus's own code is available under either the [MIT license](LICENSE-MIT) or
+the [Apache License, Version 2.0](LICENSE-APACHE), at your option.
+Third-party dependencies and bundled fonts retain their respective terms;
+the [third-party notices](THIRD-PARTY-NOTICES.md) include their license texts
+and attributions. Preserve these notices when distributing applicable components.
+
+ReX's upstream license documentation is incomplete, and its generated tables
+have additional provenance questions. The CLI includes ReX in ordinary builds.
+See the [ReX licensing investigation](licenses/REX-LICENSING.md) for the evidence
+and unresolved items before preparing a release.
+
+To refresh the notices after dependency updates:
+
+```sh
+cargo fetch --locked
+cargo fetch --locked --manifest-path ecosystem/zed/Cargo.toml
+python3 scripts/generate_third_party_notices.py
+python3 scripts/generate_third_party_notices.py --check
+```
+
+The collector reads the locked dependencies across all features and platforms,
+including development dependencies. Supplemental upstream texts and checksums
+are kept in `licenses/third-party/sources.json`. Missing notice texts cause
+generation to fail rather than being assigned an assumed license.
 
 ## Development checks
 
