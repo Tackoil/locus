@@ -10,7 +10,7 @@ Locus is an agent-friendly relational language and CLI toolchain for determinist
 
 ## Agent-friendly by design
 
-The core goal of Locus is to let AI agents create, inspect, verify, and revise precise geometry without relying on visual feedback. Agents declare geometric relationships instead of guessing coordinates, use structured diagnostics and stable JSON output to understand failures, and verify intent through persistent assertions. Deterministic output and diffable `.locus` source files make every change reproducible and auditable.
+The core goal of Locus is to let AI agents create, inspect, verify, and revise precise geometry through text feedback. Agents declare geometric relationships, use structured diagnostics and stable JSON output to understand failures, and verify intent through persistent assertions. Deterministic output and diffable `.locus` source files make every change reproducible and auditable.
 
 The project is under active development. The `locus 0 beta 6` frontend supports constructor declarations, reusable functions, ordered groups, and named instances. The beta 6 solver supports measured layout, hard separation/containment/avoidance requirements, continuous routes and path labels, endpoint clipping, bounded solve/layout feedback, and reports and safe edits for instances and groups. The confirmed rules and presets are pinned in the [specification](spec/specification.md); feasible preference settling can remain incomplete and is reported as a strict-check warning. Only `locus 0 beta 6` files are accepted. See the [specification](spec/specification.md) and [demonstrations](examples/README.md).
 
@@ -183,8 +183,7 @@ with the upstream `rel vdist(start, end) == -0.8` dimension, so a mistaken expec
 can be distinguished from an incorrect construction.
 
 Invalid annotation properties retain their type or domain diagnostic and source
-location. Conflicting `text_block` `place` and `anchor` properties return `E209`;
-they do not suggest changing solver hints.
+location. Conflicting `text_block` `place` and `anchor` properties return `E209`.
 
 `inspect` reports diagnostics by default. Request just the measurements needed
 to investigate a specific issue:
@@ -239,7 +238,7 @@ Plain text uses bundled Noto Sans and Noto Sans CJK SC fonts with actual glyph
 measurements. Chinese (Simplified and Traditional), Japanese, and Korean labels
 render as outlines in SVG, TikZ, and PNG without installed fonts. Mixed Latin
 and CJK text shares a baseline; shared Han glyphs use Simplified Chinese forms
-for now. For example, `label name = label(c.center, "中文 日本語 한국어")`.
+for now. For example, `label name(c.center, "中文 日本語 한국어")`.
 
 The default TeX engine is ReX, using bundled STIX Two Math outlines for
 fractions, roots, scripts, operators, delimiters, and matrices. SVG, TikZ, and PNG

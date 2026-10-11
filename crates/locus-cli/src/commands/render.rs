@@ -1,4 +1,4 @@
-//! Parse and solve once, then measure, place, render, and deliver the result.
+//! Parse, expand, measure, agree on solve/layout, then render and deliver the result.
 
 use locus_layout::LayoutScene;
 use locus_render::{RenderError, RenderOptions, render_svg, render_tikz, style::StyleSheet};

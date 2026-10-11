@@ -8,8 +8,8 @@ root; no floats, spans, geometry, or diagnostics are normalized away.
 
 `crates/locus-cli/tests/golden.rs` compares exact bytes. A separate determinism
 test starts two independent CLI render processes per fixture, each reading and
-parsing the original source, evaluating/solving, measuring text, placing labels,
-and rendering SVG. Every render is preceded by a successful `check`.
+parsing the original source, expanding functions, measuring text, completing
+solve/layout feedback, and rendering SVG. Every render is preceded by a successful `check`.
 Both operating systems in CI compare against these same expected files.
 
 The sources use the repository's current `0 beta 6` specification.

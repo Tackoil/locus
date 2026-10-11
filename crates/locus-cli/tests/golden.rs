@@ -50,8 +50,8 @@ fn run(command: &str, path: &Path, options: &[&str]) -> Result<Vec<u8>> {
 
 fn checked_svg(path: &Path) -> Result<Vec<u8>> {
     run("check", path, &["--json"])?;
-    // A new process rereads the original file and repeats parse, solve, measurement,
-    // layout, and rendering. No solved scene or cached layout is shared across runs.
+    // A new process rereads the original file and repeats parsing, expansion,
+    // measurement, solve/layout feedback, and rendering independently.
     run("render", path, &["--tex-engine=rex", "--stdout"])
 }
 

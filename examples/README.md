@@ -25,7 +25,7 @@ python3 scripts/check_examples.py --json
 
 The [audit](../scripts/check_examples.py) checks headers, declaration forms, constructor arities,
 name/reference order, nested-function expansion counts, group member references,
-removed relation names, assert-only restrictions, and stress-manifest membership/minimum
+relation vocabulary, assert-only restrictions, and stress-manifest membership/minimum
 object and assertion counts. It is not a full expression parser, dimensional type checker,
 solver, or renderer; its success does not establish numerical assertions or layout
 feasibility. Qualified-member resolution, overload typing, actual geometry, and rendering
@@ -68,8 +68,8 @@ demonstration total to 93 assertions and 365 declared objects, as counted by the
 
 Same-kind constructors use `kind id(args)`; aliases and differently named constructions
 retain `= rhs`, such as `point M = midpoint(A, B)` and `arc m = angle_arc(...)`.
-`horizontal`, `vertical`, and `coincident` are replaced by `align_center_y`,
-`align_center_x`, and `center`. Segment congruence becomes numeric length equality.
+Point alignment and coincidence use `align_center_y`, `align_center_x`, and `center`.
+Equal segment lengths use numeric equality.
 Measured relationships, explicit dimensions, numeric seeds, construction branches, styles,
 and the original mathematical assertions are preserved.
 
@@ -82,11 +82,11 @@ flush insets, rectangle `edge` values, `short_length`/`narrow_width`, and member
 The larger flowchart creates sixteen measured node pairs, so template reuse is exercised
 as an expanded workload rather than counted as only one template body.
 
-Public reports intentionally describe resolved relationships and measurements
-without exposing Locus-owned initialization coordinates. Stress workloads use parameterless points,
+Public reports describe resolved relationships and measurements.
+Stress workloads use parameterless points,
 shape-owned placement, relative constructions, and ordered internal circle tangency.
 Free numeric lengths, angles, and branch magnitudes retain deliberate perturbations to
-exercise convergence without authoring point coordinates or placement hints.
+exercise convergence.
 
 ## Stress workloads
 
@@ -126,8 +126,8 @@ seeds retain their original values.
 The native stress runners already verify manifest discovery, solve reports, and rendering.
 These checks run against the current parser, evaluator, and measured-layout runtime.
 
-The renderer test starts from source and repeats **parse → solve → assert → measure → layout
-→ SVG/TikZ/PNG** twice per case. It compares the complete solved scene, solver and assertion
+The renderer test starts from source and repeats **parse → expand → measure → solve/layout
+feedback → assert → SVG/TikZ/PNG** twice per case. It compares the complete solved scene, solver and assertion
 reports, layout including diagnostics, and output bytes. Successful solves must retain the
 specified residual threshold; assertion tolerances are unchanged. No wall-clock performance
 threshold is used.
@@ -164,7 +164,7 @@ software-architecture workloads.
 - Text dimensions must be measured before containment and shared-size equalities resolve.
   Typography, automatic sizing preferences, and preset metrics follow §8.7 of the specification.
 - `short_length` must be compatible with automatic point separation. `narrow_width` participates
-  in guide spacing and must not be treated as an authored coordinate or a domain-specific width.
+  in guide spacing as a shared preset length.
 - Clipping must preserve logical `.length` and endpoint incidence, while path captions and
   arrowheads follow the retained visible route. Clearance, clipping, and measurement dependencies
   need the joint-layout behavior and numerical contract identified in Part 12 of the specification.
@@ -177,8 +177,7 @@ audit proves geometry, collision-free placement, preset suitability, or solver c
 [`stress/known_limits/closed_segment_bisectors.locus`](../tests/fixtures/solver/closed_segment_bisectors.locus)
 preserves a small failure uncovered in the beta 5 runtime: three simultaneous closed-segment
 bisectors stall with `E403`. The unchanged mathematical case now uses beta 6 syntax and is
-verified by the current negative acceptance test. Its header/syntax rejection by the old parser
-is not the historical solver failure. The native corpus test checks the source-anchored convergence error and a passing supporting-line variant with the same `between` assertions.
+verified by the current negative acceptance test. The native corpus test checks the source-anchored convergence error and a passing supporting-line variant with the same `between` assertions.
 
 ## Representations and previews
 

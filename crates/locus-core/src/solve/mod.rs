@@ -41,7 +41,7 @@ pub struct Solved {
 /// Normative solve statistics exposed to `describe` and `check`.
 #[derive(Clone, Debug, PartialEq)]
 pub struct SolveSummary {
-    /// Scalar unknown count after expanding free points.
+    /// Scalar unknown count across placed geometry, numeric parameters, and layout.
     pub unknowns: usize,
     /// Scalar residual equation count after relation expansion.
     pub equations: usize,
@@ -63,7 +63,7 @@ pub struct SolveSummary {
     pub final_damping: f64,
     /// Global and per-object null-space analysis.
     pub dof: DofReport,
-    /// Seed-fixed discrete branch decisions.
+    /// Explicit tangency branch decisions.
     pub branch_resolutions: Vec<BranchResolution>,
     /// Source and normalized displacements from hints.
     pub hint_displacements: Vec<HintDisplacement>,
@@ -173,7 +173,7 @@ pub struct HintDisplacement {
     pub hint_far_threshold: f64,
 }
 
-/// A seed-selected discrete branch.
+/// An explicit tangency branch.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct BranchResolution {
     /// Relation source span.

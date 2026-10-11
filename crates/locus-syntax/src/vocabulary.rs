@@ -1,4 +1,4 @@
-//! Public completion tables shared by the parser, CLI, and future language server.
+//! Public completion tables shared by the parser, CLI, and language server.
 
 use crate::ast::Kind;
 
@@ -10,7 +10,7 @@ pub const STATEMENT_NAMES: &[&str] = &[
 /// Built-in rendering presets accepted by a `style` statement.
 pub const STYLE_PRESET_NAMES: &[&str] = &["textbook"];
 
-/// The special constructor used by free point and numeric declarations.
+/// The keyword introducing a free numeric declaration's scalar seed.
 pub const FREE_CONSTRUCTOR_NAME: &str = "free";
 
 /// Object kind keywords.
@@ -453,5 +453,5 @@ pub fn all_call_names() -> Vec<&'static str> {
     names
 }
 
-/// Deprecated beta 5 relation spellings, accepted only in legacy source.
+/// Call names reserved for source validation.
 pub const LEGACY_PREDICATE_NAMES: &[&str] = &["congruent", "coincident", "horizontal", "vertical"];

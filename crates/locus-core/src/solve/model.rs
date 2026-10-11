@@ -83,8 +83,8 @@ pub(super) fn unknown_preferences(
         .any(|source| layout::is_layout(source.expression));
     let mut values = Vec::new();
     for object in &system.objects {
-        // Initial positions are a starting point, not authored layout intent.
-        // Keeping them in the objective trades compact gaps for stale seeds.
+        // Placement seeds initialize measured layout; its preferences target
+        // numeric parameters, automatic dimensions, routes, labels, and gaps.
         if has_layout && is_internal_placement(object) {
             continue;
         }

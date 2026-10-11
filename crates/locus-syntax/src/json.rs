@@ -87,7 +87,7 @@ pub struct Definition {
     pub tree: ExprNode,
 }
 
-/// A free scalar or point hint.
+/// Interchange representation of a source seed.
 #[derive(Clone, Debug, PartialEq, Serialize)]
 #[serde(untagged)]
 pub enum Hint {

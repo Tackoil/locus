@@ -2,7 +2,7 @@
 
 *A relational language and CLI toolchain for plane-geometry figures and technical diagrams with precise alignment and ratios.*
 
-This document is self-contained and normative. The project is under development and supports only this latest draft; earlier file formats are not accepted.
+This document is self-contained and normative. The project is under development and supports this draft.
 
 This revision incorporates the beta 6 proposal into the normative language and toolchain contract. The [relation diagram](reference/relations.svg), its [Locus source](reference/relations.locus), and both [composition examples](../examples/composition) are formal reference material. It adds reusable functions, constructor declarations, ordered groups, automatic box sizing, standalone and path-attached labels, automatic connector routing, preset measurements, and rectangular boundary edges. The draft remains unfrozen pending the numerical and implementation contracts listed in Part 12. The measured runtime and 28-source acceptance now implement the contracts pinned in §7.7, §8.7 and §9. Remaining freeze questions stay listed in Part 12.
 
@@ -10,7 +10,7 @@ This revision incorporates the beta 6 proposal into the normative language and t
 
 ## 0. Design principles (informative)
 
-1. **The agent declares geometry and relationships; Locus owns placement.** Objects carry degrees of freedom; relations consume them; a deterministic solver finds the coordinates internally. Authors and agents never supply absolute positions, coordinate hints, or pins. Points may be declared with `point()` or derived from anchors and geometric constructions; there is no separate location value.
+1. **The agent declares geometry and relationships; Locus owns placement.** Objects carry degrees of freedom; relations consume them; a deterministic solver finds the coordinates internally. Points may be declared with `point()` or derived from anchors and geometric constructions.
 2. **The `.locus` file is the figure's source code** — ordered, diffable, hand-editable, self-testing (asserts live in the file).
 3. **Text-based verification is the primary feedback channel.** `describe` / `inspect` / `check` must be complete enough that a vision-less agent can catch every mistake, including wrong solution branches and leftover degrees of freedom.
 4. **Determinism is normative.** Identical file → identical solve → identical resolved geometry → byte-identical SVG.
@@ -20,14 +20,14 @@ This revision incorporates the beta 6 proposal into the normative language and t
 
 The current draft uses a relational model, keeps placement initialization inside Locus, provides parameterless `point()`, explicit or automatic shape dimensions, and measured labels, makes circle tangency choices explicit, and includes ellipses and B-splines:
 
-1. Geometry and content are declared by their intrinsic properties (`point()`, `circle(2)`, `rect(4, 2)`, `rect()`, `label("text")`); their placement belongs to Locus. Objects are related through measured bounds, points, and anchors, never through authored coordinates.
+1. Geometry and content are declared by their intrinsic properties (`point()`, `circle(2)`, `rect(4, 2)`, `rect()`, `label("text")`); their placement belongs to Locus. Objects are related through measured bounds, points, and anchors.
 2. Relations between objects (`tangent`, `on`, `align_center_y`, `dist(A,B) == 6`, …) are first-class statements that *define* geometry, not just check it.
 
 This is the geometric-constraint paradigm proven by CAD sketchers (SolveSpace, FreeCAD/planegcs). The constructive constructors survive as the **derived tier** — direct evaluation, zero unknowns — under the doctrine: **construct when you can, relate when you must.**
 
 ### 0.2 Diagram-authoring additions (informative)
 
-The [agent-loop example](../examples/composition/flowchart_agent_loop.locus) and [checkout example](../examples/composition/checkout_sequence.locus) use generic drawing objects and composition. Business meaning comes from text and local functions; there are no participant, message-event, branch, guard, activation, or lifeline primitives.
+The [agent-loop example](../examples/composition/flowchart_agent_loop.locus) and [checkout example](../examples/composition/checkout_sequence.locus) use generic drawing objects and composition. Business meaning comes from text and local functions.
 
 | Addition | Required behavior | Defined in |
 |---|---|---|
@@ -51,8 +51,7 @@ Initialization, numerical layout, routing search, and preset constants are speci
 - Extension: `*.locus`; encoding UTF-8; newline-terminated statements.
 - Comments: `//` to end of line. Outside strings and TeX spans, a comment may occupy a whole line or follow any statement.
 - Header: `locus 0 beta 6`. This exact header is mandatory.
-- **Compatibility:** Earlier headers and file formats are rejected. Backward compatibility is not maintained while the project is under development.
-- The file stores the **relational program**, never resolved coordinates. Resolved geometry is always derived by solving + evaluation.
+- The file stores the **relational program**. Resolved geometry is always derived by solving + evaluation.
 - Machine interchange: `locus fmt --json` emits the parsed AST as JSON (§9.4). The DSL is the authoring format; JSON is derived, never authored.
 
 ### 1.2 File shape
@@ -166,10 +165,10 @@ Note the `postfix` production: property access applies to any expression, so `se
 
 - **One simple statement per line.** No semicolons or continuation syntax. A function definition is a block: its opening declaration, each body statement, and its closing brace occupy separate lines (§1.5). Metadata uses `meta key = "value"`, with one key/value pair per statement; additional entries use additional `meta` statements. Parse errors are recovered at the next line boundary, so one bad simple statement never invalidates the file's remaining diagnostics.
 - **Comments are trivia.** The lexer removes `//` through the end of its physical line when it occurs outside a quoted string or TeX span; the terminating newline remains for recovery. This makes both comment-only lines and trailing comments valid without adding comment alternatives to every production.
-- **Two declaration forms, one type check.** `kind id(args)` calls the constructor that shares the kind's name: `circle c(2)`, `point P()`, `label l(P, "A")`, `rect box()`. For `segment` that constructor is `seg`. `kind id = rhs` is used when the right-hand side is anything else — an alias (`point O = c.center`), a derived constructor with another name (`point M = midpoint(A, B)`, `line t = tangent_line(E, c, 0)`, `arc m = angle_arc(A, B, C, r)`), an expression, or a `free` num. The two forms do not overlap: `circle c = circle(2)` is rejected with a fix-it to `circle c(2)`, and `num` has no constructor, so `num n(...)` is rejected. Both forms are deliberately redundant: the declared kind must match the result type. This cross-check catches agent mistakes early (`point M = seg(A,B)` → immediate type error) and makes files skimmable. Overloads are resolved from the arguments as for any call, and a constructor declaration has exactly the placed/derived status and unknowns of its constructor (§2.2).
-- **`free` is reserved for numeric declarations.** A free `num` requires a scalar seed expression directly after `free`, as in `num r = free 1.5`; a missing seed or a coordinate-pair seed is a local parse error. `point P = free ...` is invalid. There is no location type, absolute point constructor, coordinate-hint syntax, or `pin` relation.
+- **Two declaration forms, one type check.** `kind id(args)` calls the constructor that shares the kind's name: `circle c(2)`, `point P()`, `label l(P, "A")`, `rect box()`. For `segment` that constructor is `seg`. `kind id = rhs` is used for an alias (`point O = c.center`), a derived constructor with another name (`point M = midpoint(A, B)`, `line t = tangent_line(E, c, 0)`, `arc m = angle_arc(A, B, C, r)`), an expression, or a `free` num. Use the declaration form corresponding to the right-hand side; diagnostics suggest the appropriate form. The declared kind must match the result type. This cross-check catches agent mistakes early (`point M = seg(A,B)` → immediate type error) and makes files skimmable. Overloads are resolved from the arguments as for any call, and a constructor declaration has exactly the placed/derived status and unknowns of its constructor (§2.2).
+- **`free` is reserved for numeric declarations.** A free `num` requires a scalar seed expression directly after `free`, as in `num r = free 1.5`; malformed or missing scalar seeds are local parse errors.
 - **Points and object references are values.** `point O = c.center` names a derived anchor and introduces no unknowns. A reference such as `circle other = c` aliases the same geometry; it does not allocate another placement.
-- **`point()` takes no arguments.** `point P()` declares an independently placed point; `point P(1)`, `point P(1, 2)`, and `point P(A)` are local arity errors. Use `point Q = P` to name the same point, or a derived constructor to construct another. Neither declaration syntax nor point props accept coordinates, seeds, or a location field.
+- **`point()` takes no arguments.** `point P()` declares an independently placed point; other arities are local errors. Use `point Q = P` to name the same point, or a derived constructor to construct another.
 - **Placement-owning constructors occur only as a constructor declaration.** `circle c(2)` is valid; `label(circle(2).center, "O")` is invalid. Declare the object first. This gives each placement a stable source id and prevents hidden unknowns in nested expressions (§2.2).
 - **Identifiers**: `[A-Za-z][A-Za-z0-9_']*`, unique within their scope. Top-level objects, groups, classes, functions, and instance names share the file namespace. Function parameters and local members follow §1.5; qualified expanded ids are unique per file. Convention (not enforced): single/primed letters for points (`A`, `B'`, `M_1`), words for derived objects (`tri`, `inc`).
 - **Reference order**: an op's `rhs` may only reference ids defined on earlier lines; its `where` clause may also reference the id being declared. `rel` and `assert` statements may reference any id defined above them; `rel` equations constrain *earlier* objects (the solve is simultaneous, §7).
@@ -301,11 +300,11 @@ The zero-argument box overloads add automatic dimensions, and standalone labels 
 | `label caption(anchor, text)` | no independent geometric components | anchor-relative annotation offset |
 | `label caption(path, text)` | no independent geometric components | path-relative annotation placement |
 
-Zero-argument box constructors and `label(text)` are declaration-only, including inside function expansion. They accept no coordinate seed or authored location. An automatic rounded rectangle's radius is derived from the preset and resolved dimensions within its radius domain; it is not an extra independent unknown. Router controls and attached-label offsets are internal layout choices, not automatically declared free points or nums. Their integration and reporting follow §8.6 and Part 12.
+Zero-argument box constructors and `label(text)` are declaration-only, including inside function expansion. An automatic rounded rectangle's radius is derived from the preset and resolved dimensions within its radius domain; it is not an extra independent unknown. Router controls and attached-label offsets are internal layout choices. Their integration and reporting follow §8.6 and Part 12.
 
-Anchors such as `c.center`, `box.n`, and `decision.e` expose geometric relationships without exposing coordinates. Naming an anchor does not allocate unknowns, and constraining it moves its owning geometry (or the upstream objects and parameters on which it depends). `point()` introduces two internal unknowns owned by its declaration; relations constrain them directly. The old `point P = free ...` syntax remains invalid, and there is no independently placed line constructor. Lines, rays, segments, polygons, arcs, and B-splines derive from existing geometry. Arrows retain existing endpoints and resolve their route; annotations follow their constructor's placement mode (§5.6). A B-spline's controls may be declared points, anchors, or constructed points; the spline allocates no hidden control points or placement (§5.11).
+Anchors such as `c.center`, `box.n`, and `decision.e` expose geometric relationships. Naming an anchor does not allocate unknowns, and constraining it moves its owning geometry (or the upstream objects and parameters on which it depends). `point()` introduces two internal unknowns owned by its declaration; relations constrain them directly. Lines, rays, segments, polygons, arcs, and B-splines derive from existing geometry. Arrows retain existing endpoints and resolve their route; annotations follow their constructor's placement mode (§5.6). A B-spline's controls may be declared points, anchors, or constructed points; the spline derives its geometry from those controls (§5.11).
 
-Explicit-center forms such as `circle(O, r)`, `ellipse(O, a, b [, theta])`, and `rect(C, w, h)` remain derived constructors: their center argument must already be a point value, whether declared with `point()` or derived. They allocate no placement of their own. This permits concentric shapes and constructions at geometric centers without introducing authored coordinates.
+Explicit-center forms such as `circle(O, r)`, `ellipse(O, a, b [, theta])`, and `rect(C, w, h)` remain derived constructors: their center argument must already be a point value, whether declared with `point()` or derived. They allocate no placement of their own. This permits concentric shapes and constructions at geometric centers.
 
 For the explicit-dimension geometric subset, the equality subsystem's unknown vector concatenates the two internal components of each declared `point()`, the two center components of each placed shape, and the single value of each free `num`, in expanded declaration order (§7.1). Automatic box dimensions and standalone-label placements additionally belong to the joint layout model (§8.6); their numerical integration is to be finalized in Part 12. Derived objects, groups, namespaces, and aliases contribute no independent components. Two `point()` declarations own distinct placements even if relations later make them coincident; `point Q = P` shares P's placement and adds no unknowns.
 
@@ -318,11 +317,11 @@ num phi = (1 + sqrt(5)) / 2
 
 ### 2.3 Placement and solution choices
 
-- **Locus initializes placement.** No source syntax or public CLI field accepts a point or center seed. The engine supplies a deterministic initial placement and settles unconstrained placement internally (§7). A standalone `point P()` or `circle c(2)` is a complete valid figure after the required header.
-- **Relations express intent.** Use anchors, alignment, distances, and tangency to relate shapes. Relative measurements such as `hdist(a.center, b.center) == 5` remain part of the language; they express separation between objects, not absolute locations.
-- **Discrete choices are geometric.** `tangent(c1, c2)` means external tangency; `internally_tangent(outer, inner)` explicitly requests internal tangency. Multi-valued derived constructions use the documented branch selector (§5). Source choices must never be inferred from hidden center seeds.
-- **Numeric seeds remain numeric.** `num r = free 1.5` supplies a solver seed for a dimension, angle, ratio, or other numeric parameter. It is never a fixed value or an absolute coordinate. Relations determine the solved value; unresolved numeric freedom settles toward this seed. To fix a radius, write `circle(2)` or pass a constant `num`.
-- **Remaining freedoms are reported in terms of objects.** The engine distinguishes harmless rigid movement of a whole figure from unresolved relationships or dimensions (§7.2). Feedback names the affected objects and suggests geometric relations; it never asks an author to move a coordinate hint.
+- **Locus initializes placement.** The engine supplies a deterministic initial placement and settles unconstrained placement internally (§7). A standalone `point P()` or `circle c(2)` is a complete valid figure after the required header.
+- **Relations express intent.** Use anchors, alignment, distances, and tangency to relate shapes. Relative measurements such as `hdist(a.center, b.center) == 5` express separation between objects.
+- **Discrete choices are geometric.** `tangent(c1, c2)` means external tangency; `internally_tangent(outer, inner)` explicitly requests internal tangency. Multi-valued derived constructions use the documented branch selector (§5).
+- **Numeric seeds remain numeric.** `num r = free 1.5` supplies a solver seed for a dimension, angle, ratio, or other numeric parameter. Relations determine the solved value; unresolved numeric freedom settles toward this seed. To fix a radius, write `circle(2)` or pass a constant `num`.
+- **Remaining freedoms are reported in terms of objects.** The engine distinguishes harmless rigid movement of a whole figure from unresolved relationships or dimensions (§7.2). Feedback names the affected objects and suggests geometric relations.
 
 Assertions verify the chosen solution; they do not steer placement or select another solution. If a particular ordering or configuration matters, encode it with defining relations or an explicit construction rather than relying on engine placement.
 
@@ -396,7 +395,7 @@ Equality-based geometric relations work in `rel`, `where`, and `assert`. Numeric
 | `midpoint(M, A, B)` | M is halfway between A and B; A–M and M–B have equal lengths. |
 | `between(A, B, C)` | B lies strictly between distinct A and C on their line; endpoints are excluded. |
 
-There are **no vocabulary aliases**. Point coincidence uses `center(P, Q)`; horizontal point alignment uses `align_center_y(P, Q)`, and vertical point alignment uses `align_center_x(P, Q)`. Segment congruence uses numeric length equality. The former predicates `coincident`, `horizontal`, `vertical`, and `congruent` are replaced by these forms, not retained as synonyms. The point constructor `center(c)` (§5.1) remains distinct from the two-argument relation `center(A, B)`. Naming an existing geometric value (§1.4) does not add a vocabulary alias.
+Point coincidence uses `center(P, Q)`; horizontal point alignment uses `align_center_y(P, Q)`, and vertical point alignment uses `align_center_x(P, Q)`. Segment congruence uses numeric length equality. The point constructor `center(c)` (§5.1) remains distinct from the two-argument relation `center(A, B)`.
 
 ### 3.3 Geometric residuals and assert-only conditions
 
@@ -435,7 +434,7 @@ The comparisons `< > <= >=`, `between(A, B, C)`, and `inside(P, obj)` are **asse
 
 ### 3.4 Measured alignment, separation, and enclosure
 
-Layout relations use measured axis-aligned bounds and their centers, including actual rendered text extents (§8.2). A point has zero-size bounds. They accept geometric objects and measured content; they do not require authors to supply coordinates or estimate text size. Existing geometry-tier anchors remain subject to §5.8: measured content can participate directly in layout without turning label-box anchors into geometric constructor inputs.
+Layout relations use measured axis-aligned bounds and their centers, including actual rendered text extents (§8.2). A point has zero-size bounds. They accept geometric objects and content measured by the renderer. Existing geometry-tier anchors remain subject to §5.8: measured content can participate directly in layout without turning label-box anchors into geometric constructor inputs.
 
 `center` sets two center equalities. Each `align_*` relation aligns only its named bound or center component, using the first argument as the reference for the remaining arguments. These relations permit overlap and do not impose ordering, separation, containment, or equal dimensions. Matching dimensions use ordinary numeric equality.
 
@@ -475,7 +474,7 @@ Clipping boundaries are the closed regions of circles, ellipses, simple polygons
 ## Part 4 — Direction, measurement, and internal coordinates
 
 - Internal Cartesian scene space is **y-up**. The renderer flips to screen space; scene coordinates never denote pixels. The origin and absolute locations are engine details, absent from the authoring language and public `describe` / `inspect` output. Viewport is auto-fitted (§8.4).
-- Horizontal, vertical, compass directions, and angles remain available to express relative geometry and annotation intent. Removing authored locations does not remove relative placement.
+- Horizontal, vertical, compass directions, and angles express relative geometry and annotation intent.
 - `hdist(P, Q) = x(Q) − x(P)`; `vdist(P, Q) = y(Q) − y(P)` (signed).
 - Angles are CCW-positive. The unit suffix is **mandatory** on angle literals: `60deg`, `1.2rad`. A bare number in an angle position is a parse error (this kills the degrees/radians hallucination class).
 - Scene units are arbitrary; figures state their own scale conventions in `meta` if useful (e.g. "1 unit = 32 ms").
@@ -586,7 +585,7 @@ The zero-argument forms leave center placement, width, and height to Locus. Thei
 
 `contain(shape, content...)` uses actual measured content and the shape's interior to require sufficient dimensions. `cover_x` and `cover_y` impose extent requirements on the selected axis. Subject to all defining relations, the engine chooses compact dimensions and preset proportions; a standalone automatic box receives positive preset defaults. For equal-sized boxes, every containment requirement participates: the longest caption can enlarge all boxes linked by dimension equalities. A diamond must fit content inside its sloping sides, and a rounded rectangle must respect its corner arcs. `center(content, shape)` remains a separate requirement. When fixed dimensions cannot satisfy containment, checking reports a layout conflict instead of changing the dimensions or hiding overflow. The exact compact-sizing objective, preset proportions, and tie-breaks must be pinned before freezing (Part 12).
 
-A polygon implies its edges for incidence detection, label collision, and rendering, but does **not** auto-create edge ids; an agent needing a specific edge writes `seg(A, B)` explicitly (index-based edge access is deliberately absent — agents are unreliable with indices). `regular(...)` from v0.2 is removed: its vertices were unaddressable; construct vertices by `rotate` instead.
+A polygon implies its edges for incidence detection, label collision, and rendering. Name a specific edge with `seg(A, B)` and construct regular-polygon vertices with `rotate`.
 
 `rounded_rect` uses the same outer box anchors as `rect`, including bounding-box diagonal anchors (which lie outside a rounded corner when `r > 0`). `.centroid` equals `.center`; `.width`, `.height`, and `.corner_radius` are lengths. Dimensions satisfy `w > 0`, `h > 0`, and `0 <= r <= min(w, h)/2`; invalid radii are rejected rather than clamped. A zero radius gives square corners; the maximum radius gives a capsule, or a circle when the dimensions are equal. The kind remains `rounded_rect` in every case.
 
@@ -647,7 +646,7 @@ including during checking of solved scenes. Use a gentler bend such as `45deg`.
 Layout and export also reject non-finite control geometry or a control point
 more than 500 chord lengths from the midpoint (allowing floating-point rounding).
 
-The bend formula applies only to direct routes. Automatic routes retain source and target anchors, honor explicit clearance requirements, and report a routing conflict when no permitted route is found (§8.6). They do not create free control-point declarations, participant bindings, or special self-message behavior.
+The bend formula applies only to direct routes. Automatic routes retain source and target anchors, honor explicit clearance requirements, and report a routing conflict when no permitted route is found (§8.6).
 
 ### 5.8 Anchors
 
@@ -916,7 +915,7 @@ Diagnostics must name the op id, the failing precondition, and the offending mea
 
 ### 7.6 Determinism (normative)
 
-Identical file bytes → identical solve → identical internal coordinates → byte-identical SVG. All tie-breaks (initialization and retry schedule, LM schedule, branch ordering, label candidate selection, float formatting) must be frozen without randomness. The initialization rules in §7.7 are part of geometric equality conformance. `locus-core` must use a pinned math library (`libm` crate, not system libm) so this holds across platforms. This enables golden-file snapshot testing in CI, including solve-heavy fixtures on every platform in the matrix. Rendered formats necessarily contain coordinates; those are generated output, not an authoring or agent-feedback interface.
+Identical file bytes → identical solve → identical internal coordinates → byte-identical SVG. All tie-breaks (initialization and retry schedule, LM schedule, branch ordering, label candidate selection, float formatting) must be frozen without randomness. The initialization rules in §7.7 are part of geometric equality conformance. `locus-core` must use a pinned math library (`libm` crate) so this holds across platforms. This enables golden-file snapshot testing in CI, including solve-heavy fixtures on every platform in the matrix. Rendered formats necessarily contain coordinates; those are generated output, not an authoring or agent-feedback interface.
 
 ---
 
@@ -1131,7 +1130,7 @@ The four built-ins are ordinary classes with reserved names:
 | `construction` | `{ stroke: dotted, weight: thin, accent: gray }` |
 | `highlight` | `{ stroke: solid, weight: normal, accent: blue, fill: tint }` |
 
-When a class omits a prop, the built-in `main` value supplies the default; an exact class value takes precedence over its preset counterpart. Class names share the file's identifier namespace (unique, declared before use). Semantic built-ins remain the recommended default for textbook geometry; declared classes exist for diagram vocabulary — dashed lifelines, exact brand colors, color-coded signal families — which previously had to abuse `[auxiliary]` (finding F13, resolved).
+When a class omits a prop, the built-in `main` value supplies the default; an exact class value takes precedence over its preset counterpart. Class names share the file's identifier namespace (unique, declared before use). Semantic built-ins remain the recommended default for textbook geometry; declared classes support dashed lifelines, exact brand colors, and color-coded signal families.
 
 ### 8.4 Viewport
 
@@ -1170,7 +1169,7 @@ Diagram layout resolves measured content, automatic dimensions, relative placeme
 
 Original route measurements and collection layout bounds use the logical, untrimmed route; clipping changes rendering, not mathematical facts. Resolved visible strokes and labels determine the final viewport. This separation prevents clipping from silently changing a `sample.length` equality or endpoint incidence.
 
-Reports distinguish geometric equality unknowns/rank from automatic dimensions, standalone-label placements, routing choices, and active layout requirements. Preset choices are reported as engine decisions, never as authored constraints or coordinate hints. Groups, functions, aliases, and clipping add no independent placements. Equality-only rank and DOFs remain separate from one-sided active requirements and preference completion (§7.7).
+Reports distinguish geometric equality unknowns/rank from automatic dimensions, standalone-label placements, routing choices, and active layout requirements. Preset choices are reported as engine decisions. Groups, functions, aliases, and clipping add no independent placements. Equality-only rank and DOFs remain separate from one-sided active requirements and preference completion (§7.7).
 
 ---
 
@@ -1463,23 +1462,23 @@ Since the format is line-oriented, agents may equally edit the file directly; `c
 
 - All commands support `--json` for machine-readable output (agents); default output is human-readable with source-line anchors.
 - All commands support `--json --compact` for single-line JSON. Compact `check` retains every diagnostic and failed assertion (including all actual subterms), and summarizes solver unknowns, equations, rank, remaining global DOF, and maximum normalized residual. Its assertion report includes `passed`, `total`, `failed`, and `assertions` containing only failed results. Omit `--compact` for full solver and assertion details. Exit codes and strict-warning behavior are identical in both modes.
-- `describe` and `inspect`, including their JSON forms, expose object relationships, dimensions, anchor identities, relative measurements, and branch choices. They omit absolute positions, center seeds, coordinate arrays, and any `location` field. Rendering may use internal coordinates (§7.6); agents do not need them to author or repair a figure.
+- `describe` and `inspect`, including their JSON forms, expose object relationships, dimensions, anchor identities, relative measurements, and branch choices. These provide the information needed to author or repair a figure. Internal coordinates belong to generated rendering output (§7.6).
 - `inspect --json` reports diagnostics (`degenerate`, `hint_far`, `label_collision`, `out_of_view`, `crowding`) by default, with empty measurement tables and incidences. Compact inspection omits empty tables and incidences. Repeatable `--distance A B`, `--angle A B C` (vertex B; radians), and `--ratio A M B` (`AM/MB`; M strictly inside AB) request only those tuples. Unknown/non-point ids or undefined measurements return exit 3 with an `inspect_query` diagnostic. `--measurements` opts into exhaustive tables (pairwise distances among named points, triangle angles, ratios along shared lines) and conflicts with direct tuple queries. `--incidences` independently opts into all detected incidences ("`inc` tangent to `seg(A,B)`", "`M` on `AB` with `AM:MB = 1:1`"). `check` computes diagnostics without enumerating measurement tables or incidences.
 - Visual `crowding` requires two visible point markers; `mark: none` points do not produce `crowding` or `out_of_view` diagnostics. Hidden helpers remain part of mathematical measurements, incidences, and assertions. Geometry and solve diagnostics do not depend on marker visibility.
 - Declarations do not require incoming source references. Terminal drawing objects are intended outputs; unused numeric declarations and hidden construction objects are also valid. An absent reference alone produces no diagnostic and cannot fail `check --strict`.
 - On assert failure, the report includes the actual value of **every measurable subterm** so the agent can localize which upstream definition is wrong.
-- Diagram reports include automatic versus explicit dimensions, measured label sizes and roles, attachment ids, `near`/`side` choices, route modes and logical lengths, clipping boundaries, collection membership, and failed layout/clearance requirements. They identify qualified function members and source chains. `check` validates routing, containment, and clipping requirements before `render`; these failures return exit 2 with source-anchored layout/routing diagnostics. Ordinary annotation-collision warnings retain the existing strict-check policy. Public reports omit absolute label positions, route control coordinates, and internal search candidates.
-- Ellipse reports include semiaxes, rotation, anchor identities, and area. B-spline reports include the ordered control expressions, degree `3`, derived knot vector, span count, and endpoint identities. Neither report exposes internal control coordinates. Detected incidence for ellipses uses §3.2; B-spline incidence is not inferred from samples or its control polygon.
+- Diagram reports include automatic versus explicit dimensions, measured label sizes and roles, attachment ids, `near`/`side` choices, route modes and logical lengths, clipping boundaries, collection membership, and failed layout/clearance requirements. They identify qualified function members and source chains. `check` validates routing, containment, and clipping requirements before `render`; these failures return exit 2 with source-anchored layout/routing diagnostics. Ordinary annotation-collision warnings retain the existing strict-check policy. Public reports describe accepted choices through object identities and measurements.
+- Ellipse reports include semiaxes, rotation, anchor identities, and area. B-spline reports include the ordered control expressions, degree `3`, derived knot vector, span count, and endpoint identities. Detected incidence for ellipses uses §3.2; B-spline incidence is not inferred from samples or its control polygon.
 
 ### 9.4 JSON interchange
 
-`locus fmt --json` emits the AST: version, segmented meta text, style preset, declared classes, ordered ops (`{id, kind, def, where, attr, props}` with `def` as both source string and parsed tree; a constructor declaration's `def` is the constructor call), rels, and asserts. A free numeric op additionally carries its scalar `hint`; geometry ops never carry a hint or location field. Placement ownership follows from the constructor overload; implicit centers are not synthesized as free-point ops. Numeric expression nodes include their inferred dimension (§6.1); text nodes contain the ordered plain/TeX segments from §1.4. This is the integration surface for future MCP shims, editors, or watch-mode preview servers — all of which wrap the CLI, never reimplement it.
+`locus fmt --json` emits the AST: version, segmented meta text, style preset, declared classes, ordered ops (`{id, kind, def, where, attr, props}` with `def` as both source string and parsed tree; a constructor declaration's `def` is the constructor call), rels, and asserts. A free numeric op additionally carries its scalar `hint`. Placement ownership follows from the constructor overload. Numeric expression nodes include their inferred dimension (§6.1); text nodes contain the ordered plain/TeX segments from §1.4. This is the integration surface for future MCP shims, editors, or watch-mode preview servers that wrap the CLI.
 
 For reusable functions (§1.5), preserve ordered definitions, parameter names, body statements, and named invocations with their arguments and optional class. Also expose expanded ops, rels, and asserts with qualified ids and origin information linking each item to its body statement and invocation chain. Definition templates are not scene objects and contribute no unknowns. `fmt` preserves the reusable source form; `describe` and diagnostics identify expanded members such as `approved.payment.path`. `functions`, `calls`, and `groups` retain ordered source AST records. `collections` is keyed by qualified id and contains `id`, `kind` (`group` or `instance`), normalized ordered `members`, `span`, and `origin`. `expansion_origins` aligns with expanded statement order and contains the body `span` plus ordered `invocations` (`function`, qualified `instance`, call `span`). `expanded` contains the flat interchange document; `relation_properties` associates props with `relation_index`. Empty extension fields are omitted.
 
-For groups (§1.6), preserve ordered declarations and authored member references, and expose the normalized member identities after nested-group and instance expansion. Group metadata remains separate from drawable ops and never carries placement unknowns or coordinate hints. `fmt` preserves group declarations; `describe` reports membership and the relations involving the collection, and removal checks include group references as dependencies. Local group records retain qualified ids and expansion origins. `describe` attaches nonempty invocation `origin` records to expanded objects and includes `collections`, `expansion_origins`, expanded `relations` and `relation_properties`, and `diagram` records with qualified `id`, canonical expanded `definition`, authored `properties` and coordinate-free `accepted` details. Box details distinguish automatic dimensions and width/height; labels report measured width/height, typography role and accepted path side/region; arrows report accepted route mode, side, logical length and clipping. Collection relations use the expanded relation trees. Internal candidate indices and control coordinates are omitted.
+For groups (§1.6), preserve ordered declarations and authored member references, and expose the normalized member identities after nested-group and instance expansion. Group metadata describes membership separately from drawable ops. `fmt` preserves group declarations; `describe` reports membership and the relations involving the collection, and removal checks include group references as dependencies. Local group records retain qualified ids and expansion origins. `describe` attaches nonempty invocation `origin` records to expanded objects and includes `collections`, `expansion_origins`, expanded `relations` and `relation_properties`, and `diagram` records with qualified `id`, canonical expanded `definition`, authored `properties` and coordinate-free `accepted` details. Box details distinguish automatic dimensions and width/height; labels report measured width/height, typography role and accepted path side/region; arrows report accepted route mode, side, logical length and clipping. Collection relations use the expanded relation trees.
 
-Preserve zero-argument shape/label constructor forms, label attachment mode and typography role, route/placement properties, symbolic `edge` directions, and `style_metric` calls in the source AST. Do not replace omitted dimensions with authored numeric literals or synthesize free points for labels and router controls. Resolved reports may include measured dimensions and logical path lengths; coordinates and control arrays are restricted to generated rendering output. Solve reports include equality DOF classes, active requirements, settling completion/reason/projected gradient and separate settling, restoration, outer-search, routing and measurement counters. E413 conflicts name source requirements and implicated members; incomplete settling is a warning and fails strict checks.
+Preserve zero-argument shape/label constructor forms, label attachment mode and typography role, route/placement properties, symbolic `edge` directions, and `style_metric` calls in the source AST. Preserve automatic dimensions and engine-owned placement in their source forms. Resolved reports may include measured dimensions and logical path lengths; coordinates and control arrays are restricted to generated rendering output. Solve reports include equality DOF classes, active requirements, settling completion/reason/projected gradient and separate settling, restoration, outer-search, routing and measurement counters. E413 conflicts name source requirements and implicated members; incomplete settling is a warning and fails strict checks.
 
 ### 9.5 Intended agent loop
 
@@ -1499,8 +1498,6 @@ Recommended agent policy: **never `render` until `check` exits 0.**
 ## Part 10 — Out of scope for 0 beta 6 (reserved)
 
 - Inequality relations in `rel` (only asserts may compare with `< > <= >=`).
-- Authored router control coordinates, arbitrary route programs, and domain-specific sequence/flowchart primitives. Automatic box sizing, routed connectors, and measured labels are in scope (§5.5–§5.7, §8.6); their numerical implementation is pinned in §7.7 and §8.7.
-- Location values, the old hinted free-point syntax, absolute coordinate hints, and `pin` are excluded from the authoring model, not reserved for later addition. Independent placement is limited to points, supported placed shapes, and standalone measured labels (§2.2). B-splines derive all controls from existing geometry; automatic arrow controls remain engine-owned.
 - General ellipse/B-spline intersections, curve tangency and projection; ellipse arcs and perimeter; variable-degree, custom-knot, rational, periodic, closed, or fitted B-splines (§5.10–§5.11).
 - User-defined presets or named palettes; per-op inline style declarations; whole-figure transforms; layers; animation; 3D. Exact values remain reusable through classes (§8.3).
 - Statement continuations or multi-line simple statements; includes/imports; recursive or expression-valued user-defined functions. Reusable statement blocks and named calls are specified in §1.5.
@@ -1556,7 +1553,7 @@ assert tangent(c2, t_ext)               // touches BOTH circles — the theorem
 assert collinear(E, P_1, P_2)
 ```
 
-The agent states radii and a tangency relation, then derives anchors, the contact point, and a common tangent. The assertions verify their consequences. No standalone location, free point, or coordinate seed appears in the file.
+The agent states radii and a tangency relation, then derives anchors, the contact point, and a common tangent. The assertions verify their consequences.
 
 ### 11.2 Relational diagram
 
@@ -1598,8 +1595,8 @@ The two composition examples in §0.2 are broader acceptance cases: together the
 1. **Placement initializer — pinned** in §7.7, including ring seeds, relation-aware passes and bounded precondition retry scales.
 2. **Rigid symmetry classification** — common translation is handled by §7.2. Define when common rotation is also presentation-only, accounting for axis-alignment relations, compass anchors, relative offsets, and angle-based constructions, before exempting it from strict checks.
 3. **Solver constants** — empirically validate the specified normalization, rank threshold, damping schedule, and `1e-12`/`1e-9` gap on extreme-scale figures before freezing `0 beta 6`; any change after freezing requires a new file header.
-4. **Implementation migration — complete** for parser/AST, constructor typing, unknown ownership, solver initialization, CLI/JSON reports, and fixtures. Earlier headers and constructor forms are rejected; intended relative geometry must be expressed through relations and explicit construction branches.
-5. **KaTeX subset boundary** — which TeX commands are guaranteed? Needs an explicit whitelist appendix before v1.
+4. **Implementation migration — complete** for parser/AST, constructor typing, unknown ownership, solver initialization, CLI/JSON reports, and fixtures. Relative geometry is expressed through relations and explicit construction branches.
+5. **TeX subset boundary** — which TeX commands are guaranteed? Needs an explicit whitelist appendix before v1.
 6. **Curve implementation** — add ellipse/B-spline syntax and typed overloads, parameter domains, analytic evaluation and differentiation (including B-spline endpoint derivatives), rotated/conservative bounds, exact cubic span conversion, and curve-aware layout. Pin conversion operation order and collision tolerances; verify endpoint, interior-knot, repeated-control, and rotated-ellipse cases across renderers. Ellipse and B-spline demonstrations now pass runtime acceptance and renderer parity; the remaining freeze review concerns conversion operation order and extreme-scale coverage.
 7. **Measured layout and path operations — pinned** in §7.7–§8.7: live hinges, hard feasibility, working-set preferences, exact boundary distances, bounded search, measurement feedback and honest incomplete-settling reports.
 8. **Function expansion, source JSON and CLI editing — pinned** in §1.5 and §9.1–§9.4. Independent, nested, object/class arguments, source tracing and qualified-member edits are validated.
@@ -1611,18 +1608,17 @@ The two composition examples in §0.2 are broader acceptance cases: together the
 - **Object-owned placement** — `point()` declarations, circles, ellipses, rectangles, rounded rectangles, and diamonds introduce internal placement; anchors and constructive points remain derived (§2.2).
 - **Ellipses** — positive ordered semiaxes, optional explicit rotation, derived anchors, incidence, containment, and area (§5.10).
 - **B-splines** — derived open clamped uniform cubic curves, with ordered existing control points and scalar parameter sampling (§5.11).
-- **No authored locations** — hinted free-point declarations, coordinate hints, and `pin` are removed. The new `point()` constructor takes no arguments. Public authoring and feedback expose geometry and relationships, not absolute coordinates (§1.4, §9.3).
 - **Explicit tangency semantics** — `tangent(c1, c2)` is external; `internally_tangent(outer, inner)` is internal, independent of initialization (§3.2).
 - Unresolved relative DOFs report as **info** by default; `--strict` promotes. Common translation alone never fails strict checking (§7.2–§7.3).
-- **Unified relation vocabulary** — 32 entries follow the relation diagram, including measured alignment, separation, enclosure, clearance, and clipping. `center`, axis-center alignment, and numeric length equality replace `coincident`, `horizontal`, `vertical`, and `congruent`; no vocabulary aliases are retained (§3.2).
+- **Unified relation vocabulary** — 32 entries follow the relation diagram, including measured alignment, separation, enclosure, clearance, and clipping. `center`, axis-center alignment, and numeric length equality express point coincidence, alignment, and equal lengths (§3.2).
 - **Reusable local functions** — `fn` defines a statement block with positional arguments and no return value. Named calls expand fresh local declarations and shared relations; qualified members, nested composition, style fallback, and measured instance collections follow §1.5.
 - **Constructor declarations** — `kind id(args)` is the only way to call the constructor named after the kind; `kind id = rhs` is reserved for aliases, differently named derived constructors, expressions, and `free` nums (§1.4).
 - **Ordered groups** — `group name(members...)` aliases existing objects and collections, flattens nested membership in order, and keeps the first occurrence of each object identity. Groups draw nothing, introduce no unknowns, and impose no layout; relation-specific expansion or combined bounds follow §1.6.
 - **Automatic box sizing** — zero-argument rectangle, diamond, and rounded-rectangle constructors obtain positive compact dimensions from measured content, defining relations, and preset defaults; explicit dimensions stay fixed (§5.5).
 - **Measured label modes and typography** — standalone content, point-anchor attachment, and path attachment share measured text; path labels use `near`/`side`, and `role: title` selects preset typography without prescribing placement (§5.6–§5.7).
 - **Generic automatic routes** — curved and orthogonal arrows preserve endpoint identities, choose controls internally, and participate in clearance, path-label placement, and endpoint clipping (§8.6).
-- **General diagram measurements** — preset `short_length`/`narrow_width`, logical arrow length, and finite `edge(rect, direction)` values replace domain-specific sample paths, activation widths, and divider placement (§5.8, §6.2).
-- **Numeric `free` only** — scalar hints remain for unknown numeric parameters; points and lines cannot use `free` (§2.2–§2.3).
-- **Style classes introduced** — reusable classes with a closed property set (§8.3); resolves F13.
+- **General diagram measurements** — preset `short_length`/`narrow_width`, logical arrow length, and finite `edge(rect, direction)` values provide shared measurements for composition (§5.8, §6.2).
+- **Numeric parameters** — scalar hints initialize unknown numeric parameters (§2.2–§2.3).
+- **Style classes introduced** — reusable classes with a closed property set (§8.3).
 - **Exact class styles supported** — HEX colors, numeric line weights, custom dash arrays, opacity, caps, and joins coexist with preset tokens (§8.3).
 - **Mixed text and TeX supported** — quoted strings may contain measured inline `$...$` segments while bare `$...$` remains the all-TeX shorthand (§1.4, §8.2).
