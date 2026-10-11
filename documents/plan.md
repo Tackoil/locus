@@ -298,7 +298,7 @@ Deliverables:
 - `inspect.rs` per spec §9.3: measurement tables (pairwise distances among named points,
   triangle angles, ratios along shared lines), detected incidences (tangency, point-on-object,
   ratio detection along shared lines, e.g. "M on AB with AM:MB = 1:1"), and diagnostics:
-  `degenerate`, `hint_far`, `out_of_view` (geometry bbox based), `crowding`, `unreferenced`.
+  `degenerate`, `hint_far`, `out_of_view` (geometry bbox based), `crowding`.
   Emit `label_collision` as a variant that layout will populate later — define the type now.
   All detection thresholds via `tol.rs`; all output ordering deterministic (file order, then
   lexicographic).

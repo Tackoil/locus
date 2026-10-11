@@ -1067,9 +1067,6 @@ fn inspect_diagnostic_parts(diagnostic: &InspectDiagnostic) -> (&'static str, Sp
             Span::default(),
             format!("`{first}` and `{second}` are crowded at distance {distance:.6}"),
         ),
-        InspectDiagnostic::Unreferenced { id, span } => {
-            ("unreferenced", *span, format!("`{id}` is unreferenced"))
-        }
     }
 }
 

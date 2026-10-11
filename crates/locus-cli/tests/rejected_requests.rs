@@ -157,7 +157,7 @@ fn batch_assertions_and_strict_warnings_are_archived() -> Result<(), Box<dyn Err
 
     fs::write(
         directory.path().join("warning.locus"),
-        "locus 0 beta 5\npoint A = point()\n",
+        "locus 0 beta 5\npoint A = point()\npoint B = offset(A, 0, 0)\n",
     )?;
     locus(directory.path())?
         .args(["check", "warning.locus", "--strict"])
@@ -166,6 +166,7 @@ fn batch_assertions_and_strict_warnings_are_archived() -> Result<(), Box<dyn Err
     let saved = records(directory.path())?;
     assert_eq!(saved[0]["exit_code"], 1);
     assert_eq!(saved[0]["diagnostics"][0]["severity"], "warning");
+    assert_eq!(saved[0]["diagnostics"][0]["code"], "crowding");
     Ok(())
 }
 

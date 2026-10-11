@@ -1,8 +1,8 @@
 //! Deterministic, machine-readable measurements and scene diagnostics.
 
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::BTreeMap;
 
-use locus_syntax::{Constructor, Expr, File, Ident, PropValue, Span, Statement};
+use locus_syntax::{File, Ident, Span};
 use serde::Serialize;
 
 use crate::Tolerance;
@@ -20,7 +20,7 @@ pub struct InspectionReport {
     pub measurements: MeasurementTables,
     /// Automatically detected geometric facts.
     pub incidences: Vec<Incidence>,
-    /// Geometry, solve, visibility, and reference diagnostics.
+    /// Geometry, solve, and visibility diagnostics.
     pub diagnostics: Vec<InspectDiagnostic>,
 }
 
@@ -165,13 +165,6 @@ pub enum InspectDiagnostic {
         /// Point distance in scene units.
         distance: f64,
     },
-    /// A declaration has no incoming source reference.
-    Unreferenced {
-        /// Declaration id.
-        id: String,
-        /// Declaration span.
-        span: Span,
-    },
 }
 
 /// Serializable axis-aligned geometry bounds.
@@ -212,7 +205,7 @@ pub fn inspect(
     InspectionReport {
         measurements: measurement_tables(&points, tolerance),
         incidences: detected_incidences(scene, &points, tolerance),
-        diagnostics: diagnostics(file, scene, &points, solve, tolerance, viewport),
+        diagnostics: diagnostics(scene, &points, solve, tolerance, viewport),
     }
 }
 
@@ -519,27 +512,16 @@ fn detect_ratios(
 }
 
 fn diagnostics(
-    file: &File,
     scene: &ResolvedScene,
     points: &[NamedPoint<'_>],
     solve: Option<&SolveSummary>,
     tolerance: Tolerance,
     viewport: Option<BBox>,
 ) -> Vec<InspectDiagnostic> {
-    let referenced = referenced_ids(file);
     let hints = hint_diagnostics(solve);
     let mut staged = Vec::new();
     for (index, (id, object)) in scene.objects.iter().enumerate() {
-        stage_object_diagnostics(
-            &mut staged,
-            index,
-            id,
-            object,
-            viewport,
-            tolerance,
-            &referenced,
-            &hints,
-        );
+        stage_object_diagnostics(&mut staged, index, id, object, viewport, tolerance, &hints);
     }
     stage_crowding(&mut staged, points, tolerance);
     staged.sort_by(|lhs, rhs| (&lhs.0, &lhs.1).cmp(&(&rhs.0, &rhs.1)));
@@ -548,7 +530,6 @@ fn diagnostics(
 
 type StagedDiagnostic = (usize, String, InspectDiagnostic);
 
-#[allow(clippy::too_many_arguments)]
 fn stage_object_diagnostics(
     output: &mut Vec<StagedDiagnostic>,
     index: usize,
@@ -556,7 +537,6 @@ fn stage_object_diagnostics(
     object: &ResolvedObject,
     viewport: Option<BBox>,
     tolerance: Tolerance,
-    referenced: &BTreeSet<String>,
     hints: &BTreeMap<String, InspectDiagnostic>,
 ) {
     if is_degenerate(object, tolerance) {
@@ -583,16 +563,6 @@ fn stage_object_diagnostics(
                 id: id.name.clone(),
                 span: id.span,
                 bounds: bounds.into(),
-            },
-        ));
-    }
-    if !referenced.contains(&id.name) {
-        output.push((
-            index,
-            "unreferenced".to_owned(),
-            InspectDiagnostic::Unreferenced {
-                id: id.name.clone(),
-                span: id.span,
             },
         ));
     }
@@ -643,76 +613,6 @@ fn stage_crowding(
                 ));
             }
         }
-    }
-}
-
-fn referenced_ids(file: &File) -> BTreeSet<String> {
-    let mut output = BTreeSet::new();
-    for statement in &file.statements {
-        collect_statement_references(statement, &mut output);
-    }
-    output
-}
-
-fn collect_statement_references(statement: &Statement, output: &mut BTreeSet<String>) {
-    match statement {
-        Statement::Op(op) => collect_op_references(op, output),
-        Statement::Rel(relation) => collect_expr_references(&relation.expr, output),
-        Statement::Assert(assertion) => collect_expr_references(&assertion.expr, output),
-        Statement::Meta(_) | Statement::Style(_) | Statement::Class(_) => {}
-    }
-}
-
-fn collect_op_references(op: &locus_syntax::OpStmt, output: &mut BTreeSet<String>) {
-    collect_constructor_references(&op.ctor, output);
-    for expression in &op.where_clauses {
-        collect_expr_references(expression, output);
-    }
-    for property in &op.props.items {
-        if let PropValue::Expr(expression) = &property.value {
-            collect_expr_references(expression, output);
-        }
-    }
-}
-
-fn collect_constructor_references(constructor: &Constructor, output: &mut BTreeSet<String>) {
-    match constructor {
-        Constructor::Call { args, .. } => collect_expr_list_references(args, output),
-        Constructor::Expr { expr, .. } | Constructor::FreeNum { hint: expr, .. } => {
-            collect_expr_references(expr, output);
-        }
-    }
-}
-
-fn collect_expr_references(expression: &Expr, output: &mut BTreeSet<String>) {
-    if let Expr::Ref(id) = expression {
-        output.insert(id.name.clone());
-        return;
-    }
-    collect_compound_expr_references(expression, output);
-}
-
-fn collect_compound_expr_references(expression: &Expr, output: &mut BTreeSet<String>) {
-    match expression {
-        Expr::Call { args, .. } => collect_expr_list_references(args, output),
-        Expr::Property { base, args, .. } => {
-            collect_expr_references(base, output);
-            collect_expr_list_references(args, output);
-        }
-        Expr::Group { expr, .. } | Expr::Unary { expr, .. } => {
-            collect_expr_references(expr, output);
-        }
-        Expr::Binary { lhs, rhs, .. } => {
-            collect_expr_references(lhs, output);
-            collect_expr_references(rhs, output);
-        }
-        Expr::Number(_) | Expr::Boolean { .. } | Expr::String(_) | Expr::Tex(_) | Expr::Ref(_) => {}
-    }
-}
-
-fn collect_expr_list_references(expressions: &[Expr], output: &mut BTreeSet<String>) {
-    for expression in expressions {
-        collect_expr_references(expression, output);
     }
 }
 
@@ -817,6 +717,12 @@ mod tests {
             measurements.line_ratios[0].integer_ratio,
             Some(IntegerRatio { left: 1, right: 1 })
         );
+    }
+
+    #[test]
+    fn terminal_geometry_needs_no_incoming_source_references() {
+        let report = inspect(&empty_file(), &incidence_fixture(0.0), None);
+        assert!(report.diagnostics.is_empty());
     }
 
     #[test]

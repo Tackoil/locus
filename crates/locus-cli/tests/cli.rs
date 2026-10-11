@@ -133,12 +133,61 @@ fn usage_errors_honor_json_output() -> Result<(), Box<dyn Error>> {
 fn human_warnings_use_warning_severity() -> Result<(), Box<dyn Error>> {
     let directory = tempfile::tempdir()?;
     let figure = directory.path().join("warning.locus");
-    fs::write(&figure, "locus 0 beta 5\npoint A = point()\n")?;
+    fs::write(
+        &figure,
+        "locus 0 beta 5\npoint A = point()\npoint B = offset(A, 0, 0)\n",
+    )?;
     let output = locus()?.arg("inspect").arg(&figure).output()?;
     assert_eq!(output.status.code(), Some(0));
     let stderr = output_text(output.stderr)?;
     assert!(stderr.contains('⚠'));
     assert!(!stderr.contains('×'));
+    assert!(stderr.contains("crowding"));
+    Ok(())
+}
+
+#[test]
+fn terminal_objects_and_unused_declarations_pass_strict_check() -> Result<(), Box<dyn Error>> {
+    let directory = tempfile::tempdir()?;
+    let figure = directory.path().join("terminal-objects.locus");
+    fs::write(
+        &figure,
+        concat!(
+            "locus 0 beta 5\n",
+            "num unused = 42\n",
+            "point A = point()\n",
+            "point B = offset(A, 3, 0)\n",
+            "point construction = offset(A, 0.5, 0.5) { mark: none }\n",
+            "segment AB = seg(A, B)\n",
+            "circle c = circle(A, 1)\n",
+            "arrow a = arrow(A, B)\n",
+            "label t = label(B, \"end\")\n",
+        ),
+    )?;
+    let inspect = locus()?
+        .arg("inspect")
+        .arg(&figure)
+        .arg("--json")
+        .output()?;
+    assert_eq!(inspect.status.code(), Some(0));
+    let report: serde_json::Value = serde_json::from_slice(&inspect.stdout)?;
+    assert_eq!(report["diagnostics"], serde_json::json!([]));
+
+    let check = locus()?
+        .arg("check")
+        .arg(&figure)
+        .args(["--strict", "--json"])
+        .output()?;
+    assert_eq!(check.status.code(), Some(0));
+    let report: serde_json::Value = serde_json::from_slice(&check.stdout)?;
+    assert_eq!(report["passed"], true);
+    assert_eq!(report["files"][0]["diagnostics"], serde_json::json!([]));
+
+    for command in ["inspect", "check"] {
+        let output = locus()?.arg(command).arg(&figure).output()?;
+        assert_eq!(output.status.code(), Some(0));
+        assert!(output.stderr.is_empty());
+    }
     Ok(())
 }
 
