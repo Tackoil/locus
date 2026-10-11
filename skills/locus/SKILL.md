@@ -33,9 +33,13 @@ there, consult the matching version's specification instead of inventing APIs.
 - Begin with `locus 0 beta 5`. Use one statement per line and a final newline.
   `style textbook` is optional. Define dependencies before use and give every
   declaration a unique identifier.
-- Prefer derived constructions such as `midpoint`, `foot`, and `incircle` when
-  they directly express the requested geometry. Use parameterless `point()`
-  and dimension-only shapes when placement must be solved from relationships.
+- Construct when you can, relate when you must. Use anchors, `offset`, `foot`,
+  `midpoint`, and other derived constructions for geometry determined by earlier
+  objects. Each `point()` adds two solver unknowns; wrapping a known construction
+  in `point() where { coincident(...) }` adds unnecessary solve work. Use
+  parameterless points and dimension-only shapes for independent placement that
+  must be solved from relationships. For determined centers, use explicit-center
+  shapes such as `rect(offset(input.center, 5, 0), 3, 1)`.
 - Express placement with geometric anchors, signed relative offsets, distances,
   alignment, and tangency. Never supply absolute point coordinates, center
   seeds, pins, or a `location` field.
@@ -47,6 +51,11 @@ there, consult the matching version's specification instead of inventing APIs.
   offsets when left/right or above/below order matters.
 - Keep geometry independent of annotation layout. Use shape anchors to route
   connectors; label-box anchors are annotation-only.
+
+For diagram rows, lifelines, and routing points, read
+[derived placement](references/language.md#prefer-derived-placement) and adapt
+the [runnable routing example](references/derived-routing.locus). It keeps one
+placement owner and derives the rest, without absolute coordinates or pins.
 
 For an existing figure, preserve its identifiers and assertions while changing
 the definitions needed for the request. Direct source editing is supported.

@@ -12,8 +12,8 @@ locus 0 beta 5
 style textbook
 
 point A = point()
-point B = point() where { horizontal(A, B), hdist(A, B) == 4 }
-point C = point() where { vertical(A, C), vdist(A, C) == 3 }
+point B = offset(A, 4, 0)
+point C = offset(A, 0, 3)
 polygon tri = polygon(A, B, C)
 circle circum = circumcircle(A, B, C) [construction]
 right_angle corner = right_angle(A, B, C)
@@ -81,6 +81,37 @@ B-splines are open, clamped, uniform cubics; interior controls are generally
 not interpolated. `.at(t)` takes a scalar in `[0, 1]`. General spline incidence,
 intersection, projection, tangency, length, and area are unsupported.
 
+### Prefer derived placement
+
+Use a construction when earlier geometry already determines the result. Derived
+points and explicit-center shapes introduce no unknowns of their own; an
+independently placed point or shape center adds two. The remaining placement
+owner can move the whole diagram without changing its relative geometry.
+
+| Solver formulation | Direct construction for the same geometry |
+| --- | --- |
+| `point P = point() where { coincident(P, box.s) }` | `point P = box.s` |
+| `point Q = point() where { vertical(P, Q), vdist(P, Q) == -2 }` | `point Q = offset(P, 0, -2)` |
+| `point Q = point() where { horizontal(P, Q), hdist(P, Q) == 4 }` | `point Q = offset(P, 4, 0)` |
+| `point E = point() where { coincident(E, foot(row, life)) }` | `point E = foot(row, life)` |
+| `point M = point() where { midpoint(M, A, B) }` | `point M = midpoint(A, B)` |
+| `rect next = rect(3, 1) where { horizontal(input.center, next.center), hdist(input.center, next.center) == 5 }` | `rect next = rect(offset(input.center, 5, 0), 3, 1)` |
+
+These are alternatives, not pairs to append together. Preserve identifiers,
+style classes, properties, and independent assertions when changing an existing
+declaration. Keep solver relations for independent unknowns when a construction
+does not express the required geometry; do not replace an unsigned distance with
+a signed offset unless the requested direction is known.
+
+For sequence diagrams, derive rows with negative vertical offsets and project
+message endpoints onto lifelines with `foot`. Keep projected rows within a
+lifeline segment's domain; use a supporting line if projection outside that
+domain is intended. The complete [routing example](derived-routing.locus) shows
+two lifelines, a request, a connected self-call, and a return. Its one placed
+header owns two unknowns; all other centers and points are derived, with no
+solver equations. Use `describe --json` to inspect the `solve.unknowns` and
+`solve.equations` counts when diagnosing expensive placement.
+
 ## Relations, assertions, and measurements
 
 Use in both `rel` and `assert`:
@@ -121,7 +152,7 @@ and arithmetic dimensionally consistent; bare numbers never infer an angle.
 
 ```locus
 rect input = rect(3, 1)
-rect output = rect(3, 1) where { horizontal(input.center, output.center), hdist(input.center, output.center) == 5 }
+rect output = rect(offset(input.center, 5, 0), 3, 1)
 label title_in = label(input.center, "Input") { dir: center }
 label title_out = label(output.center, "Output") { dir: center }
 arrow link = arrow(input.e, output.w) { head: -> }

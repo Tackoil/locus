@@ -1,0 +1,43 @@
+locus 0 beta 5
+style textbook
+
+class life { stroke: dashed, weight: 0.75, accent: gray }
+class response { stroke: dash(6, 3), accent: teal }
+
+// One placement owner; every other center and routing point is derived.
+rect client = rect(2.6, 0.9)
+rect service = rect(offset(client.center, 5, 0), 2.6, 0.9)
+label clientName = label(client.center, "Client") { dir: center }
+label serviceName = label(service.center, "Service") { dir: center }
+segment clientLife = seg(client.s, offset(client.s, 0, -6)) [life]
+segment serviceLife = seg(service.s, offset(service.s, 0, -6)) [life]
+
+point row = offset(client.s, 0, -1.5) { mark: none }
+point send = foot(row, clientLife) { mark: none }
+point receive = foot(row, serviceLife) { mark: none }
+arrow request = arrow(send, receive)
+label requestText = label(midpoint(send, receive), "request()") { dir: N }
+
+point selfStart = offset(receive, 0, -1) { mark: none }
+point selfRight = offset(selfStart, 1, 0) { mark: none }
+point selfLower = offset(selfRight, 0, -0.75) { mark: none }
+point selfEnd = offset(selfStart, 0, -0.75) { mark: none }
+segment selfOut = seg(selfStart, selfRight)
+segment selfDown = seg(selfRight, selfLower)
+arrow selfBack = arrow(selfLower, selfEnd)
+label selfText = label(selfRight, "process()") { dir: NE }
+
+point returnRow = offset(row, 0, -3) { mark: none }
+point returnSend = foot(returnRow, serviceLife) { mark: none }
+point returnReceive = foot(returnRow, clientLife) { mark: none }
+arrow returnMessage = arrow(returnSend, returnReceive) [response]
+label responseText = label(midpoint(returnSend, returnReceive), "result") { dir: N }
+
+assert hdist(client.center, service.center) == 5
+assert horizontal(send, receive)
+assert dist(send, receive) == 5
+assert on(receive, serviceLife)
+assert on(selfEnd, serviceLife)
+assert vdist(selfStart, selfEnd) == -0.75
+assert horizontal(returnSend, returnReceive)
+assert vdist(send, returnReceive) == -3
