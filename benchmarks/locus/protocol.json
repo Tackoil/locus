@@ -1,12 +1,13 @@
 {
   "id": "locus-drawing-effort",
-  "version": "1.0",
+  "version": "1.5",
+  "filesystem_search": "native harness permissions; no benchmark search guards",
   "model": "deepseek-flash",
   "thinking": "disabled",
   "temperature": 0,
   "max_output_tokens": 8192,
   "runs": 3,
-  "tasks": ["triangle", "sequence"],
+  "tasks": ["triangle", "sequence", "flowchart"],
   "harnesses": ["dsh", "pi", "opencode"],
   "backends": ["locus", "svg"],
   "max_requests": 64,
@@ -14,16 +15,5 @@
   "versions": {"dsh": "0.1.5-rc.2", "pi": "0.84.4", "opencode": "1.18.35", "sharp": "0.35.4"},
   "node_minimum": "22.19.0",
   "rubric": {"geometry": 40, "completeness": 25, "readability": 20, "styling": 15},
-  "decision_rule": "Lower tokens and estimated cost, all Locus SVGs exported, and no lower mean correctness, completeness or visual score",
-  "pricing": {
-    "checked_on": "2026-10-07",
-    "source": "https://api-docs.deepseek.com/zh-cn/quick_start/pricing/",
-    "currency": "CNY",
-    "timezone": "Asia/Shanghai",
-    "cache_hit_per_million": 0.04,
-    "cache_miss_per_million": 2,
-    "output_per_million": 8,
-    "off_peak_multiplier": 0.5,
-    "weekday_peak_hours": [[9, 12], [14, 18]]
-  }
+  "decision_rule": "Lower tokens, all Locus SVGs exported, and no lower mean correctness, completeness or visual score"
 }

@@ -1,9 +1,6 @@
 # Locus 0 beta 5 authoring reference
 
-Use this for common authoring tasks. For the complete evolving contract in a
-Locus checkout, read `spec/specification.md`; demonstration files live under
-`spec/test/demonstrations/`. Historical plans and old examples may differ from
-the current draft.
+Use this for common authoring tasks in `locus 0 beta 5`.
 
 ## Syntax and placement
 
@@ -171,8 +168,8 @@ The angle bisector and angle arc use vertex B; the right-angle marker uses
 its first argument. Verify the rays before adding angle marks.
 
 Built-in style classes are `main`, `auxiliary`, `highlight`, and `construction`.
-Custom classes must be defined before use; consult specification §8.3 for
-supported properties instead of borrowing CSS names.
+Custom classes must be defined before use and use the supported properties
+listed below.
 
 For technical diagrams, define reusable classes before the geometry:
 

@@ -7,26 +7,18 @@ description: "Create, inspect, verify, revise, and render Locus geometry figures
 
 Locus is a deterministic relational language for plane geometry and technical
 diagrams. The `.locus` file records geometric intent; Locus owns placement.
-Use structured diagnostics and measurements to verify a figure, then render it
-for human review.
+Construct the figure, check syntax and construction, then render and review
+the result for correctness, completeness, and readable layout.
 
 ## Find the tool and language contract
 
-Use `locus --help` to confirm an installed CLI. When working in the Locus
-repository without an installed binary, run commands from its root with
-`cargo run -p locus-cli -- <command>`; add `--features png` before `--` for PNG.
-Do not assume a checkout-relative binary is current.
+Use `locus --help` to confirm an installed CLI and available export formats.
 
-This skill targets `locus 0 beta 5`. In a checkout, consult
-`spec/specification.md` for the normative contract and `spec/test/README.md`
-for demonstration selection. Read only the relevant sections and examples.
-The draft is evolving: reconcile examples against the current specification
-and actual CLI diagnostics rather than copying older syntax blindly.
+This skill targets `locus 0 beta 5`.
 
 Read [the language reference](references/language.md) when writing or repairing
-source. It covers common constructors, anchors, annotations, and pitfalls so
-the skill remains useful outside a checkout. For advanced syntax not covered
-there, consult the matching version's specification instead of inventing APIs.
+source. It covers common constructors, anchors, annotations, and pitfalls.
+Use CLI diagnostics to verify syntax rather than inventing APIs.
 
 ## Author the figure
 
@@ -43,9 +35,12 @@ there, consult the matching version's specification instead of inventing APIs.
 - Express placement with geometric anchors, signed relative offsets, distances,
   alignment, and tangency. Never supply absolute point coordinates, center
   seeds, pins, or a `location` field.
-- Use `rel` or declaration-local `where` for defining equations. Use `assert`
-  for independent consequences and requested invariants. Assertions verify the
-  chosen solution; they do not move geometry or choose another branch.
+- Use `rel` or declaration-local `where` for defining equations. Assertions are
+  optional for drawing tasks. Add `assert` when the user requests numerical
+  verification or a reusable geometry contract, or for an important independent
+  invariant that construction alone does not guarantee. Avoid repeating every
+  derived offset or construction as an assertion. Assertions verify the chosen
+  solution; they do not move geometry or choose another branch.
 - Select ambiguous constructions explicitly. `tangent(c1, c2)` means external
   tangency; internal tangency is `internally_tangent(outer, inner)`. Use signed
   offsets when left/right or above/below order matters.
@@ -72,7 +67,8 @@ Start with the saved source, using `--json` for agent feedback:
 locus check figure.locus --json --compact
 ```
 
-When diagnosing a specific issue, use
+This checks syntax, construction, and any assertions already in the source;
+new assertions are not required. When diagnosing a specific issue, use
 `locus describe figure.locus --json` for placement ownership, unresolved freedoms,
 and branch choices. Compact check feedback counts assertions and retains failed
 results with their actual values; omit `--compact` for full solver and assertion
@@ -119,8 +115,12 @@ a successful export does not prove that assertions passed.
 ```sh
 locus render figure.locus -o figure.svg
 locus render figure.locus --tikz -o figure.tex
-cargo run -p locus-cli --features png -- render figure.locus --png --background white --dpi 300 -o figure.png
+locus render figure.locus --png --background white --dpi 300 -o figure.png
 ```
+
+Review the rendered preview against the requested geometry or diagram flow,
+visible text, completeness, and layout. A passing check does not establish that
+the image meets the request.
 
 SVG is the default. Extensions do not select a backend: request `--tikz` or
 `--png` explicitly. Use `--background white` for opaque output; the default is
@@ -129,18 +129,8 @@ transparent. `--dpi` requires PNG. Supply `-o`, `--stdout`, or both;
 
 Plain text and CJK labels use bundled fonts. TeX fragments use the default ReX
 engine and bundled math outlines; no external TeX process is needed. Unsupported
-TeX produces E414: simplify to supported notation or plain text. Reserve the
-hidden mock engine for pipeline tests, since it supplies no visible math glyphs.
+TeX produces E414: simplify to supported notation or plain text.
 
 Deliver the `.locus` source and requested exports, with the check result and any
 remaining material diagnostics. If execution is unavailable, state that the
 source is unverified. Honor a request for source-only output.
-
-## Repository benchmark
-
-When explicitly asked to compare drawing effort in a Locus repository checkout,
-read `benchmarks/locus/README.md` from the repository root. That separate project
-benchmark compares this skill with direct SVG using DSH, Pi and OpenCode, and
-records token cost, source revisions and visual correctness. Running it uses
-the paid DeepSeek API. The benchmark is checkout tooling and is not needed to
-install or use this skill for drawing.

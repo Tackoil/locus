@@ -205,6 +205,8 @@ fn clap_exit(error: &clap::Error) -> std::process::ExitCode {
         error.kind(),
         ErrorKind::DisplayHelp | ErrorKind::DisplayVersion
     ) {
+        #[cfg(debug_assertions)]
+        rejected_requests::save_display(&error.to_string());
         let _ = error.print();
         return Exit::Success.into();
     }

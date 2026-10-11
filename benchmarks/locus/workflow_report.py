@@ -19,10 +19,8 @@ def load_groups(folder, task, backend):
         scores = [rating_total(ratings.get(f"{harness}-{row['repetition']}"), row, folder) for row in rows]
         if not rows or any(score is None for score in scores):
             raise ValueError(f"Inspect and rate every {task}/{backend}/{harness} image first")
-        costs = [row["estimated_cost_cny"] for row in rows]
         groups.append({"task": task, "backend": backend, "harness": harness, "runs": len(rows),
                        "total_tokens": sum(row["total_tokens"] for row in rows),
-                       "estimated_cost_cny": None if any(cost is None for cost in costs) else sum(costs),
                        "provider_calls": sum(row["api_requests"] for row in rows),
                        "mean_elapsed_seconds": mean(row["elapsed_seconds"] for row in rows),
                        "revisions": [row["retry_count"] for row in rows], "visual_scores": scores,
@@ -39,10 +37,8 @@ def load_groups(folder, task, backend):
 
 
 def table_row(group):
-    cost = group["estimated_cost_cny"]
-    cost_text = "unknown" if cost is None else f"¥{cost:.6f}"
     return (f"| {group['task']} | {group['harness']} | {group['backend']} | {group['total_tokens']:,} | "
-            f"{cost_text} | {group['provider_calls']} | {group['mean_elapsed_seconds']:.1f} | "
+            f"{group['provider_calls']} | {group['mean_elapsed_seconds']:.1f} | "
             f"{', '.join(map(str, group['revisions']))} | {group['exported_svgs']}/{group['runs']} | "
             f"{group['mean_visual_score']:.1f} |")
 
@@ -66,11 +62,8 @@ def ratio(numerator, denominator):
 
 
 def criterion_met(locus, svg):
-    costs = (locus["estimated_cost_cny"], svg["estimated_cost_cny"])
-    if any(cost is None for cost in costs):
-        return False
     return (locus["exported_svgs"] == locus["runs"]
-            and locus["total_tokens"] < svg["total_tokens"] and costs[0] < costs[1]
+            and locus["total_tokens"] < svg["total_tokens"]
             and locus["mean_correctness"] >= svg["mean_correctness"]
             and locus["mean_completeness"] >= svg["mean_completeness"]
             and locus["mean_visual_score"] >= svg["mean_visual_score"])
@@ -96,7 +89,7 @@ def findings(groups):
     lines.extend(["Assess a quality improvement together with its additional effort. More reliable "
                   "geometry verification may be useful even when authoring takes more tokens, but that "
                   "does not establish that drawing became easier. Successful arrangement checks alone "
-                  "cannot certify a correct sequence diagram.", ""])
+                  "cannot certify a correct diagram.", ""])
     return lines
 
 
@@ -117,32 +110,33 @@ def generate(args):
              "alone do not answer that question.", "",
              "DeepSeek Flash; thinking disabled; temperature 0; 8192 output-token cap. Trial counts and "
              "protocol settings are saved in manifest.json and each task summary. Failed trials remain "
-             "in the denominators and token/cost totals. No export scores 0. Available images require "
+             "in the denominators and token totals. No export scores 0. Available images require "
              "hash-bound reviewer ratings before this report can be generated.", "",
-             "| Task | Harness | Workflow | Total tokens | Estimated CNY | Provider calls | Mean time/run (s) | Revisions 1/2/3 | SVGs | Mean visual /100 |",
-             "| --- | --- | --- | ---: | ---: | ---: | ---: | --- | ---: | ---: |"]
+             "| Task | Harness | Workflow | Total tokens | Provider calls | Mean time/run (s) | Revisions 1/2/3 | SVGs | Mean visual /100 |",
+             "| --- | --- | --- | ---: | ---: | ---: | --- | ---: | ---: |"]
     lines.extend(table_row(group) for group in groups)
     lines.extend(["", "## Locus versus SVG, paired by harness", "",
                   "A token multiplier above 1 means Locus used more tokens. Correctness is geometry or "
-                  "sequence-flow correctness out of 40; completeness is out of 25. Visual score additionally "
+                  "diagram-flow correctness out of 40; completeness is out of 25. Visual score additionally "
                   "includes readability (20) and styling (15). Differences are Locus minus SVG.", "",
-                  "The descriptive criterion requires all Locus exports, lower total tokens and estimated "
-                  "cost, and no lower mean correctness, completeness or visual score than direct SVG. "
+                  "The descriptive criterion requires all Locus exports, lower total tokens, "
+                  "and no lower mean correctness, completeness or visual score than direct SVG. "
                   "Meeting it in a small sample is not statistical proof.", "",
                   "| Task | Harness | Token multiplier | Correctness: Locus / SVG | Completeness: Locus / SVG | Visual score difference | Criterion met |",
                   "| --- | --- | ---: | ---: | ---: | ---: | --- |"])
     lines.extend(paired_rows(groups))
     lines.extend([""] + findings(groups))
     lines.extend(["", "## Measurement limits", "",
-                  "This is a comparison of the full authoring workflows. Locus receives its skill and language "
-                  "reference, must author at least six assertions, uses fixed object IDs for instrumentation, "
-                  "and receives independent check feedback. Direct SVG receives a local preview renderer and "
-                  "an XML parsing gate. That additional Locus verification/context burden is included in the "
-                  "effort totals. The experiment does not isolate language syntax from validation overhead, "
-                  "and it does not measure human usability.", "",
-                  "Locus sequence checks enforce required objects/text, participant order/alignment and "
-                  "lifeline attachment/orientation. They do not verify arrow directions, self-call routing, "
-                  "activation duration, branch guards or readable layout. A check pass is not an image-quality pass.", "",
+                  "This is a comparison of the full authoring workflows. Validation and context follow "
+                  "the experiment's saved protocol. Protocol 1.3 uses task prompts that differ only in one "
+                  "workflow instruction line, with native Locus checks and SVG parsing. Locus receives its "
+                  "skill and language reference; direct SVG receives a local preview renderer. Earlier "
+                  "protocols also required authored assertions and independent geometry/annotation checks. "
+                  "This workflow effort is included in the effort totals. The experiment does not isolate "
+                  "language syntax from validation overhead and does not measure human usability.", "",
+                  "Native validity does not verify requested geometry, diagram semantics, completeness or "
+                  "readable layout. Those require image review. A check pass is not an image-quality pass. "
+                  "Debug CLI rejected requests are retained per trial in raw/<run>/work/.locus/rejected-requests/.", "",
                   "Locus counts distinct checked source candidates; SVG counts distinct file versions observed "
                   "at model-request boundaries and final export. Both are lower bounds. Bulk candidate searches "
                   "can create hundreds of source revisions in one tool call; these are not API retries.", "",
@@ -151,8 +145,7 @@ def generate(args):
                   "does not establish completion. The coordinator exports a checked Locus source even if the "
                   "harness forgets to export; the native-export count is saved separately in workflow-summary.json.", "",
                   "Trials ran in different batches. Native system prompts/tools, vision capability and provider "
-                  "caching differ; cache cannot be reset. Costs use the pinned historical pricing snapshot "
-                  "for comparability, not current invoice rates. Small samples do not establish a general result.", "",
+                  "caching differ; cache cannot be reset. Small samples do not establish a general result.", "",
                   "## Saved outputs", ""])
     for folder, task, backend in inputs:
         lines.extend([f"[{task}: {backend}, all trials and image ratings]({folder.resolve() / 'report.md'})", ""])

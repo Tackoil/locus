@@ -1,4 +1,4 @@
-//! Local failure archives, compiled only into debug/dev CLI builds.
+//! Local failure archives and opt-in complete request capture in debug/dev builds.
 
 use std::cell::RefCell;
 use std::fs::{self, OpenOptions};
@@ -133,7 +133,7 @@ pub(crate) fn candidate(path: &Path, source: &str) {
 
 pub(crate) fn save(execution: &Execution) {
     let request = REQUEST.with(|request| request.borrow_mut().take());
-    if execution.exit == Exit::Success {
+    if execution.exit == Exit::Success && std::env::var_os("LOCUS_REQUESTS_DIR").is_none() {
         return;
     }
     if let Some(request) = request {
@@ -151,6 +151,20 @@ pub(crate) fn save_usage(message: &str) {
         })
         .collect();
     archive(Request::new(&paths), &output::usage_error(message));
+}
+
+pub(crate) fn save_display(message: &str) {
+    let Some(directory) = std::env::var_os("LOCUS_REQUESTS_DIR") else {
+        return;
+    };
+    let request = Request::new(&[]);
+    let timestamp = request.timestamp_unix_nanos.clone();
+    let record = serde_json::json!({
+        "request": request, "exit_code": 0, "display": message,
+    });
+    if let Err(error) = write_record(&timestamp, &record, &PathBuf::from(directory)) {
+        eprintln!("warning: could not save CLI request: {error}");
+    }
 }
 
 fn diagnostics(execution: &Execution) -> Vec<CliDiagnostic> {
@@ -193,20 +207,32 @@ fn archive(request: Request, execution: &Execution) {
             })
             .collect(),
     };
-    if let Err(error) = write_record(&record) {
-        eprintln!("warning: could not save rejected request: {error}");
+    if let Some(directory) = std::env::var_os("LOCUS_REQUESTS_DIR") {
+        if let Err(error) = write_record(
+            &record.request.timestamp_unix_nanos,
+            &record,
+            &PathBuf::from(directory),
+        ) {
+            eprintln!("warning: could not save CLI request: {error}");
+        }
+    }
+    if execution.exit != Exit::Success {
+        let directory = std::env::var_os("LOCUS_REJECTED_REQUESTS_DIR")
+            .map_or_else(|| PathBuf::from(".locus/rejected-requests"), PathBuf::from);
+        if let Err(error) = write_record(&record.request.timestamp_unix_nanos, &record, &directory)
+        {
+            eprintln!("warning: could not save rejected request: {error}");
+        }
     }
 }
 
-fn write_record(record: &Record<'_>) -> io::Result<()> {
-    let directory = std::env::var_os("LOCUS_REJECTED_REQUESTS_DIR")
-        .map_or_else(|| PathBuf::from(".locus/rejected-requests"), PathBuf::from);
+fn write_record(timestamp: &str, record: &impl Serialize, directory: &Path) -> io::Result<()> {
     let bytes = serde_json::to_vec_pretty(record)?;
-    fs::create_dir_all(&directory)?;
+    fs::create_dir_all(directory)?;
     for sequence in 0_u32.. {
         let path = directory.join(format!(
             "{}-{}-{sequence}.json",
-            record.request.timestamp_unix_nanos,
+            timestamp,
             std::process::id(),
         ));
         match OpenOptions::new().write(true).create_new(true).open(path) {

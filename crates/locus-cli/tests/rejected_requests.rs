@@ -12,6 +12,7 @@ fn locus(directory: &Path) -> Result<Command, Box<dyn Error>> {
     let mut command = Command::cargo_bin("locus")?;
     command.current_dir(directory);
     command.env("LOCUS_REJECTED_REQUESTS_DIR", directory.join("archive"));
+    command.env_remove("LOCUS_REQUESTS_DIR");
     command.env("NO_COLOR", "1");
     Ok(command)
 }
@@ -216,6 +217,46 @@ fn success_help_and_version_do_not_create_archives() -> Result<(), Box<dyn Error
     locus(directory.path())?.arg("--help").assert().success();
     locus(directory.path())?.arg("--version").assert().success();
     assert!(!directory.path().join("archive").exists());
+    Ok(())
+}
+
+#[test]
+#[cfg(debug_assertions)]
+fn opt_in_capture_retains_success_failure_and_display_requests() -> Result<(), Box<dyn Error>> {
+    let directory = tempfile::tempdir()?;
+    let source = "locus 0 beta 5\nnum a = 1\n";
+    let appended = "num b = 2\n";
+    fs::write(directory.path().join("good.locus"), source)?;
+    locus(directory.path())?
+        .env("LOCUS_REQUESTS_DIR", directory.path().join("requests"))
+        .args(["add", "good.locus"])
+        .write_stdin(appended)
+        .assert()
+        .success();
+    let paths: Vec<_> =
+        fs::read_dir(directory.path().join("requests"))?.collect::<Result<_, _>>()?;
+    let saved: Value = serde_json::from_slice(&fs::read(paths[0].path())?)?;
+    assert_eq!(saved["exit_code"], 0);
+    assert_eq!(saved["stdin"], appended);
+    assert_eq!(saved["original_files"][0]["source"], source);
+    assert_eq!(
+        saved["candidate_sources"][0]["source"],
+        format!("{source}{appended}")
+    );
+    assert!(!directory.path().join("archive").exists());
+    for arguments in [
+        vec!["check", "missing.locus"],
+        vec!["--help"],
+        vec!["--version"],
+    ] {
+        let output = locus(directory.path())?
+            .env("LOCUS_REQUESTS_DIR", directory.path().join("requests"))
+            .args(arguments)
+            .output()?;
+        assert!(output.status.code().is_some());
+    }
+    assert_eq!(fs::read_dir(directory.path().join("requests"))?.count(), 4);
+    assert_eq!(records(directory.path())?.len(), 1);
     Ok(())
 }
 

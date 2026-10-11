@@ -1,9 +1,11 @@
-"""Offline checks for billing evidence and the task's independent gate."""
+"""Offline checks for token usage, native validation and benchmark prompts."""
 
 import json
 import io
 import os
 import sys
+import subprocess
+import shutil
 from contextlib import redirect_stdout
 from pathlib import Path
 import tempfile
@@ -17,16 +19,32 @@ from run import REPOSITORY, SKILL, execute
 from experiment import (PROTOCOL, completed_trial, initialize, require_version,
                         save_rating_template, trial_plan)
 from workflow_report import criterion_met
-from harnesses import write_json
-from meter import ProxyHandler, extract_usage, request_rates, summarize
+from harnesses import clean_environment, pi_command, write_json
+from meter import ProxyHandler, extract_usage, summarize
 from report import rating_total
+from prompts import prompt_hashes, render_prompt
 from svg_validation import check_svg, snapshot_svg
-from sequence_contract import MESSAGE_IDS, MESSAGE_TEXT, PARTICIPANTS
 from validation import attempt_records, completed_scene_checks, probe, repair_metrics, validate
 from validation import read_jsonl
 
 ROOT = REPOSITORY
 BENCHMARK = Path(__file__).resolve().parent
+
+
+class HarnessTests(unittest.TestCase):
+    def test_search_commands_are_not_wrapped_and_pi_extensions_stay_disabled(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "bin").mkdir()
+            (root / "config/pi").mkdir(parents=True)
+            env = clean_environment(root, "http://127.0.0.1:1", "")
+            self.assertEqual(list((root / "bin").iterdir()), [])
+            self.assertEqual(env["PATH"].split(os.pathsep)[0], str(root / "bin"))
+            self.assertFalse(any(name.startswith("LOCUS_SEARCH_") for name in env))
+            self.assertEqual(env["LOCUS_REQUESTS_DIR"], str(root / "work/.locus/requests"))
+            command = pi_command(["pi"], root, "http://127.0.0.1:1", PROTOCOL["model"], "fixture")
+            self.assertIn("--no-extensions", command)
+            self.assertNotIn("--extension", command)
 
 
 class DirectSvgTests(unittest.TestCase):
@@ -84,35 +102,30 @@ class AccountingTests(unittest.TestCase):
         usage = {"prompt_tokens": 1000, "prompt_cache_hit_tokens": 600,
                  "prompt_cache_miss_tokens": 400, "completion_tokens": 200,
                  "completion_tokens_details": {"reasoning_tokens": 80}}
-        rates = request_rates("2026-10-07T10:00:00+08:00")
-        record = {"status": 200, "usage": usage, "rates": rates, "request_sha256": "one"}
+        record = {"status": 200, "usage": usage, "request_sha256": "one"}
         result = summarize([record, record])
         self.assertEqual(result["total_tokens"], 2400)
         self.assertEqual(result["cache_hit_tokens"], 1200)
         self.assertEqual(result["api_repeated_payloads"], 1)
-        self.assertAlmostEqual(result["estimated_cost_cny"], 0.004848)
 
-    def test_missing_usage_is_unknown_cost(self):
+    def test_missing_usage_is_marked_incomplete(self):
         result = summarize([{"status": 200, "usage": None, "request_sha256": "one"}])
         self.assertFalse(result["usage_complete"])
-        self.assertIsNone(result["estimated_cost_cny"])
+        self.assertEqual(result["missing_usage_responses"], 1)
 
-    def test_lost_response_does_not_claim_complete_billing(self):
+    def test_lost_response_does_not_claim_complete_usage(self):
         records = [{"status": 200, "usage": {"prompt_tokens": 10, "completion_tokens": 1},
-                    "rates": request_rates("2026-10-07T10:00:00+08:00"), "request_sha256": "one"},
+                    "request_sha256": "one"},
                    {"status": 0, "usage": None, "request_sha256": "two"}]
         result = summarize(records)
         self.assertFalse(result["usage_complete"])
-        self.assertIsNone(result["estimated_cost_cny"])
+        self.assertEqual(result["missing_usage_responses"], 1)
 
-    def test_no_provider_requests_have_zero_api_cost(self):
-        self.assertEqual(summarize([])["estimated_cost_cny"], 0)
-
-    def test_peak_boundaries_and_weekend(self):
-        for moment in ("2026-10-07T12:00:00+08:00", "2026-10-07T18:00:00+08:00",
-                       "2026-10-10T10:00:00+08:00"):
-            self.assertEqual(request_rates(moment)["period"], "off_peak")
-        self.assertEqual(request_rates("2026-10-07T14:00:00+08:00")["period"], "peak")
+    def test_no_provider_requests_have_zero_tokens(self):
+        result = summarize([])
+        self.assertEqual(result["api_requests"], 0)
+        self.assertEqual(result["total_tokens"], 0)
+        self.assertEqual(result["missing_usage_responses"], 0)
 
     def test_streamed_usage_and_done(self):
         line = b'data: {"choices": [], "usage": {"prompt_tokens": 2, "completion_tokens": 3}}\n'
@@ -157,50 +170,29 @@ class AccountingTests(unittest.TestCase):
         self.assertNotIn("test-secret", json.dumps(record))
 
 
-class GeometryContractTests(unittest.TestCase):
+class NativeValidationTests(unittest.TestCase):
     def setUp(self):
         self.binary = ROOT / "target/debug/locus"
         if not self.binary.exists():
-            self.skipTest("Build locus-cli before geometry contract tests")
+            self.skipTest("Build locus CLI before native validation tests")
         self.folder = tempfile.TemporaryDirectory()
         self.addCleanup(self.folder.cleanup)
         self.source = Path(self.folder.name) / "figure.locus"
 
-    def test_unrelated_valid_figure_cannot_pass(self):
+    def test_valid_source_passes_without_assertions_or_task_geometry(self):
         self.source.write_text("locus 0 beta 5\npoint P = point()\n")
-        code, report = validate(self.binary, self.source, BENCHMARK / "tasks/triangle-contract.locus")
+        code, report = validate(self.binary, self.source)
+        self.assertEqual(code, 0, json.dumps(report))
+        self.assertTrue(report["passed"])
+
+    def test_invalid_source_still_fails_native_check(self):
+        self.source.write_text("locus 0 beta 5\npoint P = missing_constructor()\n")
+        code, report = validate(self.binary, self.source)
         self.assertNotEqual(code, 0)
         self.assertFalse(report["passed"])
 
-    def test_independent_gate_rejects_wrong_dimensions(self):
-        source = """locus 0 beta 5
-point A = point()
-point B = point() where { horizontal(A, B), hdist(A, B) == 4 }
-point C = point() where { vertical(A, C), vdist(A, C) == 3 }
-polygon tri = polygon(A, B, C)
-point H = foot(A, line(B, C))
-segment altitude = seg(A, H) [highlight]
-circle circum = circumcircle(A, B, C) [construction]
-circle inc = incircle(A, B, C) [auxiliary]
-right_angle rA = right_angle(A, B, C)
-right_angle rH = right_angle(H, A, B)
-label lA = label(A, "A")
-label lB = label(B, "B")
-label lC = label(C, "C")
-label lH = label(H, "H")
-text_block note = text_block("Area = 6; altitude = 2.4")
-assert area(tri) > 0
-assert radius(inc) > 0
-assert radius(circum) > 0
-assert dist(A, B) > 0
-assert dist(A, C) > 0
-assert length(altitude) > 0
-"""
-        self.source.write_text(source)
-        code, report = validate(self.binary, self.source, BENCHMARK / "tasks/triangle-contract.locus")
-        self.assertEqual(code, 0, json.dumps(report))
-        self.source.write_text(source.replace("hdist(A, B) == 4", "hdist(A, B) == 8"))
-        code, report = validate(self.binary, self.source, BENCHMARK / "tasks/triangle-contract.locus")
+    def test_missing_source_fails(self):
+        code, report = validate(self.binary, self.source)
         self.assertNotEqual(code, 0)
         self.assertFalse(report["passed"])
 
@@ -233,29 +225,6 @@ class RatingTests(unittest.TestCase):
             (root / "pi-1/figure.svg").write_text('<svg xmlns="http://www.w3.org/2000/svg"/>')
             with self.assertRaisesRegex(ValueError, "does not match"):
                 rating_total({"svg_sha256": "stale"}, {"harness": "pi", "repetition": 1}, root)
-
-
-def sequence_gate_fixture():
-    statements = ["locus 0 beta 5", "rect customer = rect(5, 1)"]
-    previous = "customer"
-    for name in ("web", "orders", "payment"):
-        statements.append(f"rect {name} = rect(5, 1) where {{ horizontal({previous}.center, {name}.center), "
-                          f"hdist({previous}.center, {name}.center) == 10 }}")
-        previous = name
-    for name, title in PARTICIPANTS.items():
-        statements.extend([f'label h_{name} = label({name}.center, "{title}") {{ dir: center }}',
-                           f'segment life_{name} = seg({name}.s, offset({name}.s, 0, -10))'])
-    statements.extend(["rect act_web = rect(web.center, 0.2, 5)",
-                       "rect act_orders = rect(orders.center, 0.2, 5)",
-                       "rect alt_frame = rect(orders.center, 30, 8)"])
-    for name, text in zip(MESSAGE_IDS, MESSAGE_TEXT):
-        statements.extend([f'arrow {name} = arrow(customer.s, web.s)',
-                           f'label l_{name} = label(customer.center, "{text}")'])
-    statements.extend(['label approved = label(customer.center, "[payment approved]")',
-                       'label declined = label(customer.center, "[payment declined]")'])
-    statements.extend([f"assert dist(customer.center, {name}.center) > 0" for name in ("web", "orders", "payment")])
-    statements.extend([f"assert length(life_{name}) > 0" for name in ("customer", "web", "orders")])
-    return "\n".join(statements) + "\n"
 
 
 class ExperimentTests(unittest.TestCase):
@@ -304,8 +273,8 @@ class ExperimentTests(unittest.TestCase):
 
     def test_plan_contains_every_pair_and_alternates_workflow_order(self):
         plan = trial_plan(PROTOCOL["tasks"], PROTOCOL["harnesses"], 3)
-        self.assertEqual(len(plan), 36)
-        self.assertEqual(len({tuple(t.values()) for t in plan}), 36)
+        self.assertEqual(len(plan), 54)
+        self.assertEqual(len({tuple(t.values()) for t in plan}), 54)
         for harness in PROTOCOL["harnesses"]:
             starts = [t["backend"] for i, t in enumerate(plan)
                       if i % 2 == 0 and t["harness"] == harness and t["task"] == "triangle"]
@@ -331,7 +300,7 @@ class ExperimentTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, "input_hashes changed"):
                     initialize(args, {"fixture": "identity"})
             initialize(args, {"fixture": "identity"})
-            frozen = args.output / "inputs/benchmark/tasks/triangle-locus.txt"
+            frozen = args.output / "inputs/benchmark/tasks/triangle.txt"
             frozen.write_text("modified")
             with self.assertRaisesRegex(ValueError, "Frozen input modified"):
                 initialize(args, {"fixture": "identity"})
@@ -343,19 +312,18 @@ class ExperimentTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "Interrupted trial"):
                 completed_trial(folder, {"harness": "pi", "repetition": 1})
 
-    def test_cheaper_incomplete_or_worse_images_do_not_meet_the_criterion(self):
+    def test_lower_tokens_require_complete_exports_and_no_worse_images(self):
         baseline = {"runs": 3, "exported_svgs": 3, "total_tokens": 100,
-                    "estimated_cost_cny": 1, "mean_correctness": 40,
-                    "mean_completeness": 25, "mean_visual_score": 95}
-        cheaper = {**baseline, "total_tokens": 90, "estimated_cost_cny": 0.9}
-        self.assertTrue(criterion_met(cheaper, baseline))
-        for change in ({"exported_svgs": 2}, {"mean_correctness": 39}, {"estimated_cost_cny": None}):
-            self.assertFalse(criterion_met({**cheaper, **change}, baseline))
+                    "mean_correctness": 40, "mean_completeness": 25, "mean_visual_score": 95}
+        lower_tokens = {**baseline, "total_tokens": 90}
+        self.assertTrue(criterion_met(lower_tokens, baseline))
+        for change in ({"exported_svgs": 2}, {"mean_correctness": 39},
+                       {"mean_completeness": 24}, {"mean_visual_score": 94}, {"total_tokens": 100}):
+            self.assertFalse(criterion_met({**lower_tokens, **change}, baseline))
 
 
 def matrix_metadata(args, commands):
-    return {"model": "deepseek-flash", "runs_per_harness": args.runs,
-            "pricing_checked_on": "2026-10-07", "results": []}
+    return {"model": "deepseek-flash", "runs_per_harness": args.runs, "results": []}
 
 
 def matrix_trial(args, trial, folder, key, commands):
@@ -365,13 +333,13 @@ def matrix_trial(args, trial, folder, key, commands):
     svg.write_text('<svg xmlns="http://www.w3.org/2000/svg"/>')
     result = {**trial, "svg": str(svg), "svg_sha256": hashlib.sha256(svg.read_bytes()).hexdigest(),
               "exit_code": 0, "timed_out": False, "elapsed_seconds": 1, "total_tokens": 2,
-              "api_requests": 1, "estimated_cost_cny": 0.01, "retry_count": 0,
+              "api_requests": 1, "retry_count": 0,
               "contract_passed": True, "harness_exported_svg": True}
     write_json(destination / "metrics.json", result)
     return result
 
 
-class SequenceContractTests(unittest.TestCase):
+class SourceObservationTests(unittest.TestCase):
     def test_native_wrapper_keeps_its_logs_inside_the_workspace(self):
         binary = ROOT / "target/debug/locus"
         if not binary.exists():
@@ -381,10 +349,9 @@ class SequenceContractTests(unittest.TestCase):
             work = root / "work"
             work.mkdir()
             source = work / "figure.locus"
-            source.write_text(sequence_gate_fixture())
+            source.write_text("locus 0 beta 5\npoint P = point()\n")
             outside = root / "outside-workspace"
             environment = {"LOCUS_REAL_BIN": str(binary), "LOCUS_BENCH_SOURCE": str(source),
-                           "LOCUS_BENCH_CONTRACT": str(BENCHMARK / "tasks/sequence-contract.locus"),
                            "LOCUS_BENCH_ATTEMPTS": str(outside)}
             with patch.dict(os.environ, environment), patch.object(sys, "argv", ["validation.py", "check", str(source)]):
                 with redirect_stdout(io.StringIO()):
@@ -403,33 +370,52 @@ class SequenceContractTests(unittest.TestCase):
             self.assertEqual(result["checked_versions"], 1)
             self.assertEqual(result["retry_count"], 0)
 
-    def test_arrangement_gate_catches_swapped_participants(self):
-        binary = ROOT / "target/debug/locus"
-        if not binary.exists():
-            self.skipTest("Build locus-cli before arrangement tests")
-        with tempfile.TemporaryDirectory() as folder:
-            source = Path(folder) / "figure.locus"
-            fixture = sequence_gate_fixture()
-            contract = BENCHMARK / "tasks/sequence-contract.locus"
-            source.write_text(fixture)
-            code, result = validate(binary, source, contract)
-            self.assertEqual(code, 0, json.dumps(result))
-            source.write_text(fixture.replace("hdist(customer.center, web.center) == 10",
-                                              "hdist(customer.center, web.center) == -10"))
-            code, result = validate(binary, source, contract)
-            self.assertNotEqual(code, 0)
-            self.assertFalse(result["passed"])
 
-    def test_required_message_text_is_enforced(self):
-        binary = ROOT / "target/debug/locus"
-        if not binary.exists():
-            self.skipTest("Build locus-cli before arrangement tests")
-        with tempfile.TemporaryDirectory() as folder:
-            source = Path(folder) / "figure.locus"
-            source.write_text(sequence_gate_fixture().replace('"paymentDeclined"', '"wrongResponse"'))
-            code, result = validate(binary, source, BENCHMARK / "tasks/sequence-contract.locus")
-            self.assertNotEqual(code, 0)
-            self.assertTrue(any("paymentDeclined" in error for error in result["benchmark_errors"]))
+class PromptTests(unittest.TestCase):
+    def test_templates_differ_only_in_the_workflow_line(self):
+        locus = (BENCHMARK / "templates/locus.txt").read_text().splitlines()
+        svg = (BENCHMARK / "templates/svg.txt").read_text().splitlines()
+        self.assertEqual(len(locus), len(svg))
+        self.assertEqual([i for i, pair in enumerate(zip(locus, svg)) if pair[0] != pair[1]], [1])
+
+    def test_shared_tasks_are_injected_for_both_workflows(self):
+        for task in PROTOCOL["tasks"]:
+            for backend, fields in (("locus", {"skill_file": "locus-skill/SKILL.md",
+                                               "language_file": "locus-skill/references/language.md",
+                                               "source_file": "figure.locus"}),
+                                    ("svg", {"preview_command": "node render_svg.js figure.svg preview.png"})):
+                with self.subTest(task=task, backend=backend):
+                    rendered = render_prompt(task, backend, workspace="/workspace",
+                                             svg_file="/workspace/figure.svg", **fields)
+                    self.assertIn("Create /workspace/figure.svg.", rendered)
+                    self.assertIn((BENCHMARK / "tasks" / f"{task}.txt").read_text().rstrip("\n"), rendered)
+                    self.assertNotIn("{task_prompt}", rendered)
+
+    def test_render_uses_frozen_inputs_and_preserves_task_braces(self):
+        with tempfile.TemporaryDirectory() as directory:
+            base = Path(directory)
+            (base / "tasks").mkdir()
+            (base / "templates").mkdir()
+            (base / "tasks/triangle.txt").write_text("Draw {A, B, C}; label {workspace}.\n")
+            (base / "templates/svg.txt").write_text("Workspace: {workspace}\n{task_prompt}\n")
+            self.assertEqual(render_prompt("triangle", "svg", base, workspace="/trial"),
+                             "Workspace: /trial\nDraw {A, B, C}; label {workspace}.\n")
+
+    def test_hashes_record_shared_task_and_separate_templates(self):
+        locus = prompt_hashes("triangle", "locus")
+        svg = prompt_hashes("triangle", "svg")
+        self.assertEqual(locus["task_sha256"], svg["task_sha256"])
+        self.assertNotEqual(locus["template_sha256"], svg["template_sha256"])
+
+    def test_resume_rejects_modified_frozen_template(self):
+        with tempfile.TemporaryDirectory() as directory:
+            args = SimpleNamespace(output=Path(directory) / "experiment", resume=False,
+                                   tasks=["triangle"], harnesses=["pi"], runs=1, max_requests=64, timeout=600)
+            initialize(args, {"fixture": "identity"})
+            (args.output / "inputs/benchmark/templates/locus.txt").write_text("modified")
+            args.resume = True
+            with self.assertRaisesRegex(ValueError, "Frozen input modified"):
+                initialize(args, {"fixture": "identity"})
 
 
 if __name__ == "__main__":

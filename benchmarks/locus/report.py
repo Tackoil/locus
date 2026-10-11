@@ -35,11 +35,6 @@ def rating_total(rating, result, folder):
     return sum(scores.values())
 
 
-def cost_text(results):
-    costs = [row["estimated_cost_cny"] for row in results]
-    return "unknown" if any(cost is None for cost in costs) else f"¥{sum(costs):.6f}"
-
-
 def comparison_rows(results, ratings, folder):
     rows = []
     for harness in dict.fromkeys(row["harness"] for row in results):
@@ -48,7 +43,7 @@ def comparison_rows(results, ratings, folder):
         score = "unrated" if any(value is None for value in scores) else f"{mean(scores):.1f}/100"
         retries = ", ".join(str(row["retry_count"]) for row in group)
         rows.append(f"| {harness} | {len(group)} | {sum(r['total_tokens'] for r in group):,} | "
-                    f"{mean(r['total_tokens'] for r in group):,.0f} | {cost_text(group)} | {retries} | "
+                    f"{mean(r['total_tokens'] for r in group):,.0f} | {retries} | "
                     f"{sum(r['contract_passed'] for r in group)}/{len(group)} | {score} |")
     return rows
 
@@ -61,16 +56,15 @@ def report(folder):
     direct_svg = summary.get("backend") == "svg"
     title = (f"Direct SVG harness comparison: {summary.get('task')}" if direct_svg
              else f"Locus skill harness comparison: {summary.get('task', 'triangle')}")
-    gate = "SVG parses" if direct_svg else "Contract passes"
+    gate = "SVG parses" if direct_svg else "Checks pass"
     retry_definition = ("Revision counts are distinct SVG bytes observed at model-request boundaries "
                         "and final export, after the first. Multiple edits within a tool call may be missed."
                         if direct_svg else "Repair counts are observed checked source revisions after the first.")
     lines = [f"# {title}", "", f"Model: `{summary['model']}`. "
              f"Thinking disabled; temperature 0. Versions: {summary.get('harness_versions', {})}.", "",
-             f"One drawing task; fresh sessions; {summary['runs_per_harness']} repetitions per harness. "
-             "Costs are estimates from provider usage and the saved DeepSeek rates.", "",
-             f"| Harness | Runs | Total tokens | Mean tokens/run | Total cost (CNY) | Revisions by run | {gate} | Mean visual score |",
-             "| --- | ---: | ---: | ---: | ---: | --- | ---: | ---: |"]
+             f"One drawing task; fresh sessions; {summary['runs_per_harness']} repetitions per harness.", "",
+             f"| Harness | Runs | Total tokens | Mean tokens/run | Revisions by run | {gate} | Mean visual score |",
+             "| --- | ---: | ---: | ---: | --- | ---: | ---: |"]
     lines.extend(comparison_rows(results, ratings, folder))
     lines.extend(["", retry_definition + " "
                   "API failures and repeated payloads are recorded separately. "
@@ -81,11 +75,8 @@ def report(folder):
     if summary.get("execution_note"):
         lines.extend([summary["execution_note"], ""])
     if summary.get("setup_runs"):
-        lines.extend(["Excluded setup/pilot runs: " + cost_text(summary["setup_runs"]) +
-                      ". They exposed benchmark compatibility problems and are retained "
+        lines.extend(["Excluded setup/pilot runs exposed benchmark compatibility problems and are retained "
                       "separately in summary.json; they are not scored comparison trials.", ""])
-    lines.extend(["Estimated cost uses [DeepSeek pricing](https://api-docs.deepseek.com/zh-cn/quick_start/pricing/) "
-                  f"checked on {summary['pricing_checked_on']}, with timezone and cache state saved per request.", ""])
     for observation in summary.get("observations", []):
         lines.extend([observation, ""])
     lines.extend(["## Direct SVG outputs", ""])
