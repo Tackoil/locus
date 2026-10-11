@@ -9,6 +9,8 @@ use crate::tol::Tolerance;
 pub mod arrow;
 pub mod construct;
 mod curve;
+mod rounded_rect;
+pub use rounded_rect::RoundedRect;
 pub mod intersect;
 pub mod measure;
 

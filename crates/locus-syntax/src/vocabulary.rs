@@ -24,6 +24,7 @@ pub const KIND_NAMES: &[&str] = &[
     "bspline",
     "polygon",
     "rect",
+    "rounded_rect",
     "diamond",
     "label",
     "arrow",
@@ -70,6 +71,7 @@ pub const CONSTRUCTOR_NAMES: &[&str] = &[
     "bspline",
     "polygon",
     "rect",
+    "rounded_rect",
     "diamond",
     "label",
     "arrow",
@@ -121,6 +123,10 @@ pub const CONSTRUCTOR_SIGNATURES: &[(&str, &str)] = &[
     ("bspline", "bspline(P0, P1, P2, P3, ...) -> bspline"),
     ("polygon", "polygon(A, B, C, ...) -> polygon"),
     ("rect", "rect(center, width, height) -> rect"),
+    (
+        "rounded_rect",
+        "rounded_rect(width, height, radius) | rounded_rect(center, width, height, radius) -> rounded_rect",
+    ),
     ("diamond", "diamond(center, width, height) -> diamond"),
     ("label", "label(anchor, text) -> label"),
     ("arrow", "arrow(from, to) -> arrow"),
@@ -174,6 +180,7 @@ const CONSTRUCTOR_KINDS: &[(&str, Kind)] = &[
     ("bspline", Kind::Bspline),
     ("polygon", Kind::Polygon),
     ("rect", Kind::Rect),
+    ("rounded_rect", Kind::RoundedRect),
     ("diamond", Kind::Diamond),
     ("label", Kind::Label),
     ("arrow", Kind::Arrow),
@@ -223,8 +230,9 @@ pub const PROP_NAMES: &[&str] = &[
     "dir", "gap", "head", "bend", "n", "size", "place", "anchor", "mark",
 ];
 
-const PROP_NAMES_BY_KIND: [&[&str]; 17] = [
+const PROP_NAMES_BY_KIND: [&[&str]; 18] = [
     &["mark"],
+    &[],
     &[],
     &[],
     &[],
@@ -274,6 +282,7 @@ pub const PROPERTY_NAMES: &[&str] = &[
     "nw",
     "se",
     "sw",
+    "corner_radius",
     "width",
     "height",
     "focus1",

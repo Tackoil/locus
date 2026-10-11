@@ -1,0 +1,15 @@
+locus 0 beta 5
+meta title = "Rounded rectangles"
+style textbook
+class node { fill: tint, accent: blue }
+rounded_rect start = rounded_rect(4, 2, 0.5) [node]
+rounded_rect end = rounded_rect(offset(start.center, 7, 0), 4, 2, 1) [node]
+label start_text = label(start.center, "Rounded box") { dir: center }
+label end_text = label(end.center, "Capsule") { dir: center }
+arrow flow = arrow(start.e, end.w)
+assert start.corner_radius == 0.5
+assert end.width == 4
+assert end.height == 2
+assert on(start.e, start)
+assert inside(end.center, end)
+assert not on(end.ne, end)

@@ -64,6 +64,7 @@ pub enum Kind {
     Bspline,
     Polygon,
     Rect,
+    RoundedRect,
     Diamond,
     Label,
     Arrow,
@@ -73,7 +74,7 @@ pub enum Kind {
 }
 
 impl Kind {
-    const ALL: [Self; 17] = [
+    const ALL: [Self; 18] = [
         Self::Point,
         Self::Num,
         Self::Line,
@@ -85,6 +86,7 @@ impl Kind {
         Self::Bspline,
         Self::Polygon,
         Self::Rect,
+        Self::RoundedRect,
         Self::Diamond,
         Self::Label,
         Self::Arrow,

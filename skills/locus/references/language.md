@@ -32,10 +32,14 @@ match `[A-Za-z][A-Za-z0-9_']*`; references must already be defined, except that
 `where` can reference its own declaration.
 
 `point()` takes no arguments. Placed `circle(r)`, `ellipse(a, b [, theta])`,
-`rect(w, h)`, and `diamond(w, h)` own their centers. These constructors must
+`rect(w, h)`, `rounded_rect(w, h, r)`, and `diamond(w, h)` own their centers. These constructors must
 be the complete RHS of a matching declaration; do not nest them.
 Explicit-center overloads are derived: `circle(O, r)`,
-`ellipse(O, a, b [, theta])`, `rect(O, w, h)`, `diamond(O, w, h)`.
+`ellipse(O, a, b [, theta])`, `rect(O, w, h)`, `rounded_rect(O, w, h, r)`, `diamond(O, w, h)`.
+Rounded rectangles require positive width and height and `0 <= r <= min(w,h)/2`.
+They share rectangle box anchors and expose `.corner_radius` as a length.
+Diagonal anchors are bounding-box corners, outside the curved boundary when `r > 0`.
+`area`, `perimeter`, `on`, and strict `inside` use the actual rounded boundary.
 Aliases such as `point O = c.center` introduce no additional placement.
 
 `num r = free 1.5` introduces one numeric unknown with a seed, not a fixed

@@ -744,7 +744,8 @@ impl Dimensions {
             }
             return None;
         }
-        matches!(name, "width" | "height").then(|| self.expr_var(expr, Some(Dimension::Length)))
+        matches!(name, "width" | "height" | "corner_radius")
+            .then(|| self.expr_var(expr, Some(Dimension::Length)))
     }
 
     fn expect_expr(&mut self, expr: &Expr, dimension: Dimension) {
@@ -1113,6 +1114,13 @@ fn call_arg_dimensions(name: &str, args: &[Option<usize>]) -> &'static [(usize, 
             &[(0, Length), (1, Length)]
         } else {
             &[(1, Length), (2, Length)]
+        };
+    }
+    if name == "rounded_rect" {
+        return if args.len() == 3 {
+            &[(0, Length), (1, Length), (2, Length)]
+        } else {
+            &[(1, Length), (2, Length), (3, Length)]
         };
     }
     if name == "ellipse" {

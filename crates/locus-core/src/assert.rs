@@ -351,10 +351,11 @@ impl AssertionContext<'_> {
                 | ResolvedObject::Circle(_)
                 | ResolvedObject::Arc(_)
                 | ResolvedObject::Ellipse(_)
+                | ResolvedObject::RoundedRect(_)
         ) {
             return Err(assertion_error(
                 args[1].span(),
-                "on target must be linear, circle, arc, or ellipse",
+                "on target must be linear, circle, arc, ellipse, or rounded rectangle",
             ));
         }
         point_on_object(point, &object, self.tolerance, span)
@@ -491,6 +492,9 @@ impl AssertionContext<'_> {
             ResolvedObject::Ellipse(ellipse) => Ok(self
                 .tolerance
                 .length_strictly_positive(-point_ellipse_residual(point, ellipse))),
+            ResolvedObject::RoundedRect(rect) => Ok(self
+                .tolerance
+                .length_strictly_positive(-rect.signed_distance(point))),
             ResolvedObject::Polygon(polygon)
             | ResolvedObject::Rect(polygon)
             | ResolvedObject::Diamond(polygon) => Ok(point_strictly_inside_polygon(
@@ -500,7 +504,7 @@ impl AssertionContext<'_> {
             )),
             _ => Err(assertion_error(
                 args[1].span(),
-                "inside target must be a circle, ellipse, or polygon",
+                "inside target must be a circle, ellipse, rounded rectangle, or polygon",
             )),
         }
     }
@@ -724,18 +728,19 @@ pub(crate) fn point_on_object(
         }
         ResolvedObject::Arc(arc) => point_arc_distance(point, arc.geometry, tolerance),
         ResolvedObject::Ellipse(ellipse) => point_ellipse_residual(point, *ellipse).abs(),
-        object => return point_on_polygon(point, object, tolerance, span),
+        object => return point_on_closed_shape(point, object, tolerance, span),
     };
     Ok(tolerance.length_zero(residual))
 }
 
-fn point_on_polygon(
+fn point_on_closed_shape(
     point: Point,
     object: &ResolvedObject,
     tolerance: Tolerance,
     span: Span,
 ) -> Result<bool, EvalError> {
     let residual = match object {
+        ResolvedObject::RoundedRect(rect) => rect.signed_distance(point).abs(),
         ResolvedObject::Polygon(polygon)
         | ResolvedObject::Rect(polygon)
         | ResolvedObject::Diamond(polygon) => {

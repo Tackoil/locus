@@ -1,0 +1,11 @@
+{
+  "command": "inspect",
+  "path": "spec/test/demonstrations/rounded_rect.locus",
+  "measurements": {
+    "distances": [],
+    "triangle_angles": [],
+    "line_ratios": []
+  },
+  "incidences": [],
+  "diagnostics": []
+}

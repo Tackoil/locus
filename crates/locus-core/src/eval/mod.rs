@@ -336,6 +336,7 @@ pub(crate) fn is_placed_op(op: &OpStmt, dimensions: &DimensionMap) -> bool {
             | (Kind::Circle, "circle", 1)
             | (Kind::Ellipse, "ellipse", 2)
             | (Kind::Rect | Kind::Diamond, "rect" | "diamond", 2)
+            | (Kind::RoundedRect, "rounded_rect", 3)
     ) || matches!(
         (op.kind, name.name.as_str(), args.len()),
         (Kind::Ellipse, "ellipse", 3)
@@ -384,12 +385,30 @@ fn evaluate_placed_value(
         (Kind::Ellipse, "ellipse") => {
             ResolvedObject::Ellipse(eval_ellipse_at(evaluator, center, args, span)?)
         }
+        (Kind::RoundedRect, "rounded_rect") => eval_rounded_rect_at(evaluator, center, args, span)?,
         (Kind::Rect, "rect") | (Kind::Diamond, "diamond") => {
             eval_placed_polygon(evaluator, op.kind, center, args, span)?
         }
         _ => return Err(type_error(span, "invalid placed constructor")),
     };
     Ok((object, vec![seed.x.abs(), seed.y.abs()]))
+}
+
+fn eval_rounded_rect_at(
+    evaluator: &mut ExpressionEvaluator<'_>,
+    center: Point,
+    args: &[Expr],
+    span: Span,
+) -> Result<ResolvedObject, EvalError> {
+    expect_arity("rounded_rect dimensions", args, 3, span)?;
+    crate::geom::RoundedRect::new(
+        center,
+        evaluator.eval_number(&args[0], Dimension::Length)?,
+        evaluator.eval_number(&args[1], Dimension::Length)?,
+        evaluator.eval_number(&args[2], Dimension::Length)?,
+    )
+    .map(ResolvedObject::RoundedRect)
+    .map_err(|error| EvalError::construction(span, error))
 }
 
 fn eval_placed_polygon(
@@ -666,7 +685,7 @@ fn is_circle_constructor(name: &str) -> bool {
 }
 
 fn is_polygon_constructor(name: &str) -> bool {
-    matches!(name, "polygon" | "rect" | "diamond")
+    matches!(name, "polygon" | "rect" | "rounded_rect" | "diamond")
 }
 
 fn is_annotation_constructor(name: &str) -> bool {
@@ -1264,6 +1283,11 @@ fn eval_polygon_constructor(
     args: &[Expr],
     span: Span,
 ) -> Result<ResolvedObject, EvalError> {
+    if name == "rounded_rect" {
+        expect_arity(name, args, 4, span)?;
+        let center = evaluator.eval_point(&args[0])?;
+        return eval_rounded_rect_at(evaluator, center, &args[1..], span);
+    }
     if name == "polygon" {
         let points = evaluator.eval_points(args)?;
         return construct::polygon(points, evaluator.tolerance)
@@ -1815,7 +1839,7 @@ fn geometry_kind_matches(kind: Kind, object: &ResolvedObject) -> bool {
 }
 
 fn secondary_geometry_kind_matches(kind: Kind, object: &ResolvedObject) -> bool {
-    if matches!(kind, Kind::Ellipse | Kind::Bspline) {
+    if matches!(kind, Kind::Ellipse | Kind::Bspline | Kind::RoundedRect) {
         return curve_kind_matches(kind, object);
     }
     match kind {
@@ -1831,7 +1855,9 @@ fn secondary_geometry_kind_matches(kind: Kind, object: &ResolvedObject) -> bool 
 fn curve_kind_matches(kind: Kind, object: &ResolvedObject) -> bool {
     matches!(
         (kind, object),
-        (Kind::Ellipse, ResolvedObject::Ellipse(_)) | (Kind::Bspline, ResolvedObject::Bspline(_))
+        (Kind::Ellipse, ResolvedObject::Ellipse(_))
+            | (Kind::Bspline, ResolvedObject::Bspline(_))
+            | (Kind::RoundedRect, ResolvedObject::RoundedRect(_))
     )
 }
 
@@ -2016,7 +2042,7 @@ fn compound_expression_is_numeric(expression: &Expr, numeric_ids: &BTreeSet<Stri
 fn is_numeric_property(name: &str) -> bool {
     matches!(
         name,
-        "radius" | "length" | "semimajor" | "semiminor" | "rotation"
+        "radius" | "length" | "semimajor" | "semiminor" | "rotation" | "corner_radius"
     )
 }
 
@@ -2025,6 +2051,10 @@ pub(crate) fn constructor_arg_dimension_for_arity(
     index: usize,
     arity: usize,
 ) -> Option<InferredDimension> {
+    if name == "rounded_rect" {
+        return (index >= usize::from(arity != 3) && index < arity)
+            .then_some(InferredDimension::Number(Dimension::Length));
+    }
     if matches!(name, "offset") && matches!(index, 1 | 2)
         || matches!(name, "extend") && index == 2
         || matches!(name, "circle") && (index == 1 || arity == 1 && index == 0)

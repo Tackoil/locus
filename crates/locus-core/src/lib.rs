@@ -23,7 +23,9 @@ pub use eval::{
     DependencyError, DependencyGraph, EvalError, RemovalImpact, StatementDependency,
     StatementDependencyKind, Value, evaluate,
 };
-pub use geom::{Arc, BBox, Circle, ConstructError, Line, Point, Polygon, Ray, Segment, Vec2};
+pub use geom::{
+    Arc, BBox, Circle, ConstructError, Line, Point, Polygon, Ray, RoundedRect, Segment, Vec2,
+};
 pub use inspect::{
     DistanceMeasurement, GeometryBounds, Incidence, InspectDiagnostic, InspectionReport,
     IntegerRatio, LayoutCollision, LineRatioMeasurement, MeasurementQuery, MeasurementTables,

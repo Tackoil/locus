@@ -1130,7 +1130,7 @@ fn validate_constructor_kind(op: &OpStmt, diagnostics: &mut Vec<Diagnostic>) {
 }
 
 fn constructors_for_kind(kind: Kind) -> &'static [&'static str] {
-    const BY_KIND: [&[&str]; 17] = [
+    const BY_KIND: [&[&str]; 18] = [
         &[
             "point",
             "midpoint",
@@ -1173,6 +1173,7 @@ fn constructors_for_kind(kind: Kind) -> &'static [&'static str] {
         &["bspline"],
         &["polygon"],
         &["rect"],
+        &["rounded_rect"],
         &["diamond"],
         &["label"],
         &["arrow"],

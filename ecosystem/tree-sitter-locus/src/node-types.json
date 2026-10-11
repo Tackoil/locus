@@ -1245,6 +1245,10 @@
     "named": false
   },
   {
+    "type": "rounded_rect",
+    "named": false
+  },
+  {
     "type": "segment",
     "named": false
   },

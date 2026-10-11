@@ -596,6 +596,7 @@ fn is_incidence_target(object: &ResolvedObject) -> bool {
             | ResolvedObject::Ellipse(_)
             | ResolvedObject::Polygon(_)
             | ResolvedObject::Rect(_)
+            | ResolvedObject::RoundedRect(_)
             | ResolvedObject::Diamond(_)
     )
 }

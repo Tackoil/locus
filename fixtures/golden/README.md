@@ -32,9 +32,11 @@ explicitly run in update mode.
 
 ## Visual review
 
-All 11 figures pass their in-file assertions. Tangent circles and the angle
+All 12 figures pass their in-file assertions. Tangent circles and the angle
 bisector construction look consistent with their asserted geometry. Ellipse
 foci, spline endpoints/control frame, and the 3-4-5 triangle also look consistent.
+The rounded rectangle and capsule example passes strict layout checks; both corner
+radii, centered labels, and the connecting arrow have been visually reviewed.
 
 The following existing output deserves attention; these goldens record current
 behavior rather than approving it as ideal:

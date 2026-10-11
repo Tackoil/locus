@@ -1,0 +1,95 @@
+//! Differentiated rounded-rectangle dimensions, measurements, and anchors.
+use super::{
+    DObject, DPoint, DValue, DVector, EvalError, Expr, Jet, NumericDimension, RelationEvaluator,
+    Span, polygon_property, rect_vertices, require_arity, solver_error,
+};
+
+#[derive(Clone, Debug)]
+pub(crate) struct DRoundedRect {
+    center: DPoint,
+    width: Jet,
+    height: Jet,
+    radius: Jet,
+}
+
+impl RelationEvaluator<'_> {
+    pub(super) fn rounded_rect_at(
+        &mut self,
+        center: DPoint,
+        args: &[Expr],
+        span: Span,
+    ) -> Result<DObject, EvalError> {
+        require_arity("rounded_rect dimensions", args, 3, span)?;
+        Ok(DObject::RoundedRect(DRoundedRect {
+            center,
+            width: self.eval_number_as(&args[0], NumericDimension::Length)?.0,
+            height: self.eval_number_as(&args[1], NumericDimension::Length)?.0,
+            radius: self.eval_number_as(&args[2], NumericDimension::Length)?.0,
+        }))
+    }
+}
+
+impl DRoundedRect {
+    pub(super) fn measure(&self, name: &str) -> DValue {
+        let (value, dimension) = if name == "area" {
+            (
+                self.width.mul(&self.height).sub(
+                    &self
+                        .radius
+                        .mul(&self.radius)
+                        .scale(4.0 - core::f64::consts::PI),
+                ),
+                NumericDimension::Area,
+            )
+        } else {
+            (
+                self.width
+                    .add(&self.height)
+                    .scale(2.0)
+                    .sub(&self.radius.scale(8.0 - core::f64::consts::TAU)),
+                NumericDimension::Length,
+            )
+        };
+        DValue::Number(value, dimension)
+    }
+
+    pub(super) fn property(
+        &self,
+        name: &str,
+        span: Span,
+        count: usize,
+    ) -> Result<DValue, EvalError> {
+        match name {
+            "corner_radius" => Ok(DValue::Number(
+                self.radius.clone(),
+                NumericDimension::Length,
+            )),
+            "center" | "centroid" => Ok(DValue::Object(DObject::Point(self.center.clone()))),
+            _ => polygon_property(
+                &rect_vertices(&self.center, &self.width, &self.height),
+                true,
+                name,
+                span,
+                count,
+            ),
+        }
+    }
+
+    pub(crate) fn signed_distance(&self, point: &DPoint, span: Span) -> Result<Jet, EvalError> {
+        let offset = point.sub(&self.center);
+        let x = offset.x.abs().sub(&self.width.scale(0.5).sub(&self.radius));
+        let y = offset
+            .y
+            .abs()
+            .sub(&self.height.scale(0.5).sub(&self.radius));
+        let zero = Jet::constant(0.0, x.gradient.len());
+        let outside = DVector {
+            x: x.max(&zero),
+            y: y.max(&zero),
+        };
+        let distance = outside
+            .norm()
+            .map_err(|()| solver_error(span, "undefined rounded rectangle distance"))?;
+        Ok(distance.add(&x.max(&y).min(&zero)).sub(&self.radius))
+    }
+}

@@ -6,7 +6,7 @@ It is opt-in and requires an API key.
 
 The positive `.locus` corpus is split by purpose:
 
-- [`demonstrations/`](demonstrations/) contains eleven compact, readable examples of the
+- [`demonstrations/`](demonstrations/) contains twelve compact, readable examples of the
   [`0 beta 5` language](../specification.md): points and shapes own placement;
   anchors and constructions remain derived.
 - [`stress/`](stress/) contains 16 expanded workloads. These exercise large construction
@@ -38,14 +38,15 @@ cargo test -p locus-cli -p locus-render --test spec_examples --all-features
 | [inscribed_angle.locus](demonstrations/inscribed_angle.locus) | Inscribed-angle geometry and arc marks |
 | [pentagon_golden.locus](demonstrations/pentagon_golden.locus) | Regular pentagon and golden-ratio relationships |
 | [point_relations.locus](demonstrations/point_relations.locus) | Parameterless points, relative placement, a 3-4-5 triangle, and a derived circumcircle |
+| [rounded_rect.locus](demonstrations/rounded_rect.locus) | Rounded boxes, capsules, labels, connectors, and curved boundary assertions |
 | [sequence_check.locus](demonstrations/sequence_check.locus) | Sequence-diagram participants and messages |
 | [tangent_circles.locus](demonstrations/tangent_circles.locus) | Solved tangent circles and common tangents |
 
 ### `0 beta 5` coverage
 
-The eleven demonstrations exercise parameterless points; dimension-only circles, ellipses,
-rectangles, and diamonds; derived object aliases; explicit external and internal tangency;
-and cubic, open, non-rational, clamped B-splines. Together they contain 63 assertions that
+The twelve demonstrations exercise parameterless points; dimension-only circles, ellipses,
+rectangles, rounded rectangles, and diamonds; derived object aliases; explicit external and internal tangency;
+and cubic, open, non-rational, clamped B-splines. Together they contain 69 assertions that
 run through the native parser, solver, evaluator, inspection, and rendering pipeline.
 
 Public reports intentionally describe resolved relationships and measurements
@@ -68,6 +69,7 @@ exercise convergence without authoring point coordinates or placement hints.
 | [pentagon_golden.locus](stress/pentagon_golden.locus) | Five nested pentagrams, diagonal intersections, equal sides and golden-ratio scaling | 79 | 40 |
 | [right_triangle_altitude.locus](stress/right_triangle_altitude.locus) | 14 recursive child triangles, altitude identities, incircle contacts and area checks | 131 | 78 |
 | [sankey_energy.locus](stress/sankey_energy.locus) | 28 bands, three sources, four intermediate processes, four outputs, split/merge conservation | 203 | 94 |
+| [rounded_rect.locus](demonstrations/rounded_rect.locus) | Rounded boxes, capsules, labels, connectors, and curved boundary assertions |
 | [sequence_check.locus](stress/sequence_check.locus) | Four participants, 26 messages, cache miss, rejected trial, persistence and artifact acknowledgements | 148 | 45 |
 | [software_architecture.locus](stress/software_architecture.locus) | 20 components, four boundaries, 32 shared dependency edges, placed service anchors | 101 | 39 |
 | [tangent_circles.locus](stress/tangent_circles.locus) | Noncollinear three-circle solve feeding seven further contacts and common tangents | 83 | 36 |

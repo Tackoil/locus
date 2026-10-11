@@ -129,6 +129,7 @@ const fn symbol_kind(kind: Kind) -> SymbolKind {
         | Kind::Bspline
         | Kind::Polygon
         | Kind::Rect
+        | Kind::RoundedRect
         | Kind::Diamond
         | Kind::Arrow
         | Kind::Tick

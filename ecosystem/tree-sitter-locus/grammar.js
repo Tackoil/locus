@@ -36,7 +36,7 @@ module.exports = grammar({
     ),
     kind: _ => choice(
       "point", "num", "line", "ray", "segment", "circle", "arc", "ellipse",
-      "bspline", "polygon", "rect", "diamond", "label", "arrow", "tick",
+      "bspline", "polygon", "rect", "rounded_rect", "diamond", "label", "arrow", "tick",
       "right_angle", "text_block",
     ),
     free_expression: $ => seq("free", $._expression),

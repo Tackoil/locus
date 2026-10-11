@@ -152,6 +152,18 @@ fn element(output: &mut String, shape: &Shape, style: &Style) {
                 attributes(style, true, false)
             );
         }
+        Shape::RoundedRect { min, max, radius } => {
+            let _ = writeln!(
+                output,
+                "    <rect x=\"{}\" y=\"{}\" width=\"{}\" height=\"{}\" rx=\"{}\" {}/>",
+                format_float(min.x),
+                format_float(min.y),
+                format_float(max.x - min.x),
+                format_float(max.y - min.y),
+                format_float(*radius),
+                attributes(style, true, false)
+            );
+        }
         Shape::Path {
             commands,
             closed,

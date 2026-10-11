@@ -131,19 +131,10 @@ fn geometry_preferences(
         ResolvedObject::Polygon(polygon)
         | ResolvedObject::Rect(polygon)
         | ResolvedObject::Diamond(polygon) => {
-            let vertices = polygon.vertices();
-            for index in 0..vertices.len() {
-                segment_preferences(
-                    Segment {
-                        start: vertices[index],
-                        end: vertices[(index + 1) % vertices.len()],
-                    },
-                    anchor,
-                    tolerance,
-                    directions,
-                    incident,
-                );
-            }
+            polygon_preferences(polygon, anchor, tolerance, directions, incident);
+        }
+        ResolvedObject::RoundedRect(rect) => {
+            rounded_rect_preferences(*rect, anchor, tolerance, directions, incident);
         }
         ResolvedObject::Circle(circle) => {
             radial_preference(circle.center, circle.radius, anchor, tolerance, directions);
@@ -215,5 +206,51 @@ fn push_incident(incident: &mut Vec<Vec2>, direction: Vec2, tolerance: Tolerance
         .any(|v| tolerance.scalar_zero((*v - direction).norm(), 0.0, 1.0))
     {
         incident.push(direction);
+    }
+}
+
+fn rounded_rect_preferences(
+    rect: locus_core::RoundedRect,
+    anchor: Point,
+    tolerance: Tolerance,
+    directions: &mut Vec<Vec2>,
+    incident: &mut Vec<Vec2>,
+) {
+    for side in rect.sides() {
+        segment_preferences(side, anchor, tolerance, directions, incident);
+    }
+    for arc in rect.corner_arcs() {
+        arc_preferences(
+            locus_core::ResolvedArc {
+                geometry: arc,
+                angle_mark_count: None,
+            },
+            anchor,
+            tolerance,
+            directions,
+            incident,
+        );
+    }
+}
+
+fn polygon_preferences(
+    polygon: &locus_core::Polygon,
+    anchor: Point,
+    tolerance: Tolerance,
+    directions: &mut Vec<Vec2>,
+    incident: &mut Vec<Vec2>,
+) {
+    let vertices = polygon.vertices();
+    for index in 0..vertices.len() {
+        segment_preferences(
+            Segment {
+                start: vertices[index],
+                end: vertices[(index + 1) % vertices.len()],
+            },
+            anchor,
+            tolerance,
+            directions,
+            incident,
+        );
     }
 }

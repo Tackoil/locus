@@ -144,6 +144,13 @@ pub(crate) enum ResolvedValue {
         area: f64,
         perimeter: f64,
     },
+    RoundedRect {
+        width: f64,
+        height: f64,
+        corner_radius: f64,
+        area: f64,
+        perimeter: f64,
+    },
     Rect {
         #[serde(skip_serializing_if = "Option::is_none")]
         vertices: Option<Vec<PointReport>>,
@@ -439,7 +446,8 @@ fn resolved_summary(value: &ResolvedValue) -> String {
         ResolvedValue::Circle { .. }
         | ResolvedValue::Arc { .. }
         | ResolvedValue::Ellipse { .. }
-        | ResolvedValue::Bspline { .. } => curved_summary(value),
+        | ResolvedValue::Bspline { .. }
+        | ResolvedValue::RoundedRect { .. } => curved_summary(value),
         ResolvedValue::Polygon { .. }
         | ResolvedValue::Rect { .. }
         | ResolvedValue::Diamond { .. } => polygon_object_summary(value),
@@ -498,6 +506,15 @@ fn curved_summary(value: &ResolvedValue) -> String {
             end.as_ref(),
             *counterclockwise,
             *angle_mark_count,
+        ),
+        ResolvedValue::RoundedRect {
+            width,
+            height,
+            corner_radius,
+            area,
+            perimeter,
+        } => format!(
+            "width {width:.6}, height {height:.6}, corner radius {corner_radius:.6}, area {area:.6}, perimeter {perimeter:.6}"
         ),
         ResolvedValue::Ellipse {
             semimajor,

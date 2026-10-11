@@ -88,3 +88,23 @@ fn rejects_invalid_hex_lengths_and_digits_locally() {
         assert_eq!(parsed.file.statements.len(), 1);
     }
 }
+
+#[test]
+fn rounded_rect_round_trips_and_infers_length_arguments() -> Result<(), Box<dyn std::error::Error>>
+{
+    let source = "locus 0 beta 5\nnum w = 6\nnum h = 4\nnum r = 1\nrounded_rect box = rounded_rect(w, h, r)\nrounded_rect copy = rounded_rect(box.center, w, h, r)\nnum radius = copy.corner_radius\n";
+    let parsed = parse(source);
+    assert!(parsed.diagnostics.is_empty(), "{:?}", parsed.diagnostics);
+    let formatted = format(source);
+    assert_eq!(format(&formatted.source).source, formatted.source);
+    let json = serde_json::to_value(to_interchange(&parsed.file))?;
+    for index in [0, 1, 2, 5] {
+        assert_eq!(json["ops"][index]["def"]["tree"]["dimension"], "length");
+    }
+    assert_eq!(json["ops"][3]["kind"], "rounded_rect");
+    assert_eq!(
+        locus_syntax::Kind::from_name("rounded_rect"),
+        Some(locus_syntax::Kind::RoundedRect)
+    );
+    Ok(())
+}

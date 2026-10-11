@@ -1,6 +1,8 @@
 //! Forward-mode automatic differentiation through derived geometry.
 
 use std::collections::BTreeMap;
+mod rounded_rect;
+use rounded_rect::DRoundedRect;
 
 use locus_syntax::{
     AngleUnit, BinOp, Constructor, Expr, File, Kind, OpStmt, Span, Statement, UnaryOp,
@@ -371,6 +373,7 @@ pub(crate) enum DObject {
     Ellipse(DEllipse),
     Bspline(DBspline),
     Polygon(Vec<DPoint>, bool),
+    RoundedRect(DRoundedRect),
     Annotation,
 }
 
@@ -586,6 +589,7 @@ impl AdEvaluator<'_> {
             (Kind::Ellipse, "ellipse") => evaluator
                 .ellipse_with_center(center, args, op.span)
                 .map(DObject::Ellipse),
+            (Kind::RoundedRect, "rounded_rect") => evaluator.rounded_rect_at(center, args, op.span),
             (Kind::Rect | Kind::Diamond, "rect" | "diamond") => {
                 evaluator.placed_polygon(&center, args, op.kind, op.span)
             }
@@ -910,6 +914,9 @@ impl<'a> RelationEvaluator<'a> {
         span: Span,
     ) -> Result<DValue, EvalError> {
         require_arity(name, args, 1, span)?;
+        if let DObject::RoundedRect(rect) = self.eval_object(&args[0])? {
+            return Ok(rect.measure(name));
+        }
         if name == "area" {
             if let Ok(ellipse) = self.eval_ellipse(&args[0]) {
                 let area = ellipse
@@ -1397,7 +1404,7 @@ impl<'a> RelationEvaluator<'a> {
             Kind::Arc => self
                 .eval_arc_constructor(name, args, span)
                 .map(DObject::Arc),
-            Kind::Polygon | Kind::Rect | Kind::Diamond => {
+            Kind::Polygon | Kind::Rect | Kind::RoundedRect | Kind::Diamond => {
                 self.eval_polygon_constructor(name, args, span)
             }
             Kind::Label | Kind::Arrow | Kind::Tick | Kind::RightAngle | Kind::TextBlock => {
@@ -2022,6 +2029,11 @@ impl<'a> RelationEvaluator<'a> {
         args: &[Expr],
         span: Span,
     ) -> Result<DObject, EvalError> {
+        if name == "rounded_rect" {
+            require_arity(name, args, 4, span)?;
+            let center = self.eval_point(&args[0])?;
+            return self.rounded_rect_at(center, &args[1..], span);
+        }
         if name == "polygon" {
             let vertices = args
                 .iter()
@@ -2069,6 +2081,7 @@ impl<'a> RelationEvaluator<'a> {
             DObject::Arc(arc) => {
                 arc_property(arc, name, span).map(|point| DValue::Object(DObject::Point(point)))
             }
+            DObject::RoundedRect(rect) => rect.property(name, span, self.count),
             DObject::Polygon(vertices, boxed) => {
                 polygon_property(&vertices, boxed, name, span, self.count)
             }
@@ -3079,7 +3092,7 @@ fn constructor_kind(name: &str, span: Span) -> Result<Kind, EvalError> {
     if matches!(name, "arc" | "angle_arc") {
         return Ok(Kind::Arc);
     }
-    if matches!(name, "polygon" | "rect" | "diamond") {
+    if matches!(name, "polygon" | "rect" | "rounded_rect" | "diamond") {
         return Ok(Kind::Polygon);
     }
     if matches!(

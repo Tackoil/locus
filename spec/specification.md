@@ -77,7 +77,7 @@ free_num_op   := "num" ident "=" "free" expr [where] [attr] [props] eol -- expr 
 object_op     := kind ident "=" rhs [where] [attr] [props] eol
 rhs           := expr                              -- result type must match kind
 kind        := "point" | "num" | "line" | "ray" | "segment" | "circle" | "arc" | "ellipse" | "bspline"
-             | "polygon" | "rect" | "diamond"
+             | "polygon" | "rect" | "rounded_rect" | "diamond"
              | "label" | "arrow" | "tick" | "right_angle" | "text_block"
 
 where       := "where" "{" boolexpr ("," boolexpr)* "}"
@@ -174,7 +174,7 @@ diamond decision = diamond(3, 2) // 2 internal placement DOFs; width 3, height 2
 num r = free 1.5                // 1 DOF: a numeric parameter, with a scalar seed
 ```
 
-`circle(r)`, `ellipse(a, b [, theta])`, `rect(w, h)`, and `diamond(w, h)` each own a center that Locus solves internally. Rectangles and diamonds are axis-aligned; a circle has no orientation parameter. An ellipse's rotation is an angle expression, defaulting to `0deg`, and introduces no implicit orientation unknown. Dimensions are expressions of earlier values, not implicitly free parameters. `circle(r)` with a free numeric `r` therefore depends on three unknown components in total: its two placement components and the separately declared radius parameter.
+`circle(r)`, `ellipse(a, b [, theta])`, `rect(w, h)`, `rounded_rect(w, h, r)`, and `diamond(w, h)` each own a center that Locus solves internally. Rectangles, rounded rectangles, and diamonds are axis-aligned; a circle has no orientation parameter. An ellipse's rotation is an angle expression, defaulting to `0deg`, and introduces no implicit orientation unknown. Dimensions are expressions of earlier values, not implicitly free parameters. `circle(r)` with a free numeric `r` therefore depends on three unknown components in total: its two placement components and the separately declared radius parameter.
 
 Anchors such as `c.center`, `box.n`, and `decision.e` expose geometric relationships without exposing coordinates. Naming an anchor does not allocate unknowns, and constraining it moves its owning geometry (or the upstream objects and parameters on which it depends). `point()` introduces two internal unknowns owned by its declaration; relations constrain them directly. The old `point P = free ...` syntax remains invalid, and there is no independently placed line constructor. Lines, rays, segments, polygons, arcs, B-splines, and annotations are derived from existing geometry. A B-spline's controls may be declared points, anchors, or constructed points; the spline allocates no hidden control points or placement (§5.11).
 
@@ -357,7 +357,7 @@ angle_arc(A, B, C, r)               -- angle-mark arc at vertex B, radius r
 
 In either `circle` form, `r` is a length expression, for example `2`, `dist(A, B) / 2`, or a free `num`. `circle(r)` is declaration-only (§1.4); `circle(O, r)` composes as a derived value. Every circle exposes `.center`, including circles whose center was never named by the author.
 
-### 5.5 `polygon`, `rect`, `diamond`
+### 5.5 `polygon`, `rect`, `rounded_rect`, `diamond`
 
 ```
 polygon(A, B, C, ...)               -- ≥ 3 vertices, listed in order
@@ -365,9 +365,17 @@ rect(w, h)                         -- placed axis-aligned rectangle; width w, he
 diamond(w, h)                      -- placed axis-aligned rhombus; width w, height h
 rect(C, w, h)                      -- derived rectangle at existing anchor C
 diamond(C, w, h)                   -- derived rhombus at existing anchor C
+rounded_rect(w, h, r)              -- placed rounded rectangle; circular corner radius r
+rounded_rect(C, w, h, r)           -- derived rounded rectangle at existing anchor C
 ```
 
 A polygon implies its edges for incidence detection, label collision, and rendering, but does **not** auto-create edge ids; an agent needing a specific edge writes `seg(A, B)` explicitly (index-based edge access is deliberately absent — agents are unreliable with indices). `regular(...)` from v0.2 is removed: its vertices were unaddressable; construct vertices by `rotate` instead.
+
+`rounded_rect` uses the same outer box anchors as `rect`, including bounding-box diagonal anchors (which lie outside a rounded corner when `r > 0`). `.centroid` equals `.center`; `.width`, `.height`, and `.corner_radius` are lengths. Dimensions satisfy `w > 0`, `h > 0`, and `0 <= r <= min(w, h)/2`; invalid radii are rejected rather than clamped. A zero radius gives square corners; the maximum radius gives a capsule, or a circle when the dimensions are equal. The kind remains `rounded_rect` in every case.
+
+Its exact area is `w*h - (4 - π)*r*r`; its perimeter is `2*(w+h) - (8 - 2*π)*r`. `area` and `perimeter` work in expressions and relations. For a point with center-relative coordinates `(dx, dy)`, set `qx = abs(dx) - (w/2-r)` and `qy = abs(dy) - (h/2-r)`. The signed boundary distance is `hypot(max(qx,0), max(qy,0)) + min(max(qx,qy),0) - r`. `on(P, rounded_rect)` uses this length residual; `inside` requires its negative to be strictly positive under the assertion tolerance. General intersections and tangencies with rounded rectangles are not supported.
+
+SVG renders a native rounded rectangle; PNG follows SVG, and TikZ uses the same corner radius. Layout collision tests use the four straight sides and four circular corner arcs.
 
 `rect` and `diamond` exist because box-and-arrow diagrams drowned in corner plumbing without them. Their anchors (§5.8) are ordinary derived points, legal in constructors and relations.
 
@@ -419,8 +427,9 @@ e.major_start  e.major_end  e.minor_start  e.minor_end
 e.semimajor  e.semiminor  e.rotation                       -- length, length, angle
 curve.start  curve.end  curve.at(0.5)                     -- B-spline; scalar parameter (§5.11)
 poly.centroid
-r.center  r.n  r.s  r.e  r.w  r.ne  r.nw  r.se  r.sw     -- rect / diamond
+r.center  r.n  r.s  r.e  r.w  r.ne  r.nw  r.se  r.sw     -- rect / rounded_rect / diamond
 r.width   r.height                                        -- numeric anchors
+r.corner_radius                                          -- rounded_rect only, length
 lbl.center              -- resolved label box center (annotation layer ONLY)
 ```
 
@@ -430,6 +439,7 @@ Geometry-tier anchors (everything above except `lbl.center`) are ordinary derive
 
 Every parsed number, evaluated expression, hint, solved value, and resolved coordinate must be finite. Overflow, NaN, or infinity is an error at the source expression that produced it.
 
+- Rounded-rectangle radii must satisfy `0 <= r <= min(w, h)/2`; width and height must be strictly positive.
 - Circle radii, rectangle/diamond widths and heights, and `angle_arc` radii must be strictly positive. Label gaps are nonnegative. A `right_angle` size, whether explicit or style-derived, is strictly positive.
 - Ellipse semiaxes satisfy `a >= b > 0`; both are lengths. Rotation is a finite angle. Equal semiaxes are valid, with coincident foci, but the value retains its ellipse type and parameterization.
 - A B-spline requires at least four finite point-valued controls, whether independently placed or derived. Repeated controls are allowed; the first and last must be distinct. Parameters are finite scalars in `[0, 1]`, without wrapping, extrapolation, or clamping of out-of-domain input. Self-intersection and vanishing derivatives are allowed for evaluation and rendering; no arbitrary tangent is supplied at a stationary point.
@@ -795,7 +805,7 @@ Recommended agent policy: **never `render` until `check` exits 0.**
 
 - Inequality relations in `rel` (only asserts may compare with `< > <= >=`).
 - Content-driven box sizing (rect width from measured label extents) and arrow routing (elbows, box clipping) — the rest of "diagram mode."
-- Location values, the old hinted free-point syntax, absolute coordinate hints, and `pin` are excluded from the authoring model, not reserved for later addition. Independent placements beyond points, circles, ellipses, rectangles, and diamonds are out of scope for this version (§2.2). B-splines derive all controls from existing geometry.
+- Location values, the old hinted free-point syntax, absolute coordinate hints, and `pin` are excluded from the authoring model, not reserved for later addition. Independent placements beyond points, circles, ellipses, rectangles, rounded rectangles, and diamonds are out of scope for this version (§2.2). B-splines derive all controls from existing geometry.
 - General ellipse/B-spline intersections, curve tangency and projection; ellipse arcs and perimeter; variable-degree, custom-knot, rational, periodic, closed, or fitted B-splines (§5.10–§5.11).
 - User-defined presets or named palettes; per-op inline style declarations; whole-figure transforms; layers; animation; 3D. Exact values remain reusable through classes (§8.3).
 - Statement continuations or multi-line statements; includes/imports; user-defined functions.
@@ -864,7 +874,7 @@ The agent states radii and a tangency relation, then derives anchors, the contac
 
 ### Decided (previously open)
 
-- **Object-owned placement** — `point()` declarations, circles, ellipses, rectangles, and diamonds introduce internal placement; anchors and constructive points remain derived (§2.2).
+- **Object-owned placement** — `point()` declarations, circles, ellipses, rectangles, rounded rectangles, and diamonds introduce internal placement; anchors and constructive points remain derived (§2.2).
 - **Ellipses** — positive ordered semiaxes, optional explicit rotation, derived anchors, incidence, containment, and area (§5.10).
 - **B-splines** — derived open clamped uniform cubic curves, with ordered existing control points and scalar parameter sampling (§5.11).
 - **No authored locations** — hinted free-point declarations, coordinate hints, and `pin` are removed. The new `point()` constructor takes no arguments. Public authoring and feedback expose geometry and relationships, not absolute coordinates (§1.4, §9.3).

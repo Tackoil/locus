@@ -667,6 +667,12 @@ impl<'a> ExpressionEvaluator<'a> {
         expect_arity(name, args, 1, span)?;
         let object = self.eval_resolved_object(&args[0])?;
         match (name, object) {
+            ("area", ResolvedObject::RoundedRect(rect)) => {
+                finite_scalar(rect.area(), Dimension::Area, span)
+            }
+            ("perimeter", ResolvedObject::RoundedRect(rect)) => {
+                finite_scalar(rect.perimeter(), Dimension::Length, span)
+            }
             ("area", ResolvedObject::Ellipse(ellipse)) => finite_scalar(
                 core::f64::consts::PI * ellipse.semimajor * ellipse.semiminor,
                 Dimension::Area,
@@ -777,7 +783,9 @@ impl<'a> ExpressionEvaluator<'a> {
     ) -> Result<Value, EvalError> {
         if matches!(
             object,
-            ResolvedObject::Ellipse(_) | ResolvedObject::Bspline(_)
+            ResolvedObject::Ellipse(_)
+                | ResolvedObject::Bspline(_)
+                | ResolvedObject::RoundedRect(_)
         ) {
             return self.eval_curve_property(object, name, args, span);
         }
@@ -806,6 +814,7 @@ impl<'a> ExpressionEvaluator<'a> {
         match object {
             ResolvedObject::Ellipse(ellipse) => self.ellipse_property(*ellipse, name, args, span),
             ResolvedObject::Bspline(spline) => self.bspline_property(spline, name, args, span),
+            ResolvedObject::RoundedRect(rect) => rounded_rect_property(*rect, name, args, span),
             _ => Err(type_error(span, "expected a curve")),
         }
     }
@@ -1491,6 +1500,20 @@ fn segment_property(
         }
     };
     point_property(point, args, span)
+}
+
+fn rounded_rect_property(
+    rect: crate::geom::RoundedRect,
+    name: &str,
+    args: &[Expr],
+    span: Span,
+) -> Result<Value, EvalError> {
+    expect_arity(name, args, 0, span)?;
+    match name {
+        "corner_radius" => finite_scalar(rect.corner_radius, Dimension::Length, span),
+        "centroid" => Ok(point_value(rect.center)),
+        _ => box_property(rect.bbox(), name, span),
+    }
 }
 
 fn polygon_property(

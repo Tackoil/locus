@@ -482,25 +482,10 @@ fn add_unknown(
             hints.push(*value);
             (1, NumericDimension::Angle)
         }
-        ResolvedObject::Circle(circle) => {
-            hints.extend([circle.center.x, circle.center.y]);
-            (2, NumericDimension::Length)
-        }
-        ResolvedObject::Ellipse(ellipse) => {
-            hints.extend([ellipse.center.x, ellipse.center.y]);
-            (2, NumericDimension::Length)
-        }
-        ResolvedObject::Rect(polygon) | ResolvedObject::Diamond(polygon) => {
-            let center = crate::geom::BBox::for_polygon(polygon).center();
+        _ => {
+            let center = placed_shape_center(object, op.span)?;
             hints.extend([center.x, center.y]);
             (2, NumericDimension::Length)
-        }
-        _ => {
-            return Err(EvalError::new(
-                "E404",
-                op.span,
-                "free declaration has an invalid resolved kind",
-            ));
         }
     };
     objects.push(UnknownObject {
@@ -512,6 +497,25 @@ fn add_unknown(
         report_hint: matches!(op.ctor, Constructor::FreeNum { .. }),
     });
     Ok(())
+}
+
+fn placed_shape_center(
+    object: &ResolvedObject,
+    span: locus_syntax::Span,
+) -> Result<crate::Point, EvalError> {
+    match object {
+        ResolvedObject::Circle(circle) => Ok(circle.center),
+        ResolvedObject::Ellipse(ellipse) => Ok(ellipse.center),
+        ResolvedObject::RoundedRect(rect) => Ok(rect.center),
+        ResolvedObject::Rect(polygon) | ResolvedObject::Diamond(polygon) => {
+            Ok(crate::BBox::for_polygon(polygon).center())
+        }
+        _ => Err(EvalError::new(
+            "E404",
+            span,
+            "free declaration has an invalid resolved kind",
+        )),
+    }
 }
 
 fn unknown_scales(objects: &[UnknownObject], hints: &[f64], diameter: f64) -> Vec<f64> {

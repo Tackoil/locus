@@ -88,6 +88,16 @@ fn element(output: &mut String, shape: &Shape, style: &Style) {
                 number(*radius_y)
             );
         }
+        Shape::RoundedRect { min, max, radius } => {
+            let _ = writeln!(
+                output,
+                "    \\path[{},rounded corners={}pt] {} rectangle {};",
+                attributes(style, true, false),
+                number(*radius * 0.75),
+                point(*min),
+                point(*max)
+            );
+        }
         Shape::Path {
             commands,
             closed,

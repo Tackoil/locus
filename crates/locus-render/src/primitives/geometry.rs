@@ -31,6 +31,14 @@ fn curved_geometry(object: &ResolvedObject, view: Viewport) -> Vec<Shape> {
             radius_y: ellipse.semiminor * view.pixels_per_unit,
             rotation: -ellipse.rotation,
         }],
+        ResolvedObject::RoundedRect(rect) => {
+            let bounds = rect.bbox();
+            vec![Shape::RoundedRect {
+                min: view.to_svg(bounds.northwest()),
+                max: view.to_svg(bounds.southeast()),
+                radius: rect.corner_radius * view.pixels_per_unit,
+            }]
+        }
         ResolvedObject::Bspline(spline) => spline_shape(spline, view).into_iter().collect(),
         ResolvedObject::Polygon(poly)
         | ResolvedObject::Rect(poly)

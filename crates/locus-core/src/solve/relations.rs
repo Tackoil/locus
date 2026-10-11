@@ -322,10 +322,11 @@ fn on_relation(
         DObject::Circle(circle) => point_circle_residual(&point, &circle, span)?,
         DObject::Arc(arc) => point_arc_residual(&point, &arc, span)?,
         DObject::Ellipse(ellipse) => point_ellipse_residual(&point, &ellipse, span)?,
+        DObject::RoundedRect(rect) => rect.signed_distance(&point, span)?,
         _ => {
             return Err(relation_error(
                 args[1].span(),
-                "on target must be linear, circle, arc, or ellipse",
+                "on target must be linear, circle, arc, ellipse, or rounded rectangle",
             ));
         }
     };

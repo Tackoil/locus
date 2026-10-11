@@ -844,7 +844,8 @@ fn resolved_value(object: &ResolvedObject) -> ResolvedValue {
         ResolvedObject::Circle(_)
         | ResolvedObject::Arc(_)
         | ResolvedObject::Ellipse(_)
-        | ResolvedObject::Bspline(_) => curved_value(object),
+        | ResolvedObject::Bspline(_)
+        | ResolvedObject::RoundedRect(_) => curved_value(object),
         ResolvedObject::Polygon(_) | ResolvedObject::Rect(_) | ResolvedObject::Diamond(_) => {
             polygon_object_value(object)
         }
@@ -904,6 +905,13 @@ fn curved_value(object: &ResolvedObject) -> ResolvedValue {
             end: None,
             counterclockwise: arc.geometry.ccw,
             angle_mark_count: arc.angle_mark_count,
+        },
+        ResolvedObject::RoundedRect(rect) => ResolvedValue::RoundedRect {
+            width: rect.width,
+            height: rect.height,
+            corner_radius: rect.corner_radius,
+            area: rect.area(),
+            perimeter: rect.perimeter(),
         },
         ResolvedObject::Ellipse(ellipse) => ResolvedValue::Ellipse {
             semimajor: ellipse.semimajor,

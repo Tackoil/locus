@@ -252,6 +252,13 @@ fn object_strokes(object: &ResolvedObject, strokes: &mut Vec<Stroke>) {
 
 fn curved_strokes(object: &ResolvedObject, strokes: &mut Vec<Stroke>) {
     match object {
+        ResolvedObject::RoundedRect(rect) => {
+            strokes.extend(
+                rect.sides()
+                    .map(|side| linear(side.start, side.direction(), 0.0, 1.0)),
+            );
+            strokes.extend(rect.corner_arcs().into_iter().map(Stroke::Arc));
+        }
         ResolvedObject::Circle(circle) => strokes.push(Stroke::Circle(*circle)),
         ResolvedObject::Arc(arc) => strokes.push(Stroke::Arc(arc.geometry)),
         ResolvedObject::Polygon(polygon)
@@ -563,5 +570,26 @@ mod tests {
         assert!(!boxes_overlap(first, box_at(2.0, 0.0, 1.0), tolerance));
         assert!(boxes_overlap(first, box_at(1.5, 0.0, 1.0), tolerance));
         assert!(!boxes_overlap(first, box_at(0.0, 0.0, 0.0), tolerance));
+    }
+    #[test]
+    fn rounded_rect_collisions_follow_arcs_and_leave_cutout_corners_clear()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let rect = locus_core::RoundedRect::new(Point::new(0.0, 0.0), 6.0, 4.0, 1.0)?;
+        let mut strokes = Vec::new();
+        super::object_strokes(&locus_core::ResolvedObject::RoundedRect(rect), &mut strokes);
+        let hits = |bounds| {
+            strokes
+                .iter()
+                .any(|stroke| super::stroke_hits(stroke, bounds))
+        };
+        assert!(hits(box_at(0.0, 2.0, 0.01)));
+        assert!(hits(box_at(
+            2.0 + libm::sqrt(0.5),
+            1.0 + libm::sqrt(0.5),
+            0.01
+        )));
+        assert!(!hits(box_at(3.0, 2.0, 0.01)));
+        assert!(!hits(box_at(0.0, 0.0, 0.1)));
+        Ok(())
     }
 }

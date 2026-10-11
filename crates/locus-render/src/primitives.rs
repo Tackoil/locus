@@ -26,6 +26,11 @@ pub(crate) enum Shape {
         closed: bool,
         ink: bool,
     },
+    RoundedRect {
+        min: Point,
+        max: Point,
+        radius: f64,
+    },
     Circle {
         center: Point,
         radius: f64,
@@ -115,6 +120,9 @@ fn push(
 fn valid_shape(shape: &Shape) -> bool {
     match shape {
         Shape::Path { commands, .. } => commands.iter().all(valid_command),
+        Shape::RoundedRect { min, max, radius } => {
+            min.is_finite() && max.is_finite() && radius.is_finite() && *radius >= 0.0
+        }
         Shape::Circle { center, radius, .. } => {
             center.is_finite() && radius.is_finite() && *radius > 0.0
         }

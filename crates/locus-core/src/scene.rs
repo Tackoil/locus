@@ -215,6 +215,8 @@ pub enum ResolvedObject {
     Polygon(Polygon),
     /// Axis-aligned rectangle geometry.
     Rect(Polygon),
+    /// Axis-aligned rectangle with circular corners.
+    RoundedRect(crate::geom::RoundedRect),
     /// Axis-aligned diamond geometry.
     Diamond(Polygon),
     /// Annotation input for the layout tier.
@@ -237,12 +239,14 @@ impl ResolvedObject {
             | Self::Bspline(_)
             | Self::Polygon(_)
             | Self::Rect(_)
+            | Self::RoundedRect(_)
             | Self::Diamond(_) => self.curved_bbox(),
         }
     }
 
     fn curved_bbox(&self) -> Option<BBox> {
         match self {
+            Self::RoundedRect(rect) => Some(rect.bbox()),
             Self::Circle(circle) => Some(BBox::for_circle(*circle)),
             Self::Arc(arc) => Some(BBox::for_arc(arc.geometry)),
             Self::Ellipse(ellipse) => Some(BBox::for_ellipse(*ellipse)),
