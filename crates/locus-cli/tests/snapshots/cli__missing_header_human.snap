@@ -5,7 +5,7 @@ expression: output_text(human.stderr)?
 E110
 
   × the first statement must be a `locus` header
-   ╭─[fixtures/errors/missing_header.locus:1:1]
+   ╭─[tests/fixtures/errors/missing_header.locus:1:1]
  1 │ point A()
    · ────┬────
    ·     ╰── the first statement must be a `locus` header

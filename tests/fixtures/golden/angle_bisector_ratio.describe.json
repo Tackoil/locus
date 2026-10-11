@@ -1,0 +1,566 @@
+{
+  "command": "describe",
+  "path": "examples/demonstrations/angle_bisector_ratio.locus",
+  "objects": [
+    {
+      "id": "circum",
+      "kind": "circle",
+      "span": {
+        "line": 9,
+        "col": 1,
+        "byte_start": 229,
+        "byte_end": 264
+      },
+      "definition": "circle circum(3.5)",
+      "resolved": {
+        "kind": "circle",
+        "radius": 3.5
+      }
+    },
+    {
+      "id": "A",
+      "kind": "point",
+      "span": {
+        "line": 10,
+        "col": 1,
+        "byte_start": 265,
+        "byte_end": 291
+      },
+      "definition": "circum.at(80deg)",
+      "resolved": {
+        "kind": "point",
+        "mark": "dot"
+      }
+    },
+    {
+      "id": "B",
+      "kind": "point",
+      "span": {
+        "line": 11,
+        "col": 1,
+        "byte_start": 292,
+        "byte_end": 319
+      },
+      "definition": "circum.at(210deg)",
+      "resolved": {
+        "kind": "point",
+        "mark": "dot"
+      }
+    },
+    {
+      "id": "C",
+      "kind": "point",
+      "span": {
+        "line": 12,
+        "col": 1,
+        "byte_start": 320,
+        "byte_end": 347
+      },
+      "definition": "circum.at(330deg)",
+      "resolved": {
+        "kind": "point",
+        "mark": "dot"
+      }
+    },
+    {
+      "id": "tri",
+      "kind": "polygon",
+      "span": {
+        "line": 14,
+        "col": 1,
+        "byte_start": 349,
+        "byte_end": 369
+      },
+      "definition": "polygon tri(A, B, C)",
+      "resolved": {
+        "kind": "polygon",
+        "area": 15.752045114597117,
+        "perimeter": 18.14039664577056
+      }
+    },
+    {
+      "id": "bis",
+      "kind": "line",
+      "span": {
+        "line": 16,
+        "col": 1,
+        "byte_start": 371,
+        "byte_end": 422
+      },
+      "definition": "angle_bisector(B, A, C)",
+      "resolved": {
+        "kind": "line"
+      }
+    },
+    {
+      "id": "D",
+      "kind": "point",
+      "span": {
+        "line": 19,
+        "col": 1,
+        "byte_start": 491,
+        "byte_end": 526
+      },
+      "definition": "intersect(bis, seg(B, C))",
+      "resolved": {
+        "kind": "point",
+        "mark": "dot"
+      }
+    },
+    {
+      "id": "ad",
+      "kind": "segment",
+      "span": {
+        "line": 21,
+        "col": 1,
+        "byte_start": 528,
+        "byte_end": 570
+      },
+      "definition": "segment ad(A, D)",
+      "resolved": {
+        "kind": "segment",
+        "length": 5.216678170941361
+      }
+    },
+    {
+      "id": "m1",
+      "kind": "arc",
+      "span": {
+        "line": 24,
+        "col": 1,
+        "byte_start": 647,
+        "byte_end": 689
+      },
+      "definition": "angle_arc(B, A, D, 0.5)",
+      "resolved": {
+        "kind": "arc",
+        "radius": 0.5,
+        "counterclockwise": true,
+        "angle_mark_count": 1
+      }
+    },
+    {
+      "id": "m2",
+      "kind": "arc",
+      "span": {
+        "line": 25,
+        "col": 1,
+        "byte_start": 690,
+        "byte_end": 732
+      },
+      "definition": "angle_arc(D, A, C, 0.5)",
+      "resolved": {
+        "kind": "arc",
+        "radius": 0.5,
+        "counterclockwise": true,
+        "angle_mark_count": 1
+      }
+    },
+    {
+      "id": "lA",
+      "kind": "label",
+      "span": {
+        "line": 28,
+        "col": 1,
+        "byte_start": 796,
+        "byte_end": 812
+      },
+      "definition": "label lA(A, $A$)",
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "lB",
+      "kind": "label",
+      "span": {
+        "line": 29,
+        "col": 1,
+        "byte_start": 813,
+        "byte_end": 829
+      },
+      "definition": "label lB(B, $B$)",
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "lC",
+      "kind": "label",
+      "span": {
+        "line": 30,
+        "col": 1,
+        "byte_start": 830,
+        "byte_end": 846
+      },
+      "definition": "label lC(C, $C$)",
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "lD",
+      "kind": "label",
+      "span": {
+        "line": 31,
+        "col": 1,
+        "byte_start": 847,
+        "byte_end": 875
+      },
+      "definition": "label lD(D, $D$)",
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "lbd",
+      "kind": "label",
+      "span": {
+        "line": 33,
+        "col": 1,
+        "byte_start": 877,
+        "byte_end": 934
+      },
+      "definition": "label lbd(seg(B, D).midpoint, $m$)",
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "ldc",
+      "kind": "label",
+      "span": {
+        "line": 34,
+        "col": 1,
+        "byte_start": 935,
+        "byte_end": 992
+      },
+      "definition": "label ldc(seg(D, C).midpoint, $n$)",
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "eq",
+      "kind": "text_block",
+      "span": {
+        "line": 36,
+        "col": 1,
+        "byte_start": 994,
+        "byte_end": 1058
+      },
+      "definition": "text_block eq($\\dfrac{m}{n} = \\dfrac{AB}{AC}$)",
+      "resolved": {
+        "kind": "annotation"
+      }
+    }
+  ],
+  "diagram": [
+    {
+      "accepted": {
+        "height": 0.18508000000000002,
+        "role": "normal",
+        "width": 0.20636000000000002
+      },
+      "definition": {
+        "source": "label(A, $A$)",
+        "tree": {
+          "args": [
+            {
+              "id": "A",
+              "kind": "ref"
+            },
+            {
+              "kind": "text",
+              "segments": [
+                {
+                  "kind": "tex",
+                  "source": "A"
+                }
+              ]
+            }
+          ],
+          "kind": "call",
+          "name": "label"
+        }
+      },
+      "id": "lA",
+      "properties": []
+    },
+    {
+      "accepted": {
+        "height": 0.18396,
+        "role": "normal",
+        "width": 0.17612000000000003
+      },
+      "definition": {
+        "source": "label(B, $B$)",
+        "tree": {
+          "args": [
+            {
+              "id": "B",
+              "kind": "ref"
+            },
+            {
+              "kind": "text",
+              "segments": [
+                {
+                  "kind": "tex",
+                  "source": "B"
+                }
+              ]
+            }
+          ],
+          "kind": "call",
+          "name": "label"
+        }
+      },
+      "id": "lB",
+      "properties": []
+    },
+    {
+      "accepted": {
+        "height": 0.19068000000000004,
+        "role": "normal",
+        "width": 0.18256000000000003
+      },
+      "definition": {
+        "source": "label(C, $C$)",
+        "tree": {
+          "args": [
+            {
+              "id": "C",
+              "kind": "ref"
+            },
+            {
+              "kind": "text",
+              "segments": [
+                {
+                  "kind": "tex",
+                  "source": "C"
+                }
+              ]
+            }
+          ],
+          "kind": "call",
+          "name": "label"
+        }
+      },
+      "id": "lC",
+      "properties": []
+    },
+    {
+      "accepted": {
+        "height": 0.18396,
+        "role": "normal",
+        "width": 0.19964
+      },
+      "definition": {
+        "source": "label(D, $D$)",
+        "tree": {
+          "args": [
+            {
+              "id": "D",
+              "kind": "ref"
+            },
+            {
+              "kind": "text",
+              "segments": [
+                {
+                  "kind": "tex",
+                  "source": "D"
+                }
+              ]
+            }
+          ],
+          "kind": "call",
+          "name": "label"
+        }
+      },
+      "id": "lD",
+      "properties": [
+        {
+          "name": "dir",
+          "value": {
+            "expr": {
+              "id": "S",
+              "kind": "ref"
+            },
+            "kind": "expr"
+          }
+        }
+      ]
+    },
+    {
+      "accepted": {
+        "height": 0.13692000000000001,
+        "role": "normal",
+        "width": 0.23240000000000005
+      },
+      "definition": {
+        "source": "label(seg(B, D).midpoint, $m$)",
+        "tree": {
+          "args": [
+            {
+              "args": [],
+              "base": {
+                "args": [
+                  {
+                    "id": "B",
+                    "kind": "ref"
+                  },
+                  {
+                    "id": "D",
+                    "kind": "ref"
+                  }
+                ],
+                "kind": "call",
+                "name": "seg"
+              },
+              "kind": "property",
+              "name": "midpoint"
+            },
+            {
+              "kind": "text",
+              "segments": [
+                {
+                  "kind": "tex",
+                  "source": "m"
+                }
+              ]
+            }
+          ],
+          "kind": "call",
+          "name": "label"
+        }
+      },
+      "id": "lbd",
+      "properties": [
+        {
+          "name": "dir",
+          "value": {
+            "expr": {
+              "id": "S",
+              "kind": "ref"
+            },
+            "kind": "expr"
+          }
+        },
+        {
+          "name": "gap",
+          "value": {
+            "expr": {
+              "dimension": "length",
+              "kind": "number",
+              "source": "0.35",
+              "value": 0.35
+            },
+            "kind": "expr"
+          }
+        }
+      ]
+    },
+    {
+      "accepted": {
+        "height": 0.13692000000000001,
+        "role": "normal",
+        "width": 0.15820000000000004
+      },
+      "definition": {
+        "source": "label(seg(D, C).midpoint, $n$)",
+        "tree": {
+          "args": [
+            {
+              "args": [],
+              "base": {
+                "args": [
+                  {
+                    "id": "D",
+                    "kind": "ref"
+                  },
+                  {
+                    "id": "C",
+                    "kind": "ref"
+                  }
+                ],
+                "kind": "call",
+                "name": "seg"
+              },
+              "kind": "property",
+              "name": "midpoint"
+            },
+            {
+              "kind": "text",
+              "segments": [
+                {
+                  "kind": "tex",
+                  "source": "n"
+                }
+              ]
+            }
+          ],
+          "kind": "call",
+          "name": "label"
+        }
+      },
+      "id": "ldc",
+      "properties": [
+        {
+          "name": "dir",
+          "value": {
+            "expr": {
+              "id": "S",
+              "kind": "ref"
+            },
+            "kind": "expr"
+          }
+        },
+        {
+          "name": "gap",
+          "value": {
+            "expr": {
+              "dimension": "length",
+              "kind": "number",
+              "source": "0.35",
+              "value": 0.35
+            },
+            "kind": "expr"
+          }
+        }
+      ]
+    }
+  ],
+  "solve": {
+    "unknowns": 2,
+    "equations": 0,
+    "rank": 0,
+    "attempts": 0,
+    "outer_search_attempts": 1,
+    "measurement_passes": 1,
+    "routing_attempts": 0,
+    "accepted_steps": 0,
+    "max_normalized_residual": 0.0,
+    "final_damping": 0.001,
+    "dof": {
+      "global_remaining": 2,
+      "objects": [
+        {
+          "class": "geometric",
+          "id": "circum",
+          "span": {
+            "line": 9,
+            "col": 1,
+            "byte_start": 229,
+            "byte_end": 264
+          },
+          "hint_settled_dofs": 2,
+          "suggestion": "add a relation if unintended, e.g. on(circum, …) or vdist(…) == …"
+        }
+      ]
+    },
+    "branch_resolutions": [],
+    "hint_displacements": [],
+    "redundant_relations": [],
+    "relation_residuals": []
+  }
+}

@@ -4,7 +4,7 @@ expression: stdout
 ---
 {
   "command": "describe",
-  "path": "spec/test/demonstrations/aec3_filter_alignment.locus",
+  "path": "examples/demonstrations/aec3_filter_alignment.locus",
   "objects": [
     {
       "id": "fw",

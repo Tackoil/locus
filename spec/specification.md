@@ -4,7 +4,7 @@
 
 This document is self-contained and normative. The project is under development and supports only this latest draft; earlier file formats are not accepted.
 
-This revision incorporates the beta 6 proposal into the normative language and toolchain contract. The [relation diagram](relations.svg), its [Locus source](relations.locus), and both [composition examples](test/composition/) are formal reference material. It adds reusable functions, constructor declarations, ordered groups, automatic box sizing, standalone and path-attached labels, automatic connector routing, preset measurements, and rectangular boundary edges. The draft remains unfrozen pending the numerical and implementation contracts listed in Part 12. The measured runtime and 30-source acceptance now implement the contracts pinned in §7.7, §8.7 and §9. Remaining freeze questions stay listed in Part 12.
+This revision incorporates the beta 6 proposal into the normative language and toolchain contract. The [relation diagram](reference/relations.svg), its [Locus source](reference/relations.locus), and both [composition examples](../examples/composition) are formal reference material. It adds reusable functions, constructor declarations, ordered groups, automatic box sizing, standalone and path-attached labels, automatic connector routing, preset measurements, and rectangular boundary edges. The draft remains unfrozen pending the numerical and implementation contracts listed in Part 12. The measured runtime and 30-source acceptance now implement the contracts pinned in §7.7, §8.7 and §9. Remaining freeze questions stay listed in Part 12.
 
 ---
 
@@ -27,7 +27,7 @@ This is the geometric-constraint paradigm proven by CAD sketchers (SolveSpace, F
 
 ### 0.2 Diagram-authoring additions (informative)
 
-The [agent-loop example](test/composition/flowchart_agent_loop.locus) and [checkout example](test/composition/checkout_sequence.locus) use generic drawing objects and composition. Business meaning comes from text and local functions; there are no participant, message-event, branch, guard, activation, or lifeline primitives.
+The [agent-loop example](../examples/composition/flowchart_agent_loop.locus) and [checkout example](../examples/composition/checkout_sequence.locus) use generic drawing objects and composition. Business meaning comes from text and local functions; there are no participant, message-event, branch, guard, activation, or lifeline primitives.
 
 | Addition | Required behavior | Defined in |
 |---|---|---|
@@ -181,7 +181,7 @@ Note the `postfix` production: property access applies to any expression, so `se
 
 ### 1.5 Reusable statement functions
 
-Functions follow the composition model in [the agent-loop example](test/composition/flowchart_agent_loop.locus) and [the checkout example](test/composition/checkout_sequence.locus). A function is a file-local reusable statement block, expanded before solving. It has no return type or return value, and its definition creates no objects until invoked. A call is a named statement, not an expression-valued `funcall` from §1.3. Function bodies use the same two declaration forms as the top level (§1.4); `rect shape()` and `label caption(text)` inside a body are ordinary constructor declarations with automatic dimensions (§5.5) and standalone measured text (§5.6).
+Functions follow the composition model in [the agent-loop example](../examples/composition/flowchart_agent_loop.locus) and [the checkout example](../examples/composition/checkout_sequence.locus). A function is a file-local reusable statement block, expanded before solving. It has no return type or return value, and its definition creates no objects until invoked. A call is a named statement, not an expression-valued `funcall` from §1.3. Function bodies use the same two declaration forms as the top level (§1.4); `rect shape()` and `label caption(text)` inside a body are ordinary constructor declarations with automatic dimensions (§5.5) and standalone measured text (§5.6).
 
 **Definition and invocation.** Define a function before invoking it. Parameters are positional, named without type annotations, and substituted as structured arguments at expansion time. Their uses determine the required kinds and numeric dimensions. A call must supply exactly the declared number of arguments, including zero arguments for a parameterless function. Object and anchor arguments refer to existing values; passing an object does not copy it or allocate another placement. Text arguments preserve their plain/TeX segments. A parameter used in `[appearance]` must receive a built-in or previously declared style-class name.
 
@@ -235,7 +235,7 @@ Expansion diagnostics retain the function-body source location and the invocatio
 
 ### 1.6 Ordered groups
 
-Groups follow the ordered collection model described in [the agent-loop example](test/composition/flowchart_agent_loop.locus) and used in [the checkout example](test/composition/checkout_sequence.locus). `group name(member, ...)` aliases existing objects. It draws nothing, creates no objects or placement unknowns, and imposes no layout relation. Members retain their identities, styles, and geometric relationships; an object can belong to several groups without being copied or rendered again.
+Groups follow the ordered collection model described in [the agent-loop example](../examples/composition/flowchart_agent_loop.locus) and used in [the checkout example](../examples/composition/checkout_sequence.locus). `group name(member, ...)` aliases existing objects. It draws nothing, creates no objects or placement unknowns, and imposes no layout relation. Members retain their identities, styles, and geometric relationships; an object can belong to several groups without being copied or rendered again.
 
 **Members and order.** A group requires at least one member reference. Each reference must resolve to an already declared drawable object or point, group, or function instance. Qualified references such as `customer.shape` and `approved.payment.path` are accepted. Numeric values, text literals, style classes, function definitions, and constructor calls are not group members. Groups have no style class, properties, `where` clause, geometric anchors, or intrinsic dimensions; relations supply their layout behavior.
 
@@ -346,7 +346,7 @@ A `where` clause may only reference earlier ids (plus the id being declared).
 
 ### 3.1 One relation vocabulary, defining facts and checks
 
-The relation vocabulary follows [the relation diagram](relations.svg). It has **32 entries**, counting equivalent numeric comparison forms and geometric overloads together: the 20 layout and clipping names used by the composition examples (`center`, `contain`, `gap_x`, `gap_y`, `row`, `column`, the four `align_*` bounds, `align_center_x`, `align_center_y`, the four `inset_*`, `cover_x`, `cover_y`, `avoid`, `trim_endpoints`) plus the 12 numeric and geometric entries (`==`, the ordered comparisons, `inside`, `on`, `tangent`, `internally_tangent`, `parallel`, `perpendicular`, `collinear`, `concyclic`, `midpoint`, `between`). The layout additions and their measurement, routing, and solve contracts are normative (§7.7–§8.7).
+The relation vocabulary follows [the relation diagram](reference/relations.svg). It has **32 entries**, counting equivalent numeric comparison forms and geometric overloads together: the 20 layout and clipping names used by the composition examples (`center`, `contain`, `gap_x`, `gap_y`, `row`, `column`, the four `align_*` bounds, `align_center_x`, `align_center_y`, the four `inset_*`, `cover_x`, `cover_y`, `avoid`, `trim_endpoints`) plus the 12 numeric and geometric entries (`==`, the ordered comparisons, `inside`, `on`, `tangent`, `internally_tangent`, `parallel`, `perpendicular`, `collinear`, `concyclic`, `midpoint`, `between`). The layout additions and their measurement, routing, and solve contracts are normative (§7.7–§8.7).
 
 For a Boolean relation supported in both modes, only the keyword differs:
 

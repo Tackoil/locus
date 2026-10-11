@@ -319,7 +319,7 @@ fn serialize<T: serde::Serialize>(value: T) -> Result<Value, (i32, String)> {
 #[cfg(test)]
 #[allow(clippy::expect_used, clippy::panic, clippy::unwrap_used)]
 mod tests {
-    mod beta6;
+    mod source_navigation;
     use std::thread;
     use std::time::Duration;
 

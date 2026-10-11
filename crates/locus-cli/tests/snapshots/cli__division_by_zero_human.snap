@@ -5,7 +5,7 @@ expression: output_text(human.stderr)?
 E204
 
   × division denominator is zero under construction tolerance
-   ╭─[fixtures/errors/division_by_zero.locus:2:18]
+   ╭─[tests/fixtures/errors/division_by_zero.locus:2:18]
  1 │ locus 0 beta 6
  2 │ num broken = 1 / 0
    ·                  ┬

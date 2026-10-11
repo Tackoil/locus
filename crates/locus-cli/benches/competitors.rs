@@ -145,13 +145,13 @@ fn cases() -> [Case; 2] {
     [
         Case {
             name: "agent_flowchart",
-            locus: "spec/test/stress/flowchart_agent_loop.locus",
+            locus: "examples/stress/flowchart_agent_loop.locus",
             mermaid: "benchmarks/competitors/agent_flowchart.mmd",
             d2: "benchmarks/competitors/agent_flowchart.d2",
         },
         Case {
             name: "software_architecture",
-            locus: "spec/test/stress/software_architecture.locus",
+            locus: "examples/stress/software_architecture.locus",
             mermaid: "benchmarks/competitors/software_architecture.mmd",
             d2: "benchmarks/competitors/software_architecture.d2",
         },

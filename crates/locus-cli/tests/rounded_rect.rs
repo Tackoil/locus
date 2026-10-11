@@ -4,7 +4,7 @@ use serde_json::Value;
 use std::error::Error;
 use std::path::Path;
 
-const SOURCE: &str = include_str!("../../../spec/test/demonstrations/rounded_rect.locus");
+const SOURCE: &str = include_str!("../../../examples/demonstrations/rounded_rect.locus");
 
 fn output(file: &Path, verb: &str, args: &[&str]) -> Result<Vec<u8>, Box<dyn Error>> {
     let result = Command::cargo_bin("locus")?

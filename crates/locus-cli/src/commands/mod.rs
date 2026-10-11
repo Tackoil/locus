@@ -2,7 +2,7 @@
 #![allow(missing_docs, reason = "command report plumbing is crate-internal")]
 
 mod diagram_report;
-mod edit_beta6;
+mod edit_collections;
 mod layout;
 mod measurement;
 mod render;
@@ -116,7 +116,7 @@ fn update(path: &Path, id: &str, definition: Option<&str>, property: Option<&str
         Ok(loaded) => loaded,
         Err(execution) => return *execution,
     };
-    if let Some(execution) = edit_beta6::update(&loaded, id, definition, property) {
+    if let Some(execution) = edit_collections::update(&loaded, id, definition, property) {
         return execution;
     }
     let Some(op) = find_op(&loaded.file, id) else {
@@ -150,7 +150,7 @@ fn remove(path: &Path, id: &str) -> Execution {
         Ok(loaded) => loaded,
         Err(execution) => return *execution,
     };
-    if let Some(execution) = edit_beta6::remove(&loaded, id) {
+    if let Some(execution) = edit_collections::remove(&loaded, id) {
         return execution;
     }
     let Some(op) = find_op(&loaded.file, id) else {

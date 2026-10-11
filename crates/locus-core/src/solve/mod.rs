@@ -2,11 +2,11 @@
 
 mod ad;
 mod conflict;
+mod geometric_projection;
 mod init;
 mod layout;
 mod linear;
 mod model;
-mod model_phase1;
 mod search;
 mod settling;
 use model::{append_domains, equality_analysis, settle, unknown_preferences};
@@ -352,7 +352,7 @@ fn run_lm(
                 )
             })?;
         let hint_null = if geometric_hint_projection(system, sources) {
-            model_phase1::null(system, &state)?
+            geometric_projection::null(system, &state)?
         } else {
             state.analysis.null.clone()
         };

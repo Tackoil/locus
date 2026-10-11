@@ -1,0 +1,186 @@
+{
+  "command": "inspect",
+  "path": "examples/demonstrations/inscribed_angle.locus",
+  "measurements": {
+    "distances": [
+      {
+        "first": "O",
+        "second": "P",
+        "distance": 3.0
+      },
+      {
+        "first": "O",
+        "second": "A",
+        "distance": 3.0
+      },
+      {
+        "first": "O",
+        "second": "B",
+        "distance": 3.0
+      },
+      {
+        "first": "P",
+        "second": "A",
+        "distance": 4.242640687119285
+      },
+      {
+        "first": "P",
+        "second": "B",
+        "distance": 5.437846722219899
+      },
+      {
+        "first": "A",
+        "second": "B",
+        "distance": 5.638155724715451
+      }
+    ],
+    "triangle_angles": [
+      {
+        "first": "P",
+        "vertex": "O",
+        "second": "A",
+        "radians": 1.5707963267948966
+      },
+      {
+        "first": "O",
+        "vertex": "P",
+        "second": "A",
+        "radians": 0.7853981633974483
+      },
+      {
+        "first": "O",
+        "vertex": "A",
+        "second": "P",
+        "radians": 0.7853981633974483
+      },
+      {
+        "first": "P",
+        "vertex": "O",
+        "second": "B",
+        "radians": 2.2689280275926285
+      },
+      {
+        "first": "O",
+        "vertex": "P",
+        "second": "B",
+        "radians": 0.4363323129985825
+      },
+      {
+        "first": "O",
+        "vertex": "B",
+        "second": "P",
+        "radians": 0.4363323129985825
+      },
+      {
+        "first": "A",
+        "vertex": "O",
+        "second": "B",
+        "radians": 2.4434609527920617
+      },
+      {
+        "first": "O",
+        "vertex": "A",
+        "second": "B",
+        "radians": 0.34906585039886573
+      },
+      {
+        "first": "O",
+        "vertex": "B",
+        "second": "A",
+        "radians": 0.3490658503988658
+      },
+      {
+        "first": "A",
+        "vertex": "P",
+        "second": "B",
+        "radians": 1.2217304763960308
+      },
+      {
+        "first": "P",
+        "vertex": "A",
+        "second": "B",
+        "radians": 1.1344640137963142
+      },
+      {
+        "first": "P",
+        "vertex": "B",
+        "second": "A",
+        "radians": 0.7853981633974483
+      }
+    ],
+    "line_ratios": []
+  },
+  "incidences": [
+    {
+      "kind": "point_on_object",
+      "point": "O",
+      "object": "oa"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "O",
+      "object": "ob"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "P",
+      "object": "c"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "P",
+      "object": "pa"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "P",
+      "object": "pb"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "P",
+      "object": "sub"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "A",
+      "object": "c"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "A",
+      "object": "pa"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "A",
+      "object": "oa"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "A",
+      "object": "sub"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "B",
+      "object": "c"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "B",
+      "object": "pb"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "B",
+      "object": "ob"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "B",
+      "object": "sub"
+    }
+  ],
+  "diagnostics": []
+}

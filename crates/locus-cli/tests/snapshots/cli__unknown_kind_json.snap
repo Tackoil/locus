@@ -8,13 +8,13 @@ expression: output_text(json.stdout)?
   "passed": false,
   "files": [
     {
-      "path": "fixtures/errors/unknown_kind.locus",
+      "path": "tests/fixtures/errors/unknown_kind.locus",
       "passed": false,
       "diagnostics": [
         {
           "code": "E113",
           "severity": "error",
-          "path": "fixtures/errors/unknown_kind.locus",
+          "path": "tests/fixtures/errors/unknown_kind.locus",
           "span": {
             "line": 2,
             "col": 8,

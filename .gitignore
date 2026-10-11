@@ -8,5 +8,4 @@
 **/.locus/rejected-requests/
 
 # Local development plans, progress records, and generated validation output.
-/documents/
-/artifacts/
+/.local/

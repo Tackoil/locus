@@ -1,0 +1,643 @@
+{
+  "command": "describe",
+  "path": "examples/demonstrations/inscribed_angle.locus",
+  "objects": [
+    {
+      "id": "c",
+      "kind": "circle",
+      "span": {
+        "line": 8,
+        "col": 1,
+        "byte_start": 135,
+        "byte_end": 146
+      },
+      "definition": "circle c(3)",
+      "resolved": {
+        "kind": "circle",
+        "radius": 3.0
+      }
+    },
+    {
+      "id": "O",
+      "kind": "point",
+      "span": {
+        "line": 9,
+        "col": 1,
+        "byte_start": 147,
+        "byte_end": 165
+      },
+      "definition": "c.center",
+      "resolved": {
+        "kind": "point",
+        "mark": "dot"
+      }
+    },
+    {
+      "id": "P",
+      "kind": "point",
+      "span": {
+        "line": 11,
+        "col": 1,
+        "byte_start": 167,
+        "byte_end": 197
+      },
+      "definition": "on_circle(c, 110deg)",
+      "resolved": {
+        "kind": "point",
+        "mark": "dot"
+      }
+    },
+    {
+      "id": "A",
+      "kind": "point",
+      "span": {
+        "line": 12,
+        "col": 1,
+        "byte_start": 198,
+        "byte_end": 228
+      },
+      "definition": "on_circle(c, 200deg)",
+      "resolved": {
+        "kind": "point",
+        "mark": "dot"
+      }
+    },
+    {
+      "id": "B",
+      "kind": "point",
+      "span": {
+        "line": 13,
+        "col": 1,
+        "byte_start": 229,
+        "byte_end": 259
+      },
+      "definition": "on_circle(c, 340deg)",
+      "resolved": {
+        "kind": "point",
+        "mark": "dot"
+      }
+    },
+    {
+      "id": "pa",
+      "kind": "segment",
+      "span": {
+        "line": 15,
+        "col": 1,
+        "byte_start": 261,
+        "byte_end": 277
+      },
+      "definition": "segment pa(P, A)",
+      "resolved": {
+        "kind": "segment",
+        "length": 4.242640687119285
+      }
+    },
+    {
+      "id": "pb",
+      "kind": "segment",
+      "span": {
+        "line": 16,
+        "col": 1,
+        "byte_start": 278,
+        "byte_end": 294
+      },
+      "definition": "segment pb(P, B)",
+      "resolved": {
+        "kind": "segment",
+        "length": 5.437846722219899
+      }
+    },
+    {
+      "id": "oa",
+      "kind": "segment",
+      "span": {
+        "line": 17,
+        "col": 1,
+        "byte_start": 295,
+        "byte_end": 325
+      },
+      "definition": "segment oa(O, A)",
+      "resolved": {
+        "kind": "segment",
+        "length": 3.0
+      }
+    },
+    {
+      "id": "ob",
+      "kind": "segment",
+      "span": {
+        "line": 18,
+        "col": 1,
+        "byte_start": 326,
+        "byte_end": 356
+      },
+      "definition": "segment ob(O, B)",
+      "resolved": {
+        "kind": "segment",
+        "length": 3.0
+      }
+    },
+    {
+      "id": "sub",
+      "kind": "arc",
+      "span": {
+        "line": 20,
+        "col": 1,
+        "byte_start": 358,
+        "byte_end": 395
+      },
+      "definition": "arc sub(c, A, B, false)",
+      "resolved": {
+        "kind": "arc",
+        "radius": 3.0,
+        "counterclockwise": false,
+        "angle_mark_count": null
+      }
+    },
+    {
+      "id": "inscribed",
+      "kind": "arc",
+      "span": {
+        "line": 22,
+        "col": 1,
+        "byte_start": 430,
+        "byte_end": 470
+      },
+      "definition": "angle_arc(A, P, B, 0.55)",
+      "resolved": {
+        "kind": "arc",
+        "radius": 0.55,
+        "counterclockwise": true,
+        "angle_mark_count": 1
+      }
+    },
+    {
+      "id": "central",
+      "kind": "arc",
+      "span": {
+        "line": 23,
+        "col": 1,
+        "byte_start": 471,
+        "byte_end": 510
+      },
+      "definition": "angle_arc(A, O, B, 0.4)",
+      "resolved": {
+        "kind": "arc",
+        "radius": 0.4,
+        "counterclockwise": true,
+        "angle_mark_count": 1
+      }
+    },
+    {
+      "id": "lP",
+      "kind": "label",
+      "span": {
+        "line": 26,
+        "col": 1,
+        "byte_start": 574,
+        "byte_end": 590
+      },
+      "definition": "label lP(P, $P$)",
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "lA",
+      "kind": "label",
+      "span": {
+        "line": 27,
+        "col": 1,
+        "byte_start": 591,
+        "byte_end": 607
+      },
+      "definition": "label lA(A, $A$)",
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "lB",
+      "kind": "label",
+      "span": {
+        "line": 28,
+        "col": 1,
+        "byte_start": 608,
+        "byte_end": 624
+      },
+      "definition": "label lB(B, $B$)",
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "lO",
+      "kind": "label",
+      "span": {
+        "line": 29,
+        "col": 1,
+        "byte_start": 625,
+        "byte_end": 653
+      },
+      "definition": "label lO(O, $O$)",
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "li",
+      "kind": "label",
+      "span": {
+        "line": 31,
+        "col": 1,
+        "byte_start": 655,
+        "byte_end": 710
+      },
+      "definition": "label li(P, $\\theta$)",
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "lc",
+      "kind": "label",
+      "span": {
+        "line": 32,
+        "col": 1,
+        "byte_start": 711,
+        "byte_end": 766
+      },
+      "definition": "label lc(O, $2\\theta$)",
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "see",
+      "kind": "arrow",
+      "span": {
+        "line": 34,
+        "col": 1,
+        "byte_start": 768,
+        "byte_end": 843
+      },
+      "definition": "arrow see(li.center, lc.center)",
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "thm",
+      "kind": "text_block",
+      "span": {
+        "line": 36,
+        "col": 1,
+        "byte_start": 845,
+        "byte_end": 907
+      },
+      "definition": "text_block thm($\\angle AOB = 2\\,\\angle APB$)",
+      "resolved": {
+        "kind": "annotation"
+      }
+    }
+  ],
+  "diagram": [
+    {
+      "accepted": {
+        "height": 0.18396,
+        "role": "normal",
+        "width": 0.168
+      },
+      "definition": {
+        "source": "label(P, $P$)",
+        "tree": {
+          "args": [
+            {
+              "id": "P",
+              "kind": "ref"
+            },
+            {
+              "kind": "text",
+              "segments": [
+                {
+                  "kind": "tex",
+                  "source": "P"
+                }
+              ]
+            }
+          ],
+          "kind": "call",
+          "name": "label"
+        }
+      },
+      "id": "lP",
+      "properties": []
+    },
+    {
+      "accepted": {
+        "height": 0.18508000000000002,
+        "role": "normal",
+        "width": 0.20636000000000002
+      },
+      "definition": {
+        "source": "label(A, $A$)",
+        "tree": {
+          "args": [
+            {
+              "id": "A",
+              "kind": "ref"
+            },
+            {
+              "kind": "text",
+              "segments": [
+                {
+                  "kind": "tex",
+                  "source": "A"
+                }
+              ]
+            }
+          ],
+          "kind": "call",
+          "name": "label"
+        }
+      },
+      "id": "lA",
+      "properties": []
+    },
+    {
+      "accepted": {
+        "height": 0.18396,
+        "role": "normal",
+        "width": 0.17612000000000003
+      },
+      "definition": {
+        "source": "label(B, $B$)",
+        "tree": {
+          "args": [
+            {
+              "id": "B",
+              "kind": "ref"
+            },
+            {
+              "kind": "text",
+              "segments": [
+                {
+                  "kind": "tex",
+                  "source": "B"
+                }
+              ]
+            }
+          ],
+          "kind": "call",
+          "name": "label"
+        }
+      },
+      "id": "lB",
+      "properties": []
+    },
+    {
+      "accepted": {
+        "height": 0.19068000000000004,
+        "role": "normal",
+        "width": 0.19628000000000004
+      },
+      "definition": {
+        "source": "label(O, $O$)",
+        "tree": {
+          "args": [
+            {
+              "id": "O",
+              "kind": "ref"
+            },
+            {
+              "kind": "text",
+              "segments": [
+                {
+                  "kind": "tex",
+                  "source": "O"
+                }
+              ]
+            }
+          ],
+          "kind": "call",
+          "name": "label"
+        }
+      },
+      "id": "lO",
+      "properties": [
+        {
+          "name": "dir",
+          "value": {
+            "expr": {
+              "id": "N",
+              "kind": "ref"
+            },
+            "kind": "expr"
+          }
+        }
+      ]
+    },
+    {
+      "accepted": {
+        "height": 0.20468000000000003,
+        "role": "normal",
+        "width": 0.14392000000000002
+      },
+      "definition": {
+        "source": "label(P, $\\theta$)",
+        "tree": {
+          "args": [
+            {
+              "id": "P",
+              "kind": "ref"
+            },
+            {
+              "kind": "text",
+              "segments": [
+                {
+                  "kind": "tex",
+                  "source": "\\theta"
+                }
+              ]
+            }
+          ],
+          "kind": "call",
+          "name": "label"
+        }
+      },
+      "id": "li",
+      "properties": [
+        {
+          "name": "dir",
+          "value": {
+            "expr": {
+              "id": "S",
+              "kind": "ref"
+            },
+            "kind": "expr"
+          }
+        },
+        {
+          "name": "gap",
+          "value": {
+            "expr": {
+              "dimension": "length",
+              "kind": "number",
+              "source": "0.8",
+              "value": 0.8
+            },
+            "kind": "expr"
+          }
+        }
+      ]
+    },
+    {
+      "accepted": {
+        "height": 0.20468000000000003,
+        "role": "normal",
+        "width": 0.28252000000000005
+      },
+      "definition": {
+        "source": "label(O, $2\\theta$)",
+        "tree": {
+          "args": [
+            {
+              "id": "O",
+              "kind": "ref"
+            },
+            {
+              "kind": "text",
+              "segments": [
+                {
+                  "kind": "tex",
+                  "source": "2\\theta"
+                }
+              ]
+            }
+          ],
+          "kind": "call",
+          "name": "label"
+        }
+      },
+      "id": "lc",
+      "properties": [
+        {
+          "name": "dir",
+          "value": {
+            "expr": {
+              "id": "S",
+              "kind": "ref"
+            },
+            "kind": "expr"
+          }
+        },
+        {
+          "name": "gap",
+          "value": {
+            "expr": {
+              "dimension": "length",
+              "kind": "number",
+              "source": "0.6",
+              "value": 0.6
+            },
+            "kind": "expr"
+          }
+        }
+      ]
+    },
+    {
+      "accepted": {
+        "clipped": false,
+        "logical_length": 2.9621548524148404,
+        "route": "direct"
+      },
+      "definition": {
+        "source": "arrow(li.center, lc.center)",
+        "tree": {
+          "args": [
+            {
+              "args": [],
+              "base": {
+                "id": "li",
+                "kind": "ref"
+              },
+              "kind": "property",
+              "name": "center"
+            },
+            {
+              "args": [],
+              "base": {
+                "id": "lc",
+                "kind": "ref"
+              },
+              "kind": "property",
+              "name": "center"
+            }
+          ],
+          "kind": "call",
+          "name": "arrow"
+        }
+      },
+      "id": "see",
+      "properties": [
+        {
+          "name": "head",
+          "value": {
+            "kind": "head",
+            "value": "forward"
+          }
+        },
+        {
+          "name": "bend",
+          "value": {
+            "expr": {
+              "dimension": "angle",
+              "expr": {
+                "dimension": "angle",
+                "kind": "number",
+                "source": "30deg",
+                "value": 30.0
+              },
+              "kind": "unary",
+              "op": "neg"
+            },
+            "kind": "expr"
+          }
+        }
+      ]
+    }
+  ],
+  "solve": {
+    "unknowns": 2,
+    "equations": 0,
+    "rank": 0,
+    "attempts": 0,
+    "outer_search_attempts": 1,
+    "measurement_passes": 1,
+    "routing_attempts": 0,
+    "accepted_steps": 0,
+    "max_normalized_residual": 0.0,
+    "final_damping": 0.001,
+    "dof": {
+      "global_remaining": 2,
+      "objects": [
+        {
+          "class": "geometric",
+          "id": "c",
+          "span": {
+            "line": 8,
+            "col": 1,
+            "byte_start": 135,
+            "byte_end": 146
+          },
+          "hint_settled_dofs": 2,
+          "suggestion": "add a relation if unintended, e.g. on(c, …) or vdist(…) == …"
+        }
+      ]
+    },
+    "branch_resolutions": [],
+    "hint_displacements": [],
+    "redundant_relations": [],
+    "relation_residuals": []
+  }
+}

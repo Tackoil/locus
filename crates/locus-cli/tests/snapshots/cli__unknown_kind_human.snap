@@ -5,7 +5,7 @@ expression: output_text(human.stderr)?
 E113
 
   × expected `(` after instance name
-   ╭─[fixtures/errors/unknown_kind.locus:2:8]
+   ╭─[tests/fixtures/errors/unknown_kind.locus:2:8]
  1 │ locus 0 beta 6
  2 │ pont A = free (0, 0)
    ·        ┬

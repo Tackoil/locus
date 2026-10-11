@@ -4,7 +4,7 @@ expression: stdout
 ---
 {
   "command": "inspect",
-  "path": "spec/test/demonstrations/aec3_filter_alignment.locus",
+  "path": "examples/demonstrations/aec3_filter_alignment.locus",
   "measurements": {
     "distances": [
       {

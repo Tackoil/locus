@@ -23,7 +23,7 @@ npm test
 Commit `grammar.js`, the generated `src/` files, and the lockfile together. The
 CLI is pinned to 0.25.10 and the generated parser uses ABI 14 for compatibility.
 `npm test` checks parse-tree fixtures, highlighting assertions, every source in
-`spec/test`, `fixtures/beta6`, and `assets`, all four Zed query files, newline variants, and recovery
+`examples`, `tests/fixtures/programs`, and `assets`, all four Zed query files, newline variants, and recovery
 after malformed input. The query files live in `../zed/languages/locus` so the
 tests exercise exactly the rules shipped to Zed.
 

@@ -106,7 +106,7 @@ fn usage_errors_honor_json_output() -> Result<(), Box<dyn Error>> {
 #[test]
 fn solved_demonstration_reports_are_stable() -> Result<(), Box<dyn Error>> {
     for name in DEMONSTRATIONS {
-        let fixture = format!("spec/test/demonstrations/{name}.locus");
+        let fixture = format!("examples/demonstrations/{name}.locus");
         for command_name in ["describe", "inspect"] {
             let mut command = locus()?;
             command.args([command_name, &fixture, "--json"]);
@@ -125,7 +125,7 @@ fn solved_demonstration_reports_are_stable() -> Result<(), Box<dyn Error>> {
 #[test]
 fn invalid_file_diagnostics_are_stable_in_both_formats() -> Result<(), Box<dyn Error>> {
     for name in ERRORS {
-        let fixture = format!("fixtures/errors/{name}.locus");
+        let fixture = format!("tests/fixtures/errors/{name}.locus");
         let human = locus()?.args(["check", &fixture]).output()?;
         assert_ne!(human.status.code(), Some(0), "human {name}");
         insta::assert_snapshot!(format!("{name}_human"), output_text(human.stderr)?);

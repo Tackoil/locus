@@ -5,7 +5,7 @@ expression: output_text(human.stderr)?
 E113
 
   × expected `:` after property name
-   ╭─[fixtures/errors/malformed_property.locus:3:23]
+   ╭─[tests/fixtures/errors/malformed_property.locus:3:23]
  2 │ point A()
  3 │ label l(A, $A$) { dir NE }
    ·                       ─┬

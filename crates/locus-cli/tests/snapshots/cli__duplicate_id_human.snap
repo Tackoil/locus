@@ -5,7 +5,7 @@ expression: output_text(human.stderr)?
 E134
 
   × duplicate identifier `A`
-   ╭─[fixtures/errors/duplicate_id.locus:3:7]
+   ╭─[tests/fixtures/errors/duplicate_id.locus:3:7]
  2 │ point A()
  3 │ point A()
    ·       ┬

@@ -1,0 +1,162 @@
+{
+  "command": "inspect",
+  "path": "examples/demonstrations/ellipse_foci.locus",
+  "measurements": {
+    "distances": [
+      {
+        "first": "O",
+        "second": "F1",
+        "distance": 2.23606797749979
+      },
+      {
+        "first": "O",
+        "second": "F2",
+        "distance": 2.23606797749979
+      },
+      {
+        "first": "O",
+        "second": "P",
+        "distance": 2.2912878474779204
+      },
+      {
+        "first": "F1",
+        "second": "F2",
+        "distance": 4.47213595499958
+      },
+      {
+        "first": "F1",
+        "second": "P",
+        "distance": 4.118033988749895
+      },
+      {
+        "first": "F2",
+        "second": "P",
+        "distance": 1.881966011250105
+      }
+    ],
+    "triangle_angles": [
+      {
+        "first": "F1",
+        "vertex": "O",
+        "second": "P",
+        "radians": 2.2845207057396624
+      },
+      {
+        "first": "O",
+        "vertex": "F1",
+        "second": "P",
+        "radians": 0.43410808961177016
+      },
+      {
+        "first": "O",
+        "vertex": "P",
+        "second": "F1",
+        "radians": 0.4229638582383607
+      },
+      {
+        "first": "F2",
+        "vertex": "O",
+        "second": "P",
+        "radians": 0.8570719478501307
+      },
+      {
+        "first": "O",
+        "vertex": "F2",
+        "second": "P",
+        "radians": 1.1689518988513734
+      },
+      {
+        "first": "O",
+        "vertex": "P",
+        "second": "F2",
+        "radians": 1.115568806888289
+      },
+      {
+        "first": "F2",
+        "vertex": "F1",
+        "second": "P",
+        "radians": 0.43410808961177016
+      },
+      {
+        "first": "F1",
+        "vertex": "F2",
+        "second": "P",
+        "radians": 1.1689518988513734
+      },
+      {
+        "first": "F1",
+        "vertex": "P",
+        "second": "F2",
+        "radians": 1.5385326651266498
+      }
+    ],
+    "line_ratios": [
+      {
+        "start": "F1",
+        "point": "O",
+        "end": "F2",
+        "ratio": 1.0,
+        "integer_ratio": {
+          "left": 1,
+          "right": 1
+        }
+      }
+    ]
+  },
+  "incidences": [
+    {
+      "kind": "point_on_object",
+      "point": "O",
+      "object": "major"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "O",
+      "object": "minor"
+    },
+    {
+      "kind": "ratio_along_line",
+      "start": "F1",
+      "point": "O",
+      "end": "F2",
+      "left": 1,
+      "right": 1
+    },
+    {
+      "kind": "point_on_object",
+      "point": "F1",
+      "object": "major"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "F1",
+      "object": "focal1"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "F2",
+      "object": "major"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "F2",
+      "object": "focal2"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "P",
+      "object": "e"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "P",
+      "object": "focal1"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "P",
+      "object": "focal2"
+    }
+  ],
+  "diagnostics": []
+}

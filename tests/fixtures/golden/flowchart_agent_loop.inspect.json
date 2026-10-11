@@ -1,0 +1,11 @@
+{
+  "command": "inspect",
+  "path": "examples/demonstrations/flowchart_agent_loop.locus",
+  "measurements": {
+    "distances": [],
+    "triangle_angles": [],
+    "line_ratios": []
+  },
+  "incidences": [],
+  "diagnostics": []
+}

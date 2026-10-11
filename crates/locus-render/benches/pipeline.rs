@@ -15,7 +15,7 @@ use locus_render::{RenderOptions, render_svg, style::StyleSheet};
 use locus_syntax::{File, parse};
 use locus_tex::{PlaintextEngine, RexEngine};
 
-const SOURCE: &str = include_str!("../../../spec/test/stress/tangent_internal_branches.locus");
+const SOURCE: &str = include_str!("../../../examples/stress/tangent_internal_branches.locus");
 
 fn parse_source(source: &str) -> Result<File, Box<dyn Error>> {
     let parsed = parse(source);

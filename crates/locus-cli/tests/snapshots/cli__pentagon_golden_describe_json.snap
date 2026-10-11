@@ -4,7 +4,7 @@ expression: stdout
 ---
 {
   "command": "describe",
-  "path": "spec/test/demonstrations/pentagon_golden.locus",
+  "path": "examples/demonstrations/pentagon_golden.locus",
   "objects": [
     {
       "id": "circ",

@@ -8,8 +8,8 @@ The two workloads preserve equivalent semantic topology across the three languag
 
 | Workload | Structure | Locus source |
 | --- | --- | --- |
-| Agent flowchart | 22 nodes and 27 directed connections | `spec/test/stress/flowchart_agent_loop.locus` |
-| Software architecture | 20 components, four groups, and 32 directed connections | `spec/test/stress/software_architecture.locus` |
+| Agent flowchart | 22 nodes and 27 directed connections | `examples/stress/flowchart_agent_loop.locus` |
+| Software architecture | 20 components, four groups, and 32 directed connections | `examples/stress/software_architecture.locus` |
 
 The implementations are not feature-equivalent. Locus also resolves authored geometry and checks
 persistent assertions. Mermaid and D2 perform automatic graph layout. Results therefore represent

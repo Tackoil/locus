@@ -5,7 +5,7 @@ expression: output_text(human.stderr)?
 E156
 
   × same-kind constructors use a constructor declaration
-   ╭─[fixtures/errors/forward_reference.locus:3:14]
+   ╭─[tests/fixtures/errors/forward_reference.locus:3:14]
  2 │ point A()
  3 │ segment AC = seg(A, C)
    ·              ─┬─
@@ -17,7 +17,7 @@ E156
 E135
 
   × unknown or forward reference `C`
-   ╭─[fixtures/errors/forward_reference.locus:3:21]
+   ╭─[tests/fixtures/errors/forward_reference.locus:3:21]
  2 │ point A()
  3 │ segment AC = seg(A, C)
    ·                     ┬

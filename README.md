@@ -12,20 +12,40 @@ Locus is an agent-friendly relational language and CLI toolchain for determinist
 
 The core goal of Locus is to let AI agents create, inspect, verify, and revise precise geometry without relying on visual feedback. Agents declare geometric relationships instead of guessing coordinates, use structured diagnostics and stable JSON output to understand failures, and verify intent through persistent assertions. Deterministic output and diffable `.locus` source files make every change reproducible and auditable.
 
-The project is under active development. The `locus 0 beta 6` frontend supports constructor declarations, reusable functions, ordered groups, and named instances. The beta 6 solver supports measured layout, hard separation/containment/avoidance requirements, continuous routes and path labels, endpoint clipping, bounded solve/layout feedback, and reports and safe edits for instances and groups. The confirmed rules and presets are pinned in the [specification](spec/specification.md); feasible preference settling can remain incomplete and is reported as a strict-check warning. Only `locus 0 beta 6` files are accepted. See the [specification](spec/specification.md) and [demonstrations](spec/test/README.md).
+The project is under active development. The `locus 0 beta 6` frontend supports constructor declarations, reusable functions, ordered groups, and named instances. The beta 6 solver supports measured layout, hard separation/containment/avoidance requirements, continuous routes and path labels, endpoint clipping, bounded solve/layout feedback, and reports and safe edits for instances and groups. The confirmed rules and presets are pinned in the [specification](spec/specification.md); feasible preference settling can remain incomplete and is reported as a strict-check warning. Only `locus 0 beta 6` files are accepted. See the [specification](spec/specification.md) and [demonstrations](examples/README.md).
+
+## Repository layout
+
+| Directory | Contents |
+| --- | --- |
+| [`crates/`](crates/) | Rust libraries, CLI, language server, and crate-local tests |
+| [`spec/`](spec/) | Normative language and toolchain specification and reference diagrams |
+| [`examples/`](examples/README.md) | Runnable demonstrations, reusable compositions, and stress workloads |
+| [`tests/`](tests/README.md) | Shared fixtures, expected outputs, and stress-test support |
+| [`scripts/`](scripts/) | Repository checks, including the example source audit |
+| [`ecosystem/`](ecosystem/) | Tree-sitter grammar and Zed editor integration |
+| [`benchmarks/`](benchmarks/) | Comparison workloads used by crate-local benchmarks |
+| [`assets/`](assets/) | Project logo source and artwork |
+| [`vendor/`](vendor/) | Pinned compatibility patches for dependencies |
+
+Local development plans and generated validation output live under the ignored
+`.local/plans/` and `.local/artifacts/` directories. Build output stays in `target/`.
+Name tests and fixtures after the behavior they cover; format revisions belong in
+file headers and compatibility assertions.
 
 ## Development checks
 
 ```sh
+python3 scripts/check_examples.py
 cargo fmt --all -- --check
 cargo build --workspace --all-features --all-targets
 cargo clippy --workspace --all-features --all-targets -- -D warnings
 cargo test --workspace --all-features --all-targets
-cargo run -p locus-cli -- check spec/test/demonstrations/*.locus
-cargo run -p locus-cli -- check spec/test/stress/*.locus
+cargo run -p locus-cli -- check examples/demonstrations/*.locus
+cargo run -p locus-cli -- check examples/stress/*.locus
 ```
 
-See the [specification](spec/specification.md) for the normative contract and the [test corpus](spec/test/README.md) for runnable examples.
+See the [specification](spec/specification.md) for the normative contract and the [test corpus](examples/README.md) for runnable examples.
 
 ### Pipeline timing metrics
 
@@ -199,7 +219,7 @@ output needs no installed math font or external TeX process. Invalid or
 unsupported TeX returns source-anchored E414 and exit 2; there is no silent
 fallback. ReX supports a
 subset of TeX, not a full LaTeX installation; see the
-[integration notes](crates/locus-tex/REX-VIABILITY.md).
+[integration notes](crates/locus-tex/README.md).
 For deterministic pipeline testing only, the hidden `--tex-engine=mock` flag
 selects `MockEngine` for TeX fragments while retaining real plain-text rendering:
 
@@ -209,4 +229,4 @@ locus render figure.locus --tex-engine=mock -o figure.svg
 
 The mock reserves deterministic TeX boxes but supplies no visible glyphs. It is
 suitable for isolated pipeline tests, not finished mathematical typography. See
-[the golden suite](fixtures/golden/README.md) for coverage and review notes.
+[the golden suite](tests/fixtures/golden/README.md) for coverage and review notes.

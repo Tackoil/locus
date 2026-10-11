@@ -55,7 +55,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: Check normative specification artifacts
-        run: python3 spec/test/audit_beta6.py
+        run: python3 scripts/check_examples.py
       - name: Check formatting
         run: cargo fmt --all -- --check
       - name: Run Clippy

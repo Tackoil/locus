@@ -14,7 +14,7 @@ fn root() -> PathBuf {
 }
 
 fn fixtures() -> Result<Vec<PathBuf>> {
-    let directory = Path::new("spec/test/demonstrations");
+    let directory = Path::new("examples/demonstrations");
     let mut paths = Vec::new();
     for entry in fs::read_dir(root().join(directory))? {
         let name = entry?.file_name();
@@ -58,7 +58,7 @@ fn checked_svg(path: &Path) -> Result<Vec<u8>> {
 fn compare(path: &Path, extension: &str, actual: &[u8]) -> Result {
     let name = path.file_stem().ok_or("missing fixture name")?;
     let expected_path = root()
-        .join("fixtures/golden")
+        .join("tests/fixtures/golden")
         .join(name)
         .with_extension(extension);
     if std::env::var_os("LOCUS_UPDATE_GOLDENS").as_deref() == Some(std::ffi::OsStr::new("1")) {

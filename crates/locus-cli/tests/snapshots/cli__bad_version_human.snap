@@ -5,7 +5,7 @@ expression: output_text(human.stderr)?
 E111
 
   × unsupported Locus file header
-   ╭─[fixtures/errors/bad_version.locus:1:7]
+   ╭─[tests/fixtures/errors/bad_version.locus:1:7]
  1 │ locus 3
    ·       ┬
    ·       ╰── unsupported Locus file header

@@ -13,12 +13,16 @@ use locus_tex::{PlaintextEngine, RexEngine};
 use serde_json::{Value, json};
 
 fn root() -> PathBuf {
-    Path::new(env!("CARGO_MANIFEST_DIR")).join("../../spec")
+    Path::new(env!("CARGO_MANIFEST_DIR")).join("../..")
 }
 
 fn sources() -> Result<Vec<PathBuf>, Box<dyn Error>> {
     let mut paths = Vec::new();
-    for group in ["test/demonstrations", "test/stress", "test/composition"] {
+    for group in [
+        "examples/demonstrations",
+        "examples/stress",
+        "examples/composition",
+    ] {
         for entry in fs::read_dir(root().join(group))? {
             let path = entry?.path();
             if path
@@ -89,7 +93,7 @@ fn core_corpus_measurement_fixture_matches_real_font_engines() -> Result<(), Box
     let actual =
         json!({"engine": "bundled PlaintextEngine and RexEngine", "measurements": fixtures});
     let actual = format!("{}\n", serde_json::to_string_pretty(&actual)?);
-    let path = root().join("test/measurements.json");
+    let path = root().join("tests/fixtures/text_measurements.json");
     if std::env::var_os("LOCUS_UPDATE_MEASUREMENT_FIXTURE").is_some() {
         fs::write(&path, &actual)?;
     }
@@ -136,9 +140,9 @@ fn output_file(source: &Path, extension: &str) -> Result<Option<PathBuf>, Box<dy
         return Ok(None);
     };
     let relative = source.strip_prefix(root())?;
-    let category = if relative.starts_with("test/demonstrations") {
+    let category = if relative.starts_with("examples/demonstrations") {
         "demonstrations"
-    } else if relative.starts_with("test/stress") {
+    } else if relative.starts_with("examples/stress") {
         "stress"
     } else {
         "composition"
@@ -299,7 +303,7 @@ fn raster_parity(document: &roxmltree::Document<'_>, bytes: &[u8]) -> Result<(),
 #[test]
 fn vector_and_raster_parity_cover_mixed_geometry_and_text() -> Result<(), Box<dyn Error>> {
     for name in ["rounded_rect", "bspline_controls", "point_relations"] {
-        render_source(&root().join(format!("test/demonstrations/{name}.locus")))?;
+        render_source(&root().join(format!("examples/demonstrations/{name}.locus")))?;
     }
     Ok(())
 }
@@ -388,15 +392,15 @@ fn render_group(group: &str, expected: usize) -> Result<(), Box<dyn Error>> {
 
 #[test]
 fn all_demonstrations_render_with_shared_measurements() -> Result<(), Box<dyn Error>> {
-    render_group("test/demonstrations", 12)
+    render_group("examples/demonstrations", 12)
 }
 
 #[test]
 fn all_stress_sources_render_with_shared_measurements() -> Result<(), Box<dyn Error>> {
-    render_group("test/stress", 16)
+    render_group("examples/stress", 16)
 }
 
 #[test]
 fn composition_examples_render_with_shared_measurements() -> Result<(), Box<dyn Error>> {
-    render_group("test/composition", 2)
+    render_group("examples/composition", 2)
 }

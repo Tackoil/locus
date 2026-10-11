@@ -5,7 +5,7 @@ use std::fs;
 use std::path::{Path, PathBuf};
 
 fn corpus_dir() -> PathBuf {
-    PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../spec/test")
+    PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../examples")
 }
 
 fn fixture(name: &str) -> Result<String, std::io::Error> {

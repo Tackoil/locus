@@ -8,13 +8,13 @@ expression: output_text(json.stdout)?
   "passed": false,
   "files": [
     {
-      "path": "fixtures/errors/division_by_zero.locus",
+      "path": "tests/fixtures/errors/division_by_zero.locus",
       "passed": false,
       "diagnostics": [
         {
           "code": "E204",
           "severity": "error",
-          "path": "fixtures/errors/division_by_zero.locus",
+          "path": "tests/fixtures/errors/division_by_zero.locus",
           "span": {
             "line": 2,
             "col": 18,

@@ -8,13 +8,13 @@ expression: output_text(json.stdout)?
   "passed": false,
   "files": [
     {
-      "path": "fixtures/errors/forward_reference.locus",
+      "path": "tests/fixtures/errors/forward_reference.locus",
       "passed": false,
       "diagnostics": [
         {
           "code": "E156",
           "severity": "error",
-          "path": "fixtures/errors/forward_reference.locus",
+          "path": "tests/fixtures/errors/forward_reference.locus",
           "span": {
             "line": 3,
             "col": 14,
@@ -28,7 +28,7 @@ expression: output_text(json.stdout)?
         {
           "code": "E135",
           "severity": "error",
-          "path": "fixtures/errors/forward_reference.locus",
+          "path": "tests/fixtures/errors/forward_reference.locus",
           "span": {
             "line": 3,
             "col": 21,

@@ -1,0 +1,3397 @@
+{
+  "engine": "bundled PlaintextEngine and RexEngine",
+  "measurements": {
+    "examples/composition/checkout_sequence.locus": {
+      "alt.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.3304,
+        "width_bits": 4599623577185438768
+      },
+      "approved.heading": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 2.67064,
+        "width_bits": 4613196165454437779
+      },
+      "approved.notify_customer.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 2.7871200000000003,
+        "width_bits": 4613458455096735837
+      },
+      "approved.notify_web.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 3.5890400000000002,
+        "width_bits": 4615264218403326311
+      },
+      "approved.payment.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.7410400000000001,
+        "width_bits": 4610519766267884041
+      },
+      "approved.update.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 2.27332,
+        "width_bits": 4612301480352464356
+      },
+      "charge.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 2.41892,
+        "width_bits": 4612629342405336928
+      },
+      "checkout.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 2.2195600000000004,
+        "width_bits": 4612180423594480638
+      },
+      "create_order.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 2.5771200000000003,
+        "width_bits": 4612985577135861935
+      },
+      "customer.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.2899600000000002,
+        "width_bits": 4608488282547969758
+      },
+      "declined.heading": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 2.5351200000000005,
+        "width_bits": 4612891001543687155
+      },
+      "declined.notify_customer.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 2.9988000000000006,
+        "width_bits": 4613935116081296731
+      },
+      "declined.notify_web.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 2.2509200000000003,
+        "width_bits": 4612251040036637807
+      },
+      "declined.payment.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 2.6182800000000004,
+        "width_bits": 4613078261216193220
+      },
+      "declined.update.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 2.0795600000000003,
+        "width_bits": 4611865171620564703
+      },
+      "gateway.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 2.3702,
+        "width_bits": 4612519634718414183
+      },
+      "key.requests.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 2.7708800000000005,
+        "width_bits": 4613421885867761589
+      },
+      "key.responses.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 2.9416800000000003,
+        "width_bits": 4613806493275939029
+      },
+      "order.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.7813600000000003,
+        "width_bits": 4610701351404859620
+      },
+      "title": {
+        "height": 0.533904,
+        "height_bits": 4602984199256179651,
+        "role": "title",
+        "width": 5.314344000000001,
+        "width_bits": 4617669437841917563
+      },
+      "web.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.18104,
+        "width_bits": 4607997750476556563
+      }
+    },
+    "examples/composition/flowchart_agent_loop.locus": {
+      "add.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 2.7972,
+        "width_bits": 4613481153238857784
+      },
+      "check.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.5052800000000002,
+        "width_bits": 4609457997619735173
+      },
+      "decision.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.8282400000000001,
+        "width_bits": 4605635342256023096
+      },
+      "init.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.1746,
+        "width_bits": 4607968747294956297
+      },
+      "no": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.3424400000000001,
+        "width_bits": 4599840470543492932
+      },
+      "render.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 2.9122800000000004,
+        "width_bits": 4613740290361416683
+      },
+      "repair.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 2.7927200000000005,
+        "width_bits": 4613471065175692475
+      },
+      "yes": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.43484,
+        "width_bits": 4601505000965769066
+      }
+    },
+    "examples/demonstrations/aec3_filter_alignment.locus": {
+      "cpt0.heading": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.8974000000000001,
+        "width_bits": 4606258280156480983
+      },
+      "cpt0.range": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.24936,
+        "width_bits": 4608305436403098515
+      },
+      "cpt1.heading": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.8974000000000001,
+        "width_bits": 4606258280156480983
+      },
+      "cpt1.range": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.40952,
+        "width_bits": 4609026732919418174
+      },
+      "cpt2.heading": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.8974000000000001,
+        "width_bits": 4606258280156480983
+      },
+      "cpt2.range": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.5696800000000002,
+        "width_bits": 4609748029435737833
+      },
+      "cpt3.heading": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.8974000000000001,
+        "width_bits": 4606258280156480983
+      },
+      "cpt3.range": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.5696800000000002,
+        "width_bits": 4609748029435737833
+      },
+      "cpt4.heading": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.8974000000000001,
+        "width_bits": 4606258280156480983
+      },
+      "cpt4.range": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.5696800000000002,
+        "width_bits": 4609748029435737833
+      },
+      "eq": {
+        "height": 0.5619578125,
+        "height_bits": 4603236885535222294,
+        "role": "normal",
+        "width": 3.4543742187500004,
+        "width_bits": 4614960978022197783
+      },
+      "lax": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 2.3741200000000005,
+        "width_bits": 4612528461773683830
+      },
+      "lcap": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.5066800000000002,
+        "width_bits": 4609464302659213492
+      },
+      "lg1": {
+        "height": 0.40684,
+        "height_bits": 4601000597807503570,
+        "role": "normal",
+        "width": 3.6195600000000003,
+        "width_bits": 4615332943333639985
+      },
+      "lg2": {
+        "height": 0.40684,
+        "height_bits": 4601000597807503570,
+        "role": "normal",
+        "width": 3.9852400000000006,
+        "width_bits": 4616156381489508407
+      },
+      "lk": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.6914800000000003,
+        "width_bits": 4610296567870351560
+      },
+      "llg": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.8429600000000002,
+        "width_bits": 4610978773141905642
+      },
+      "lo2": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.8009917187500002,
+        "width_bits": 4610789764806106762
+      },
+      "lt0": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.6288800000000001,
+        "width_bits": 4603839667012597932
+      },
+      "lt512": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.9492000000000002,
+        "width_bits": 4606724853077876567
+      },
+      "ltd": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 5.41402203125,
+        "width_bits": 4617781665328016193
+      },
+      "sub": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 9.7664,
+        "width_bits": 4621687612479852302
+      },
+      "t128.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.48048,
+        "width_bits": 4602327178113741824
+      },
+      "t192.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.48048,
+        "width_bits": 4602327178113741824
+      },
+      "t224.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.48048,
+        "width_bits": 4602327178113741824
+      },
+      "t288.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.48048,
+        "width_bits": 4602327178113741824
+      },
+      "t320.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.48048,
+        "width_bits": 4602327178113741824
+      },
+      "t384.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.48048,
+        "width_bits": 4602327178113741824
+      },
+      "t416.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.48048,
+        "width_bits": 4602327178113741824
+      },
+      "t96.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.32032000000000005,
+        "width_bits": 4599441992048463190
+      }
+    },
+    "examples/demonstrations/angle_bisector_ratio.locus": {
+      "eq": {
+        "height": 0.54656,
+        "height_bits": 4603098194369947653,
+        "role": "normal",
+        "width": 1.1165459375000002,
+        "width_bits": 4607707295040713954
+      },
+      "lA": {
+        "height": 0.18508000000000002,
+        "height_bits": 4595836230042805276,
+        "role": "normal",
+        "width": 0.20636000000000002,
+        "width_bits": 4596602922843368829
+      },
+      "lB": {
+        "height": 0.18396,
+        "height_bits": 4595795877790144036,
+        "role": "normal",
+        "width": 0.17612000000000003,
+        "width_bits": 4595513412021515359
+      },
+      "lC": {
+        "height": 0.19068000000000004,
+        "height_bits": 4596037991306111475,
+        "role": "normal",
+        "width": 0.18256000000000003,
+        "width_bits": 4595745437474317487
+      },
+      "lD": {
+        "height": 0.18396,
+        "height_bits": 4595795877790144036,
+        "role": "normal",
+        "width": 0.19964,
+        "width_bits": 4596360809327401391
+      },
+      "lbd": {
+        "height": 0.13692000000000001,
+        "height_bits": 4594101083178371971,
+        "role": "normal",
+        "width": 0.23240000000000005,
+        "width_bits": 4597541112717742652
+      },
+      "ldc": {
+        "height": 0.13692000000000001,
+        "height_bits": 4594101083178371971,
+        "role": "normal",
+        "width": 0.15820000000000004,
+        "width_bits": 4594867775978935525
+      }
+    },
+    "examples/demonstrations/bspline_controls.locus": {
+      "lM": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.8289859375000002,
+        "width_bits": 4605642061063717180
+      },
+      "lP0": {
+        "height": 0.24491359375000002,
+        "height_bits": 4597991962446939177,
+        "role": "normal",
+        "width": 0.20359171875,
+        "width_bits": 4596503185000121175
+      },
+      "lP1": {
+        "height": 0.24276000000000003,
+        "height_bits": 4597914371054859118,
+        "role": "normal",
+        "width": 0.20359171875,
+        "width_bits": 4596503185000121175
+      },
+      "lP2": {
+        "height": 0.24276000000000003,
+        "height_bits": 4597914371054859118,
+        "role": "normal",
+        "width": 0.20359171875,
+        "width_bits": 4596503185000121175
+      },
+      "lP3": {
+        "height": 0.24530515625000002,
+        "height_bits": 4598006069972771915,
+        "role": "normal",
+        "width": 0.20359171875,
+        "width_bits": 4596503185000121175
+      },
+      "lP4": {
+        "height": 0.24276000000000003,
+        "height_bits": 4597914371054859118,
+        "role": "normal",
+        "width": 0.20359171875,
+        "width_bits": 4596503185000121175
+      },
+      "lQ": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.9675859375000001,
+        "width_bits": 4606890458880424281
+      }
+    },
+    "examples/demonstrations/ellipse_foci.locus": {
+      "identity": {
+        "height": 0.24276000000000003,
+        "height_bits": 4597914371054859118,
+        "role": "normal",
+        "width": 1.7926518750000002,
+        "width_bits": 4610752205488901934
+      },
+      "lF1": {
+        "height": 0.24276000000000003,
+        "height_bits": 4597914371054859118,
+        "role": "normal",
+        "width": 0.22963171875000005,
+        "width_bits": 4597441374874494998
+      },
+      "lF2": {
+        "height": 0.24276000000000003,
+        "height_bits": 4597914371054859118,
+        "role": "normal",
+        "width": 0.22963171875000005,
+        "width_bits": 4597441374874494998
+      },
+      "lO": {
+        "height": 0.19068000000000004,
+        "height_bits": 4596037991306111475,
+        "role": "normal",
+        "width": 0.19628000000000004,
+        "width_bits": 4596239752569417673
+      },
+      "lP": {
+        "height": 0.18396,
+        "height_bits": 4595795877790144036,
+        "role": "normal",
+        "width": 0.168,
+        "width_bits": 4595220858189721371
+      }
+    },
+    "examples/demonstrations/euler_nine_point.locus": {
+      "lA": {
+        "height": 0.18508000000000002,
+        "height_bits": 4595836230042805276,
+        "role": "normal",
+        "width": 0.20636000000000002,
+        "width_bits": 4596602922843368829
+      },
+      "lB": {
+        "height": 0.18396,
+        "height_bits": 4595795877790144036,
+        "role": "normal",
+        "width": 0.17612000000000003,
+        "width_bits": 4595513412021515359
+      },
+      "lC": {
+        "height": 0.19068000000000004,
+        "height_bits": 4596037991306111475,
+        "role": "normal",
+        "width": 0.18256000000000003,
+        "width_bits": 4595745437474317487
+      },
+      "lG": {
+        "height": 0.19068000000000004,
+        "height_bits": 4596037991306111475,
+        "role": "normal",
+        "width": 0.18928000000000003,
+        "width_bits": 4595987550990284925
+      },
+      "lH": {
+        "height": 0.18396,
+        "height_bits": 4595795877790144036,
+        "role": "normal",
+        "width": 0.22904000000000005,
+        "width_bits": 4597420055959758933
+      },
+      "lN": {
+        "height": 0.18620000000000003,
+        "height_bits": 4595876582295466516,
+        "role": "normal",
+        "width": 0.22512000000000004,
+        "width_bits": 4597278823075444594
+      },
+      "lO": {
+        "height": 0.19068000000000004,
+        "height_bits": 4596037991306111475,
+        "role": "normal",
+        "width": 0.19628000000000004,
+        "width_bits": 4596239752569417673
+      }
+    },
+    "examples/demonstrations/flowchart_agent_loop.locus": {
+      "ln": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.3424400000000001,
+        "width_bits": 4599840470543492932
+      },
+      "ly": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.43484,
+        "width_bits": 4601505000965769066
+      },
+      "measured_heading": {
+        "height": 0.533904,
+        "height_bits": 4602984199256179651,
+        "role": "title",
+        "width": 7.009352000000001,
+        "width_bits": 4619577847191215065
+      },
+      "measured_panel.first.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 2.7342000000000004,
+        "width_bits": 4613339289850595614
+      },
+      "measured_panel.next": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.09396,
+        "width_bits": 4607605577021005140
+      },
+      "measured_panel.retry": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.62748,
+        "width_bits": 4603827056933641294
+      },
+      "measured_panel.second.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 6.095040000000001,
+        "width_bits": 4618548423395589972
+      },
+      "t1": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.1746,
+        "width_bits": 4607968747294956297
+      },
+      "t2": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 2.7972,
+        "width_bits": 4613481153238857784
+      },
+      "t3": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.5052800000000002,
+        "width_bits": 4609457997619735173
+      },
+      "t4": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.8282400000000001,
+        "width_bits": 4605635342256023096
+      },
+      "t5": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 2.9122800000000004,
+        "width_bits": 4613740290361416683
+      },
+      "tf": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 2.7927200000000005,
+        "width_bits": 4613471065175692475
+      }
+    },
+    "examples/demonstrations/inscribed_angle.locus": {
+      "lA": {
+        "height": 0.18508000000000002,
+        "height_bits": 4595836230042805276,
+        "role": "normal",
+        "width": 0.20636000000000002,
+        "width_bits": 4596602922843368829
+      },
+      "lB": {
+        "height": 0.18396,
+        "height_bits": 4595795877790144036,
+        "role": "normal",
+        "width": 0.17612000000000003,
+        "width_bits": 4595513412021515359
+      },
+      "lO": {
+        "height": 0.19068000000000004,
+        "height_bits": 4596037991306111475,
+        "role": "normal",
+        "width": 0.19628000000000004,
+        "width_bits": 4596239752569417673
+      },
+      "lP": {
+        "height": 0.18396,
+        "height_bits": 4595795877790144036,
+        "role": "normal",
+        "width": 0.168,
+        "width_bits": 4595220858189721371
+      },
+      "lc": {
+        "height": 0.20468000000000003,
+        "height_bits": 4596542394464376970,
+        "role": "normal",
+        "width": 0.28252000000000005,
+        "width_bits": 4598761047784804771
+      },
+      "li": {
+        "height": 0.20468000000000003,
+        "height_bits": 4596542394464376970,
+        "role": "normal",
+        "width": 0.14392000000000002,
+        "width_bits": 4594353284757504719
+      },
+      "thm": {
+        "height": 0.19068000000000004,
+        "height_bits": 4596037991306111475,
+        "role": "normal",
+        "width": 2.0769634375000003,
+        "width_bits": 4611859324681610981
+      }
+    },
+    "examples/demonstrations/pentagon_golden.locus": {
+      "lA": {
+        "height": 0.18508000000000002,
+        "height_bits": 4595836230042805276,
+        "role": "normal",
+        "width": 0.20636000000000002,
+        "width_bits": 4596602922843368829
+      },
+      "lB": {
+        "height": 0.18396,
+        "height_bits": 4595795877790144036,
+        "role": "normal",
+        "width": 0.17612000000000003,
+        "width_bits": 4595513412021515359
+      },
+      "lC": {
+        "height": 0.19068000000000004,
+        "height_bits": 4596037991306111475,
+        "role": "normal",
+        "width": 0.18256000000000003,
+        "width_bits": 4595745437474317487
+      },
+      "lD": {
+        "height": 0.18396,
+        "height_bits": 4595795877790144036,
+        "role": "normal",
+        "width": 0.19964,
+        "width_bits": 4596360809327401391
+      },
+      "lE": {
+        "height": 0.18396,
+        "height_bits": 4595795877790144036,
+        "role": "normal",
+        "width": 0.18004000000000003,
+        "width_bits": 4595654644905829698
+      },
+      "lP": {
+        "height": 0.18396,
+        "height_bits": 4595795877790144036,
+        "role": "normal",
+        "width": 0.168,
+        "width_bits": 4595220858189721371
+      },
+      "phi": {
+        "height": 0.6353200000000001,
+        "height_bits": 4603897673375798464,
+        "role": "normal",
+        "width": 2.2679343750000003,
+        "width_bits": 4612289353003092778
+      }
+    },
+    "examples/demonstrations/point_relations.locus": {
+      "lA": {
+        "height": 0.18508000000000002,
+        "height_bits": 4595836230042805276,
+        "role": "normal",
+        "width": 0.20636000000000002,
+        "width_bits": 4596602922843368829
+      },
+      "lB": {
+        "height": 0.18396,
+        "height_bits": 4595795877790144036,
+        "role": "normal",
+        "width": 0.17612000000000003,
+        "width_bits": 4595513412021515359
+      },
+      "lC": {
+        "height": 0.19068000000000004,
+        "height_bits": 4596037991306111475,
+        "role": "normal",
+        "width": 0.18256000000000003,
+        "width_bits": 4595745437474317487
+      },
+      "lM": {
+        "height": 0.18396,
+        "height_bits": 4595795877790144036,
+        "role": "normal",
+        "width": 0.26236000000000004,
+        "width_bits": 4598397877510853614
+      }
+    },
+    "examples/demonstrations/rounded_rect.locus": {
+      "end_text": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.04356,
+        "width_bits": 4607378595599785667
+      },
+      "measured_question": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 4.97728,
+        "width_bits": 4617289937515717560
+      },
+      "measured_result": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.26964,
+        "width_bits": 4598529022332002642
+      },
+      "start_text": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.7488800000000002,
+        "width_bits": 4610555074488962626
+      }
+    },
+    "examples/demonstrations/sequence_check.locus": {
+      "beta6_agent.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.7520800000000001,
+        "width_bits": 4604949353960782022
+      },
+      "beta6_kernel.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 3.56748,
+        "width_bits": 4615215669599343257
+      },
+      "beta6_legend.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.9023200000000002,
+        "width_bits": 4611246106815786355
+      },
+      "beta6_reply.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 2.5978400000000006,
+        "width_bits": 4613032234428001494
+      },
+      "beta6_request.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 6.959960000000001,
+        "width_bits": 4619522236743016294
+      },
+      "beta6_tab_text": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.7539200000000001,
+        "width_bits": 4610577772631084573
+      },
+      "beta6_work.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 2.1823200000000003,
+        "width_bits": 4612096566569418999
+      },
+      "hA": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.7831600000000001,
+        "width_bits": 4605229297713619372
+      },
+      "hB": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.1746,
+        "width_bits": 4607968747294956297
+      },
+      "hC": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.8500800000000001,
+        "width_bits": 4605832059487746639
+      },
+      "l1": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.9210800000000001,
+        "width_bits": 4611330594344795825
+      },
+      "l2": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 3.1374000000000004,
+        "width_bits": 4614247215535473506
+      },
+      "l3": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 3.7195200000000006,
+        "width_bits": 4615558033243015963
+      },
+      "l4": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.4686000000000001,
+        "width_bits": 4609292805585403223
+      },
+      "l5": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 2.4321117187500003,
+        "width_bits": 4612659047515160367
+      },
+      "l6": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 2.5732,
+        "width_bits": 4612976750080592288
+      }
+    },
+    "examples/demonstrations/tangent_circles.locus": {
+      "lE": {
+        "height": 0.18396,
+        "height_bits": 4595795877790144036,
+        "role": "normal",
+        "width": 0.18004000000000003,
+        "width_bits": 4595654644905829698
+      },
+      "lO1": {
+        "height": 0.24612000000000003,
+        "height_bits": 4598035427812842837,
+        "role": "normal",
+        "width": 0.28479171875000003,
+        "width_bits": 4598801971431668733
+      },
+      "lO2": {
+        "height": 0.24612000000000003,
+        "height_bits": 4598035427812842837,
+        "role": "normal",
+        "width": 0.28479171875000003,
+        "width_bits": 4598801971431668733
+      },
+      "lP1": {
+        "height": 0.24276000000000003,
+        "height_bits": 4597914371054859118,
+        "role": "normal",
+        "width": 0.20359171875,
+        "width_bits": 4596503185000121175
+      },
+      "lP2": {
+        "height": 0.24276000000000003,
+        "height_bits": 4597914371054859118,
+        "role": "normal",
+        "width": 0.20359171875,
+        "width_bits": 4596503185000121175
+      },
+      "lT": {
+        "height": 0.18396,
+        "height_bits": 4595795877790144036,
+        "role": "normal",
+        "width": 0.1708,
+        "width_bits": 4595321738821374470
+      }
+    },
+    "examples/stress/aec3_filter_alignment.locus": {
+      "delay_summary": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 5.911080000000001,
+        "width_bits": 4618341302848727203
+      },
+      "eq": {
+        "height": 0.5619578125,
+        "height_bits": 4603236885535222294,
+        "role": "normal",
+        "width": 3.4543742187500004,
+        "width_bits": 4614960978022197783
+      },
+      "lax": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 2.3741200000000005,
+        "width_bits": 4612528461773683830
+      },
+      "lcap": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.5066800000000002,
+        "width_bits": 4609464302659213492
+      },
+      "lg1": {
+        "height": 0.40684,
+        "height_bits": 4601000597807503570,
+        "role": "normal",
+        "width": 3.6195600000000003,
+        "width_bits": 4615332943333639985
+      },
+      "lg2": {
+        "height": 0.40684,
+        "height_bits": 4601000597807503570,
+        "role": "normal",
+        "width": 3.9852400000000006,
+        "width_bits": 4616156381489508407
+      },
+      "lk": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.6914800000000003,
+        "width_bits": 4610296567870351560
+      },
+      "llg": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.8429600000000002,
+        "width_bits": 4610978773141905642
+      },
+      "lo2": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.8009917187500002,
+        "width_bits": 4610789764806106762
+      },
+      "lt0": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.6288800000000001,
+        "width_bits": 4603839667012597932
+      },
+      "lt128": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.48048,
+        "width_bits": 4602327178113741824
+      },
+      "lt192": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.48048,
+        "width_bits": 4602327178113741824
+      },
+      "lt224": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.48048,
+        "width_bits": 4602327178113741824
+      },
+      "lt288": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.48048,
+        "width_bits": 4602327178113741824
+      },
+      "lt320": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.48048,
+        "width_bits": 4602327178113741824
+      },
+      "lt384": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.48048,
+        "width_bits": 4602327178113741824
+      },
+      "lt416": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.48048,
+        "width_bits": 4602327178113741824
+      },
+      "lt512": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.9492000000000002,
+        "width_bits": 4606724853077876567
+      },
+      "lt96": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.32032000000000005,
+        "width_bits": 4599441992048463190
+      },
+      "ltd": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 5.41402203125,
+        "width_bits": 4617781665328016193
+      },
+      "n0": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.8974000000000001,
+        "width_bits": 4606258280156480983
+      },
+      "n1": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.8974000000000001,
+        "width_bits": 4606258280156480983
+      },
+      "n2": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.8974000000000001,
+        "width_bits": 4606258280156480983
+      },
+      "n3": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.8974000000000001,
+        "width_bits": 4606258280156480983
+      },
+      "n4": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.8974000000000001,
+        "width_bits": 4606258280156480983
+      },
+      "r0": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.24936,
+        "width_bits": 4608305436403098515
+      },
+      "r1": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.40952,
+        "width_bits": 4609026732919418174
+      },
+      "r2": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.5696800000000002,
+        "width_bits": 4609748029435737833
+      },
+      "r3": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.5696800000000002,
+        "width_bits": 4609748029435737833
+      },
+      "r4": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.5696800000000002,
+        "width_bits": 4609748029435737833
+      },
+      "sub": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 9.7664,
+        "width_bits": 4621687612479852302
+      }
+    },
+    "examples/stress/angle_bisector_ratio.locus": {
+      "eq": {
+        "height": 0.54656,
+        "height_bits": 4603098194369947653,
+        "role": "normal",
+        "width": 1.1165459375000002,
+        "width_bits": 4607707295040713954
+      },
+      "lA": {
+        "height": 0.18508000000000002,
+        "height_bits": 4595836230042805276,
+        "role": "normal",
+        "width": 0.20636000000000002,
+        "width_bits": 4596602922843368829
+      },
+      "lB": {
+        "height": 0.18396,
+        "height_bits": 4595795877790144036,
+        "role": "normal",
+        "width": 0.17612000000000003,
+        "width_bits": 4595513412021515359
+      },
+      "lC": {
+        "height": 0.19068000000000004,
+        "height_bits": 4596037991306111475,
+        "role": "normal",
+        "width": 0.18256000000000003,
+        "width_bits": 4595745437474317487
+      },
+      "lD": {
+        "height": 0.18396,
+        "height_bits": 4595795877790144036,
+        "role": "normal",
+        "width": 0.19964,
+        "width_bits": 4596360809327401391
+      },
+      "lbd": {
+        "height": 0.13692000000000001,
+        "height_bits": 4594101083178371971,
+        "role": "normal",
+        "width": 0.23240000000000005,
+        "width_bits": 4597541112717742652
+      },
+      "ldc": {
+        "height": 0.13692000000000001,
+        "height_bits": 4594101083178371971,
+        "role": "normal",
+        "width": 0.15820000000000004,
+        "width_bits": 4594867775978935525
+      }
+    },
+    "examples/stress/euler_nine_point.locus": {
+      "lA": {
+        "height": 0.18508000000000002,
+        "height_bits": 4595836230042805276,
+        "role": "normal",
+        "width": 0.20636000000000002,
+        "width_bits": 4596602922843368829
+      },
+      "lB": {
+        "height": 0.18396,
+        "height_bits": 4595795877790144036,
+        "role": "normal",
+        "width": 0.17612000000000003,
+        "width_bits": 4595513412021515359
+      },
+      "lC": {
+        "height": 0.19068000000000004,
+        "height_bits": 4596037991306111475,
+        "role": "normal",
+        "width": 0.18256000000000003,
+        "width_bits": 4595745437474317487
+      },
+      "lG": {
+        "height": 0.19068000000000004,
+        "height_bits": 4596037991306111475,
+        "role": "normal",
+        "width": 0.18928000000000003,
+        "width_bits": 4595987550990284925
+      },
+      "lH": {
+        "height": 0.18396,
+        "height_bits": 4595795877790144036,
+        "role": "normal",
+        "width": 0.22904000000000005,
+        "width_bits": 4597420055959758933
+      },
+      "lN": {
+        "height": 0.18620000000000003,
+        "height_bits": 4595876582295466516,
+        "role": "normal",
+        "width": 0.22512000000000004,
+        "width_bits": 4597278823075444594
+      },
+      "lO": {
+        "height": 0.19068000000000004,
+        "height_bits": 4596037991306111475,
+        "role": "normal",
+        "width": 0.19628000000000004,
+        "width_bits": 4596239752569417673
+      }
+    },
+    "examples/stress/flowchart_agent_loop.locus": {
+      "beta6_pair0.first.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.9038400000000001,
+        "width_bits": 4606316286519681515
+      },
+      "beta6_pair0.next": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.09396,
+        "width_bits": 4607605577021005140
+      },
+      "beta6_pair0.retry": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.62748,
+        "width_bits": 4603827056933641294
+      },
+      "beta6_pair0.second.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 4.73956,
+        "width_bits": 4617022288589862931
+      },
+      "beta6_pair1.first.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.9038400000000001,
+        "width_bits": 4606316286519681515
+      },
+      "beta6_pair1.next": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.09396,
+        "width_bits": 4607605577021005140
+      },
+      "beta6_pair1.retry": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.62748,
+        "width_bits": 4603827056933641294
+      },
+      "beta6_pair1.second.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 4.73956,
+        "width_bits": 4617022288589862931
+      },
+      "beta6_pair10.first.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.0640000000000003,
+        "width_bits": 4607470649176169121
+      },
+      "beta6_pair10.next": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.09396,
+        "width_bits": 4607605577021005140
+      },
+      "beta6_pair10.retry": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.62748,
+        "width_bits": 4603827056933641294
+      },
+      "beta6_pair10.second.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 4.89972,
+        "width_bits": 4617202612718942846
+      },
+      "beta6_pair11.first.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.0640000000000003,
+        "width_bits": 4607470649176169121
+      },
+      "beta6_pair11.next": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.09396,
+        "width_bits": 4607605577021005140
+      },
+      "beta6_pair11.retry": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.62748,
+        "width_bits": 4603827056933641294
+      },
+      "beta6_pair11.second.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 4.89972,
+        "width_bits": 4617202612718942846
+      },
+      "beta6_pair12.first.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.0640000000000003,
+        "width_bits": 4607470649176169121
+      },
+      "beta6_pair12.next": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.09396,
+        "width_bits": 4607605577021005140
+      },
+      "beta6_pair12.retry": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.62748,
+        "width_bits": 4603827056933641294
+      },
+      "beta6_pair12.second.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 4.89972,
+        "width_bits": 4617202612718942846
+      },
+      "beta6_pair13.first.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.0640000000000003,
+        "width_bits": 4607470649176169121
+      },
+      "beta6_pair13.next": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.09396,
+        "width_bits": 4607605577021005140
+      },
+      "beta6_pair13.retry": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.62748,
+        "width_bits": 4603827056933641294
+      },
+      "beta6_pair13.second.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 4.89972,
+        "width_bits": 4617202612718942846
+      },
+      "beta6_pair14.first.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.0640000000000003,
+        "width_bits": 4607470649176169121
+      },
+      "beta6_pair14.next": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.09396,
+        "width_bits": 4607605577021005140
+      },
+      "beta6_pair14.retry": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.62748,
+        "width_bits": 4603827056933641294
+      },
+      "beta6_pair14.second.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 4.89972,
+        "width_bits": 4617202612718942846
+      },
+      "beta6_pair15.first.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.0640000000000003,
+        "width_bits": 4607470649176169121
+      },
+      "beta6_pair15.next": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.09396,
+        "width_bits": 4607605577021005140
+      },
+      "beta6_pair15.retry": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.62748,
+        "width_bits": 4603827056933641294
+      },
+      "beta6_pair15.second.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 4.89972,
+        "width_bits": 4617202612718942846
+      },
+      "beta6_pair2.first.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.9038400000000001,
+        "width_bits": 4606316286519681515
+      },
+      "beta6_pair2.next": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.09396,
+        "width_bits": 4607605577021005140
+      },
+      "beta6_pair2.retry": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.62748,
+        "width_bits": 4603827056933641294
+      },
+      "beta6_pair2.second.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 4.73956,
+        "width_bits": 4617022288589862931
+      },
+      "beta6_pair3.first.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.9038400000000001,
+        "width_bits": 4606316286519681515
+      },
+      "beta6_pair3.next": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.09396,
+        "width_bits": 4607605577021005140
+      },
+      "beta6_pair3.retry": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.62748,
+        "width_bits": 4603827056933641294
+      },
+      "beta6_pair3.second.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 4.73956,
+        "width_bits": 4617022288589862931
+      },
+      "beta6_pair4.first.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.9038400000000001,
+        "width_bits": 4606316286519681515
+      },
+      "beta6_pair4.next": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.09396,
+        "width_bits": 4607605577021005140
+      },
+      "beta6_pair4.retry": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.62748,
+        "width_bits": 4603827056933641294
+      },
+      "beta6_pair4.second.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 4.73956,
+        "width_bits": 4617022288589862931
+      },
+      "beta6_pair5.first.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.9038400000000001,
+        "width_bits": 4606316286519681515
+      },
+      "beta6_pair5.next": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.09396,
+        "width_bits": 4607605577021005140
+      },
+      "beta6_pair5.retry": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.62748,
+        "width_bits": 4603827056933641294
+      },
+      "beta6_pair5.second.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 4.73956,
+        "width_bits": 4617022288589862931
+      },
+      "beta6_pair6.first.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.9038400000000001,
+        "width_bits": 4606316286519681515
+      },
+      "beta6_pair6.next": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.09396,
+        "width_bits": 4607605577021005140
+      },
+      "beta6_pair6.retry": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.62748,
+        "width_bits": 4603827056933641294
+      },
+      "beta6_pair6.second.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 4.73956,
+        "width_bits": 4617022288589862931
+      },
+      "beta6_pair7.first.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.9038400000000001,
+        "width_bits": 4606316286519681515
+      },
+      "beta6_pair7.next": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.09396,
+        "width_bits": 4607605577021005140
+      },
+      "beta6_pair7.retry": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.62748,
+        "width_bits": 4603827056933641294
+      },
+      "beta6_pair7.second.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 4.73956,
+        "width_bits": 4617022288589862931
+      },
+      "beta6_pair8.first.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.9038400000000001,
+        "width_bits": 4606316286519681515
+      },
+      "beta6_pair8.next": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.09396,
+        "width_bits": 4607605577021005140
+      },
+      "beta6_pair8.retry": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.62748,
+        "width_bits": 4603827056933641294
+      },
+      "beta6_pair8.second.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 4.73956,
+        "width_bits": 4617022288589862931
+      },
+      "beta6_pair9.first.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.9038400000000001,
+        "width_bits": 4606316286519681515
+      },
+      "beta6_pair9.next": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.09396,
+        "width_bits": 4607605577021005140
+      },
+      "beta6_pair9.retry": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.62748,
+        "width_bits": 4603827056933641294
+      },
+      "beta6_pair9.second.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 4.73956,
+        "width_bits": 4617022288589862931
+      },
+      "ln": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.3424400000000001,
+        "width_bits": 4599840470543492932
+      },
+      "ly": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.43484,
+        "width_bits": 4601505000965769066
+      },
+      "t1": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.1746,
+        "width_bits": 4607968747294956297
+      },
+      "t2": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 2.7972,
+        "width_bits": 4613481153238857784
+      },
+      "t3": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.5052800000000002,
+        "width_bits": 4609457997619735173
+      },
+      "t4": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.8282400000000001,
+        "width_bits": 4605635342256023096
+      },
+      "t5": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 2.9122800000000004,
+        "width_bits": 4613740290361416683
+      },
+      "tf": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 2.7927200000000005,
+        "width_bits": 4613471065175692475
+      },
+      "title0": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 2.1434,
+        "width_bits": 4612008926520670369
+      },
+      "title1": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.6587200000000002,
+        "width_bits": 4610149029946558902
+      },
+      "title10": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.9490800000000004,
+        "width_bits": 4611456695134362200
+      },
+      "title11": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.5803200000000002,
+        "width_bits": 4609795947735773055
+      },
+      "title12": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 2.2134000000000005,
+        "width_bits": 4612166552507628337
+      },
+      "title13": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 2.16244,
+        "width_bits": 4612051800789122936
+      },
+      "title14": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 2.04764,
+        "width_bits": 4611793294170511869
+      },
+      "title15": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.8020800000000001,
+        "width_bits": 4610794665989138736
+      },
+      "title2": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.7698800000000001,
+        "width_bits": 4610649650081137406
+      },
+      "title3": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.8564,
+        "width_bits": 4611039301520897501
+      },
+      "title4": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 2.26576,
+        "width_bits": 4612284456745872896
+      },
+      "title5": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.55624,
+        "width_bits": 4609687501056745973
+      },
+      "title6": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.5117200000000002,
+        "width_bits": 4609487000801335439
+      },
+      "title7": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.8482800000000001,
+        "width_bits": 4611002732291923253
+      },
+      "title8": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.5915200000000003,
+        "width_bits": 4609846388051599605
+      },
+      "title9": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 2.05772,
+        "width_bits": 4611815992312633817
+      }
+    },
+    "examples/stress/gantt_chart.locus": {
+      "release_label": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.6724400000000001,
+        "width_bits": 4610210819333446425
+      },
+      "task_label0_0": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.3776000000000002,
+        "width_bits": 4608882978019312508
+      },
+      "task_label0_1": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.3776000000000002,
+        "width_bits": 4608882978019312508
+      },
+      "task_label0_2": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.3776000000000002,
+        "width_bits": 4608882978019312508
+      },
+      "task_label0_3": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.3776000000000002,
+        "width_bits": 4608882978019312508
+      },
+      "task_label1_0": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.1354,
+        "width_bits": 4607792206189563373
+      },
+      "task_label1_1": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.1354,
+        "width_bits": 4607792206189563373
+      },
+      "task_label1_2": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.1354,
+        "width_bits": 4607792206189563373
+      },
+      "task_label1_3": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.1354,
+        "width_bits": 4607792206189563373
+      },
+      "task_label2_0": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.6889600000000002,
+        "width_bits": 4610285218799290586
+      },
+      "task_label2_1": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.6889600000000002,
+        "width_bits": 4610285218799290586
+      },
+      "task_label2_2": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.6889600000000002,
+        "width_bits": 4610285218799290586
+      },
+      "task_label2_3": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.6889600000000002,
+        "width_bits": 4610285218799290586
+      },
+      "task_label3_0": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.9928800000000002,
+        "width_bits": 4607118287541323654
+      },
+      "task_label3_1": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.9928800000000002,
+        "width_bits": 4607118287541323654
+      },
+      "task_label3_2": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.9928800000000002,
+        "width_bits": 4607118287541323654
+      },
+      "task_label3_3": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.9928800000000002,
+        "width_bits": 4607118287541323654
+      },
+      "task_label4_0": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.3770400000000003,
+        "width_bits": 4608880456003521181
+      },
+      "task_label4_1": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.3770400000000003,
+        "width_bits": 4608880456003521181
+      },
+      "task_label4_2": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.3770400000000003,
+        "width_bits": 4608880456003521181
+      },
+      "task_label4_3": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.3770400000000003,
+        "width_bits": 4608880456003521181
+      },
+      "tick_label0": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.16016000000000002,
+        "width_bits": 4594938392421092694
+      },
+      "tick_label10": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.32032000000000005,
+        "width_bits": 4599441992048463190
+      },
+      "tick_label12": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.32032000000000005,
+        "width_bits": 4599441992048463190
+      },
+      "tick_label14": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.32032000000000005,
+        "width_bits": 4599441992048463190
+      },
+      "tick_label16": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.32032000000000005,
+        "width_bits": 4599441992048463190
+      },
+      "tick_label18": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.32032000000000005,
+        "width_bits": 4599441992048463190
+      },
+      "tick_label2": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.16016000000000002,
+        "width_bits": 4594938392421092694
+      },
+      "tick_label20": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.32032000000000005,
+        "width_bits": 4599441992048463190
+      },
+      "tick_label4": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.16016000000000002,
+        "width_bits": 4594938392421092694
+      },
+      "tick_label6": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.16016000000000002,
+        "width_bits": 4594938392421092694
+      },
+      "tick_label8": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.16016000000000002,
+        "width_bits": 4594938392421092694
+      }
+    },
+    "examples/stress/inscribed_angle.locus": {
+      "lA": {
+        "height": 0.18508000000000002,
+        "height_bits": 4595836230042805276,
+        "role": "normal",
+        "width": 0.20636000000000002,
+        "width_bits": 4596602922843368829
+      },
+      "lB": {
+        "height": 0.18396,
+        "height_bits": 4595795877790144036,
+        "role": "normal",
+        "width": 0.17612000000000003,
+        "width_bits": 4595513412021515359
+      },
+      "lO": {
+        "height": 0.19068000000000004,
+        "height_bits": 4596037991306111475,
+        "role": "normal",
+        "width": 0.19628000000000004,
+        "width_bits": 4596239752569417673
+      },
+      "lP": {
+        "height": 0.18396,
+        "height_bits": 4595795877790144036,
+        "role": "normal",
+        "width": 0.168,
+        "width_bits": 4595220858189721371
+      },
+      "lc": {
+        "height": 0.20468000000000003,
+        "height_bits": 4596542394464376970,
+        "role": "normal",
+        "width": 0.28252000000000005,
+        "width_bits": 4598761047784804771
+      },
+      "li": {
+        "height": 0.20468000000000003,
+        "height_bits": 4596542394464376970,
+        "role": "normal",
+        "width": 0.14392000000000002,
+        "width_bits": 4594353284757504719
+      },
+      "thm": {
+        "height": 0.19068000000000004,
+        "height_bits": 4596037991306111475,
+        "role": "normal",
+        "width": 2.0769634375000003,
+        "width_bits": 4611859324681610981
+      }
+    },
+    "examples/stress/kanban_board.locus": {
+      "team0": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.14296,
+        "width_bits": 4607826253402746294
+      },
+      "team1": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.58492,
+        "width_bits": 4603443710533359517
+      },
+      "team2": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.6196400000000001,
+        "width_bits": 4603756440491484125
+      },
+      "text_card0_0_0": {
+        "height": 0.8187199999999999,
+        "height_bits": 4605549593719117960,
+        "role": "normal",
+        "width": 1.6139200000000002,
+        "width_bits": 4609947268683252704
+      },
+      "text_card0_0_1": {
+        "height": 0.8187199999999999,
+        "height_bits": 4605549593719117960,
+        "role": "normal",
+        "width": 1.5898400000000001,
+        "width_bits": 4609838822004225622
+      },
+      "text_card0_1_0": {
+        "height": 0.8187199999999999,
+        "height_bits": 4605549593719117960,
+        "role": "normal",
+        "width": 1.5898400000000001,
+        "width_bits": 4609838822004225622
+      },
+      "text_card0_1_1": {
+        "height": 0.8187199999999999,
+        "height_bits": 4605549593719117960,
+        "role": "normal",
+        "width": 1.3538000000000001,
+        "width_bits": 4608775792348181090
+      },
+      "text_card0_1_2": {
+        "height": 0.8187199999999999,
+        "height_bits": 4605549593719117960,
+        "role": "normal",
+        "width": 1.52712,
+        "width_bits": 4609556356235596944
+      },
+      "text_card0_2_0": {
+        "height": 0.8187199999999999,
+        "height_bits": 4605549593719117960,
+        "role": "normal",
+        "width": 1.3538000000000001,
+        "width_bits": 4608775792348181090
+      },
+      "text_card0_2_1": {
+        "height": 0.8187199999999999,
+        "height_bits": 4605549593719117960,
+        "role": "normal",
+        "width": 1.52712,
+        "width_bits": 4609556356235596944
+      },
+      "text_card0_3_0": {
+        "height": 0.8187199999999999,
+        "height_bits": 4605549593719117960,
+        "role": "normal",
+        "width": 1.52712,
+        "width_bits": 4609556356235596944
+      },
+      "text_card0_3_1": {
+        "height": 0.8187199999999999,
+        "height_bits": 4605549593719117960,
+        "role": "normal",
+        "width": 1.6884000000000001,
+        "width_bits": 4610282696783499258
+      },
+      "text_card0_3_2": {
+        "height": 0.8187199999999999,
+        "height_bits": 4605549593719117960,
+        "role": "normal",
+        "width": 1.5439200000000002,
+        "width_bits": 4609632016709336769
+      },
+      "text_card0_4_0": {
+        "height": 0.8187199999999999,
+        "height_bits": 4605549593719117960,
+        "role": "normal",
+        "width": 1.6884000000000001,
+        "width_bits": 4610282696783499258
+      },
+      "text_card0_4_1": {
+        "height": 0.8187199999999999,
+        "height_bits": 4605549593719117960,
+        "role": "normal",
+        "width": 1.5439200000000002,
+        "width_bits": 4609632016709336769
+      },
+      "text_card1_0_0": {
+        "height": 0.8187199999999999,
+        "height_bits": 4605549593719117960,
+        "role": "normal",
+        "width": 1.6349200000000004,
+        "width_bits": 4610041844275427485
+      },
+      "text_card1_0_1": {
+        "height": 0.8187199999999999,
+        "height_bits": 4605549593719117960,
+        "role": "normal",
+        "width": 1.6993200000000002,
+        "width_bits": 4610331876091430144
+      },
+      "text_card1_0_2": {
+        "height": 0.8187199999999999,
+        "height_bits": 4605549593719117960,
+        "role": "normal",
+        "width": 1.7337600000000002,
+        "width_bits": 4610486980062596784
+      },
+      "text_card1_1_0": {
+        "height": 0.8187199999999999,
+        "height_bits": 4605549593719117960,
+        "role": "normal",
+        "width": 1.6993200000000002,
+        "width_bits": 4610331876091430144
+      },
+      "text_card1_1_1": {
+        "height": 0.8187199999999999,
+        "height_bits": 4605549593719117960,
+        "role": "normal",
+        "width": 1.7337600000000002,
+        "width_bits": 4610486980062596784
+      },
+      "text_card1_2_0": {
+        "height": 0.8187199999999999,
+        "height_bits": 4605549593719117960,
+        "role": "normal",
+        "width": 1.7337600000000002,
+        "width_bits": 4610486980062596784
+      },
+      "text_card1_2_1": {
+        "height": 0.8187199999999999,
+        "height_bits": 4605549593719117960,
+        "role": "normal",
+        "width": 1.57864,
+        "width_bits": 4609788381688399072
+      },
+      "text_card1_2_2": {
+        "height": 0.8187199999999999,
+        "height_bits": 4605549593719117960,
+        "role": "normal",
+        "width": 1.7880800000000001,
+        "width_bits": 4610731615594355549
+      },
+      "text_card1_3_0": {
+        "height": 0.8187199999999999,
+        "height_bits": 4605549593719117960,
+        "role": "normal",
+        "width": 1.57864,
+        "width_bits": 4609788381688399072
+      },
+      "text_card1_3_1": {
+        "height": 0.8187199999999999,
+        "height_bits": 4605549593719117960,
+        "role": "normal",
+        "width": 1.7880800000000001,
+        "width_bits": 4610731615594355549
+      },
+      "text_card1_4_0": {
+        "height": 0.8187199999999999,
+        "height_bits": 4605549593719117960,
+        "role": "normal",
+        "width": 1.7880800000000001,
+        "width_bits": 4610731615594355549
+      },
+      "text_card1_4_1": {
+        "height": 0.8187199999999999,
+        "height_bits": 4605549593719117960,
+        "role": "normal",
+        "width": 1.7049200000000002,
+        "width_bits": 4610357096249343419
+      },
+      "text_card1_4_2": {
+        "height": 0.8187199999999999,
+        "height_bits": 4605549593719117960,
+        "role": "normal",
+        "width": 1.6808400000000001,
+        "width_bits": 4610248649570316337
+      },
+      "text_card2_0_0": {
+        "height": 0.8187199999999999,
+        "height_bits": 4605549593719117960,
+        "role": "normal",
+        "width": 1.6489200000000002,
+        "width_bits": 4610104894670210671
+      },
+      "text_card2_0_1": {
+        "height": 0.8187199999999999,
+        "height_bits": 4605549593719117960,
+        "role": "normal",
+        "width": 1.62484,
+        "width_bits": 4609996447991183589
+      },
+      "text_card2_1_0": {
+        "height": 0.8187199999999999,
+        "height_bits": 4605549593719117960,
+        "role": "normal",
+        "width": 1.62484,
+        "width_bits": 4609996447991183589
+      },
+      "text_card2_1_1": {
+        "height": 0.8187199999999999,
+        "height_bits": 4605549593719117960,
+        "role": "normal",
+        "width": 1.3888,
+        "width_bits": 4608933418335139057
+      },
+      "text_card2_1_2": {
+        "height": 0.8187199999999999,
+        "height_bits": 4605549593719117960,
+        "role": "normal",
+        "width": 1.5621200000000002,
+        "width_bits": 4609713982222554912
+      },
+      "text_card2_2_0": {
+        "height": 0.8187199999999999,
+        "height_bits": 4605549593719117960,
+        "role": "normal",
+        "width": 1.3888,
+        "width_bits": 4608933418335139057
+      },
+      "text_card2_2_1": {
+        "height": 0.8187199999999999,
+        "height_bits": 4605549593719117960,
+        "role": "normal",
+        "width": 1.5621200000000002,
+        "width_bits": 4609713982222554912
+      },
+      "text_card2_3_0": {
+        "height": 0.8187199999999999,
+        "height_bits": 4605549593719117960,
+        "role": "normal",
+        "width": 1.5621200000000002,
+        "width_bits": 4609713982222554912
+      },
+      "text_card2_3_1": {
+        "height": 0.8187199999999999,
+        "height_bits": 4605549593719117960,
+        "role": "normal",
+        "width": 1.7234000000000003,
+        "width_bits": 4610440322770457226
+      },
+      "text_card2_3_2": {
+        "height": 0.8187199999999999,
+        "height_bits": 4605549593719117960,
+        "role": "normal",
+        "width": 1.5789200000000003,
+        "width_bits": 4609789642696294737
+      },
+      "text_card2_4_0": {
+        "height": 0.8187199999999999,
+        "height_bits": 4605549593719117960,
+        "role": "normal",
+        "width": 1.7234000000000003,
+        "width_bits": 4610440322770457226
+      },
+      "text_card2_4_1": {
+        "height": 0.8187199999999999,
+        "height_bits": 4605549593719117960,
+        "role": "normal",
+        "width": 1.5789200000000003,
+        "width_bits": 4609789642696294737
+      },
+      "title0_0": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.4378,
+        "width_bits": 4609154094716880211
+      },
+      "title0_1": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.2051200000000002,
+        "width_bits": 4608106197155583645
+      },
+      "title0_2": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.1922400000000002,
+        "width_bits": 4608048190792383113
+      },
+      "title0_3": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.3143200000000002,
+        "width_bits": 4608597990234892503
+      },
+      "title0_4": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.1057200000000003,
+        "width_bits": 4607658539352623018
+      },
+      "title1_0": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.4378,
+        "width_bits": 4609154094716880211
+      },
+      "title1_1": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.2051200000000002,
+        "width_bits": 4608106197155583645
+      },
+      "title1_2": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.1922400000000002,
+        "width_bits": 4608048190792383113
+      },
+      "title1_3": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.3143200000000002,
+        "width_bits": 4608597990234892503
+      },
+      "title1_4": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.1057200000000003,
+        "width_bits": 4607658539352623018
+      },
+      "title2_0": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.4378,
+        "width_bits": 4609154094716880211
+      },
+      "title2_1": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.2051200000000002,
+        "width_bits": 4608106197155583645
+      },
+      "title2_2": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.1922400000000002,
+        "width_bits": 4608048190792383113
+      },
+      "title2_3": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.3143200000000002,
+        "width_bits": 4608597990234892503
+      },
+      "title2_4": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.1057200000000003,
+        "width_bits": 4607658539352623018
+      }
+    },
+    "examples/stress/pentagon_golden.locus": {
+      "lA": {
+        "height": 0.18508000000000002,
+        "height_bits": 4595836230042805276,
+        "role": "normal",
+        "width": 0.20636000000000002,
+        "width_bits": 4596602922843368829
+      },
+      "lB": {
+        "height": 0.18396,
+        "height_bits": 4595795877790144036,
+        "role": "normal",
+        "width": 0.17612000000000003,
+        "width_bits": 4595513412021515359
+      },
+      "lC": {
+        "height": 0.19068000000000004,
+        "height_bits": 4596037991306111475,
+        "role": "normal",
+        "width": 0.18256000000000003,
+        "width_bits": 4595745437474317487
+      },
+      "lD": {
+        "height": 0.18396,
+        "height_bits": 4595795877790144036,
+        "role": "normal",
+        "width": 0.19964,
+        "width_bits": 4596360809327401391
+      },
+      "lE": {
+        "height": 0.18396,
+        "height_bits": 4595795877790144036,
+        "role": "normal",
+        "width": 0.18004000000000003,
+        "width_bits": 4595654644905829698
+      },
+      "lP": {
+        "height": 0.18396,
+        "height_bits": 4595795877790144036,
+        "role": "normal",
+        "width": 0.168,
+        "width_bits": 4595220858189721371
+      },
+      "phi": {
+        "height": 0.6353200000000001,
+        "height_bits": 4603897673375798464,
+        "role": "normal",
+        "width": 2.2679343750000003,
+        "width_bits": 4612289353003092778
+      }
+    },
+    "examples/stress/right_triangle_altitude.locus": {
+      "la": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.17892000000000002,
+        "width_bits": 4595614292653168458
+      },
+      "lb": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.18200000000000002,
+        "width_bits": 4595725261347986867
+      },
+      "lc": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.17696,
+        "width_bits": 4595543676211011288
+      },
+      "lh": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.20748000000000003,
+        "width_bits": 4596643275096030069
+      },
+      "lm": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.25396,
+        "width_bits": 4598246556563373965
+      },
+      "theorem": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 4.2571200000000005,
+        "width_bits": 4616479109438805776
+      }
+    },
+    "examples/stress/sankey_energy.locus": {
+      "label0_0": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.5996400000000002,
+        "width_bits": 4609882957280573853
+      },
+      "label0_1": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.5996400000000002,
+        "width_bits": 4609882957280573853
+      },
+      "label0_2": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.5996400000000002,
+        "width_bits": 4609882957280573853
+      },
+      "label1_0": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.7105200000000003,
+        "width_bits": 4610382316407256694
+      },
+      "label1_1": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.7105200000000003,
+        "width_bits": 4610382316407256694
+      },
+      "label1_2": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.7105200000000003,
+        "width_bits": 4610382316407256694
+      },
+      "label1_3": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.7105200000000003,
+        "width_bits": 4610382316407256694
+      },
+      "label2_0": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.6402400000000004,
+        "width_bits": 4610065803425445096
+      },
+      "label2_1": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.6402400000000004,
+        "width_bits": 4610065803425445096
+      },
+      "label2_2": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.6402400000000004,
+        "width_bits": 4610065803425445096
+      },
+      "label2_3": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.6402400000000004,
+        "width_bits": 4610065803425445096
+      }
+    },
+    "examples/stress/sequence_check.locus": {
+      "beta6_agent.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.7520800000000001,
+        "width_bits": 4604949353960782022
+      },
+      "beta6_kernel.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 3.56748,
+        "width_bits": 4615215669599343257
+      },
+      "beta6_legend.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.9023200000000002,
+        "width_bits": 4611246106815786355
+      },
+      "beta6_reply.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 2.5978400000000006,
+        "width_bits": 4613032234428001494
+      },
+      "beta6_request.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 6.959960000000001,
+        "width_bits": 4619522236743016294
+      },
+      "beta6_tab_text": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.7539200000000001,
+        "width_bits": 4610577772631084573
+      },
+      "beta6_work.caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 2.1823200000000003,
+        "width_bits": 4612096566569418999
+      },
+      "hA": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.7831600000000001,
+        "width_bits": 4605229297713619372
+      },
+      "hB": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.1746,
+        "width_bits": 4607968747294956297
+      },
+      "hC": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.8500800000000001,
+        "width_bits": 4605832059487746639
+      },
+      "hD": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.9490800000000004,
+        "width_bits": 4611456695134362200
+      },
+      "l1": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.9210800000000001,
+        "width_bits": 4611330594344795825
+      },
+      "l2": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 3.1374000000000004,
+        "width_bits": 4614247215535473506
+      },
+      "l3": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 3.7195200000000006,
+        "width_bits": 4615558033243015963
+      },
+      "l4": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.4686000000000001,
+        "width_bits": 4609292805585403223
+      },
+      "l5": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 2.4321117187500003,
+        "width_bits": 4612659047515160367
+      },
+      "l6": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 2.5732,
+        "width_bits": 4612976750080592288
+      },
+      "sl10": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.43192,
+        "width_bits": 4609127613551071273
+      },
+      "sl11": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 3.4549200000000004,
+        "width_bits": 4614962207012314846
+      },
+      "sl12": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 3.8228400000000007,
+        "width_bits": 4615790689199765923
+      },
+      "sl13": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 3.1488800000000006,
+        "width_bits": 4614273066197334613
+      },
+      "sl14": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 2.7073200000000006,
+        "width_bits": 4613278761471603755
+      },
+      "sl15": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 2.9761200000000003,
+        "width_bits": 4613884045261522349
+      },
+      "sl16": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 3.5977200000000003,
+        "width_bits": 4615283764025709099
+      },
+      "sl17": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 2.3934400000000005,
+        "width_bits": 4612571966546084229
+      },
+      "sl18": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.5288000000000002,
+        "width_bits": 4609563922282970927
+      },
+      "sl19": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 2.6678400000000004,
+        "width_bits": 4613189860414959461
+      },
+      "sl20": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 3.3322800000000004,
+        "width_bits": 4614686046283164487
+      },
+      "sl21": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 2.6670000000000003,
+        "width_bits": 4613187968903115965
+      },
+      "sl22": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 2.2702400000000003,
+        "width_bits": 4612294544809038206
+      },
+      "sl23": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.6450000000000002,
+        "width_bits": 4610087240559671379
+      },
+      "sl24": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 2.2850800000000002,
+        "width_bits": 4612327961518273295
+      },
+      "sl25": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.6450000000000002,
+        "width_bits": 4610087240559671379
+      },
+      "sl26": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 2.1865200000000002,
+        "width_bits": 4612106024128636477
+      },
+      "sl7": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 4.124960000000001,
+        "width_bits": 4616330310507117455
+      },
+      "sl8": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 3.0046800000000005,
+        "width_bits": 4613948356664201200
+      },
+      "sl9": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 3.6517600000000003,
+        "width_bits": 4615405451287640650
+      }
+    },
+    "examples/stress/software_architecture.locus": {
+      "label_audit": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.18412,
+        "width_bits": 4608011621563408864
+      },
+      "label_auth": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.6133600000000003,
+        "width_bits": 4609944746667461377
+      },
+      "label_cache": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.7994000000000001,
+        "width_bits": 4605375574629516366
+      },
+      "label_catalog": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.00604,
+        "width_bits": 4607209620541766726
+      },
+      "label_cdn": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.59416,
+        "width_bits": 4603526937054473324
+      },
+      "label_events": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.75644,
+        "width_bits": 4610589121702145546
+      },
+      "label_gateway": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.6186800000000001,
+        "width_bits": 4609968705817478987
+      },
+      "label_inventory": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.2700800000000003,
+        "width_bits": 4608398750987377633
+      },
+      "label_limit": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.5162000000000002,
+        "width_bits": 4609507176927666059
+      },
+      "label_mobile": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.4722400000000002,
+        "width_bits": 4609309198688046852
+      },
+      "label_monitor": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.4722400000000002,
+        "width_bits": 4609309198688046852
+      },
+      "label_orderdb": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.23368,
+        "width_bits": 4608234819960941346
+      },
+      "label_orders": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.9086000000000001,
+        "width_bits": 4606359160788134082
+      },
+      "label_partner": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.50584,
+        "width_bits": 4609460519635526500
+      },
+      "label_payments": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.2972400000000002,
+        "width_bits": 4608521068753257015
+      },
+      "label_products": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.48876,
+        "width_bits": 4609383598153891012
+      },
+      "label_queue": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.3468000000000002,
+        "width_bits": 4608744267150789497
+      },
+      "label_schedule": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.3101200000000002,
+        "width_bits": 4608579075116457547
+      },
+      "label_web": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.36864,
+        "width_bits": 4608842625766651268
+      },
+      "label_worker": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.6189600000000002,
+        "width_bits": 4609969966825374651
+      },
+      "zone_title0": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.8876000000000001,
+        "width_bits": 4606170009603784521
+      },
+      "zone_title1": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 2.23552,
+        "width_bits": 4612216362319507054
+      },
+      "zone_title2": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.4750400000000001,
+        "width_bits": 4609321808767003489
+      },
+      "zone_title3": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.5078,
+        "width_bits": 4609469346690796146
+      }
+    },
+    "examples/stress/tangent_circles.locus": {
+      "lE": {
+        "height": 0.18396,
+        "height_bits": 4595795877790144036,
+        "role": "normal",
+        "width": 0.18004000000000003,
+        "width_bits": 4595654644905829698
+      },
+      "lO1": {
+        "height": 0.24612000000000003,
+        "height_bits": 4598035427812842837,
+        "role": "normal",
+        "width": 0.28479171875000003,
+        "width_bits": 4598801971431668733
+      },
+      "lO2": {
+        "height": 0.24612000000000003,
+        "height_bits": 4598035427812842837,
+        "role": "normal",
+        "width": 0.28479171875000003,
+        "width_bits": 4598801971431668733
+      },
+      "lP1": {
+        "height": 0.24276000000000003,
+        "height_bits": 4597914371054859118,
+        "role": "normal",
+        "width": 0.20359171875,
+        "width_bits": 4596503185000121175
+      },
+      "lP2": {
+        "height": 0.24276000000000003,
+        "height_bits": 4597914371054859118,
+        "role": "normal",
+        "width": 0.20359171875,
+        "width_bits": 4596503185000121175
+      },
+      "lT": {
+        "height": 0.18396,
+        "height_bits": 4595795877790144036,
+        "role": "normal",
+        "width": 0.1708,
+        "width_bits": 4595321738821374470
+      }
+    },
+    "examples/stress/tangent_internal_branches.locus": {
+      "le": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.15568000000000004,
+        "width_bits": 4594776983410447736
+      },
+      "li": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.09492000000000002,
+        "width_bits": 4591504127489245049
+      },
+      "ll": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.5402800000000003,
+        "width_bits": 4609615623606693141
+      },
+      "lo": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.21868000000000004,
+        "width_bits": 4597046797622642466
+      },
+      "lt": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.15568000000000004,
+        "width_bits": 4594776983410447736
+      },
+      "lu": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.59824,
+        "width_bits": 4609876652241095534
+      }
+    },
+    "examples/stress/xy_parabola.locus": {
+      "caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 4.8232800000000005,
+        "width_bits": 4617116548930063796
+      },
+      "lx": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.14812000000000003,
+        "width_bits": 4594504605704984368
+      },
+      "ly": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.1428,
+        "width_bits": 4594312932504843479
+      },
+      "sample": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.6361600000000002,
+        "width_bits": 4603905239423172447
+      },
+      "zero": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.16016000000000002,
+        "width_bits": 4594938392421092694
+      }
+    },
+    "examples/stress/xy_reciprocal.locus": {
+      "caption": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 4.386480000000001,
+        "width_bits": 4616624755850754938
+      },
+      "ln": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.8164800000000001,
+        "width_bits": 4605529417592787342
+      },
+      "lp": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.6361600000000002,
+        "width_bits": 4603905239423172447
+      },
+      "lx": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.14812000000000003,
+        "width_bits": 4594504605704984368
+      },
+      "ly": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.1428,
+        "width_bits": 4594312932504843479
+      }
+    }
+  }
+}

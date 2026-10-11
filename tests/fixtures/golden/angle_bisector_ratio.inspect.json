@@ -1,0 +1,173 @@
+{
+  "command": "inspect",
+  "path": "examples/demonstrations/angle_bisector_ratio.locus",
+  "measurements": {
+    "distances": [
+      {
+        "first": "A",
+        "second": "B",
+        "distance": 6.3441545092565494
+      },
+      {
+        "first": "A",
+        "second": "C",
+        "distance": 5.734064310022943
+      },
+      {
+        "first": "A",
+        "second": "D",
+        "distance": 5.216678170941361
+      },
+      {
+        "first": "B",
+        "second": "C",
+        "distance": 6.0621778264910695
+      },
+      {
+        "first": "B",
+        "second": "D",
+        "distance": 3.1841940744159016
+      },
+      {
+        "first": "C",
+        "second": "D",
+        "distance": 2.877983752075168
+      }
+    ],
+    "triangle_angles": [
+      {
+        "first": "B",
+        "vertex": "A",
+        "second": "C",
+        "radians": 1.0471975511965974
+      },
+      {
+        "first": "A",
+        "vertex": "B",
+        "second": "C",
+        "radians": 0.9599310885968814
+      },
+      {
+        "first": "A",
+        "vertex": "C",
+        "second": "B",
+        "radians": 1.1344640137963145
+      },
+      {
+        "first": "B",
+        "vertex": "A",
+        "second": "D",
+        "radians": 0.5235987755982987
+      },
+      {
+        "first": "A",
+        "vertex": "B",
+        "second": "D",
+        "radians": 0.9599310885968813
+      },
+      {
+        "first": "A",
+        "vertex": "D",
+        "second": "B",
+        "radians": 1.6580627893946132
+      },
+      {
+        "first": "C",
+        "vertex": "A",
+        "second": "D",
+        "radians": 0.5235987755982987
+      },
+      {
+        "first": "A",
+        "vertex": "C",
+        "second": "D",
+        "radians": 1.1344640137963142
+      },
+      {
+        "first": "A",
+        "vertex": "D",
+        "second": "C",
+        "radians": 1.4835298641951802
+      },
+      {
+        "first": "C",
+        "vertex": "B",
+        "second": "D",
+        "radians": 4.36725500350282e-17
+      },
+      {
+        "first": "B",
+        "vertex": "C",
+        "second": "D",
+        "radians": 4.831920087662007e-17
+      }
+    ],
+    "line_ratios": [
+      {
+        "start": "B",
+        "point": "D",
+        "end": "C",
+        "ratio": 1.1063975160109716,
+        "integer_ratio": null
+      }
+    ]
+  },
+  "incidences": [
+    {
+      "kind": "point_on_object",
+      "point": "A",
+      "object": "circum"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "A",
+      "object": "tri"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "A",
+      "object": "bis"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "A",
+      "object": "ad"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "B",
+      "object": "circum"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "B",
+      "object": "tri"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "C",
+      "object": "circum"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "C",
+      "object": "tri"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "D",
+      "object": "tri"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "D",
+      "object": "bis"
+    },
+    {
+      "kind": "point_on_object",
+      "point": "D",
+      "object": "ad"
+    }
+  ],
+  "diagnostics": []
+}
