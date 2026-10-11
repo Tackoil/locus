@@ -100,13 +100,11 @@ fn decode_source(file: &mut OriginalFile, bytes: Vec<u8>) {
 pub(crate) fn begin(command: &Command) {
     let paths = match command {
         Command::Init(args) => vec![args.file.clone()],
-        Command::Add(args)
-        | Command::Describe(args)
-        | Command::Inspect(args)
-        | Command::Fmt(args) => {
+        Command::Add(args) | Command::Describe(args) | Command::Fmt(args) => {
             vec![args.file.clone()]
         }
         Command::Update(args) => vec![args.file.clone()],
+        Command::Inspect(args) => vec![args.file.clone()],
         Command::Remove(args) => vec![args.file.clone()],
         Command::Render(args) => vec![args.file.clone()],
         Command::Check(args) => args.files.clone(),

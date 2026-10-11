@@ -430,7 +430,11 @@ fn human_reports_include_relationships_measurements_and_incidences() -> Result<(
     assert!(describe.contains("relative linear geometry"));
     assert!(!describe.contains("start ("));
 
-    let inspect = locus()?.arg("inspect").arg(&figure).output()?;
+    let inspect = locus()?
+        .arg("inspect")
+        .arg(&figure)
+        .args(["--measurements", "--incidences"])
+        .output()?;
     assert_eq!(inspect.status.code(), Some(0));
     let inspect = output_text(inspect.stdout)?;
     assert!(inspect.contains("distance A@2:7--B@3:7 = 5.000000"));
@@ -540,7 +544,12 @@ fn solved_demonstration_reports_are_stable() -> Result<(), Box<dyn Error>> {
     for name in DEMONSTRATIONS {
         let fixture = format!("spec/test/demonstrations/{name}.locus");
         for command_name in ["describe", "inspect"] {
-            let output = locus()?.args([command_name, &fixture, "--json"]).output()?;
+            let mut command = locus()?;
+            command.args([command_name, &fixture, "--json"]);
+            if command_name == "inspect" {
+                command.args(["--measurements", "--incidences"]);
+            }
+            let output = command.output()?;
             assert_eq!(output.status.code(), Some(0), "{command_name} {name}");
             let stdout = output_text(output.stdout)?;
             insta::assert_snapshot!(format!("{name}_{command_name}_json"), stdout);

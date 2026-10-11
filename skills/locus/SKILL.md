@@ -66,17 +66,31 @@ changing a property with `--set 'dir=NE'`, and removing a declaration with
 
 ## Verify and repair
 
-Run these against the saved source, using `--json` for agent feedback:
+Start with the saved source, using `--json` for agent feedback:
 
 ```sh
-locus check figure.locus --json
-locus describe figure.locus --json
-locus inspect figure.locus --json
+locus check figure.locus --json --compact
 ```
 
-Start with `check`; use `describe` for placement ownership, unresolved freedoms,
-and branch choices, or `inspect` for measurements, incidences, and diagnostics
-when needed. Reports describe relationships rather than absolute coordinates.
+When diagnosing a specific issue, use
+`locus describe figure.locus --json` for placement ownership, unresolved freedoms,
+and branch choices. Compact check feedback counts assertions and retains failed
+results with their actual values; omit `--compact` for full solver and assertion
+details. Reports describe relationships rather than absolute coordinates.
+
+`inspect` returns diagnostics by default. Request only the measurements needed
+for the issue, including hidden helper points:
+
+```sh
+locus inspect figure.locus --distance A B --json --compact
+locus inspect figure.locus --angle A B C --ratio A M B --json --compact
+```
+
+Repeat query flags for additional tuples. Angles return radians with the middle
+point as vertex; ratios require the middle point strictly between the endpoints.
+Use `--measurements` only when an exhaustive distance/angle/ratio table is needed,
+and `--incidences` for all detected facts; both can produce large output.
+Invisible `mark: none` helpers do not cause visual crowding/clipping warnings.
 
 | Exit | Meaning | Response |
 | --- | --- | --- |

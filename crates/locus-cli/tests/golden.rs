@@ -77,10 +77,15 @@ fn compare(path: &Path, extension: &str, actual: &[u8]) -> Result {
 fn demonstration_goldens() -> Result {
     for path in fixtures()? {
         for command in ["describe", "inspect"] {
+            let args: &[&str] = if command == "inspect" {
+                &["--json", "--measurements", "--incidences"]
+            } else {
+                &["--json"]
+            };
             compare(
                 &path,
                 &format!("{command}.json"),
-                &run(command, &path, &["--json"])?,
+                &run(command, &path, args)?,
             )?;
         }
         compare(&path, "svg", &checked_svg(&path)?)?;

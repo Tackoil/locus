@@ -299,7 +299,7 @@ pub(crate) struct Execution {
     pub sources: Vec<SourceDocument>,
 }
 
-pub(crate) fn emit(execution: &Execution, json: bool) -> Exit {
+pub(crate) fn emit(execution: &Execution, json: bool, compact: bool) -> Exit {
     if let CommandOutput::Render(result) = &execution.output {
         if let Some(bytes) = &result.stdout {
             emit_diagnostics(&result.diagnostics, &execution.sources);
@@ -311,7 +311,7 @@ pub(crate) fn emit(execution: &Execution, json: bool) -> Exit {
         }
     }
     if json {
-        emit_json(&execution.output);
+        emit_json(&execution.output, compact);
     } else {
         emit_human(execution);
     }
@@ -338,8 +338,12 @@ pub(crate) fn usage_error(message: &str) -> Execution {
     }
 }
 
-fn emit_json(output: &CommandOutput) {
-    let result = serde_json::to_writer_pretty(io::stdout(), output);
+fn emit_json(output: &CommandOutput, compact: bool) {
+    let result = if compact {
+        crate::compact::write(io::stdout(), output)
+    } else {
+        serde_json::to_writer_pretty(io::stdout(), output)
+    };
     if result.is_ok() {
         let _ = writeln!(io::stdout());
     }

@@ -53,6 +53,36 @@ bundled Tree-sitter grammar and connects `.locus` files to `locus-lsp` for
 diagnostics, completion, hover, go-to-definition, and formatting.
 See its README for local installation and server configuration.
 
+## Focused feedback
+
+Start with `locus check figure.locus --json --compact`. Compact JSON uses one
+line, summarizes solver rank, remaining DOF and residual, counts assertions,
+and retains every failed assertion's actual values and every diagnostic.
+Omit `--compact` for the full solver and assertion reports. `--compact` requires
+`--json` and is available on all commands.
+
+`inspect` reports diagnostics by default. Request just the measurements needed
+to investigate a specific issue:
+
+```sh
+locus inspect figure.locus --distance A B --json --compact
+locus inspect figure.locus --angle A B C --ratio A M B --json --compact
+locus inspect figure.locus --measurements --incidences --json
+```
+
+Repeat `--distance`, `--angle`, or `--ratio` for additional tuples. Angles use
+the middle point as vertex and return radians; ratios require the middle point
+to lie strictly between the endpoints and return `dist(A,M) / dist(M,B)`.
+Unknown ids, non-point objects, and undefined measurements return structured
+errors with exit 3. `--measurements` opts into all pairwise distances, triangle
+angles, and line ratios; it conflicts with direct measurement queries.
+`--incidences` independently opts into all detected geometric facts. Both can
+produce large output. Checks compute diagnostics without building these tables.
+
+Points declared with `mark: none` remain available to measurements, incidences,
+and assertions, but do not cause visual crowding or out-of-view warnings.
+Visible marker collisions and solve/construction diagnostics still apply.
+
 ## Rendering
 
 Run `locus check figure.locus` first; after it exits 0, render for human review:

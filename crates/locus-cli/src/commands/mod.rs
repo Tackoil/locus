@@ -8,9 +8,9 @@ use std::io::{self, Read as _, Write as _};
 use std::path::{Path, PathBuf};
 
 use locus_core::{
-    DependencyGraph, Dimension, EvalError, Evaluation, InspectDiagnostic, Point, PointMark,
-    RemovalImpact, ResolvedObject, ResolvedScene, Scene, SolveSummary, evaluate_assertions,
-    inspect_scene,
+    DependencyGraph, Dimension, EvalError, Evaluation, InspectDiagnostic, MeasurementQuery, Point,
+    PointMark, RemovalImpact, ResolvedObject, ResolvedScene, Scene, SolveSummary,
+    evaluate_assertions, inspect_scene_with_options, query_measurements,
 };
 use locus_syntax::{Diagnostic, File, OpStmt, Span, Statement, format, parse};
 
@@ -21,7 +21,7 @@ use crate::output::{
     ObjectAnchorReport, ObjectDofReport, ObjectReport, PointReport, RelationReport, ResolvedValue,
     Severity, SolveReport, SourceDocument,
 };
-use crate::{Command, Style};
+use crate::{Command, InspectArgs, Style};
 
 pub(crate) fn execute(command: Command) -> Execution {
     match command {
@@ -58,7 +58,7 @@ fn execute_mutation(command: Command) -> Execution {
 fn execute_analysis(command: Command) -> Execution {
     match command {
         Command::Describe(args) => describe(&args.file),
-        Command::Inspect(args) => inspect(&args.file),
+        Command::Inspect(args) => inspect(&args),
         Command::Init(_)
         | Command::Add(_)
         | Command::Update(_)
@@ -185,12 +185,22 @@ fn describe(path: &Path) -> Execution {
     success(CommandOutput::Describe(result), loaded.document())
 }
 
-fn inspect(path: &Path) -> Execution {
+fn inspect(args: &InspectArgs) -> Execution {
+    let path = &args.file;
     let loaded = match load_scene("inspect", path) {
         Ok(loaded) => loaded,
         Err(execution) => return *execution,
     };
-    let inspection = inspect_scene(&loaded.scene);
+    let mut inspection =
+        inspect_scene_with_options(&loaded.scene, args.measurements, args.incidences);
+    let queries = measurement_queries(args);
+    if !queries.is_empty() {
+        inspection.measurements =
+            match query_measurements(&loaded.file, resolved_scene(&loaded.scene), &queries) {
+                Ok(measurements) => measurements,
+                Err(message) => return inspection_query_failure(&loaded, message),
+            };
+    }
     let result = InspectResult {
         command: "inspect",
         path: path_string(path),
@@ -199,6 +209,43 @@ fn inspect(path: &Path) -> Execution {
         inspection,
     };
     success(CommandOutput::Inspect(result), loaded.document())
+}
+
+fn measurement_queries(args: &InspectArgs) -> Vec<MeasurementQuery> {
+    let mut queries = Vec::new();
+    queries.extend(
+        args.distance
+            .chunks_exact(2)
+            .map(|ids| MeasurementQuery::Distance([ids[0].clone(), ids[1].clone()])),
+    );
+    queries.extend(
+        args.angle
+            .chunks_exact(3)
+            .map(|ids| MeasurementQuery::Angle([ids[0].clone(), ids[1].clone(), ids[2].clone()])),
+    );
+    queries.extend(
+        args.ratio
+            .chunks_exact(3)
+            .map(|ids| MeasurementQuery::Ratio([ids[0].clone(), ids[1].clone(), ids[2].clone()])),
+    );
+    queries
+}
+
+fn inspection_query_failure(loaded: &LoadedScene, message: String) -> Execution {
+    failure(
+        "inspect",
+        vec![CliDiagnostic {
+            code: "inspect_query".to_owned(),
+            severity: Severity::Error,
+            path: path_string(&loaded.path),
+            span: Span::default(),
+            message,
+            notes: Vec::new(),
+            suggestion: None,
+        }],
+        Exit::Usage,
+        loaded.document(),
+    )
 }
 
 fn check(paths: &[PathBuf], strict: bool) -> Execution {
@@ -236,7 +283,7 @@ fn load_checked(path: &Path, strict: bool) -> CheckedOutcome {
 }
 
 fn check_file(loaded: &LoadedScene, strict: bool) -> Result<CheckFileResult, Box<Execution>> {
-    let inspection = inspect_scene(&loaded.scene);
+    let inspection = inspect_scene_with_options(&loaded.scene, false, false);
     let diagnostics = inspection_diagnostics(&loaded.path, &inspection.diagnostics);
     let assertions = evaluate_assertions(&loaded.file, resolved_scene(&loaded.scene))
         .map_err(|error| Box::new(eval_failure("check", &loaded.as_file(), error)))?;

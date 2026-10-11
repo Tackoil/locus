@@ -83,6 +83,98 @@ pub struct IntegerRatio {
     pub right: u32,
 }
 
+/// A single requested measurement; point order is significant for angles and ratios.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum MeasurementQuery {
+    /// Distance between two named points, in scene units.
+    Distance([String; 2]),
+    /// Unsigned angle in radians, with the middle point as vertex.
+    Angle([String; 3]),
+    /// Ratio along a line, with the middle point strictly between the endpoints.
+    Ratio([String; 3]),
+}
+
+/// Measures only the requested tuples, including invisible construction points.
+///
+/// # Errors
+/// Returns an error for unknown/non-point ids or undefined angles/line ratios.
+pub fn query_measurements(
+    file: &File,
+    scene: &ResolvedScene,
+    queries: &[MeasurementQuery],
+) -> Result<MeasurementTables, String> {
+    let tolerance = resolved_scene_tolerance(file, scene);
+    let mut output = MeasurementTables::default();
+    for query in queries {
+        push_query(&mut output, scene, query, tolerance)?;
+    }
+    Ok(output)
+}
+
+fn query_point<'a>(scene: &'a ResolvedScene, name: &str) -> Result<NamedPoint<'a>, String> {
+    let (index, id, object) = scene
+        .objects
+        .iter()
+        .enumerate()
+        .find_map(|(index, (id, object))| (id.name == name).then_some((index, id, object)))
+        .ok_or_else(|| format!("unknown point `{name}`"))?;
+    let ResolvedObject::Point(point) = object else {
+        return Err(format!("`{name}` is not a point"));
+    };
+    Ok(NamedPoint {
+        id,
+        point: point.geometry,
+        index,
+        visible: is_visible(object),
+    })
+}
+
+fn push_query(
+    output: &mut MeasurementTables,
+    scene: &ResolvedScene,
+    query: &MeasurementQuery,
+    tolerance: Tolerance,
+) -> Result<(), String> {
+    match query {
+        MeasurementQuery::Distance([first, second]) => {
+            output.distances.push(DistanceMeasurement {
+                first: first.clone(),
+                second: second.clone(),
+                distance: measure::dist(
+                    query_point(scene, first)?.point,
+                    query_point(scene, second)?.point,
+                ),
+            });
+        }
+        MeasurementQuery::Angle([first, vertex, second]) => {
+            let radians = measure::angle(
+                query_point(scene, first)?.point,
+                query_point(scene, vertex)?.point,
+                query_point(scene, second)?.point,
+                tolerance,
+            )
+            .map_err(|error| format!("angle `{first} {vertex} {second}`: {error}"))?;
+            output.triangle_angles.push(TriangleAngleMeasurement {
+                first: first.clone(),
+                vertex: vertex.clone(),
+                second: second.clone(),
+                radians,
+            });
+        }
+        MeasurementQuery::Ratio([start, point, end]) => {
+            let measurement = line_ratio(
+                query_point(scene, start)?,
+                query_point(scene, point)?,
+                query_point(scene, end)?,
+                tolerance,
+            )
+            .ok_or_else(|| format!("`{point}` must lie strictly between `{start}` and `{end}`"))?;
+            output.line_ratios.push(measurement);
+        }
+    }
+    Ok(())
+}
+
 /// A geometry fact detected with the same tolerance model as assertions.
 #[derive(Clone, Debug, PartialEq, Serialize)]
 #[serde(tag = "kind", rename_all = "snake_case")]
@@ -183,12 +275,30 @@ pub struct GeometryBounds {
 /// Inspects an already evaluated `Scene`, including solve-only diagnostics when present.
 #[must_use]
 pub fn inspect_scene(scene: &Scene) -> InspectionReport {
+    inspect_scene_with_options(scene, true, true)
+}
+
+/// Inspects a scene, computing exhaustive tables and incidences only when requested.
+#[must_use]
+pub fn inspect_scene_with_options(
+    scene: &Scene,
+    measurements: bool,
+    incidences: bool,
+) -> InspectionReport {
     match &scene.evaluation {
-        Evaluation::Resolved(resolved) => inspect(&scene.file, resolved, None),
+        Evaluation::Resolved(resolved) => {
+            inspect_with_options(&scene.file, resolved, None, measurements, incidences)
+        }
         Evaluation::Solved {
             scene: resolved,
             summary,
-        } => inspect(&scene.file, resolved, Some(summary)),
+        } => inspect_with_options(
+            &scene.file,
+            resolved,
+            Some(summary),
+            measurements,
+            incidences,
+        ),
     }
 }
 
@@ -199,12 +309,30 @@ pub fn inspect(
     scene: &ResolvedScene,
     solve: Option<&SolveSummary>,
 ) -> InspectionReport {
+    inspect_with_options(file, scene, solve, true, true)
+}
+
+fn inspect_with_options(
+    file: &File,
+    scene: &ResolvedScene,
+    solve: Option<&SolveSummary>,
+    measurements: bool,
+    incidences: bool,
+) -> InspectionReport {
     let tolerance = resolved_scene_tolerance(file, scene);
     let viewport = visible_geometry_bbox(scene);
     let points = named_points(scene);
     InspectionReport {
-        measurements: measurement_tables(&points, tolerance),
-        incidences: detected_incidences(scene, &points, tolerance),
+        measurements: if measurements {
+            measurement_tables(&points, tolerance)
+        } else {
+            MeasurementTables::default()
+        },
+        incidences: if incidences {
+            detected_incidences(scene, &points, tolerance)
+        } else {
+            Vec::new()
+        },
         diagnostics: diagnostics(scene, &points, solve, tolerance, viewport),
     }
 }
@@ -242,6 +370,7 @@ struct NamedPoint<'a> {
     id: &'a Ident,
     point: Point,
     index: usize,
+    visible: bool,
 }
 
 fn named_points(scene: &ResolvedScene) -> Vec<NamedPoint<'_>> {
@@ -254,6 +383,7 @@ fn named_points(scene: &ResolvedScene) -> Vec<NamedPoint<'_>> {
                 id,
                 point: point.geometry,
                 index,
+                visible: is_visible(object),
             }),
             _ => None,
         })
@@ -553,7 +683,8 @@ fn stage_object_diagnostics(
     if let Some(diagnostic) = hints.get(&id.name) {
         output.push((index, "hint_far".to_owned(), diagnostic.clone()));
     }
-    if let (Some(viewport), Some(bounds)) = (viewport, object.bbox())
+    if is_visible(object)
+        && let (Some(viewport), Some(bounds)) = (viewport, object.bbox())
         && !tolerance.bbox_contains(viewport, bounds)
     {
         output.push((
@@ -596,6 +727,7 @@ fn stage_crowding(
     points: &[NamedPoint<'_>],
     tolerance: Tolerance,
 ) {
+    let points: Vec<_> = points.iter().filter(|point| point.visible).collect();
     for first in 0..points.len() {
         for second in first + 1..points.len() {
             if tolerance.points_crowded(points[first].point, points[second].point) {
@@ -736,7 +868,7 @@ mod tests {
     }
 
     #[test]
-    fn out_of_view_uses_visible_geometry_bounds() {
+    fn invisible_helpers_do_not_report_out_of_view() {
         let mut scene = incidence_fixture(0.0);
         scene.objects.insert(
             ident("hidden", 6),
@@ -747,9 +879,37 @@ mod tests {
         );
         scene.bbox.include_point(Point::new(100.0, 100.0));
         let report = inspect(&empty_file(), &scene, None);
-        assert!(report.diagnostics.iter().any(|diagnostic| matches!(
+        assert!(!report.diagnostics.iter().any(|diagnostic| matches!(
             diagnostic,
             InspectDiagnostic::OutOfView { id, .. } if id == "hidden"
+        )));
+    }
+
+    #[test]
+    fn crowding_requires_two_visible_markers_but_helpers_remain_measurable() {
+        let mut scene = incidence_fixture(0.0);
+        for (name, mark) in [("helper", PointMark::None), ("cross", PointMark::Cross)] {
+            scene.objects.insert(
+                ident(name, 6),
+                ResolvedObject::Point(ResolvedPoint {
+                    geometry: Point::new(0.0, 0.0),
+                    mark,
+                }),
+            );
+        }
+        let report = inspect(&empty_file(), &scene, None);
+        assert_eq!(report.diagnostics.len(), 1);
+        assert!(matches!(
+            &report.diagnostics[0],
+            InspectDiagnostic::Crowding { first, second, .. } if first == "A" && second == "cross"
+        ));
+        assert!(
+            report.measurements.distances.iter().any(|item| {
+                item.first == "A" && item.second == "helper" && item.distance == 0.0
+            })
+        );
+        assert!(report.incidences.iter().any(|item| matches!(
+            item, Incidence::PointOnObject { point, object } if point == "helper" && object == "AB"
         )));
     }
 

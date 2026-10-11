@@ -33213,18 +33213,5 @@
       "object": "kline"
     }
   ],
-  "diagnostics": [
-    {
-      "kind": "crowding",
-      "first": "sb0",
-      "second": "q1",
-      "distance": 0.275
-    },
-    {
-      "kind": "crowding",
-      "first": "sb1",
-      "second": "q6",
-      "distance": 0.3477944795421572
-    }
-  ]
+  "diagnostics": []
 }

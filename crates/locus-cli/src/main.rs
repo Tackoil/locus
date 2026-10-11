@@ -1,6 +1,7 @@
 //! Command-line entry point for Locus.
 
 mod commands;
+mod compact;
 mod exit;
 mod output;
 #[cfg(debug_assertions)]
@@ -25,6 +26,10 @@ struct Cli {
     #[arg(long, global = true)]
     json: bool,
 
+    /// Emit concise single-line JSON, with check summaries and failed assertions only.
+    #[arg(long, global = true, requires = "json")]
+    compact: bool,
+
     #[command(subcommand)]
     command: Command,
 }
@@ -41,8 +46,8 @@ enum Command {
     Remove(RemoveArgs),
     /// Report declarations, resolved geometry, and solver details.
     Describe(FileArgs),
-    /// Report measurements, incidences, and diagnostics.
-    Inspect(FileArgs),
+    /// Report diagnostics and requested measurements or incidences.
+    Inspect(InspectArgs),
     /// Solve, inspect, and evaluate every in-file assertion.
     Check(CheckArgs),
     /// Canonically format source or export the parsed AST.
@@ -55,6 +60,27 @@ enum Command {
 struct FileArgs {
     /// Locus source file.
     file: PathBuf,
+}
+
+#[derive(Debug, Args)]
+struct InspectArgs {
+    /// Locus source file.
+    file: PathBuf,
+    /// Include exhaustive pairwise distances, triangle angles, and line ratios.
+    #[arg(long, conflicts_with_all = ["distance", "angle", "ratio"])]
+    measurements: bool,
+    /// Include all automatically detected geometric incidences.
+    #[arg(long)]
+    incidences: bool,
+    /// Measure a distance; repeat for additional pairs.
+    #[arg(long, num_args = 2, value_names = ["FIRST", "SECOND"], action = clap::ArgAction::Append)]
+    distance: Vec<String>,
+    /// Measure an angle in radians; the middle point is the vertex. Repeat as needed.
+    #[arg(long, num_args = 3, value_names = ["FIRST", "VERTEX", "SECOND"], action = clap::ArgAction::Append)]
+    angle: Vec<String>,
+    /// Measure a line ratio; the middle point must be strictly between the endpoints.
+    #[arg(long, num_args = 3, value_names = ["START", "POINT", "END"], action = clap::ArgAction::Append)]
+    ratio: Vec<String>,
 }
 
 #[derive(Clone, Copy, Debug, Default, ValueEnum)]
@@ -165,7 +191,7 @@ fn main() -> std::process::ExitCode {
     let execution = execute(cli.command);
     #[cfg(debug_assertions)]
     rejected_requests::save(&execution);
-    output::emit(&execution, cli.json).into()
+    output::emit(&execution, cli.json, cli.compact).into()
 }
 
 fn clap_exit(error: &clap::Error) -> std::process::ExitCode {
@@ -180,7 +206,7 @@ fn clap_exit(error: &clap::Error) -> std::process::ExitCode {
     rejected_requests::save_usage(&error.to_string());
     if json_requested() {
         let execution = output::usage_error(&error.to_string());
-        output::emit(&execution, true);
+        output::emit(&execution, true, compact_requested());
     } else {
         let _ = error.print();
     }
@@ -189,4 +215,8 @@ fn clap_exit(error: &clap::Error) -> std::process::ExitCode {
 
 fn json_requested() -> bool {
     std::env::args_os().any(|argument| argument == "--json")
+}
+
+fn compact_requested() -> bool {
+    std::env::args_os().any(|argument| argument == "--compact")
 }
