@@ -32,7 +32,7 @@ fn measured_caption() -> (EvaluationInputs, TextBoxes) {
 #[test]
 fn accepted_internal_label_retry_does_not_require_another_measurement_pass() {
     let parsed = locus_syntax::parse(
-        "locus 0 beta 6\npoint start()\npoint end = offset(start,10,0)\narrow path(start,end)\nlabel caption(path,\"caption\") { near: middle }\npoint target = offset(start,5,-2)\nrel center(caption,target)\nassert center(caption,target)\n",
+        "locus 0 beta 6\npoint start()\npoint end = on_circle(circle(start, 10), 0deg)\narrow path(start,end)\nlabel caption(path,\"caption\") { near: middle }\npoint target = translate(on_circle(circle(start, 5), 0deg), start, on_circle(circle(start, 2), 270deg))\nrel center(caption,target)\nassert center(caption,target)\n",
     );
     assert!(parsed.diagnostics.is_empty(), "{:?}", parsed.diagnostics);
     let (mut inputs, measured) = measured_caption();
@@ -97,7 +97,7 @@ fn accepted_internal_label_retry_does_not_require_another_measurement_pass() {
 #[test]
 fn new_physical_trim_still_requires_a_solve_with_visible_label_bounds() {
     let parsed = locus_syntax::parse(
-        "locus 0 beta 6\npoint start()\npoint end = offset(start,4,0)\nrect source(start,2,2)\narrow path(start,end)\nlabel caption(path,\"caption\") { near: end, side: above }\nrel trim_endpoints(path,source)\n",
+        "locus 0 beta 6\npoint start()\npoint end = on_circle(circle(start, 4), 0deg)\nrect source(start,2,2)\narrow path(start,end)\nlabel caption(path,\"caption\") { near: end, side: above }\nrel trim_endpoints(path,source)\n",
     );
     assert!(parsed.diagnostics.is_empty(), "{:?}", parsed.diagnostics);
     let (inputs, measured) = measured_caption();
@@ -135,7 +135,7 @@ fn new_physical_trim_still_requires_a_solve_with_visible_label_bounds() {
 #[test]
 fn genuinely_new_label_candidate_requires_another_solve() {
     let parsed = locus_syntax::parse(
-        "locus 0 beta 6\npoint start()\npoint end = offset(start,4,0)\npoint center = offset(start,2,0.25)\ncircle obstacle(center,0.12)\narrow path(start,end)\nlabel caption(path,\"caption\") { near: middle, side: above }\n",
+        "locus 0 beta 6\npoint start()\npoint end = on_circle(circle(start, 4), 0deg)\npoint center = translate(on_circle(circle(start, 2), 0deg), start, on_circle(circle(start, 0.25), 90deg))\ncircle obstacle(center,0.12)\narrow path(start,end)\nlabel caption(path,\"caption\") { near: middle, side: above }\n",
     );
     assert!(parsed.diagnostics.is_empty(), "{:?}", parsed.diagnostics);
     let (inputs, measured) = measured_caption();

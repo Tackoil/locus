@@ -1624,10 +1624,7 @@ impl<'a> RelationEvaluator<'a> {
         args: &[Expr],
         span: Span,
     ) -> Result<DPoint, EvalError> {
-        if matches!(
-            name,
-            "midpoint" | "lerp" | "offset" | "translate" | "extend"
-        ) {
+        if matches!(name, "midpoint" | "lerp" | "translate" | "extend") {
             return self.eval_affine_point(name, args, span);
         }
         if matches!(
@@ -1648,7 +1645,6 @@ impl<'a> RelationEvaluator<'a> {
         match name {
             "midpoint" => self.affine_pair(args, span, 0.5),
             "lerp" => self.lerp(args, span),
-            "offset" => self.offset(args, span),
             "translate" => self.translate(args, span),
             "extend" => self.extend(args, span),
             _ => Err(solver_error(
@@ -1708,19 +1704,6 @@ impl<'a> RelationEvaluator<'a> {
         let second = self.eval_point(&args[1])?;
         let factor = self.eval_number_as(&args[2], NumericDimension::Scalar)?.0;
         Ok(first.add_vector(&second.sub(&first).scale(&factor)))
-    }
-
-    fn offset(&mut self, args: &[Expr], span: Span) -> Result<DPoint, EvalError> {
-        require_arity("offset", args, 3, span)?;
-        let point = self.eval_point(&args[0])?;
-        Ok(DPoint {
-            x: point
-                .x
-                .add(&self.eval_number_as(&args[1], NumericDimension::Length)?.0),
-            y: point
-                .y
-                .add(&self.eval_number_as(&args[2], NumericDimension::Length)?.0),
-        })
     }
 
     fn translate(&mut self, args: &[Expr], span: Span) -> Result<DPoint, EvalError> {
@@ -3244,7 +3227,6 @@ fn constructor_kind(name: &str, span: Span) -> Result<Kind, EvalError> {
         name,
         "midpoint"
             | "lerp"
-            | "offset"
             | "intersect"
             | "foot"
             | "project"

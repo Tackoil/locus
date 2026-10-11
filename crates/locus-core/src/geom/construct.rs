@@ -23,14 +23,6 @@ pub fn lerp(a: Point, b: Point, t: f64) -> Result<Point, ConstructError> {
     validate_finite_result("lerp", a + (b - a) * t)
 }
 
-/// Adds a signed x/y displacement to a point.
-pub fn offset(point: Point, dx: f64, dy: f64) -> Result<Point, ConstructError> {
-    validate_finite_points("offset", &[point])?;
-    validate_finite_scalar("offset", dx)?;
-    validate_finite_scalar("offset", dy)?;
-    validate_finite_result("offset", point + Vec2::new(dx, dy))
-}
-
 /// Objects that have a directed linear carrier and a parameter domain.
 pub trait FootTarget: Copy {
     /// Carrier parameter of the orthogonal projection, or a domain error.
@@ -777,10 +769,6 @@ mod tests {
         assert_eq!(
             lerp(Point::new(0.0, 0.0), Point::new(2.0, 4.0), 1.5),
             Ok(Point::new(3.0, 6.0))
-        );
-        assert_eq!(
-            offset(Point::new(1.0, 2.0), -3.0, 5.0),
-            Ok(Point::new(-2.0, 7.0))
         );
         assert_eq!(
             translate(

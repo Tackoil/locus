@@ -14,7 +14,7 @@ fn scene(source: &str) -> Result<Scene, locus_core::EvalError> {
 fn frozen_route_context_cannot_override_an_authored_side() {
     use locus_core::geom::route::{RouteChoice, RouteSide};
     let parsed = parse(
-        "locus 0 beta 6\npoint start()\npoint end = offset(start, 0, 3)\narrow path(start, end) { route: orthogonal, side: right }\n",
+        "locus 0 beta 6\npoint start()\npoint end = on_circle(circle(start, 3), 90deg)\narrow path(start, end) { route: orthogonal, side: right }\n",
     );
     let mut inputs = locus_core::EvaluationInputs::default();
     inputs.choices.routes.insert(
@@ -127,7 +127,7 @@ fn style_metric_rejects_unknown_names_and_non_plain_strings() {
 
 #[test]
 fn deferred_bent_arrow_assertions_share_exact_bounds_and_length() {
-    let scene = scene("locus 0 beta 6\npoint start()\npoint finish = offset(start, 4, 0)\narrow path(start, finish) { bend: 45deg }\nassert path.height == 1\nassert path.width == 4\nassert path.length > 4.5\nassert path.length < 4.6\n").expect("bent route");
+    let scene = scene("locus 0 beta 6\npoint start()\npoint finish = on_circle(circle(start, 4), 0deg)\narrow path(start, finish) { bend: 45deg }\nassert path.height == 1\nassert path.width == 4\nassert path.length > 4.5\nassert path.length < 4.6\n").expect("bent route");
     let report = evaluate_assertions(
         &scene.source_file,
         scene.resolved().expect("resolved route"),
@@ -190,7 +190,7 @@ fn orthogonal_authored_length_solves_internal_detour_without_avoidance() {
 
 #[test]
 fn unused_route_parameter_keeps_preset_default_and_is_registered() {
-    let scene = scene("locus 0 beta 6\npoint start()\npoint finish = offset(start, 0, 3)\narrow path(start, finish) { route: orthogonal }\nassert path.length == 4\n").expect("unreferenced internal route parameter");
+    let scene = scene("locus 0 beta 6\npoint start()\npoint finish = on_circle(circle(start, 3), 90deg)\narrow path(start, finish) { route: orthogonal }\nassert path.length == 4\n").expect("unreferenced internal route parameter");
     assert_eq!(scene.solve_summary().expect("solve summary").unknowns, 3);
     assert!(
         evaluate_assertions(&scene.source_file, scene.resolved().expect("solved route"))
@@ -201,7 +201,7 @@ fn unused_route_parameter_keeps_preset_default_and_is_registered() {
 
 #[test]
 fn curved_authored_length_solves_control_offset() {
-    let scene = scene("locus 0 beta 6\npoint start()\npoint finish = offset(start, 0, 4)\narrow path(start, finish) { route: curved, side: right }\nrel path.length == 5\nassert path.length == 5\nassert path.width > 1\n").expect("curved internal parameter");
+    let scene = scene("locus 0 beta 6\npoint start()\npoint finish = on_circle(circle(start, 4), 90deg)\narrow path(start, finish) { route: curved, side: right }\nrel path.length == 5\nassert path.length == 5\nassert path.width > 1\n").expect("curved internal parameter");
     assert!(
         evaluate_assertions(&scene.source_file, scene.resolved().expect("solved curve"))
             .expect("curve assertions")
@@ -224,7 +224,7 @@ fn frozen_route_choice_follows_endpoints_moving_during_solving() {
 
 #[test]
 fn outer_search_runs_when_default_route_side_cannot_meet_measurement_without_avoid() {
-    let scene = scene("locus 0 beta 6\npoint start()\npoint finish = offset(start, 3, 2)\narrow path(start, finish) { route: orthogonal }\nrel path.height == 4\nrel path.width == 3\nrel path.length == 9\nassert path.height == 4\nassert path.length == 9\n").expect("outer route-side search");
+    let scene = scene("locus 0 beta 6\npoint start()\npoint finish = translate(on_circle(circle(start, 3), 0deg), start, on_circle(circle(start, 2), 90deg))\narrow path(start, finish) { route: orthogonal }\nrel path.height == 4\nrel path.width == 3\nrel path.length == 9\nassert path.height == 4\nassert path.length == 9\n").expect("outer route-side search");
     assert!(
         evaluate_assertions(
             &scene.source_file,
@@ -242,7 +242,7 @@ fn fixed_route_side_preserves_authored_restriction_and_domain_conflicts() {
         "rel path.length == 4",
     ] {
         let source = format!(
-            "locus 0 beta 6\npoint start()\npoint finish = offset(start, 3, 2)\narrow path(start, finish) {{ route: orthogonal, side: right }}\n{constraints}\n"
+            "locus 0 beta 6\npoint start()\npoint finish = translate(on_circle(circle(start, 3), 0deg), start, on_circle(circle(start, 2), 90deg))\narrow path(start, finish) {{ route: orthogonal, side: right }}\n{constraints}\n"
         );
         assert!(scene(&source).is_err(), "{source}");
     }
@@ -250,7 +250,7 @@ fn fixed_route_side_preserves_authored_restriction_and_domain_conflicts() {
 
 #[test]
 fn outer_search_combines_choices_for_multiple_routes() {
-    let scene = scene("locus 0 beta 6\npoint first()\npoint first_tip = offset(first, 3, 2)\npoint second()\npoint second_tip = offset(second, 3, 2)\narrow first_path(first, first_tip) { route: orthogonal }\narrow second_path(second, second_tip) { route: orthogonal }\nrel first_path.length == 9\nrel hdist(first, first_path.w) == -2\nrel second_path.length == 9\nrel hdist(second, second_path.w) == -2\nassert first_path.length == 9\nassert second_path.length == 9\nassert hdist(first, first_path.w) == -2\nassert hdist(second, second_path.w) == -2\n").expect("bounded combined route search");
+    let scene = scene("locus 0 beta 6\npoint first()\npoint first_tip = translate(on_circle(circle(first, 3), 0deg), first, on_circle(circle(first, 2), 90deg))\npoint second()\npoint second_tip = translate(on_circle(circle(second, 3), 0deg), second, on_circle(circle(second, 2), 90deg))\narrow first_path(first, first_tip) { route: orthogonal }\narrow second_path(second, second_tip) { route: orthogonal }\nrel first_path.length == 9\nrel hdist(first, first_path.w) == -2\nrel second_path.length == 9\nrel hdist(second, second_path.w) == -2\nassert first_path.length == 9\nassert second_path.length == 9\nassert hdist(first, first_path.w) == -2\nassert hdist(second, second_path.w) == -2\n").expect("bounded combined route search");
     assert!(
         evaluate_assertions(
             &scene.source_file,
@@ -263,7 +263,7 @@ fn outer_search_combines_choices_for_multiple_routes() {
 
 #[test]
 fn failing_row_search_holds_successful_choices_and_skips_unrelated_routes() {
-    let scene = scene("locus 0 beta 6\npoint unused()\npoint unused_tip = offset(unused, 0, 3)\narrow unused_path(unused, unused_tip) { route: orthogonal }\npoint first()\npoint first_tip = offset(first, 3, 2)\npoint second()\npoint second_tip = offset(second, 3, 2)\narrow first_path(first, first_tip) { route: orthogonal }\narrow second_path(second, second_tip) { route: orthogonal }\nrel first_path.height == 4\nrel first_path.width == 3\nrel first_path.length == 9\nrel second_path.height == 4\nrel second_path.width == 3\nrel second_path.length == 9\nassert unused_path.length == 4\nassert first_path.height == 4\nassert second_path.height == 4\n").expect("failed-row guided combination within search cap");
+    let scene = scene("locus 0 beta 6\npoint unused()\npoint unused_tip = on_circle(circle(unused, 3), 90deg)\narrow unused_path(unused, unused_tip) { route: orthogonal }\npoint first()\npoint first_tip = translate(on_circle(circle(first, 3), 0deg), first, on_circle(circle(first, 2), 90deg))\npoint second()\npoint second_tip = translate(on_circle(circle(second, 3), 0deg), second, on_circle(circle(second, 2), 90deg))\narrow first_path(first, first_tip) { route: orthogonal }\narrow second_path(second, second_tip) { route: orthogonal }\nrel first_path.height == 4\nrel first_path.width == 3\nrel first_path.length == 9\nrel second_path.height == 4\nrel second_path.width == 3\nrel second_path.length == 9\nassert unused_path.length == 4\nassert first_path.height == 4\nassert second_path.height == 4\n").expect("failed-row guided combination within search cap");
     assert!(
         evaluate_assertions(
             &scene.source_file,

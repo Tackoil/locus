@@ -9,7 +9,7 @@ use locus_layout::{LayoutOptions, SolveLayoutError, TextBoxes, layout_program, s
 
 fn file(obstacle: f64, width: f64) -> locus_syntax::File {
     let source = format!(
-        "locus 0 beta 6\npoint origin()\nrect source(origin,{width},2)\npoint end = offset(origin,10,0)\narrow path(origin,end)\npoint obstacle = offset(origin,{obstacle},0)\nrel trim_endpoints(path,source)\nrel avoid(obstacle,path)\nassert avoid(obstacle,path)\nassert path.length == 10\nassert path.width == 10\n"
+        "locus 0 beta 6\npoint origin()\nrect source(origin,{width},2)\npoint end = on_circle(circle(origin, 10), 0deg)\narrow path(origin,end)\npoint obstacle = lerp(origin, on_circle(circle(origin, style_metric(\"short_length\")), 0deg), ({obstacle}) / style_metric(\"short_length\"))\nrel trim_endpoints(path,source)\nrel avoid(obstacle,path)\nassert avoid(obstacle,path)\nassert path.length == 10\nassert path.width == 10\n"
     );
     let parsed = locus_syntax::parse(&source);
     assert!(parsed.diagnostics.is_empty(), "{:?}", parsed.diagnostics);
@@ -83,7 +83,7 @@ fn unsupported_fully_enclosed_seed_preserves_original_diagnostic() {
 #[test]
 fn bootstrap_route_probes_share_the_normal_feedback_budget_and_report() {
     let parsed = locus_syntax::parse(
-        "locus 0 beta 6\npoint origin()\nrect source(origin,24,6)\npoint end = offset(origin,10,0)\narrow path(origin,end) { route: orthogonal, side: right }\nrel trim_endpoints(path,source)\nrel avoid(origin,path)\nassert avoid(origin,path)\n",
+        "locus 0 beta 6\npoint origin()\nrect source(origin,24,6)\npoint end = on_circle(circle(origin, 10), 0deg)\narrow path(origin,end) { route: orthogonal, side: right }\nrel trim_endpoints(path,source)\nrel avoid(origin,path)\nassert avoid(origin,path)\n",
     );
     assert!(parsed.diagnostics.is_empty(), "{:?}", parsed.diagnostics);
     let initial = Scene::new(parsed.file.clone()).expect_err("logical endpoint collision");

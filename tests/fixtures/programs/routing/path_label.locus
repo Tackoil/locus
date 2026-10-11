@@ -1,9 +1,13 @@
 locus 0 beta 6
 point origin()
-point tip = offset(origin, 10, 0)
+point tip()
+rel hdist(origin, tip) == 10
+rel vdist(origin, tip) == 0
 arrow path(origin, tip)
 label caption(path, "Accepted path caption") { near: start, side: above }
-point target = offset(origin, 2.5, 2)
+point target()
+rel hdist(origin, target) == 2.5
+rel vdist(origin, target) == 2
 rel center(caption, target)
 assert center(caption, target)
 assert path.length == 10

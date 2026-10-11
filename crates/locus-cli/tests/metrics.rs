@@ -204,8 +204,8 @@ fn repeated_layout_passes_are_reported_individually() -> Result {
         directory.path().join("routing.locus"),
         "locus 0 beta 6\n\
 point start()\n\
-point finish = offset(start, 0, 4)\n\
-point middle = offset(start, 0, 2)\n\
+point finish = on_circle(circle(start, 4), 90deg)\n\
+point middle = on_circle(circle(start, 2), 90deg)\n\
 rect obstacle(middle, 2.5, 1)\n\
 arrow path(start, finish) { route: orthogonal, side: right }\n\
 rel avoid(path, obstacle)\n\

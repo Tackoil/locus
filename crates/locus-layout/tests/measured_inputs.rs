@@ -51,7 +51,7 @@ fn orthogonal_layout_retains_solved_route_and_curved_layout_retains_solved_contr
 -> Result<(), Box<dyn Error>> {
     for kind in ["orthogonal", "curved"] {
         let parsed = locus_syntax::parse(&format!(
-            "locus 0 beta 6\npoint start()\npoint finish = offset(start, 0, 3)\narrow path(start, finish) {{ route: {kind}, side: right }}\nrel path.length == 7\n"
+            "locus 0 beta 6\npoint start()\npoint finish = on_circle(circle(start, 3), 90deg)\narrow path(start, finish) {{ route: {kind}, side: right }}\nrel path.length == 7\n"
         ));
         assert!(parsed.diagnostics.is_empty());
         let scene = Scene::new(parsed.file)?;

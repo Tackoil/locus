@@ -179,7 +179,7 @@ measured subterm includes its expression and unit: `unitless`, `scene units`,
 source uses degrees. Predicate and negated-predicate failures report their
 boolean result against `true`. The same context appears in human diagnostics.
 For example, `vdist(start, end) == -0.7` shows an actual value of `-0.8` together
-with the upstream `offset(start, 0, -0.8)` definition, so a mistaken expectation
+with the upstream `rel vdist(start, end) == -0.8` dimension, so a mistaken expectation
 can be distinguished from an incorrect construction.
 
 Invalid annotation properties retain their type or domain diagnostic and source

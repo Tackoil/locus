@@ -59,7 +59,7 @@ fn gaps_compact_after_a_hard_anchor_moves_their_initial_placement() {
 
 #[test]
 fn gaps_allow_extra_space_required_by_hard_geometry() {
-    let source = "locus 0 beta 6\npoint origin()\nrect first(origin, 2, 1)\nrect second(offset(origin, 0, -4), 2, 1)\nrel gap_y(first, second)\n";
+    let source = "locus 0 beta 6\npoint origin()\nrect first(origin, 2, 1)\nrect second(2, 1)\nrel align_center_x(first,second)\nrel vdist(second.center,first.center) == 4\nrel gap_y(first, second)\n";
     let scene = scene(source, EvaluationInputs::default());
     let actual = bounds(&scene, "first").min.y - bounds(&scene, "second").max.y;
     assert!((actual - 3.0).abs() < 1.0e-10);
@@ -72,6 +72,22 @@ fn gaps_allow_extra_space_required_by_hard_geometry() {
             .expect("settling report")
             .settling_complete
     );
+}
+
+#[test]
+fn rows_adapt_to_changed_dimensions_without_manual_positions() {
+    for width in [2, 8] {
+        let source = format!(
+            "locus 0 beta 6\nrect first({width}, 1)\nrect second(2, 1)\nrel row(first, second)\n"
+        );
+        let inputs = EvaluationInputs::default();
+        let expected_gap = inputs.metrics.gap;
+        let scene = scene(&source, inputs);
+        let first = bounds(&scene, "first");
+        let second = bounds(&scene, "second");
+        assert!((second.min.x - first.max.x - expected_gap).abs() < 1e-9);
+        assert!((first.center().y - second.center().y).abs() < 1e-9);
+    }
 }
 
 #[test]

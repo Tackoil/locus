@@ -190,7 +190,7 @@ mod tests {
     #[test]
     fn roundoff_above_acceptance_tolerance_does_not_hide_a_material_route_failure() {
         let parsed = locus_syntax::parse(
-            "locus 0 beta 6\npoint origin()\npoint tip = offset(origin,3,2)\narrow first(origin,tip) {route:orthogonal}\narrow second(origin,tip) {route:orthogonal}\nrel first.height == 4\nrel second.height == 4\n",
+            "locus 0 beta 6\npoint origin()\npoint tip()\nrel hdist(origin, tip) == 3\nrel vdist(origin, tip) == 2\narrow first(origin,tip) {route:orthogonal}\narrow second(origin,tip) {route:orthogonal}\nrel first.height == 4\nrel second.height == 4\n",
         );
         assert!(parsed.diagnostics.is_empty());
         let prepared = PreparedEvaluation::new(&parsed.file).expect("registered routes");
@@ -199,11 +199,11 @@ mod tests {
             equations: vec![
                 relations::Equation {
                     residual: Jet::constant(crate::tol::SOLVE_EPSILON * 10.0, 4),
-                    relation: 0,
+                    relation: 2,
                 },
                 relations::Equation {
                     residual: Jet::constant(0.1, 4),
-                    relation: 1,
+                    relation: 3,
                 },
             ],
             equalities: Vec::new(),

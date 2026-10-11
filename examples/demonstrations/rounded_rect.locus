@@ -3,10 +3,12 @@ meta title = "Rounded rectangles"
 style textbook
 class node { fill: tint, accent: blue }
 rounded_rect start(4, 2, 0.5) [node]
-rounded_rect end(offset(start.center, 7, 0), 4, 2, 1) [node]
+rounded_rect end(4, 2, 1) [node]
+rel row(start, end)
 label start_text(start.center, "Rounded box") { dir: center }
 label end_text(end.center, "Capsule") { dir: center }
 arrow flow(start.e, end.w)
+rel flow.length == style_metric("short_length")
 assert start.corner_radius == 0.5
 assert end.width == 4
 assert end.height == 2

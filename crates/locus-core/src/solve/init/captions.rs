@@ -473,15 +473,15 @@ mod tests {
             .replace("rect first(2,1)", "point origin()\nrect first(origin,2,1)")
             .replace(
                 "rect second(2,1)",
-                "point other = offset(origin,2.25,0)\nrect second(other,2,1)",
+                "point other = on_circle(circle(origin,2.25),0deg)\nrect second(other,2,1)",
             )
             .replace(
                 "point left_finish() { mark: none }",
-                "point left_finish = offset(first.s,0,-10) { mark: none }",
+                "point left_finish = on_circle(circle(first.s,10),270deg) { mark: none }",
             )
             .replace(
                 "point right_finish() { mark: none }",
-                "point right_finish = offset(second.s,0,-10) { mark: none }",
+                "point right_finish = on_circle(circle(second.s,10),270deg) { mark: none }",
             );
         let bounds = seeded(&source, 7.0);
         let gap = bounds["right_guide"].center().x - bounds["left_guide"].center().x;

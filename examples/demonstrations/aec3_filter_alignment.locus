@@ -12,10 +12,11 @@ class offsetln  { stroke: dash(6, 3), accent: #2563EB, weight: 1, cap: round }
 class peak      { accent: #EA580C, weight: 2, cap: round }
 class peakln    { stroke: dash(6, 3), accent: #EA580C, weight: 1.25, cap: round }
 
-// Only physical sizes are fixed; layout gaps are chosen by the engine.
-num fw = 4       // 128 ms
-num ov = 1       // 32 ms
+// Filter widths and overlap are time measurements; layout chooses vertical spacing.
+num fw = 4
+num ov = 1
 num bh = 1.2
+num history_span = fw + 4 * (fw - ov)
 
 rect f0(fw, bh) [filterbox]
 rect f1(fw, bh) [filterbox]
@@ -23,18 +24,14 @@ rect f2(fw, bh) [filterbox]
 rect f3(fw, bh) [filterbox]
 rect f4(fw, bh) [filterbox]
 rel gap_y(f0, f1, f2, f3, f4)
-// Temporal overlap determines horizontal alignment, not layout coordinates.
 rel hdist(f1.w, f0.e) == ov
 rel hdist(f2.w, f1.e) == ov
 rel hdist(f3.w, f2.e) == ov
 rel hdist(f4.w, f3.e) == ov
 
 fn filter_caption(box, name, span) {
-    label heading(name)
-    label range(span)
-    rel column(heading, range)
-    group captions(heading, range)
-    rel center(captions, box)
+    label heading(box.n, name) [coeff] { dir: N }
+    label range(box.n, span) { dir: S }
 }
 filter_caption cpt0(f0, "Filter 0", "0–128 ms")
 filter_caption cpt1(f1, "Filter 1", "96–224 ms")
@@ -42,28 +39,16 @@ filter_caption cpt2(f2, "Filter 2", "192–320 ms")
 filter_caption cpt3(f3, "Filter 3", "288–416 ms")
 filter_caption cpt4(f4, "Filter 4", "384–512 ms")
 
-fn overlap_strip(box) {
-    rect shape(ov, bh) [overlap]
-    rel align_center_y(shape, box)
-}
-overlap_strip s0e(f0)
-rel inset_right(s0e.shape, f0) { padding: none }
-overlap_strip s1w(f1)
-rel inset_left(s1w.shape, f1) { padding: none }
-overlap_strip s1e(f1)
-rel inset_right(s1e.shape, f1) { padding: none }
-overlap_strip s2w(f2)
-rel inset_left(s2w.shape, f2) { padding: none }
-overlap_strip s2e(f2)
-rel inset_right(s2e.shape, f2) { padding: none }
-overlap_strip s3w(f3)
-rel inset_left(s3w.shape, f3) { padding: none }
-overlap_strip s3e(f3)
-rel inset_right(s3e.shape, f3) { padding: none }
-overlap_strip s4w(f4)
-rel inset_left(s4w.shape, f4) { padding: none }
+// Overlap strips are boundary fractions of the actual filter width.
+rect s0e(lerp(f0.e, f0.w, ov / (2 * fw)), ov, bh) [overlap]
+rect s1w(lerp(f1.w, f1.e, ov / (2 * fw)), ov, bh) [overlap]
+rect s1e(lerp(f1.e, f1.w, ov / (2 * fw)), ov, bh) [overlap]
+rect s2w(lerp(f2.w, f2.e, ov / (2 * fw)), ov, bh) [overlap]
+rect s2e(lerp(f2.e, f2.w, ov / (2 * fw)), ov, bh) [overlap]
+rect s3w(lerp(f3.w, f3.e, ov / (2 * fw)), ov, bh) [overlap]
+rect s3e(lerp(f3.e, f3.w, ov / (2 * fw)), ov, bh) [overlap]
+rect s4w(lerp(f4.w, f4.e, ov / (2 * fw)), ov, bh) [overlap]
 
-// Axis ticks inherit the temporal boundaries of the fixed-size filters.
 point A0() { mark: cross }
 point A512() { mark: cross }
 rel align_center_x(A0, f0.w)
@@ -74,9 +59,7 @@ rel gap_y(f4, axis)
 label lax(A0, "render history x[t]") { dir: W }
 
 fn time_tick(boundary, text) {
-    point position() { mark: cross }
-    rel align_center_x(position, boundary)
-    rel on(position, seg(A0, A512))
+    point position = lerp(A0, A512, hdist(f0.w, boundary) / history_span) { mark: cross }
     label caption(position, text) { dir: S }
 }
 time_tick t96(f1.w, "96")
@@ -90,20 +73,15 @@ time_tick t416(f3.e, "416")
 label lt0(A0, "0 ms") { dir: S }
 label lt512(A512, "512 ms") { dir: S }
 
-// Capture feed and taps are aligned by relations rather than offsets.
+// The capture bus shares the filter rows; projected taps introduce no placement.
 point cap_top() { mark: none }
-point cap_bot() { mark: none }
 rel align_center_y(cap_top, f0.center)
-rel align_center_y(cap_bot, f4.center)
-rel align_center_x(cap_top, cap_bot)
+rel gap_x(cap_top, f0)
+point cap_bot = foot(f4.center, perpendicular(cap_top, line(f0.w, f0.e))) { mark: none }
 segment cap(cap_top, cap_bot)
-rel gap_x(cap, f0)
 label lcap(cap_top, "capture y[t]") { dir: NW }
-
 fn capture_tap(box) {
-    point tail() { mark: none }
-    rel on(tail, cap)
-    rel align_center_y(tail, box.center)
+    point tail = foot(box.center, cap) { mark: none }
     arrow path(tail, box.w) { head: -> }
 }
 capture_tap c0(f0)
@@ -112,38 +90,25 @@ capture_tap c2(f2)
 capture_tap c3(f3)
 capture_tap c4(f4)
 
-// Coefficient stems share a baseline; the engine chooses their spacing.
-fn coefficient(height) {
-    point base() { mark: none }
-    point tip() [coeff] { mark: dot }
-    rel on(base, seg(f2.sw, f2.se))
-    rel align_center_x(base, tip)
-    rel vdist(base, tip) == height
-    rel contain(f2, tip)
+// Sample position is a boundary fraction; its height is the measured echo gain.
+fn coefficient(position, height) {
+    point base = lerp(f2.sw, f2.se, position) { mark: none }
+    point tip = on_circle(circle(base, height), 90deg) [coeff] { mark: dot }
     segment stem(base, tip) [coeff]
 }
-coefficient st1(0.22)
-coefficient st2(0.30)
-coefficient st3(0.24)
-coefficient st4(0.28)
-coefficient st5(0.20)
-coefficient st6(0.26)
-
-// The peak remains at the temporal midpoint of filter 2.
-point kb() { mark: none }
-rel midpoint(kb, f2.sw, f2.se)
-point kstar() [peak] { mark: dot }
-rel align_center_x(kstar, kb)
-rel contain(f2, kstar)
-rel vdist(kb, kstar) == 0.45
+coefficient st1(0.05, 0.22)
+coefficient st2(0.18, 0.3)
+coefficient st3(0.32, 0.24)
+coefficient st4(0.66, 0.28)
+coefficient st5(0.8, 0.2)
+coefficient st6(0.93, 0.26)
+point kb = midpoint(f2.sw, f2.se) { mark: none }
+point kstar = on_circle(circle(kb, 0.45), 90deg) [peak] { mark: dot }
 segment stk(kb, kstar) [peak]
 label lk(kstar, "local peak k*") [peak] { dir: E }
-
 segment o2drop(f2.sw, t192.position) [offsetln]
 label lo2(o2drop.midpoint, "filter offset $O_2$") [offsetln] { dir: W }
-point kdrop() { mark: none }
-rel on(kdrop, seg(A0, A512))
-rel align_center_x(kdrop, kb)
+point kdrop = foot(kb, seg(A0, A512)) { mark: none }
 segment kline(kb, kdrop) [peakln]
 
 rect td()
@@ -152,21 +117,18 @@ rel center(ltd, td)
 rel contain(td, ltd)
 rel align_center_x(td, kdrop)
 rel gap_y(axis, td)
-
 rect lg(0.6, 0.45) [overlap]
 label llg("32 ms overlap")
 rel row(lg, llg)
 group legend(lg, llg)
 rel gap_x(f0, legend)
 rel align_center_y(legend, f0)
-
 label lg1("coefficient position → delay") [coeff]
 label lg2("coefficient height → echo gain") [coeff]
 rel row(lg1, lg2)
 group coefficient_legend(lg1, lg2)
 rel gap_y(td, coefficient_legend)
 rel align_center_x(td, coefficient_legend)
-
 text_block sub("Each filter reads a different, overlapping region of the same render history") { place: above }
 text_block eq($\hat{y}[t] = \textstyle\sum_n h_n[k]\, x[t - (O_n + k)]$) { place: below }
 

@@ -4,6 +4,6 @@ locus 0 beta 6
 num x = free 2.5
 num t = 2*x-5
 point origin()
-point moving = offset(origin, 0.1*(2*t*t*t-1.5*t*t-2*t+2.5)+0.25, 0)
+point moving = lerp(origin, on_circle(circle(origin, 0.25), 0deg), 4*(0.1*(2*t*t*t-1.5*t*t-2*t+2.5)+0.25))
 rel gap_x(origin, moving)
 assert gap_x(origin, moving)

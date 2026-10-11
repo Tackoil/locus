@@ -1,6 +1,8 @@
 locus 0 beta 6
 point start()
-point finish = offset(start, 4, 0)
+point finish()
+rel hdist(start, finish) == 4
+rel vdist(start, finish) == 0
 circle source(start, 1)
 circle target(finish, 1)
 arrow path(start, finish)

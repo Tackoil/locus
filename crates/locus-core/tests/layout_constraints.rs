@@ -123,7 +123,7 @@ fn stroke_crossing_box_is_a_layout_conflict() {
 
 #[test]
 fn exact_inradius_keeps_rectangular_deepest_segment() {
-    let source = "locus 0 beta 6\npoint origin()\npoint start = offset(origin,-4,0)\npoint end = offset(origin,4,0)\nrect panel(origin,10,2)\nsegment line(start,end)\nrel contain(panel,line)\nassert contain(panel,line)\n";
+    let source = "locus 0 beta 6\npoint origin()\npoint start = on_circle(circle(origin, 4), 180deg)\npoint end = on_circle(circle(origin, 4), 0deg)\nrect panel(origin,10,2)\nsegment line(start,end)\nrel contain(panel,line)\nassert contain(panel,line)\n";
     let mut inputs = EvaluationInputs::default();
     inputs.metrics.padding = 1.0;
     let scene = scene(source, inputs).expect("nonempty deepest-point segment");
@@ -167,7 +167,7 @@ fn nonlinear_preference_settling_backtracks_and_retains_feasibility() {
 
 #[test]
 fn cover_relations_use_collection_extrema_and_compact_automatic_dimensions() {
-    let source = "locus 0 beta 6\npoint origin()\npoint other = offset(origin,5,2)\nrect panel()\ngroup content(origin,other)\nrel cover_x(panel,content)\nrel cover_y(panel,content)\nassert cover_x(panel,content)\nassert cover_y(panel,content)\n";
+    let source = "locus 0 beta 6\npoint origin()\npoint other = translate(on_circle(circle(origin, 5), 0deg), origin, on_circle(circle(origin, 2), 90deg))\nrect panel()\ngroup content(origin,other)\nrel cover_x(panel,content)\nrel cover_y(panel,content)\nassert cover_x(panel,content)\nassert cover_y(panel,content)\n";
     let scene = scene(source, EvaluationInputs::default()).expect("cover collections");
     validated(&scene);
     let panel = bounds(&scene, "panel");
@@ -177,7 +177,7 @@ fn cover_relations_use_collection_extrema_and_compact_automatic_dimensions() {
 
 #[test]
 fn row_groups_deduplicate_aliases_and_keep_instances_as_whole_items() {
-    let source = "locus 0 beta 6\nfn card() {\n rect lower(2,1)\n rect upper(offset(lower.center,0,2),2,1)\n}\ncard first()\ncard second()\ngroup cards(first,second)\nrel column(cards)\nassert column(cards)\n";
+    let source = "locus 0 beta 6\nfn card() {\n rect lower(2,1)\n rect upper(2,1)\n rel align_center_x(lower,upper)\n rel vdist(lower.center,upper.center) == 2\n}\ncard first()\ncard second()\ngroup cards(first,second)\nrel column(cards)\nassert column(cards)\n";
     let scene = scene(source, EvaluationInputs::default()).expect("whole composed instances");
     validated(&scene);
     let first = bounds(&scene, "first.lower");
@@ -199,7 +199,7 @@ fn gaps_separate_collection_union_without_chaining_its_members() {
 
 #[test]
 fn containment_uses_all_corners_of_collection_combined_bounds() {
-    let source = "locus 0 beta 6\npoint origin()\npoint a = offset(origin,-1.5,0)\npoint b = offset(origin,0,1.5)\ndiamond panel(origin,4,4)\ngroup content(a,b)\nrel contain(panel,content)\n";
+    let source = "locus 0 beta 6\npoint origin()\npoint a = on_circle(circle(origin, 1.5), 180deg)\npoint b = on_circle(circle(origin, 1.5), 90deg)\ndiamond panel(origin,4,4)\ngroup content(a,b)\nrel contain(panel,content)\n";
     let mut inputs = EvaluationInputs::default();
     inputs.metrics.padding = 0.0;
     let error = scene(source, inputs).expect_err("combined corner lies outside diamond");
@@ -208,7 +208,7 @@ fn containment_uses_all_corners_of_collection_combined_bounds() {
 
 #[test]
 fn overflowing_layout_normalization_is_an_error_instead_of_a_panic_or_feasible_hinge() {
-    let source = "locus 0 beta 6\npoint origin()\npoint nearby = offset(origin,0.01,0)\nrel gap_x(origin,nearby)\n";
+    let source = "locus 0 beta 6\npoint origin()\npoint nearby = on_circle(circle(origin, 0.01), 0deg)\nrel gap_x(origin,nearby)\n";
     let mut inputs = EvaluationInputs::default();
     inputs.metrics.gap = 1e308;
     let error = scene(source, inputs).expect_err("overflowing normalized gap");
@@ -217,7 +217,7 @@ fn overflowing_layout_normalization_is_an_error_instead_of_a_panic_or_feasible_h
 
 #[test]
 fn avoidance_recursively_expands_instances_and_deduplicates_aliases() {
-    let declarations = "locus 0 beta 6\nfn pair(anchor) {\n rect one(anchor,1,1)\n rect two(offset(anchor,3,0),1,1)\n rect alias = one\n group nested(one,two,alias)\n}\nfn assembly(anchor) {\n pair child(anchor)\n group parts(child.nested,child)\n}\npoint origin()\nassembly subject(origin)\nassembly obstacle(offset(origin,0,5))\ngroup subjects(subject.parts,subject.child.alias)\ngroup obstacles(obstacle.parts,obstacle.child.alias)\n";
+    let declarations = "locus 0 beta 6\nfn pair(anchor) {\n rect one(anchor,1,1)\n rect two(1,1)\n rel align_center_y(one,two)\n rel hdist(anchor,two.center) == 3\n rect alias = one\n group nested(one,two,alias)\n}\nfn assembly(anchor) {\n pair child(anchor)\n group parts(child.nested,child)\n}\npoint origin()\nassembly subject(origin)\npoint other()\nrel align_center_x(origin,other)\nrel vdist(origin,other) == 5\nassembly obstacle(other)\ngroup subjects(subject.parts,subject.child.alias)\ngroup obstacles(obstacle.parts,obstacle.child.alias)\n";
     let nested = scene(
         &format!("{declarations}rel avoid(subjects,obstacles)\nassert avoid(subjects,obstacles)\n"),
         EvaluationInputs::default(),
@@ -236,7 +236,7 @@ fn avoidance_recursively_expands_instances_and_deduplicates_aliases() {
 
 #[test]
 fn nested_collection_rows_keep_instances_whole_and_deduplicate_references() {
-    let source = "locus 0 beta 6\nfn card() {\n rect lower(2,1)\n rect upper(offset(lower.center,0,2),2,1)\n}\ncard first()\ncard second()\ngroup cards(first,second)\ngroup nested(cards,first)\nrel column(nested)\nassert column(nested)\n";
+    let source = "locus 0 beta 6\nfn card() {\n rect lower(2,1)\n rect upper(2,1)\n rel align_center_x(lower,upper)\n rel vdist(lower.center,upper.center) == 2\n}\ncard first()\ncard second()\ngroup cards(first,second)\ngroup nested(cards,first)\nrel column(nested)\nassert column(nested)\n";
     let scene = scene(source, EvaluationInputs::default()).expect("nested whole-instance column");
     validated(&scene);
     assert!(
@@ -246,7 +246,7 @@ fn nested_collection_rows_keep_instances_whole_and_deduplicate_references() {
 
 #[test]
 fn containment_keeps_nested_instance_aggregate_corner_semantics() {
-    let source = "locus 0 beta 6\nfn pair(anchor) {\n point a = offset(anchor,-1.5,0)\n point b = offset(anchor,0,1.5)\n}\npoint origin()\npair items(origin)\ndiamond panel(origin,4,4)\ngroup content(items)\nrel contain(panel,content)\n";
+    let source = "locus 0 beta 6\nfn pair(anchor) {\n point a = on_circle(circle(anchor, 1.5), 180deg)\n point b = on_circle(circle(anchor, 1.5), 90deg)\n}\npoint origin()\npair items(origin)\ndiamond panel(origin,4,4)\ngroup content(items)\nrel contain(panel,content)\n";
     let mut inputs = EvaluationInputs::default();
     inputs.metrics.padding = 0.0;
     let error =

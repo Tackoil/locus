@@ -699,7 +699,6 @@ fn is_point_constructor(name: &str) -> bool {
         name,
         "midpoint"
             | "lerp"
-            | "offset"
             | "intersect"
             | "foot"
             | "project"
@@ -760,10 +759,7 @@ fn eval_point_constructor(
     args: &[Expr],
     span: Span,
 ) -> Result<ResolvedObject, EvalError> {
-    if matches!(
-        name,
-        "midpoint" | "lerp" | "offset" | "translate" | "extend"
-    ) {
+    if matches!(name, "midpoint" | "lerp" | "translate" | "extend") {
         return eval_affine_point_constructor(evaluator, name, args, span);
     }
     if matches!(
@@ -853,7 +849,6 @@ fn eval_affine_point_constructor(
             .map(resolved_point)
             .map_err(|error| EvalError::construction(span, error))
         }
-        "offset" => eval_offset(evaluator, args, span).map(resolved_point),
         "translate" => eval_translate(evaluator, args, span).map(resolved_point),
         "extend" => eval_extend(evaluator, args, span).map(resolved_point),
         _ => Err(type_error(
@@ -861,18 +856,6 @@ fn eval_affine_point_constructor(
             format!("unknown affine constructor `{name}`"),
         )),
     }
-}
-
-fn eval_offset(
-    evaluator: &mut ExpressionEvaluator<'_>,
-    args: &[Expr],
-    span: Span,
-) -> Result<Point, EvalError> {
-    expect_arity("offset", args, 3, span)?;
-    let point = evaluator.eval_point(&args[0])?;
-    let dx = evaluator.eval_number(&args[1], Dimension::Length)?;
-    let dy = evaluator.eval_number(&args[2], Dimension::Length)?;
-    construct::offset(point, dx, dy).map_err(|error| EvalError::construction(span, error))
 }
 
 fn eval_translate(
@@ -2128,8 +2111,7 @@ pub(crate) fn constructor_arg_dimension_for_arity(
         return (index >= usize::from(arity != 3) && index < arity)
             .then_some(InferredDimension::Number(Dimension::Length));
     }
-    if matches!(name, "offset") && matches!(index, 1 | 2)
-        || matches!(name, "extend") && index == 2
+    if matches!(name, "extend") && index == 2
         || matches!(name, "circle") && (index == 1 || arity == 1 && index == 0)
         || matches!(name, "angle_arc") && index == 3
         || matches!(name, "rect" | "diamond")

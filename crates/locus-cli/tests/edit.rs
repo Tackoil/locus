@@ -8,7 +8,7 @@ use assert_cmd::Command;
 const INSTANCE: &str = "locus 0 beta 6\n\
 fn duo(distance) {\n\
     point tail()\n\
-    point tip = offset(tail, distance, 0)\n\
+    point tip = lerp(tail, on_circle(circle(tail, style_metric(\"short_length\")), 0deg), (distance) / style_metric(\"short_length\"))\n\
     segment path(tail, tip)\n\
     rel align_center_y(tail, tip)\n\
 }\n\
@@ -34,7 +34,7 @@ fn instance_arguments_are_editable_and_unreferenced_instances_can_be_removed()
         .success();
     let edited = fs::read_to_string(&path)?;
     assert!(edited.contains("duo sample(3) [highlight] // keep"));
-    assert!(edited.contains("point tip = offset(tail, distance, 0)"));
+    assert!(edited.contains("point tip = lerp(tail,"));
     locus()?
         .arg("remove")
         .arg(&path)
@@ -214,7 +214,7 @@ fn collection_relations_preserve_removal_dependencies_without_blocking_unrelated
 -> Result<(), Box<dyn Error>> {
     let directory = tempfile::tempdir()?;
     let path = directory.path().join("related-group.locus");
-    let source = "locus 0 beta 6\npoint A()\npoint B = offset(A,2,0)\npoint unused() {mark:none}\ngroup pair(A,B)\nrel align_center_y(pair,A)\nassert center(pair,pair)\n";
+    let source = "locus 0 beta 6\npoint A()\npoint B = on_circle(circle(A, 2), 0deg)\npoint unused() {mark:none}\ngroup pair(A,B)\nrel align_center_y(pair,A)\nassert center(pair,pair)\n";
     fs::write(&path, source)?;
     locus()?
         .arg("remove")

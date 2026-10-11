@@ -8,28 +8,29 @@ style textbook
 // ---- sizing constants --------------------------------------
 num bw    = 3.4        // box width
 num bh    = 1.1        // box height
-num pitch = 2.3        // vertical center-to-center pitch
-num side  = 5.6        // offset to the fix branch
 
 // ---- spine nodes --------------------------------------------
 rect n1(bw, bh)
 label t1(n1.center, "locus init")  { dir: center }
 
-rect n2(bw, bh) where { align_center_x(n1.center, n2.center), vdist(n2.center, n1.center) == pitch }
+rect n2(bw, bh)
 label t2(n2.center, "locus add < ops.locus")  { dir: center }
 
-rect n3(bw, bh) where { align_center_x(n2.center, n3.center), vdist(n3.center, n2.center) == pitch }
+rect n3(bw, bh)
 label t3(n3.center, "locus check")  { dir: center }
 
-diamond n4(3.2, 1.5) where { align_center_x(n3.center, n4.center), vdist(n4.center, n3.center) == pitch }
+diamond n4(3.2, 1.5)
 label t4(n4.center, "exit 0?")  { dir: center }
 
-rect n5(bw, bh) where { align_center_x(n4.center, n5.center), vdist(n5.center, n4.center) == pitch }   [highlight]
+rect n5(bw, bh)   [highlight]
 label t5(n5.center, "locus render -o fig.svg")  { dir: center }
 
 // ---- side node: fix ------------------------------------------
-rect nf(bw, bh) where { align_center_y(n4.center, nf.center), hdist(n4.center, nf.center) == side }
+rect nf(bw, bh)
 label tf(nf.center, "fix ops (update / edit)")  { dir: center }
+
+rel column(n1, n2, n3, n4, n5)
+rel row(n4, nf)
 
 // ---- edges ----------------------------------------------------
 arrow a1(n1.s, n2.n)  { head: -> }

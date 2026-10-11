@@ -589,7 +589,7 @@ fn png_composes_color_alpha_with_object_opacity() {
 fn automatic_routes_export_accepted_spans_and_controls_on_all_backends() {
     for kind in ["orthogonal", "curved"] {
         let parsed = locus_syntax::parse(&format!(
-            "locus 0 beta 6\npoint start()\npoint finish = offset(start, 0, 3)\narrow path(start, finish) {{ route: {kind}, side: right }}\nrel path.length == 7\n"
+            "locus 0 beta 6\npoint start()\npoint finish = on_circle(circle(start, 3), 90deg)\narrow path(start, finish) {{ route: {kind}, side: right }}\nrel path.length == 7\n"
         ));
         assert!(parsed.diagnostics.is_empty());
         let sheet = StyleSheet::from_file(&parsed.file).expect("route style");
@@ -665,7 +665,7 @@ fn assert_route_export_commands(svg: &str, tikz: &str, kind: &str) {
 #[test]
 fn clipped_arrow_and_segment_export_the_same_visible_endpoints_on_all_backends() {
     let parsed = locus_syntax::parse(
-        "locus 0 beta 6\nclass hidden { opacity: 0 }\npoint start() [hidden]\npoint finish = offset(start, 4, 0) [hidden]\ncircle source(start, 1)\ncircle target(finish, 1)\narrow path(start, finish)\nsegment stroke(start, finish)\ngroup paths(path, stroke)\nrel trim_endpoints(paths, source)\nrel trim_endpoints(paths, target)\n",
+        "locus 0 beta 6\nclass hidden { opacity: 0 }\npoint start() [hidden]\npoint finish = on_circle(circle(start, 4), 0deg) [hidden]\ncircle source(start, 1)\ncircle target(finish, 1)\narrow path(start, finish)\nsegment stroke(start, finish)\ngroup paths(path, stroke)\nrel trim_endpoints(paths, source)\nrel trim_endpoints(paths, target)\n",
     );
     assert!(parsed.diagnostics.is_empty(), "{:?}", parsed.diagnostics);
     let sheet = StyleSheet::from_file(&parsed.file).expect("clipping style");

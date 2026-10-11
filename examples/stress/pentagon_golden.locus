@@ -7,7 +7,7 @@ style textbook
 
 // ---- objects ----------------------------------------------
 point O()
-point A = offset(O, 0, 3)
+point A = on_circle(circle(O, 3), 90deg)
 
 point B = rotate(A, O, 72deg)
 point C = rotate(A, O, 144deg)

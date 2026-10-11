@@ -37,7 +37,7 @@ fn path(scene: &Scene) -> locus_core::geom::route::Route {
 #[test]
 fn clipping_preserves_logical_bounds_and_moves_arrowhead_to_boundary() {
     let scene = scene(
-        "locus 0 beta 6\npoint start()\npoint finish = offset(start, 4, 0)\nrect boundary(start, 2, 2)\narrow path(start, finish)\nrel trim_endpoints(path, boundary)\n",
+        "locus 0 beta 6\npoint start()\npoint finish = on_circle(circle(start, 4), 0deg)\nrect boundary(start, 2, 2)\narrow path(start, finish)\nrel trim_endpoints(path, boundary)\n",
     );
     let logical = path(&scene).clone();
     let feedback =
@@ -55,7 +55,7 @@ fn clipping_preserves_logical_bounds_and_moves_arrowhead_to_boundary() {
 #[test]
 fn clipping_collection_visits_arrow_and_segment_paths() {
     let scene = scene(
-        "locus 0 beta 6\npoint start()\npoint finish = offset(start, 4, 0)\nrect boundary(start, 2, 2)\narrow path(start, finish)\nsegment line(start, finish)\ngroup paths(path, line)\nrel trim_endpoints(paths, boundary)\n",
+        "locus 0 beta 6\npoint start()\npoint finish = on_circle(circle(start, 4), 0deg)\nrect boundary(start, 2, 2)\narrow path(start, finish)\nsegment line(start, finish)\ngroup paths(path, line)\nrel trim_endpoints(paths, boundary)\n",
     );
     let feedback =
         layout_program(&scene, &TextBoxes::new(), LayoutOptions::default()).expect("clipped");
@@ -67,7 +67,7 @@ fn clipping_collection_visits_arrow_and_segment_paths() {
 #[test]
 fn fully_enclosed_paths_have_source_anchored_conflicts() {
     let scene = scene(
-        "locus 0 beta 6\npoint start()\npoint finish = offset(start, 0.5, 0)\nrect boundary(start, 2, 2)\narrow path(start, finish)\nrel trim_endpoints(path, boundary)\n",
+        "locus 0 beta 6\npoint start()\npoint finish = on_circle(circle(start, 0.5), 0deg)\nrect boundary(start, 2, 2)\narrow path(start, finish)\nrel trim_endpoints(path, boundary)\n",
     );
     let error = layout_program(&scene, &TextBoxes::new(), LayoutOptions::default())
         .expect_err("fully enclosed");
@@ -85,7 +85,7 @@ fn fully_enclosed_paths_have_source_anchored_conflicts() {
 #[test]
 fn incompatible_boundaries_are_diagnosed() {
     let scene = scene(
-        "locus 0 beta 6\npoint start()\npoint finish = offset(start, 4, 0)\nrect first(start, 7, 2)\nrect second(finish, 7, 2)\narrow path(start, finish)\nrel trim_endpoints(path, first)\nrel trim_endpoints(path, second)\n",
+        "locus 0 beta 6\npoint start()\npoint finish = on_circle(circle(start, 4), 0deg)\nrect first(start, 7, 2)\nrect second(finish, 7, 2)\narrow path(start, finish)\nrel trim_endpoints(path, first)\nrel trim_endpoints(path, second)\n",
     );
     let error = layout_program(&scene, &TextBoxes::new(), LayoutOptions::default())
         .expect_err("incompatible trims");
@@ -95,7 +95,7 @@ fn incompatible_boundaries_are_diagnosed() {
 #[test]
 fn curved_clipping_keeps_exact_quadratic_geometry() {
     let scene = scene(
-        "locus 0 beta 6\npoint start()\npoint finish = offset(start, 4, 0)\ncircle boundary(start, 1)\narrow path(start, finish) { bend: 45deg }\nrel trim_endpoints(path, boundary)\n",
+        "locus 0 beta 6\npoint start()\npoint finish = on_circle(circle(start, 4), 0deg)\ncircle boundary(start, 1)\narrow path(start, finish) { bend: 45deg }\nrel trim_endpoints(path, boundary)\n",
     );
     let feedback = layout_program(&scene, &TextBoxes::new(), LayoutOptions::default())
         .expect("clipped quadratic");
@@ -128,7 +128,7 @@ fn curved_clipping_keeps_exact_quadratic_geometry() {
 #[test]
 fn routed_avoidance_increases_offset_and_retains_authored_side() {
     let parsed = locus_syntax::parse(
-        "locus 0 beta 6\npoint start()\npoint finish = offset(start, 0, 4)\npoint center = offset(start, 0, 2)\nrect obstacle(center, 2.5, 1)\narrow path(start, finish) { route: orthogonal, side: right }\nrel avoid(path, obstacle)\n",
+        "locus 0 beta 6\npoint start()\npoint finish = on_circle(circle(start, 4), 90deg)\npoint center = on_circle(circle(start, 2), 90deg)\nrect obstacle(center, 2.5, 1)\narrow path(start, finish) { route: orthogonal, side: right }\nrel avoid(path, obstacle)\n",
     );
     let initial = Scene::new(parsed.file.clone()).expect("initial routed scene");
     let feedback = layout_program(&initial, &TextBoxes::new(), LayoutOptions::default())
@@ -155,7 +155,7 @@ fn routed_avoidance_increases_offset_and_retains_authored_side() {
 #[test]
 fn route_clearance_does_not_replace_authored_length() {
     let parsed = locus_syntax::parse(
-        "locus 0 beta 6\npoint start()\npoint finish = offset(start, 0, 4)\npoint center = offset(start, 0, 2)\nrect obstacle(center, 2.5, 1)\narrow path(start, finish) { route: orthogonal, side: right }\nrel path.length == 5\nrel avoid(path, obstacle)\n",
+        "locus 0 beta 6\npoint start()\npoint finish = on_circle(circle(start, 4), 90deg)\npoint center = on_circle(circle(start, 2), 90deg)\nrect obstacle(center, 2.5, 1)\narrow path(start, finish) { route: orthogonal, side: right }\nrel path.length == 5\nrel avoid(path, obstacle)\n",
     );
     let error = solve_layout(
         &parsed.file,
@@ -170,7 +170,7 @@ fn route_clearance_does_not_replace_authored_length() {
 #[test]
 fn route_can_leave_an_attached_shape_without_moving_it() {
     let parsed = locus_syntax::parse(
-        "locus 0 beta 6\npoint center()\nrect first(center, 2, 2)\npoint second_center = offset(center, 0, 4)\nrect second(second_center, 2, 2)\narrow path(first.e, second.e) { route: orthogonal, side: right }\nrel avoid(path, first, second)\n",
+        "locus 0 beta 6\npoint center()\nrect first(center, 2, 2)\npoint second_center = on_circle(circle(center, 4), 90deg)\nrect second(second_center, 2, 2)\narrow path(first.e, second.e) { route: orthogonal, side: right }\nrel avoid(path, first, second)\n",
     );
     let (scene, _) = solve_layout(
         &parsed.file,
@@ -208,7 +208,7 @@ fn measured_label() -> (EvaluationInputs, TextBoxes) {
 #[test]
 fn clipped_label_uses_retained_route_while_logical_length_stays_fixed() {
     let parsed = locus_syntax::parse(
-        "locus 0 beta 6\npoint start()\npoint finish = offset(start, 4, 0)\ncircle source(start, 1)\ncircle target(finish, 1)\narrow path(start, finish)\nlabel caption(path, \"next\") { near: end, side: above }\nrel trim_endpoints(path, source)\nrel trim_endpoints(path, target)\n",
+        "locus 0 beta 6\npoint start()\npoint finish = on_circle(circle(start, 4), 0deg)\ncircle source(start, 1)\ncircle target(finish, 1)\narrow path(start, finish)\nlabel caption(path, \"next\") { near: end, side: above }\nrel trim_endpoints(path, source)\nrel trim_endpoints(path, target)\n",
     );
     let (inputs, measured) = measured_label();
     let (scene, layout) = solve_layout(&parsed.file, inputs, &measured, LayoutOptions::default())
@@ -223,7 +223,7 @@ fn clipped_label_uses_retained_route_while_logical_length_stays_fixed() {
 #[test]
 fn path_label_candidate_is_deterministic_and_honors_authored_near_and_side() {
     let parsed = locus_syntax::parse(
-        "locus 0 beta 6\npoint start()\npoint finish = offset(start, 4, 0)\npoint center = offset(start, 2, 0.25)\ncircle obstacle(center, 0.12)\narrow path(start, finish)\nlabel caption(path, \"next\") { near: middle, side: above }\n",
+        "locus 0 beta 6\npoint start()\npoint finish = on_circle(circle(start, 4), 0deg)\npoint center = translate(on_circle(circle(start, 2), 0deg), start, on_circle(circle(start, 0.25), 90deg))\ncircle obstacle(center, 0.12)\narrow path(start, finish)\nlabel caption(path, \"next\") { near: middle, side: above }\n",
     );
     let (inputs, measured) = measured_label();
     let (scene, layout) = solve_layout(
@@ -248,7 +248,7 @@ fn path_label_candidate_is_deterministic_and_honors_authored_near_and_side() {
 #[test]
 fn nested_instance_collections_visit_owned_paths_and_deduplicate_alias_identity() {
     let scene = scene(
-        "locus 0 beta 6\npoint start()\npoint finish = offset(start, 4, 0)\nrect boundary(start, 2, 2)\nfn link(from, to) {\n    arrow path(from, to)\n}\nlink first(start, finish)\nlink second(start, finish)\narrow alias = first.path\ngroup paths(first, alias, second)\nrel trim_endpoints(paths, boundary)\n",
+        "locus 0 beta 6\npoint start()\npoint finish = on_circle(circle(start, 4), 0deg)\nrect boundary(start, 2, 2)\nfn link(from, to) {\n    arrow path(from, to)\n}\nlink first(start, finish)\nlink second(start, finish)\narrow alias = first.path\ngroup paths(first, alias, second)\nrel trim_endpoints(paths, boundary)\n",
     );
     let feedback = layout_program(&scene, &TextBoxes::new(), LayoutOptions::default())
         .expect("nested clipped paths");
@@ -265,7 +265,7 @@ fn nested_instance_collections_visit_owned_paths_and_deduplicate_alias_identity(
 #[test]
 fn clipping_rejects_collection_boundaries_even_when_they_have_one_member() {
     let scene = scene(
-        "locus 0 beta 6\npoint start()\npoint finish = offset(start, 4, 0)\nrect boundary(start, 2, 2)\ngroup boundaries(boundary)\narrow path(start, finish)\nrel trim_endpoints(path, boundaries)\n",
+        "locus 0 beta 6\npoint start()\npoint finish = on_circle(circle(start, 4), 0deg)\nrect boundary(start, 2, 2)\ngroup boundaries(boundary)\narrow path(start, finish)\nrel trim_endpoints(path, boundaries)\n",
     );
     let error = layout_program(&scene, &TextBoxes::new(), LayoutOptions::default())
         .expect_err("collection has no outline");
@@ -275,7 +275,7 @@ fn clipping_rejects_collection_boundaries_even_when_they_have_one_member() {
 #[test]
 fn oscillating_retained_label_measurements_exhaust_the_feedback_cap_honestly() {
     let parsed = locus_syntax::parse(
-        "locus 0 beta 6\npoint start()\npoint finish = offset(start, 4, 0)\narrow path(start, finish)\nlabel caption(path, \"next\") { near: start, side: above }\nrect boundary(caption.center, 2, 1)\nrel trim_endpoints(path, boundary)\n",
+        "locus 0 beta 6\npoint start()\npoint finish = on_circle(circle(start, 4), 0deg)\narrow path(start, finish)\nlabel caption(path, \"next\") { near: start, side: above }\nrect boundary(caption.center, 2, 1)\nrel trim_endpoints(path, boundary)\n",
     );
     assert!(parsed.diagnostics.is_empty(), "{:?}", parsed.diagnostics);
     let (inputs, measured) = measured_label();
@@ -288,7 +288,7 @@ fn oscillating_retained_label_measurements_exhaust_the_feedback_cap_honestly() {
 #[test]
 fn clipped_diagnostics_check_visible_strokes_and_exclude_removed_endpoint_spans() {
     let parsed = locus_syntax::parse(
-        "locus 0 beta 6\npoint start() { mark: none }\npoint finish = offset(start, 4, 0)\ncircle source(start, 1)\narrow path(start, finish)\nsegment stroke(start, finish)\ngroup paths(path, stroke)\nlabel caption(\"origin\")\nrel center(caption, start)\nrel trim_endpoints(paths, source)\n",
+        "locus 0 beta 6\npoint start() { mark: none }\npoint finish = on_circle(circle(start, 4), 0deg)\ncircle source(start, 1)\narrow path(start, finish)\nsegment stroke(start, finish)\ngroup paths(path, stroke)\nlabel caption(\"origin\")\nrel center(caption, start)\nrel trim_endpoints(paths, source)\n",
     );
     let (inputs, measured) = measured_label();
     let scene = Scene::with_inputs(parsed.file, inputs).expect("centered caption");
@@ -311,7 +311,7 @@ fn clipped_diagnostics_check_visible_strokes_and_exclude_removed_endpoint_spans(
 #[test]
 fn clipping_leaves_middle_crossings_and_exterior_endpoints_intact() {
     let scene = scene(
-        "locus 0 beta 6\npoint start()\npoint finish = offset(start, 4, 0)\npoint center = offset(start, 2, 0)\ncircle boundary(center, 0.5)\narrow path(start, finish)\nrel trim_endpoints(path, boundary)\n",
+        "locus 0 beta 6\npoint start()\npoint finish = on_circle(circle(start, 4), 0deg)\npoint center = on_circle(circle(start, 2), 0deg)\ncircle boundary(center, 0.5)\narrow path(start, finish)\nrel trim_endpoints(path, boundary)\n",
     );
     let feedback = layout_program(&scene, &TextBoxes::new(), LayoutOptions::default())
         .expect("unchanged endpoints");
@@ -326,7 +326,7 @@ fn clipping_leaves_middle_crossings_and_exterior_endpoints_intact() {
 #[test]
 fn route_conflicts_follow_relation_order_when_route_declarations_are_reversed() {
     let scene = scene(
-        "locus 0 beta 6\npoint start()\npoint finish = offset(start, 0, 4)\npoint center = offset(start, 0, 2)\nrect obstacle(center, 2000, 2000)\narrow first(start, finish) { route: orthogonal, side: right }\narrow second(start, finish) { route: orthogonal, side: right }\nrel avoid(second, obstacle)\nrel avoid(first, obstacle)\n",
+        "locus 0 beta 6\npoint start()\npoint finish = on_circle(circle(start, 4), 90deg)\npoint center = on_circle(circle(start, 2), 90deg)\nrect obstacle(center, 2000, 2000)\narrow first(start, finish) { route: orthogonal, side: right }\narrow second(start, finish) { route: orthogonal, side: right }\nrel avoid(second, obstacle)\nrel avoid(first, obstacle)\n",
     );
     let error = layout_program(&scene, &TextBoxes::new(), LayoutOptions::default())
         .expect_err("enclosed routes fail");
@@ -343,7 +343,7 @@ fn route_conflicts_follow_relation_order_when_route_declarations_are_reversed() 
 #[test]
 fn grouped_and_conjoined_clipping_requirements_are_applied_in_source_order() {
     let scene = scene(
-        "locus 0 beta 6\npoint start()\npoint finish = offset(start, 4, 0)\ncircle source(start,1)\ncircle target(finish,1)\narrow path(start,finish)\nrel (trim_endpoints(path,source)) and (trim_endpoints(path,target))\n",
+        "locus 0 beta 6\npoint start()\npoint finish = on_circle(circle(start, 4), 0deg)\ncircle source(start,1)\ncircle target(finish,1)\narrow path(start,finish)\nrel (trim_endpoints(path,source)) and (trim_endpoints(path,target))\n",
     );
     let feedback = layout_program(&scene, &TextBoxes::new(), LayoutOptions::default())
         .expect("wrapped clipping");
@@ -355,7 +355,7 @@ fn grouped_and_conjoined_clipping_requirements_are_applied_in_source_order() {
 fn direct_route_avoidance_rejects_intersections_and_accepts_actual_clearance() {
     for (width, accepted) in [(2.0, false), (0.1, true)] {
         let source = format!(
-            "locus 0 beta 6\npoint start()\npoint finish = offset(start,0,4)\npoint center = offset(start,0.5,2)\nrect obstacle(center,{width},1)\narrow path(start,finish)\nrel avoid(path,obstacle)\n"
+            "locus 0 beta 6\npoint start()\npoint finish = on_circle(circle(start, 4), 90deg)\npoint center = translate(on_circle(circle(start, 0.5), 0deg), start, on_circle(circle(start, 2), 90deg))\nrect obstacle(center,{width},1)\narrow path(start,finish)\nrel avoid(path,obstacle)\n"
         );
         let scene = scene(&source);
         let result = layout_program(&scene, &TextBoxes::new(), LayoutOptions::default());
@@ -369,7 +369,7 @@ fn direct_route_avoidance_rejects_intersections_and_accepts_actual_clearance() {
 #[test]
 fn fully_enclosed_automatic_route_searches_for_visible_detour_before_acceptance() {
     let parsed = locus_syntax::parse(
-        "locus 0 beta 6\npoint start()\npoint finish = offset(start,0,2)\npoint center = offset(start,0,1)\nrect boundary(center,0.3,4)\narrow path(start,finish) { route: orthogonal, side: right }\nnum span = free 2.1\nrel path.length == span\nrel trim_endpoints(path,boundary)\n",
+        "locus 0 beta 6\npoint start()\npoint finish = on_circle(circle(start, 2), 90deg)\npoint center = on_circle(circle(start, 1), 90deg)\nrect boundary(center,0.3,4)\narrow path(start,finish) { route: orthogonal, side: right }\nnum span = free 2.1\nrel path.length == span\nrel trim_endpoints(path,boundary)\n",
     );
     assert!(parsed.diagnostics.is_empty(), "{:?}", parsed.diagnostics);
     let initial = Scene::new(parsed.file.clone()).expect("short feasible route");
@@ -395,7 +395,7 @@ fn minimum_settled_offsets_recover_clipping_and_avoidance_within_budget() {
     for relation in ["trim_endpoints", "avoid"] {
         let height = if relation == "avoid" { 1 } else { 4 };
         let source = format!(
-            "locus 0 beta 6\npoint start()\npoint finish = offset(start,0,2)\npoint center = offset(start,0,1)\nrect boundary(center,0.3,{height})\narrow path(start,finish) {{ route: orthogonal, side: right }}\nnum span = free 1\nrel path.length == span\nrel {relation}(path,boundary)\n"
+            "locus 0 beta 6\npoint start()\npoint finish = on_circle(circle(start, 2), 90deg)\npoint center = on_circle(circle(start, 1), 90deg)\nrect boundary(center,0.3,{height})\narrow path(start,finish) {{ route: orthogonal, side: right }}\nnum span = free 1\nrel path.length == span\nrel {relation}(path,boundary)\n"
         );
         let parsed = locus_syntax::parse(&source);
         assert!(parsed.diagnostics.is_empty(), "{:?}", parsed.diagnostics);
@@ -423,7 +423,7 @@ fn minimum_settled_offsets_recover_clipping_and_avoidance_within_budget() {
 #[test]
 fn path_label_selection_predicts_the_proposed_clipped_route() {
     let parsed = locus_syntax::parse(
-        "locus 0 beta 6\npoint start()\npoint finish = offset(start,0,2)\npoint center = offset(start,0,1)\nrect boundary(center,0.3,4)\npoint obstacle_center = offset(start,1.7,1)\nrect obstacle(obstacle_center,0.4,0.2)\narrow path(start,finish) { route: orthogonal, side: right }\nlabel caption(path,\"next\") { near: middle, side: right }\nnum span = free 1\nrel path.length == span\nrel trim_endpoints(path,boundary)\n",
+        "locus 0 beta 6\npoint start()\npoint finish = on_circle(circle(start, 2), 90deg)\npoint center = on_circle(circle(start, 1), 90deg)\nrect boundary(center,0.3,4)\npoint obstacle_center = translate(on_circle(circle(start, 1.7), 0deg), start, on_circle(circle(start, 1), 90deg))\nrect obstacle(obstacle_center,0.4,0.2)\narrow path(start,finish) { route: orthogonal, side: right }\nlabel caption(path,\"next\") { near: middle, side: right }\nnum span = free 1\nrel path.length == span\nrel trim_endpoints(path,boundary)\n",
     );
     assert!(parsed.diagnostics.is_empty(), "{:?}", parsed.diagnostics);
     let (mut inputs, mut measured) = measured_label();
@@ -454,7 +454,7 @@ fn path_label_selection_predicts_the_proposed_clipped_route() {
 #[test]
 fn contained_path_labels_preserve_the_solved_candidate_inside_clear_outlines() {
     let parsed = locus_syntax::parse(
-        "locus 0 beta 6\npoint start() { mark: none }\npoint finish = offset(start,8,0)\npoint center = offset(start,4,0)\nrect frame(center,10,20)\narrow path(start,finish)\nlabel caption(path,\"next\") { near: middle, side: above }\nrel contain(frame,path,caption)\n",
+        "locus 0 beta 6\npoint start() { mark: none }\npoint finish = on_circle(circle(start, 8), 0deg)\npoint center = on_circle(circle(start, 4), 0deg)\nrect frame(center,10,20)\narrow path(start,finish)\nlabel caption(path,\"next\") { near: middle, side: above }\nrel contain(frame,path,caption)\n",
     );
     assert!(parsed.diagnostics.is_empty(), "{:?}", parsed.diagnostics);
     for candidate in 0..3 {
@@ -486,7 +486,7 @@ fn contained_path_labels_preserve_the_solved_candidate_inside_clear_outlines() {
 #[test]
 fn visual_outline_scoring_preserves_explicit_solid_avoidance_failures() {
     let parsed = locus_syntax::parse(
-        "locus 0 beta 6\npoint start()\npoint finish = offset(start,8,0)\npoint center = offset(start,4,0)\nrect frame(center,10,20)\narrow path(start,finish)\nlabel caption(path,\"next\") { side: above }\nrel contain(frame,caption)\nrel avoid(caption,frame)\n",
+        "locus 0 beta 6\npoint start()\npoint finish = on_circle(circle(start, 8), 0deg)\npoint center = on_circle(circle(start, 4), 0deg)\nrect frame(center,10,20)\narrow path(start,finish)\nlabel caption(path,\"next\") { side: above }\nrel contain(frame,caption)\nrel avoid(caption,frame)\n",
     );
     assert!(parsed.diagnostics.is_empty(), "{:?}", parsed.diagnostics);
     let (inputs, measured) = measured_label();

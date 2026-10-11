@@ -5,7 +5,6 @@ meta note = "Each filter reads a different, overlapping region of the same rende
 
 style textbook
 
-// exact color families and stroke treatments from the source image
 class filterbox { accent: #2563EB, fill: #DBEAFE, weight: 1.25, join: round }
 class overlap   { accent: #0F766E, fill: #CCFBF1, weight: 0.75, opacity: 0.88 }
 class coeff     { accent: #2563EB, weight: 1 }
@@ -13,210 +12,207 @@ class offsetln  { stroke: dash(6, 3), accent: #2563EB, weight: 1, cap: round }
 class peak      { accent: #EA580C, weight: 2, cap: round }
 class peakln    { stroke: dash(6, 3), accent: #EA580C, weight: 1.25, cap: round }
 
-// ---- scale constants ----------------------------------------
-num fw    = 4          // filter span: 128 ms
-num ov    = 1          // overlap: 32 ms
-num bh    = 1.2        // filter box height
-num pitch = 1.8        // row pitch (center to center)
+// Filter widths and overlap are time measurements; layout chooses vertical spacing.
+num fw = 4
+num ov = 1
+num bh = 1.2
+num history_span = fw + 4 * (fw - ov)
 
-// ---- render history axis: x[t] ------------------------------
-point A0()                                                        { mark: cross }
-point A512() where { align_center_y(A0, A512), hdist(A0, A512) == 16 } { mark: cross }
+rect f0(fw, bh) [filterbox]
+rect f1(fw, bh) [filterbox]
+rect f2(fw, bh) [filterbox]
+rect f3(fw, bh) [filterbox]
+rect f4(fw, bh) [filterbox]
+rel gap_y(f0, f1, f2, f3, f4)
+rel hdist(f1.w, f0.e) == ov
+rel hdist(f2.w, f1.e) == ov
+rel hdist(f3.w, f2.e) == ov
+rel hdist(f4.w, f3.e) == ov
 
-arrow axis(A0, offset(A512, 0.6, 0))  { head: -> }
-label lax(A0, "render history x[t]")  { dir: W, gap: 0.4 }
+fn filter_caption(box, name, span) {
+    label heading(box.n, name) [coeff] { dir: N }
+    label range(box.n, span) { dir: S }
+}
+filter_caption cpt0(f0, "Filter 0", "0–128 ms")
+filter_caption cpt1(f1, "Filter 1", "96–224 ms")
+filter_caption cpt2(f2, "Filter 2", "192–320 ms")
+filter_caption cpt3(f3, "Filter 3", "288–416 ms")
+filter_caption cpt4(f4, "Filter 4", "384–512 ms")
 
-// interior tick points — exact positions along the axis
-point t96  = lerp(A0, A512,  96/512)  { mark: cross }
-point t128 = lerp(A0, A512, 128/512)  { mark: cross }
-point t192 = lerp(A0, A512, 192/512)  { mark: cross }
-point t224 = lerp(A0, A512, 224/512)  { mark: cross }
-point t288 = lerp(A0, A512, 288/512)  { mark: cross }
-point t320 = lerp(A0, A512, 320/512)  { mark: cross }
-point t384 = lerp(A0, A512, 384/512)  { mark: cross }
-point t416 = lerp(A0, A512, 416/512)  { mark: cross }
+// Overlap strips are boundary fractions of the actual filter width.
+rect s0e(lerp(f0.e, f0.w, ov / (2 * fw)), ov, bh) [overlap]
+rect s1w(lerp(f1.w, f1.e, ov / (2 * fw)), ov, bh) [overlap]
+rect s1e(lerp(f1.e, f1.w, ov / (2 * fw)), ov, bh) [overlap]
+rect s2w(lerp(f2.w, f2.e, ov / (2 * fw)), ov, bh) [overlap]
+rect s2e(lerp(f2.e, f2.w, ov / (2 * fw)), ov, bh) [overlap]
+rect s3w(lerp(f3.w, f3.e, ov / (2 * fw)), ov, bh) [overlap]
+rect s3e(lerp(f3.e, f3.w, ov / (2 * fw)), ov, bh) [overlap]
+rect s4w(lerp(f4.w, f4.e, ov / (2 * fw)), ov, bh) [overlap]
 
-label lt0(A0,   "0 ms")    { dir: S, gap: 0.3 }
-label lt96(t96,  "96")      { dir: S, gap: 0.3 }
-label lt128(t128, "128")     { dir: S, gap: 0.3 }
-label lt192(t192, "192")     { dir: S, gap: 0.3 }
-label lt224(t224, "224")     { dir: S, gap: 0.3 }
-label lt288(t288, "288")     { dir: S, gap: 0.3 }
-label lt320(t320, "320")     { dir: S, gap: 0.3 }
-label lt384(t384, "384")     { dir: S, gap: 0.3 }
-label lt416(t416, "416")     { dir: S, gap: 0.3 }
-label lt512(A512, "512 ms")  { dir: S, gap: 0.3 }
+point A0() { mark: cross }
+point A512 = on_circle(circle(A0, history_span), 0deg) { mark: cross }
+rel align_center_x(A0, f0.w)
+arrow axis(A0, A512) { head: -> }
+rel gap_y(f4, axis)
+label lax(A0, "render history x[t]") { dir: W }
 
-// ---- five staggered filters ----------------------------------
-// Each west edge sits exactly above its start tick; rows step down evenly.
-rect f0(fw, bh) where { hdist(A0,   f0.center) == fw/2, vdist(A0, f0.center) == 8.8  }   [filterbox]
-point F0c = f0.center { mark: none }
-label n0(offset(f0.n, 0, -0.28), "Filter 0")  { dir: center }
-label r0(offset(f0.w, 0.9, -0.25), "0–128 ms")  { dir: center }
+fn time_tick(boundary, text) {
+    point position = lerp(A0, A512, hdist(f0.w, boundary) / history_span) { mark: cross }
+    label caption(position, text) { dir: S }
+}
+time_tick t96(f1.w, "96")
+time_tick t128(f0.e, "128")
+time_tick t192(f2.w, "192")
+time_tick t224(f1.e, "224")
+time_tick t288(f3.w, "288")
+time_tick t320(f2.e, "320")
+time_tick t384(f4.w, "384")
+time_tick t416(f3.e, "416")
+label lt0(A0, "0 ms") { dir: S }
+label lt512(A512, "512 ms") { dir: S }
 
-rect f1(fw, bh) where { hdist(t96,  f1.center) == fw/2, vdist(f1.center, F0c) == pitch }   [filterbox]
-point F1c = f1.center { mark: none }
-label n1(offset(f1.n, 0, -0.28), "Filter 1")  { dir: center }
-label r1(offset(f1.w, 0.9, -0.25), "96–224 ms")  { dir: center }
-
-rect f2(fw, bh) where { hdist(t192, f2.center) == fw/2, vdist(f2.center, F1c) == pitch }   [filterbox]
-point F2c = f2.center { mark: none }
-label n2(offset(f2.n, 0, -0.28), "Filter 2")  { dir: center }
-label r2(offset(f2.w, 0.9, -0.25), "192–320 ms")  { dir: center }
-
-rect f3(fw, bh) where { hdist(t288, f3.center) == fw/2, vdist(f3.center, F2c) == pitch }   [filterbox]
-point F3c = f3.center { mark: none }
-label n3(offset(f3.n, 0, -0.28), "Filter 3")  { dir: center }
-label r3(offset(f3.w, 0.9, -0.25), "288–416 ms")  { dir: center }
-
-rect f4(fw, bh) where { hdist(t384, f4.center) == fw/2, vdist(f4.center, F3c) == pitch }   [filterbox]
-point F4c = f4.center { mark: none }
-label n4(offset(f4.n, 0, -0.28), "Filter 4")  { dir: center }
-label r4(offset(f4.w, 0.9, -0.25), "384–512 ms")  { dir: center }
-
-// ---- 32 ms overlap strips (shared regions with the neighbours)
-rect s0e(offset(f0.e, -ov/2, 0), ov, bh)   [overlap]
-rect s1w(offset(f1.w,  ov/2, 0), ov, bh)   [overlap]
-rect s1e(offset(f1.e, -ov/2, 0), ov, bh)   [overlap]
-rect s2w(offset(f2.w,  ov/2, 0), ov, bh)   [overlap]
-rect s2e(offset(f2.e, -ov/2, 0), ov, bh)   [overlap]
-rect s3w(offset(f3.w,  ov/2, 0), ov, bh)   [overlap]
-rect s3e(offset(f3.e, -ov/2, 0), ov, bh)   [overlap]
-rect s4w(offset(f4.w,  ov/2, 0), ov, bh)   [overlap]
-
-// ---- capture y[t] feed ---------------------------------------
-point cap_top = offset(f0.w, -1.2, 0.6)  { mark: none }
-point cap_bot() where { align_center_x(cap_top, cap_bot), align_center_y(cap_bot, F4c) }  { mark: none }
+// The capture bus shares the filter rows; projected taps introduce no placement.
+point cap_top() { mark: none }
+rel align_center_y(cap_top, f0.center)
+rel gap_x(cap_top, f0)
+point cap_bot = foot(f4.center, perpendicular(cap_top, line(f0.w, f0.e))) { mark: none }
 segment cap(cap_top, cap_bot)
-label lcap(cap_top, "capture y[t]")  { dir: NW, gap: 0.2 }
+label lcap(cap_top, "capture y[t]") { dir: NW }
+fn capture_tap(box) {
+    point tail = foot(box.center, cap) { mark: none }
+    arrow path(tail, box.w) { head: -> }
+}
+capture_tap c0(f0)
+capture_tap c1(f1)
+capture_tap c2(f2)
+capture_tap c3(f3)
+capture_tap c4(f4)
 
-arrow c0(foot(F0c, cap), f0.w)  { head: -> }
-arrow c1(foot(F1c, cap), f1.w)  { head: -> }
-arrow c2(foot(F2c, cap), f2.w)  { head: -> }
-arrow c3(foot(F3c, cap), f3.w)  { head: -> }
-arrow c4(foot(F4c, cap), f4.w)  { head: -> }
+// Sample position is a boundary fraction; its height is the measured echo gain.
+fn coefficient(position, height) {
+    point base = lerp(f2.sw, f2.se, position) { mark: none }
+    point tip = on_circle(circle(base, height), 90deg) [coeff] { mark: dot }
+    segment stem(base, tip) [coeff]
+}
+coefficient st1(0.05, 0.22)
+coefficient st2(0.18, 0.3)
+coefficient st3(0.32, 0.24)
+coefficient st4(0.66, 0.28)
+coefficient st5(0.8, 0.2)
+coefficient st6(0.93, 0.26)
+point kb = midpoint(f2.sw, f2.se) { mark: none }
+point kstar = on_circle(circle(kb, 0.45), 90deg) [peak] { mark: dot }
+segment stk(kb, kstar) [peak]
+label lk(kstar, "local peak k*") [peak] { dir: E }
+segment o2drop(f2.sw, t192.position) [offsetln]
+label lo2(o2drop.midpoint, "filter offset $O_2$") [offsetln] { dir: W }
+point kdrop = foot(kb, seg(A0, A512)) { mark: none }
+segment kline(kb, kdrop) [peakln]
 
-// ---- filter 2 coefficient stems ------------------------------
-point sb0 = offset(f2.sw, 0.35, 0.25)   { mark: none }
-point sb1 = offset(f2.se, -0.35, 0.25)  { mark: none }
-segment coef_base(sb0, sb1)   [auxiliary]
+rect td()
+label ltd("total delay = filter offset $O_2$ + local peak $k^*$")
+rel center(ltd, td)
+rel contain(td, ltd)
+rel align_center_x(td, kdrop)
+rel gap_y(axis, td)
+rect lg(0.6, 0.45) [overlap]
+label llg("32 ms overlap")
+rel row(lg, llg)
+group legend(lg, llg)
+rel gap_x(f0, legend)
+rel align_center_y(legend, f0)
+label lg1("coefficient position → delay") [coeff]
+label lg2("coefficient height → echo gain") [coeff]
+rel row(lg1, lg2)
+group coefficient_legend(lg1, lg2)
+rel gap_y(td, coefficient_legend)
+rel align_center_x(td, coefficient_legend)
+text_block sub("Each filter reads a different, overlapping region of the same render history") { place: above }
+text_block eq($\hat{y}[t] = \textstyle\sum_n h_n[k]\, x[t - (O_n + k)]$) { place: below }
 
-point q1 = offset(lerp(sb0, sb1, 0.05), 0, 0.22)  [coeff]  { mark: dot }
-segment st1(lerp(sb0, sb1, 0.05), q1)  [coeff]
-point q2 = offset(lerp(sb0, sb1, 0.18), 0, 0.30)  [coeff]  { mark: dot }
-segment st2(lerp(sb0, sb1, 0.18), q2)  [coeff]
-point q3 = offset(lerp(sb0, sb1, 0.32), 0, 0.24)  [coeff]  { mark: dot }
-segment st3(lerp(sb0, sb1, 0.32), q3)  [coeff]
-point q4 = offset(lerp(sb0, sb1, 0.66), 0, 0.28)  [coeff]  { mark: dot }
-segment st4(lerp(sb0, sb1, 0.66), q4)  [coeff]
-point q5 = offset(lerp(sb0, sb1, 0.80), 0, 0.20)  [coeff]  { mark: dot }
-segment st5(lerp(sb0, sb1, 0.80), q5)  [coeff]
-point q6 = offset(lerp(sb0, sb1, 0.93), 0, 0.26)  [coeff]  { mark: dot }
-segment st6(lerp(sb0, sb1, 0.93), q6)  [coeff]
-
-// the winning coefficient: local peak k*
-point kb    = lerp(sb0, sb1, 0.5)   { mark: none }
-point kstar = offset(kb, 0, 0.45)   [peak]  { mark: dot }
-segment stk(kb, kstar)        [peak]
-label lk(kstar, "local peak k*")  [peak]  { dir: E, gap: 2.2 }
-arrow ak(lk.center, kstar)  [peak]  { head: -> }
-
-// ---- delay decomposition (color-coded drop lines via classes) --
-segment o2drop(f2.sw, t192)   [offsetln]
-label lo2(o2drop.midpoint, "filter offset $O_2$")  [offsetln]  { dir: W, gap: 0.25 }
-
-point kdrop = foot(kb, seg(A0, A512))  { mark: none }
-segment kline(kb, kdrop)      [peakln]
-
-// ---- total delay box below the axis --------------------------
-rect td(9.5, 1) where { align_center_x(td.center, kdrop), vdist(td.center, A0) == 1.9 }
-point TDc = td.center { mark: none }
-label ltd(td.center, "total delay = filter offset $O_2$ + local peak $k^*$")  { dir: center }
-
-// ---- legends ---------------------------------------------------
-rect lg(0.6, 0.45) where { align_center_y(lg.center, F0c), align_center_x(lg.center, A512) }   [overlap]
-point LGc = lg.center { mark: none }
-label llg(lg.e, "32 ms overlap")  { dir: E, gap: 0.2 }
-
-label lg1(offset(TDc, -3, -1.3), "coefficient position → delay")   [coeff]  { dir: center }
-label lg2(offset(TDc,  4, -1.3), "coefficient height → echo gain") [coeff]  { dir: center }
-
-text_block sub("Each filter reads a different, overlapping region of the same render history")  { place: above }
-text_block eq($\hat{y}[t] = \textstyle\sum_n h_n[k]\, x[t - (O_n + k)]$)  { place: below }
-
-// ---- alignment invariants — the Locus payoff -------------------
-assert align_center_x(f0.w, A0) and align_center_x(f2.w, t192)        // boxes sit exactly on their time positions
-assert hdist(f2.w, f2.e) == fw                            // every filter spans 128 ms
-assert hdist(f1.w, f0.e) == ov and hdist(f2.w, f1.e) == ov  // neighbours overlap by exactly 32 ms
-assert collinear(F0c, F1c, F2c, F3c, F4c)                 // even diagonal stagger
-assert vdist(F1c, F0c) == vdist(F2c, F1c)                 // equal row pitch
+// Physical invariants remain independent of automatic layout spacing.
+assert f0.width == fw and f0.height == bh
+assert f1.width == fw and f1.height == bh
+assert f2.width == fw and f2.height == bh
+assert f3.width == fw and f3.height == bh
+assert f4.width == fw and f4.height == bh
+assert hdist(f1.w, f0.e) == ov and hdist(f2.w, f1.e) == ov
+assert hdist(f3.w, f2.e) == ov and hdist(f4.w, f3.e) == ov
+assert align_center_x(f0.w, A0) and align_center_x(f2.w, t192.position)
+assert hdist(A0, A512) == 16
 assert on(kdrop, seg(A0, A512))
-assert between(t224, kdrop, t288)                         // the peak lands between 224 and 288 ms
-assert hdist(A0, kdrop) == hdist(A0, t192) + hdist(t192, kdrop)   // total delay = O2 + k*
+assert between(t224.position, kdrop, t288.position)
+assert hdist(A0, kdrop) == hdist(A0, t192.position) + hdist(t192.position, kdrop)
+
+// Uniform filter row rhythm is a relationship, rather than a numeric pitch.
+rel vdist(f2.center, f1.center) == vdist(f1.center, f0.center)
+rel vdist(f3.center, f2.center) == vdist(f1.center, f0.center)
+rel vdist(f4.center, f3.center) == vdist(f1.center, f0.center)
+assert collinear(f0.center, f1.center, f2.center, f3.center, f4.center)
 
 // ---- stress construction network ----
 // Four additional coefficient banks feed per-filter delay estimates and a comparison strip.
-point coeff0_0 = offset(lerp(f0.sw, f0.se, 0.03125), 0, 0.120) { mark: none }
+point coeff0_0 = on_circle(circle(lerp(f0.sw, f0.se, 0.03125), 0.120), 90deg) { mark: none }
 segment stem0_0(foot(coeff0_0, seg(f0.sw, f0.se)), coeff0_0) [coeff]
 assert inside(coeff0_0, f0)
 assert length(stem0_0) == 0.120
-point coeff0_1 = offset(lerp(f0.sw, f0.se, 0.09375), 0, 0.295) { mark: none }
+point coeff0_1 = on_circle(circle(lerp(f0.sw, f0.se, 0.09375), 0.295), 90deg) { mark: none }
 segment stem0_1(foot(coeff0_1, seg(f0.sw, f0.se)), coeff0_1) [coeff]
 assert inside(coeff0_1, f0)
 assert length(stem0_1) == 0.295
-point coeff0_2 = offset(lerp(f0.sw, f0.se, 0.15625), 0, 0.195) { mark: none }
+point coeff0_2 = on_circle(circle(lerp(f0.sw, f0.se, 0.15625), 0.195), 90deg) { mark: none }
 segment stem0_2(foot(coeff0_2, seg(f0.sw, f0.se)), coeff0_2) [coeff]
 assert inside(coeff0_2, f0)
 assert length(stem0_2) == 0.195
-point coeff0_3 = offset(lerp(f0.sw, f0.se, 0.21875), 0, 0.370) { mark: none }
+point coeff0_3 = on_circle(circle(lerp(f0.sw, f0.se, 0.21875), 0.370), 90deg) { mark: none }
 segment stem0_3(foot(coeff0_3, seg(f0.sw, f0.se)), coeff0_3) [coeff]
 assert inside(coeff0_3, f0)
 assert length(stem0_3) == 0.370
-point coeff0_4 = offset(lerp(f0.sw, f0.se, 0.28125), 0, 0.270) { mark: none }
+point coeff0_4 = on_circle(circle(lerp(f0.sw, f0.se, 0.28125), 0.270), 90deg) { mark: none }
 segment stem0_4(foot(coeff0_4, seg(f0.sw, f0.se)), coeff0_4) [coeff]
 assert inside(coeff0_4, f0)
 assert length(stem0_4) == 0.270
-point coeff0_5 = offset(lerp(f0.sw, f0.se, 0.34375), 0, 0.170) { mark: none }
+point coeff0_5 = on_circle(circle(lerp(f0.sw, f0.se, 0.34375), 0.170), 90deg) { mark: none }
 segment stem0_5(foot(coeff0_5, seg(f0.sw, f0.se)), coeff0_5) [coeff]
 assert inside(coeff0_5, f0)
 assert length(stem0_5) == 0.170
-point coeff0_6 = offset(lerp(f0.sw, f0.se, 0.40625), 0, 0.345) { mark: none }
+point coeff0_6 = on_circle(circle(lerp(f0.sw, f0.se, 0.40625), 0.345), 90deg) { mark: none }
 segment stem0_6(foot(coeff0_6, seg(f0.sw, f0.se)), coeff0_6) [coeff]
 assert inside(coeff0_6, f0)
 assert length(stem0_6) == 0.345
-point coeff0_7 = offset(lerp(f0.sw, f0.se, 0.46875), 0, 0.245) { mark: none }
+point coeff0_7 = on_circle(circle(lerp(f0.sw, f0.se, 0.46875), 0.245), 90deg) { mark: none }
 segment stem0_7(foot(coeff0_7, seg(f0.sw, f0.se)), coeff0_7) [coeff]
 assert inside(coeff0_7, f0)
 assert length(stem0_7) == 0.245
-point coeff0_8 = offset(lerp(f0.sw, f0.se, 0.53125), 0, 0.145) { mark: none }
+point coeff0_8 = on_circle(circle(lerp(f0.sw, f0.se, 0.53125), 0.145), 90deg) { mark: none }
 segment stem0_8(foot(coeff0_8, seg(f0.sw, f0.se)), coeff0_8) [coeff]
 assert inside(coeff0_8, f0)
 assert length(stem0_8) == 0.145
-point coeff0_9 = offset(lerp(f0.sw, f0.se, 0.59375), 0, 0.320) { mark: none }
+point coeff0_9 = on_circle(circle(lerp(f0.sw, f0.se, 0.59375), 0.320), 90deg) { mark: none }
 segment stem0_9(foot(coeff0_9, seg(f0.sw, f0.se)), coeff0_9) [coeff]
 assert inside(coeff0_9, f0)
 assert length(stem0_9) == 0.320
-point coeff0_10 = offset(lerp(f0.sw, f0.se, 0.65625), 0, 0.220) { mark: none }
+point coeff0_10 = on_circle(circle(lerp(f0.sw, f0.se, 0.65625), 0.220), 90deg) { mark: none }
 segment stem0_10(foot(coeff0_10, seg(f0.sw, f0.se)), coeff0_10) [coeff]
 assert inside(coeff0_10, f0)
 assert length(stem0_10) == 0.220
-point coeff0_11 = offset(lerp(f0.sw, f0.se, 0.71875), 0, 0.120) { mark: none }
+point coeff0_11 = on_circle(circle(lerp(f0.sw, f0.se, 0.71875), 0.120), 90deg) { mark: none }
 segment stem0_11(foot(coeff0_11, seg(f0.sw, f0.se)), coeff0_11) [coeff]
 assert inside(coeff0_11, f0)
 assert length(stem0_11) == 0.120
-point coeff0_12 = offset(lerp(f0.sw, f0.se, 0.78125), 0, 0.295) { mark: none }
+point coeff0_12 = on_circle(circle(lerp(f0.sw, f0.se, 0.78125), 0.295), 90deg) { mark: none }
 segment stem0_12(foot(coeff0_12, seg(f0.sw, f0.se)), coeff0_12) [coeff]
 assert inside(coeff0_12, f0)
 assert length(stem0_12) == 0.295
-point coeff0_13 = offset(lerp(f0.sw, f0.se, 0.84375), 0, 0.195) { mark: none }
+point coeff0_13 = on_circle(circle(lerp(f0.sw, f0.se, 0.84375), 0.195), 90deg) { mark: none }
 segment stem0_13(foot(coeff0_13, seg(f0.sw, f0.se)), coeff0_13) [coeff]
 assert inside(coeff0_13, f0)
 assert length(stem0_13) == 0.195
-point coeff0_14 = offset(lerp(f0.sw, f0.se, 0.90625), 0, 0.370) { mark: none }
+point coeff0_14 = on_circle(circle(lerp(f0.sw, f0.se, 0.90625), 0.370), 90deg) { mark: none }
 segment stem0_14(foot(coeff0_14, seg(f0.sw, f0.se)), coeff0_14) [coeff]
 assert inside(coeff0_14, f0)
 assert length(stem0_14) == 0.370
-point coeff0_15 = offset(lerp(f0.sw, f0.se, 0.96875), 0, 0.270) { mark: none }
+point coeff0_15 = on_circle(circle(lerp(f0.sw, f0.se, 0.96875), 0.270), 90deg) { mark: none }
 segment stem0_15(foot(coeff0_15, seg(f0.sw, f0.se)), coeff0_15) [coeff]
 assert inside(coeff0_15, f0)
 assert length(stem0_15) == 0.270
@@ -224,67 +220,67 @@ point delay0 = foot(coeff0_5, seg(A0, A512)) { mark: none }
 segment delayline0(coeff0_5, delay0) [peakln]
 num delay_value0 = hdist(A0, delay0)
 assert delay_value0 == hdist(A0, f0.w) + hdist(f0.w, coeff0_5)
-point coeff1_0 = offset(lerp(f1.sw, f1.se, 0.03125), 0, 0.195) { mark: none }
+point coeff1_0 = on_circle(circle(lerp(f1.sw, f1.se, 0.03125), 0.195), 90deg) { mark: none }
 segment stem1_0(foot(coeff1_0, seg(f1.sw, f1.se)), coeff1_0) [coeff]
 assert inside(coeff1_0, f1)
 assert length(stem1_0) == 0.195
-point coeff1_1 = offset(lerp(f1.sw, f1.se, 0.09375), 0, 0.370) { mark: none }
+point coeff1_1 = on_circle(circle(lerp(f1.sw, f1.se, 0.09375), 0.370), 90deg) { mark: none }
 segment stem1_1(foot(coeff1_1, seg(f1.sw, f1.se)), coeff1_1) [coeff]
 assert inside(coeff1_1, f1)
 assert length(stem1_1) == 0.370
-point coeff1_2 = offset(lerp(f1.sw, f1.se, 0.15625), 0, 0.270) { mark: none }
+point coeff1_2 = on_circle(circle(lerp(f1.sw, f1.se, 0.15625), 0.270), 90deg) { mark: none }
 segment stem1_2(foot(coeff1_2, seg(f1.sw, f1.se)), coeff1_2) [coeff]
 assert inside(coeff1_2, f1)
 assert length(stem1_2) == 0.270
-point coeff1_3 = offset(lerp(f1.sw, f1.se, 0.21875), 0, 0.170) { mark: none }
+point coeff1_3 = on_circle(circle(lerp(f1.sw, f1.se, 0.21875), 0.170), 90deg) { mark: none }
 segment stem1_3(foot(coeff1_3, seg(f1.sw, f1.se)), coeff1_3) [coeff]
 assert inside(coeff1_3, f1)
 assert length(stem1_3) == 0.170
-point coeff1_4 = offset(lerp(f1.sw, f1.se, 0.28125), 0, 0.345) { mark: none }
+point coeff1_4 = on_circle(circle(lerp(f1.sw, f1.se, 0.28125), 0.345), 90deg) { mark: none }
 segment stem1_4(foot(coeff1_4, seg(f1.sw, f1.se)), coeff1_4) [coeff]
 assert inside(coeff1_4, f1)
 assert length(stem1_4) == 0.345
-point coeff1_5 = offset(lerp(f1.sw, f1.se, 0.34375), 0, 0.245) { mark: none }
+point coeff1_5 = on_circle(circle(lerp(f1.sw, f1.se, 0.34375), 0.245), 90deg) { mark: none }
 segment stem1_5(foot(coeff1_5, seg(f1.sw, f1.se)), coeff1_5) [coeff]
 assert inside(coeff1_5, f1)
 assert length(stem1_5) == 0.245
-point coeff1_6 = offset(lerp(f1.sw, f1.se, 0.40625), 0, 0.145) { mark: none }
+point coeff1_6 = on_circle(circle(lerp(f1.sw, f1.se, 0.40625), 0.145), 90deg) { mark: none }
 segment stem1_6(foot(coeff1_6, seg(f1.sw, f1.se)), coeff1_6) [coeff]
 assert inside(coeff1_6, f1)
 assert length(stem1_6) == 0.145
-point coeff1_7 = offset(lerp(f1.sw, f1.se, 0.46875), 0, 0.320) { mark: none }
+point coeff1_7 = on_circle(circle(lerp(f1.sw, f1.se, 0.46875), 0.320), 90deg) { mark: none }
 segment stem1_7(foot(coeff1_7, seg(f1.sw, f1.se)), coeff1_7) [coeff]
 assert inside(coeff1_7, f1)
 assert length(stem1_7) == 0.320
-point coeff1_8 = offset(lerp(f1.sw, f1.se, 0.53125), 0, 0.220) { mark: none }
+point coeff1_8 = on_circle(circle(lerp(f1.sw, f1.se, 0.53125), 0.220), 90deg) { mark: none }
 segment stem1_8(foot(coeff1_8, seg(f1.sw, f1.se)), coeff1_8) [coeff]
 assert inside(coeff1_8, f1)
 assert length(stem1_8) == 0.220
-point coeff1_9 = offset(lerp(f1.sw, f1.se, 0.59375), 0, 0.120) { mark: none }
+point coeff1_9 = on_circle(circle(lerp(f1.sw, f1.se, 0.59375), 0.120), 90deg) { mark: none }
 segment stem1_9(foot(coeff1_9, seg(f1.sw, f1.se)), coeff1_9) [coeff]
 assert inside(coeff1_9, f1)
 assert length(stem1_9) == 0.120
-point coeff1_10 = offset(lerp(f1.sw, f1.se, 0.65625), 0, 0.295) { mark: none }
+point coeff1_10 = on_circle(circle(lerp(f1.sw, f1.se, 0.65625), 0.295), 90deg) { mark: none }
 segment stem1_10(foot(coeff1_10, seg(f1.sw, f1.se)), coeff1_10) [coeff]
 assert inside(coeff1_10, f1)
 assert length(stem1_10) == 0.295
-point coeff1_11 = offset(lerp(f1.sw, f1.se, 0.71875), 0, 0.195) { mark: none }
+point coeff1_11 = on_circle(circle(lerp(f1.sw, f1.se, 0.71875), 0.195), 90deg) { mark: none }
 segment stem1_11(foot(coeff1_11, seg(f1.sw, f1.se)), coeff1_11) [coeff]
 assert inside(coeff1_11, f1)
 assert length(stem1_11) == 0.195
-point coeff1_12 = offset(lerp(f1.sw, f1.se, 0.78125), 0, 0.370) { mark: none }
+point coeff1_12 = on_circle(circle(lerp(f1.sw, f1.se, 0.78125), 0.370), 90deg) { mark: none }
 segment stem1_12(foot(coeff1_12, seg(f1.sw, f1.se)), coeff1_12) [coeff]
 assert inside(coeff1_12, f1)
 assert length(stem1_12) == 0.370
-point coeff1_13 = offset(lerp(f1.sw, f1.se, 0.84375), 0, 0.270) { mark: none }
+point coeff1_13 = on_circle(circle(lerp(f1.sw, f1.se, 0.84375), 0.270), 90deg) { mark: none }
 segment stem1_13(foot(coeff1_13, seg(f1.sw, f1.se)), coeff1_13) [coeff]
 assert inside(coeff1_13, f1)
 assert length(stem1_13) == 0.270
-point coeff1_14 = offset(lerp(f1.sw, f1.se, 0.90625), 0, 0.170) { mark: none }
+point coeff1_14 = on_circle(circle(lerp(f1.sw, f1.se, 0.90625), 0.170), 90deg) { mark: none }
 segment stem1_14(foot(coeff1_14, seg(f1.sw, f1.se)), coeff1_14) [coeff]
 assert inside(coeff1_14, f1)
 assert length(stem1_14) == 0.170
-point coeff1_15 = offset(lerp(f1.sw, f1.se, 0.96875), 0, 0.345) { mark: none }
+point coeff1_15 = on_circle(circle(lerp(f1.sw, f1.se, 0.96875), 0.345), 90deg) { mark: none }
 segment stem1_15(foot(coeff1_15, seg(f1.sw, f1.se)), coeff1_15) [coeff]
 assert inside(coeff1_15, f1)
 assert length(stem1_15) == 0.345
@@ -292,67 +288,67 @@ point delay1 = foot(coeff1_8, seg(A0, A512)) { mark: none }
 segment delayline1(coeff1_8, delay1) [peakln]
 num delay_value1 = hdist(A0, delay1)
 assert delay_value1 == hdist(A0, f1.w) + hdist(f1.w, coeff1_8)
-point coeff3_0 = offset(lerp(f3.sw, f3.se, 0.03125), 0, 0.345) { mark: none }
+point coeff3_0 = on_circle(circle(lerp(f3.sw, f3.se, 0.03125), 0.345), 90deg) { mark: none }
 segment stem3_0(foot(coeff3_0, seg(f3.sw, f3.se)), coeff3_0) [coeff]
 assert inside(coeff3_0, f3)
 assert length(stem3_0) == 0.345
-point coeff3_1 = offset(lerp(f3.sw, f3.se, 0.09375), 0, 0.245) { mark: none }
+point coeff3_1 = on_circle(circle(lerp(f3.sw, f3.se, 0.09375), 0.245), 90deg) { mark: none }
 segment stem3_1(foot(coeff3_1, seg(f3.sw, f3.se)), coeff3_1) [coeff]
 assert inside(coeff3_1, f3)
 assert length(stem3_1) == 0.245
-point coeff3_2 = offset(lerp(f3.sw, f3.se, 0.15625), 0, 0.145) { mark: none }
+point coeff3_2 = on_circle(circle(lerp(f3.sw, f3.se, 0.15625), 0.145), 90deg) { mark: none }
 segment stem3_2(foot(coeff3_2, seg(f3.sw, f3.se)), coeff3_2) [coeff]
 assert inside(coeff3_2, f3)
 assert length(stem3_2) == 0.145
-point coeff3_3 = offset(lerp(f3.sw, f3.se, 0.21875), 0, 0.320) { mark: none }
+point coeff3_3 = on_circle(circle(lerp(f3.sw, f3.se, 0.21875), 0.320), 90deg) { mark: none }
 segment stem3_3(foot(coeff3_3, seg(f3.sw, f3.se)), coeff3_3) [coeff]
 assert inside(coeff3_3, f3)
 assert length(stem3_3) == 0.320
-point coeff3_4 = offset(lerp(f3.sw, f3.se, 0.28125), 0, 0.220) { mark: none }
+point coeff3_4 = on_circle(circle(lerp(f3.sw, f3.se, 0.28125), 0.220), 90deg) { mark: none }
 segment stem3_4(foot(coeff3_4, seg(f3.sw, f3.se)), coeff3_4) [coeff]
 assert inside(coeff3_4, f3)
 assert length(stem3_4) == 0.220
-point coeff3_5 = offset(lerp(f3.sw, f3.se, 0.34375), 0, 0.120) { mark: none }
+point coeff3_5 = on_circle(circle(lerp(f3.sw, f3.se, 0.34375), 0.120), 90deg) { mark: none }
 segment stem3_5(foot(coeff3_5, seg(f3.sw, f3.se)), coeff3_5) [coeff]
 assert inside(coeff3_5, f3)
 assert length(stem3_5) == 0.120
-point coeff3_6 = offset(lerp(f3.sw, f3.se, 0.40625), 0, 0.295) { mark: none }
+point coeff3_6 = on_circle(circle(lerp(f3.sw, f3.se, 0.40625), 0.295), 90deg) { mark: none }
 segment stem3_6(foot(coeff3_6, seg(f3.sw, f3.se)), coeff3_6) [coeff]
 assert inside(coeff3_6, f3)
 assert length(stem3_6) == 0.295
-point coeff3_7 = offset(lerp(f3.sw, f3.se, 0.46875), 0, 0.195) { mark: none }
+point coeff3_7 = on_circle(circle(lerp(f3.sw, f3.se, 0.46875), 0.195), 90deg) { mark: none }
 segment stem3_7(foot(coeff3_7, seg(f3.sw, f3.se)), coeff3_7) [coeff]
 assert inside(coeff3_7, f3)
 assert length(stem3_7) == 0.195
-point coeff3_8 = offset(lerp(f3.sw, f3.se, 0.53125), 0, 0.370) { mark: none }
+point coeff3_8 = on_circle(circle(lerp(f3.sw, f3.se, 0.53125), 0.370), 90deg) { mark: none }
 segment stem3_8(foot(coeff3_8, seg(f3.sw, f3.se)), coeff3_8) [coeff]
 assert inside(coeff3_8, f3)
 assert length(stem3_8) == 0.370
-point coeff3_9 = offset(lerp(f3.sw, f3.se, 0.59375), 0, 0.270) { mark: none }
+point coeff3_9 = on_circle(circle(lerp(f3.sw, f3.se, 0.59375), 0.270), 90deg) { mark: none }
 segment stem3_9(foot(coeff3_9, seg(f3.sw, f3.se)), coeff3_9) [coeff]
 assert inside(coeff3_9, f3)
 assert length(stem3_9) == 0.270
-point coeff3_10 = offset(lerp(f3.sw, f3.se, 0.65625), 0, 0.170) { mark: none }
+point coeff3_10 = on_circle(circle(lerp(f3.sw, f3.se, 0.65625), 0.170), 90deg) { mark: none }
 segment stem3_10(foot(coeff3_10, seg(f3.sw, f3.se)), coeff3_10) [coeff]
 assert inside(coeff3_10, f3)
 assert length(stem3_10) == 0.170
-point coeff3_11 = offset(lerp(f3.sw, f3.se, 0.71875), 0, 0.345) { mark: none }
+point coeff3_11 = on_circle(circle(lerp(f3.sw, f3.se, 0.71875), 0.345), 90deg) { mark: none }
 segment stem3_11(foot(coeff3_11, seg(f3.sw, f3.se)), coeff3_11) [coeff]
 assert inside(coeff3_11, f3)
 assert length(stem3_11) == 0.345
-point coeff3_12 = offset(lerp(f3.sw, f3.se, 0.78125), 0, 0.245) { mark: none }
+point coeff3_12 = on_circle(circle(lerp(f3.sw, f3.se, 0.78125), 0.245), 90deg) { mark: none }
 segment stem3_12(foot(coeff3_12, seg(f3.sw, f3.se)), coeff3_12) [coeff]
 assert inside(coeff3_12, f3)
 assert length(stem3_12) == 0.245
-point coeff3_13 = offset(lerp(f3.sw, f3.se, 0.84375), 0, 0.145) { mark: none }
+point coeff3_13 = on_circle(circle(lerp(f3.sw, f3.se, 0.84375), 0.145), 90deg) { mark: none }
 segment stem3_13(foot(coeff3_13, seg(f3.sw, f3.se)), coeff3_13) [coeff]
 assert inside(coeff3_13, f3)
 assert length(stem3_13) == 0.145
-point coeff3_14 = offset(lerp(f3.sw, f3.se, 0.90625), 0, 0.320) { mark: none }
+point coeff3_14 = on_circle(circle(lerp(f3.sw, f3.se, 0.90625), 0.320), 90deg) { mark: none }
 segment stem3_14(foot(coeff3_14, seg(f3.sw, f3.se)), coeff3_14) [coeff]
 assert inside(coeff3_14, f3)
 assert length(stem3_14) == 0.320
-point coeff3_15 = offset(lerp(f3.sw, f3.se, 0.96875), 0, 0.220) { mark: none }
+point coeff3_15 = on_circle(circle(lerp(f3.sw, f3.se, 0.96875), 0.220), 90deg) { mark: none }
 segment stem3_15(foot(coeff3_15, seg(f3.sw, f3.se)), coeff3_15) [coeff]
 assert inside(coeff3_15, f3)
 assert length(stem3_15) == 0.220
@@ -360,67 +356,67 @@ point delay3 = foot(coeff3_14, seg(A0, A512)) { mark: none }
 segment delayline3(coeff3_14, delay3) [peakln]
 num delay_value3 = hdist(A0, delay3)
 assert delay_value3 == hdist(A0, f3.w) + hdist(f3.w, coeff3_14)
-point coeff4_0 = offset(lerp(f4.sw, f4.se, 0.03125), 0, 0.145) { mark: none }
+point coeff4_0 = on_circle(circle(lerp(f4.sw, f4.se, 0.03125), 0.145), 90deg) { mark: none }
 segment stem4_0(foot(coeff4_0, seg(f4.sw, f4.se)), coeff4_0) [coeff]
 assert inside(coeff4_0, f4)
 assert length(stem4_0) == 0.145
-point coeff4_1 = offset(lerp(f4.sw, f4.se, 0.09375), 0, 0.320) { mark: none }
+point coeff4_1 = on_circle(circle(lerp(f4.sw, f4.se, 0.09375), 0.320), 90deg) { mark: none }
 segment stem4_1(foot(coeff4_1, seg(f4.sw, f4.se)), coeff4_1) [coeff]
 assert inside(coeff4_1, f4)
 assert length(stem4_1) == 0.320
-point coeff4_2 = offset(lerp(f4.sw, f4.se, 0.15625), 0, 0.220) { mark: none }
+point coeff4_2 = on_circle(circle(lerp(f4.sw, f4.se, 0.15625), 0.220), 90deg) { mark: none }
 segment stem4_2(foot(coeff4_2, seg(f4.sw, f4.se)), coeff4_2) [coeff]
 assert inside(coeff4_2, f4)
 assert length(stem4_2) == 0.220
-point coeff4_3 = offset(lerp(f4.sw, f4.se, 0.21875), 0, 0.120) { mark: none }
+point coeff4_3 = on_circle(circle(lerp(f4.sw, f4.se, 0.21875), 0.120), 90deg) { mark: none }
 segment stem4_3(foot(coeff4_3, seg(f4.sw, f4.se)), coeff4_3) [coeff]
 assert inside(coeff4_3, f4)
 assert length(stem4_3) == 0.120
-point coeff4_4 = offset(lerp(f4.sw, f4.se, 0.28125), 0, 0.295) { mark: none }
+point coeff4_4 = on_circle(circle(lerp(f4.sw, f4.se, 0.28125), 0.295), 90deg) { mark: none }
 segment stem4_4(foot(coeff4_4, seg(f4.sw, f4.se)), coeff4_4) [coeff]
 assert inside(coeff4_4, f4)
 assert length(stem4_4) == 0.295
-point coeff4_5 = offset(lerp(f4.sw, f4.se, 0.34375), 0, 0.195) { mark: none }
+point coeff4_5 = on_circle(circle(lerp(f4.sw, f4.se, 0.34375), 0.195), 90deg) { mark: none }
 segment stem4_5(foot(coeff4_5, seg(f4.sw, f4.se)), coeff4_5) [coeff]
 assert inside(coeff4_5, f4)
 assert length(stem4_5) == 0.195
-point coeff4_6 = offset(lerp(f4.sw, f4.se, 0.40625), 0, 0.370) { mark: none }
+point coeff4_6 = on_circle(circle(lerp(f4.sw, f4.se, 0.40625), 0.370), 90deg) { mark: none }
 segment stem4_6(foot(coeff4_6, seg(f4.sw, f4.se)), coeff4_6) [coeff]
 assert inside(coeff4_6, f4)
 assert length(stem4_6) == 0.370
-point coeff4_7 = offset(lerp(f4.sw, f4.se, 0.46875), 0, 0.270) { mark: none }
+point coeff4_7 = on_circle(circle(lerp(f4.sw, f4.se, 0.46875), 0.270), 90deg) { mark: none }
 segment stem4_7(foot(coeff4_7, seg(f4.sw, f4.se)), coeff4_7) [coeff]
 assert inside(coeff4_7, f4)
 assert length(stem4_7) == 0.270
-point coeff4_8 = offset(lerp(f4.sw, f4.se, 0.53125), 0, 0.170) { mark: none }
+point coeff4_8 = on_circle(circle(lerp(f4.sw, f4.se, 0.53125), 0.170), 90deg) { mark: none }
 segment stem4_8(foot(coeff4_8, seg(f4.sw, f4.se)), coeff4_8) [coeff]
 assert inside(coeff4_8, f4)
 assert length(stem4_8) == 0.170
-point coeff4_9 = offset(lerp(f4.sw, f4.se, 0.59375), 0, 0.345) { mark: none }
+point coeff4_9 = on_circle(circle(lerp(f4.sw, f4.se, 0.59375), 0.345), 90deg) { mark: none }
 segment stem4_9(foot(coeff4_9, seg(f4.sw, f4.se)), coeff4_9) [coeff]
 assert inside(coeff4_9, f4)
 assert length(stem4_9) == 0.345
-point coeff4_10 = offset(lerp(f4.sw, f4.se, 0.65625), 0, 0.245) { mark: none }
+point coeff4_10 = on_circle(circle(lerp(f4.sw, f4.se, 0.65625), 0.245), 90deg) { mark: none }
 segment stem4_10(foot(coeff4_10, seg(f4.sw, f4.se)), coeff4_10) [coeff]
 assert inside(coeff4_10, f4)
 assert length(stem4_10) == 0.245
-point coeff4_11 = offset(lerp(f4.sw, f4.se, 0.71875), 0, 0.145) { mark: none }
+point coeff4_11 = on_circle(circle(lerp(f4.sw, f4.se, 0.71875), 0.145), 90deg) { mark: none }
 segment stem4_11(foot(coeff4_11, seg(f4.sw, f4.se)), coeff4_11) [coeff]
 assert inside(coeff4_11, f4)
 assert length(stem4_11) == 0.145
-point coeff4_12 = offset(lerp(f4.sw, f4.se, 0.78125), 0, 0.320) { mark: none }
+point coeff4_12 = on_circle(circle(lerp(f4.sw, f4.se, 0.78125), 0.320), 90deg) { mark: none }
 segment stem4_12(foot(coeff4_12, seg(f4.sw, f4.se)), coeff4_12) [coeff]
 assert inside(coeff4_12, f4)
 assert length(stem4_12) == 0.320
-point coeff4_13 = offset(lerp(f4.sw, f4.se, 0.84375), 0, 0.220) { mark: none }
+point coeff4_13 = on_circle(circle(lerp(f4.sw, f4.se, 0.84375), 0.220), 90deg) { mark: none }
 segment stem4_13(foot(coeff4_13, seg(f4.sw, f4.se)), coeff4_13) [coeff]
 assert inside(coeff4_13, f4)
 assert length(stem4_13) == 0.220
-point coeff4_14 = offset(lerp(f4.sw, f4.se, 0.90625), 0, 0.120) { mark: none }
+point coeff4_14 = on_circle(circle(lerp(f4.sw, f4.se, 0.90625), 0.120), 90deg) { mark: none }
 segment stem4_14(foot(coeff4_14, seg(f4.sw, f4.se)), coeff4_14) [coeff]
 assert inside(coeff4_14, f4)
 assert length(stem4_14) == 0.120
-point coeff4_15 = offset(lerp(f4.sw, f4.se, 0.96875), 0, 0.295) { mark: none }
+point coeff4_15 = on_circle(circle(lerp(f4.sw, f4.se, 0.96875), 0.295), 90deg) { mark: none }
 segment stem4_15(foot(coeff4_15, seg(f4.sw, f4.se)), coeff4_15) [coeff]
 assert inside(coeff4_15, f4)
 assert length(stem4_15) == 0.295
@@ -430,7 +426,11 @@ num delay_value4 = hdist(A0, delay4)
 assert delay_value4 == hdist(A0, f4.w) + hdist(f4.w, coeff4_1)
 num delay_min = min(min(delay_value0, delay_value1), min(delay_value3, delay_value4))
 num delay_max = max(max(delay_value0, delay_value1), max(delay_value3, delay_value4))
-rect delay_range(offset(A0, (delay_min + delay_max) / 2, -5), delay_max - delay_min, 0.7) [overlap]
+rect delay_range() [overlap]
+rel delay_range.width == delay_max - delay_min
+rel delay_range.height == 0.7
+rel hdist(A0, delay_range.w) == delay_min
+rel gap_y(coefficient_legend, delay_range)
 label delay_summary(delay_range.center, "Range of candidate delays across filter banks") { dir: center }
 assert delay_value0 >= delay_min and delay_value0 <= delay_max
 assert delay_value1 >= delay_min and delay_value1 <= delay_max

@@ -10,8 +10,6 @@ pentagon_golden                 75          35             2            1
 right_triangle_altitude        125          75             2            1
 sankey_energy                  200          90             0            0
 sequence_check                 145          40             4            0
-software_architecture          100          35            12            1
+software_architecture          100          35            12            0
 tangent_circles                 80          35             4            1
 tangent_internal_branches      100          50            18            1
-xy_parabola                    310         140             2            1
-xy_reciprocal                  280         270             2            1

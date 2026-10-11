@@ -20,7 +20,7 @@ fn scene(source: &str) -> Scene {
 #[test]
 fn multiple_avoidance_pairs_retain_different_forced_escape_directions() {
     let scene = scene(
-        "locus 0 beta 6\npoint origin()\nnum dx = free 0\nnum dy = free 0\npoint shifted = offset(origin,dx,dy)\nrect first(origin,4,1)\nrect second(shifted,4,1)\npoint other = origin\nnum ux = free 0\nnum uy = free 0\npoint other_shifted = offset(other,ux,uy)\nrect third(other,1,4)\nrect fourth(other_shifted,1,4)\nrel align_center_y(first,second)\nrel align_center_x(third,fourth)\nrel avoid(first,second)\nrel avoid(third,fourth)\nassert avoid(first,second)\nassert avoid(third,fourth)\nassert align_center_y(first,second)\nassert align_center_x(third,fourth)\n",
+        "locus 0 beta 6\npoint origin()\nnum dx = free 0\nnum dy = free 0\npoint shifted = translate(lerp(origin, on_circle(circle(origin, style_metric(\"short_length\")), 0deg), (dx) / style_metric(\"short_length\")), origin, lerp(origin, on_circle(circle(origin, style_metric(\"short_length\")), 90deg), (dy) / style_metric(\"short_length\")))\nrect first(origin,4,1)\nrect second(shifted,4,1)\npoint other = origin\nnum ux = free 0\nnum uy = free 0\npoint other_shifted = translate(lerp(other, on_circle(circle(other, style_metric(\"short_length\")), 0deg), (ux) / style_metric(\"short_length\")), other, lerp(other, on_circle(circle(other, style_metric(\"short_length\")), 90deg), (uy) / style_metric(\"short_length\")))\nrect third(other,1,4)\nrect fourth(other_shifted,1,4)\nrel align_center_y(first,second)\nrel align_center_x(third,fourth)\nrel avoid(first,second)\nrel avoid(third,fourth)\nassert avoid(first,second)\nassert avoid(third,fourth)\nassert align_center_y(first,second)\nassert align_center_x(third,fourth)\n",
     );
     let summary = scene.solve_summary().expect("search report");
     assert!(summary.outer_search_attempts > 1);
@@ -37,7 +37,7 @@ fn multiple_avoidance_pairs_retain_different_forced_escape_directions() {
 #[test]
 fn routing_and_avoidance_choices_are_retried_in_one_joint_candidate() {
     let scene = scene(
-        "locus 0 beta 6\npoint origin()\nnum dx = free 0\nnum dy = free 0\npoint shifted = offset(origin,dx,dy)\ncircle first(origin,1)\ncircle second(shifted,1)\npoint finish = offset(origin,3,2)\narrow path(origin,finish) { route: orthogonal }\nrel path.height == 4\nrel path.width == 3\nrel path.length == 9\nrel align_center_y(first,second)\nrel avoid(first,second)\nassert path.height == 4\nassert path.width == 3\nassert path.length == 9\nassert avoid(first,second)\n",
+        "locus 0 beta 6\npoint origin()\nnum dx = free 0\nnum dy = free 0\npoint shifted = translate(lerp(origin, on_circle(circle(origin, style_metric(\"short_length\")), 0deg), (dx) / style_metric(\"short_length\")), origin, lerp(origin, on_circle(circle(origin, style_metric(\"short_length\")), 90deg), (dy) / style_metric(\"short_length\")))\ncircle first(origin,1)\ncircle second(shifted,1)\npoint finish = translate(on_circle(circle(origin, 3), 0deg), origin, on_circle(circle(origin, 2), 90deg))\narrow path(origin,finish) { route: orthogonal }\nrel path.height == 4\nrel path.width == 3\nrel path.length == 9\nrel align_center_y(first,second)\nrel avoid(first,second)\nassert path.height == 4\nassert path.width == 3\nassert path.length == 9\nassert avoid(first,second)\n",
     );
     let summary = scene.solve_summary().expect("joint search report");
     assert!(summary.outer_search_attempts > 1);

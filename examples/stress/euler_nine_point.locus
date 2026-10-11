@@ -6,10 +6,14 @@ meta note = "Almost entirely derived-tier: construct when you can, relate when y
 style textbook
 
 // ---- objects ----------------------------------------------
-// A scalene triangle derived from relative vertex offsets.
+// A scalene triangle derived from measured triangle dimensions.
 point A()
-point B = offset(A, -2, -3.5)
-point C = offset(A, 4.5, -3.5)
+point B()
+rel hdist(A, B) == -2
+rel vdist(A, B) == -3.5
+point C()
+rel hdist(A, C) == 4.5
+rel vdist(A, C) == -3.5
 
 polygon tri(A, B, C)
 

@@ -311,7 +311,7 @@ fn automatic_dimensions_seed_from_centered_measured_content() {
 
 #[test]
 fn failed_layout_assertions_report_booleans_and_metrics_without_symbol_errors() {
-    let source = "locus 0 beta 6\nrect panel(4, 2)\ngroup container(panel)\nrect shifted(offset(panel.center, 1, 0), 1, 1)\nassert center(shifted, container)\nassert on(panel.center, edge(panel, N))\nassert style_metric(\"short_length\") == 999\n";
+    let source = "locus 0 beta 6\nrect panel(4, 2)\ngroup container(panel)\nrect shifted(1, 1)\nrel align_center_y(panel,shifted)\nrel hdist(panel.center,shifted.center) == 1\nassert center(shifted, container)\nassert on(panel.center, edge(panel, N))\nassert style_metric(\"short_length\") == 999\n";
     let scene = scene(source, EvaluationInputs::default());
     let report = evaluate_assertions_with_inputs(
         &scene.source_file,

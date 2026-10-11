@@ -7,7 +7,7 @@ use std::process::Output;
 
 use assert_cmd::Command;
 
-const SOURCE: &str = "locus 0 beta 6\npoint anchor()\nfn leaf(at) {\n    rect shape(at,1,1)\n}\nfn pair(at) {\n    leaf first(at)\n    point right = offset(at,2,0)\n    leaf second(right)\n    group items(first,second)\n    group repeated(items,first,second)\n    rel row(items)\n    assert center(repeated,items)\n}\npair panel(anchor)\nassert center(panel.items,panel.repeated)\n";
+const SOURCE: &str = "locus 0 beta 6\npoint anchor()\nfn leaf(at) {\n    rect shape(at,1,1)\n}\nfn pair(at) {\n    leaf first(at)\n    point right = on_circle(circle(at, 2), 0deg)\n    leaf second(right)\n    group items(first,second)\n    group repeated(items,first,second)\n    rel row(items)\n    assert center(repeated,items)\n}\npair panel(anchor)\nassert center(panel.items,panel.repeated)\n";
 
 fn run(path: &Path, command: &str, args: &[&str]) -> Result<Output, Box<dyn Error>> {
     Ok(Command::cargo_bin("locus")?
@@ -134,7 +134,7 @@ fn describe_reports_accepted_measured_dimensions_and_path_attachment() -> Result
     let path = directory.path().join("diagram.locus");
     fs::write(
         &path,
-        "locus 0 beta 6\nrect panel()\nlabel title(\"Measured title\") {role:title}\nrel center(title,panel)\nrel contain(panel,title)\npoint tip = offset(panel.center,4,0)\narrow path(panel.center,tip)\nlabel caption(path,\"path\") {side:above}\n",
+        "locus 0 beta 6\nrect panel()\nlabel title(\"Measured title\") {role:title}\nrel center(title,panel)\nrel contain(panel,title)\npoint tip = on_circle(circle(panel.center, 4), 0deg)\narrow path(panel.center,tip)\nlabel caption(path,\"path\") {side:above}\n",
     )?;
     let output = run(&path, "describe", &["--json"])?;
     assert!(

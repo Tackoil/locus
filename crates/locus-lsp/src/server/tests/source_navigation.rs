@@ -53,7 +53,10 @@ fn large_diagrams_do_not_block_navigation_or_shutdown() {
         "textDocument/definition",
         position(source, "connector checkout("),
     );
-    assert_eq!(definition["range"]["start"]["line"], 87);
+    assert_eq!(
+        definition["range"]["start"]["line"],
+        position(source, "fn connector(")["position"]["line"]
+    );
     transcript.finish();
 }
 

@@ -37,6 +37,10 @@ bisector construction look consistent with their asserted geometry. Ellipse
 foci, spline endpoints/control frame, and the 3-4-5 triangle also look consistent.
 The rounded rectangle and capsule example passes strict layout checks; both corner
 radii, centered labels, and the connecting arrow have been visually reviewed.
+The migrated filter, workflow, rounded-rectangle, and sequence figures have been
+rendered and visually reviewed again. Filter ranges use inward-facing top anchors;
+sequence captions determine guide spacing and vertical message separation from
+their measured bounds.
 
 The following existing output deserves attention; these goldens record current
 behavior rather than approving it as ideal:
@@ -47,8 +51,6 @@ behavior rather than approving it as ideal:
 - `euler_nine_point`: the opaque highlighted nine-point disk obscures much of the
   triangle and the points it illustrates. This is a style/visibility concern;
   its incidence assertions pass.
-- `aec3_filter_alignment`: the Filter 2 range caption overlaps the coefficient
-  stems. The layout reports collisions for r1, r2, r3, r4, lk, llg, and lg1/eq.
 
 Additional layout collision warnings are emitted for `angle_bisector_ratio`
 (lD, eq), `bspline_controls` (lM), `ellipse_foci` (lO), `euler_nine_point` (lN), `inscribed_angle`

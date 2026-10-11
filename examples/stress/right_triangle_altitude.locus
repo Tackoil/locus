@@ -8,8 +8,8 @@ style textbook
 point A()
 num base = free 4.2
 num height = free 2.8
-point B = offset(A, base, 0)
-point C = offset(A, 0, height)
+point B = on_circle(circle(A, base), 0deg)
+point C = on_circle(circle(A, height), 90deg)
 rel dist(A, B) == 4
 rel dist(A, C) == 3
 polygon triangle(A, B, C)

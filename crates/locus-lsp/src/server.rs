@@ -445,7 +445,13 @@ mod tests {
         for name in ["center", "align_center_x", "row", "contain", "avoid"] {
             assert!(completion_contains(&predicates, name), "missing {name}");
         }
-        for name in ["coincident", "horizontal", "vertical", "congruent"] {
+        for name in [
+            "coincident",
+            "horizontal",
+            "vertical",
+            "congruent",
+            "offset",
+        ] {
             assert!(!completion_contains(&predicates, name), "removed {name}");
         }
         let symbols = transcript.request(

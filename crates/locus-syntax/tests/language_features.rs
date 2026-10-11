@@ -256,3 +256,33 @@ fn earlier_format_headers_are_rejected() {
         );
     }
 }
+
+#[test]
+fn removed_offset_is_rejected_at_every_expression_site() {
+    for statement in [
+        "point B = offset(A, 2, 0)",
+        "point B = (offset(A, 2, 0))",
+        "rect box(offset(A, 2, 0), 2, 1)",
+        "point B = midpoint(A, offset(A, 2, 0))",
+        "rel hdist(A, offset(A, 2, 0)) == 2",
+        "assert center(A, offset(A, 0, 0))",
+        "fn unused() {\n    point B = offset(A, 2, 0)\n}",
+    ] {
+        let parsed = parse(&format!("locus 0 beta 6\npoint A()\n{statement}\n"));
+        let diagnostic = parsed
+            .diagnostics
+            .iter()
+            .find(|diagnostic| diagnostic.message.contains("`offset`"))
+            .unwrap_or_else(|| unreachable!("missing removed-constructor diagnostic: {statement}"));
+        assert!(matches!(diagnostic.code, "E140" | "E142"));
+        assert_eq!(diagnostic.span.byte_end - diagnostic.span.byte_start, 6);
+        assert!(
+            diagnostic
+                .suggestion
+                .as_deref()
+                .is_some_and(|suggestion| suggestion.contains("row/column"))
+        );
+    }
+    assert!(!locus_syntax::CONSTRUCTOR_NAMES.contains(&"offset"));
+    assert_eq!(locus_syntax::constructor_kind("offset"), None);
+}

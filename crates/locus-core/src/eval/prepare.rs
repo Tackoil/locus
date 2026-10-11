@@ -301,7 +301,7 @@ mod tests {
     #[test]
     fn registry_ranges_survive_interleaved_deferred_declarations() {
         let file = file(
-            "locus 0 beta 6\npoint A()\npoint far = offset(A, 1000, 0)\nnum spare = free 7\npoint B()\nrel dist(A, B) == 2\n",
+            "locus 0 beta 6\npoint A()\npoint far = on_circle(circle(A, 1000), 0deg)\nnum spare = free 7\npoint B()\nrel dist(A, B) == 2\n",
         );
         let prepared = PreparedEvaluation::new(&file).expect("prepared program");
         assert_eq!(prepared.unknown_range("A"), Some(&(0..2)));
@@ -366,7 +366,7 @@ mod tests {
     #[test]
     fn deferred_distant_geometry_cannot_inflate_solve_tolerance() {
         let file = file(
-            "locus 0 beta 6\npoint O()\npoint Far = offset(O, 1000000, 0)\ncircle c(O, 6)\nrel radius(c) / 2 == 3.000001\n",
+            "locus 0 beta 6\npoint O()\npoint Far = on_circle(circle(O, 1000000), 0deg)\ncircle c(O, 6)\nrel radius(c) / 2 == 3.000001\n",
         );
         let error = crate::solve::solve(&file).expect_err("constant length relation conflicts");
         assert_eq!(error.code, "E403");

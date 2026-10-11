@@ -10,179 +10,348 @@ class pending { accent: blue, fill: tint }
 class active { accent: orange, fill: tint }
 class complete { accent: green, fill: tint }
 class blocked { accent: red, fill: tint }
-point O() { mark: none }
 num card_width = 4.6
 num card_height = 1.25
-num card_pitch = 1.65
-label team0(offset(O, -3, 0), "Platform") { dir: W }
-rect lane0_0(offset(O, 0, 0), 5.4, 6.6) [lane]
-label title0_0(offset(lane0_0.n, 0, -0.45), "Backlog (2)") { dir: center }
-rect card0_0_0(offset(lane0_0.n, 0, -1.6 - 0 * card_pitch), card_width, card_height) [pending]
-label text_card0_0_0(card0_0_0.center, "P-00: Search\nScope") { dir: center }
-assert inside(card0_0_0.nw, lane0_0) and inside(card0_0_0.ne, lane0_0) and inside(card0_0_0.sw, lane0_0) and inside(card0_0_0.se, lane0_0)
-rect card0_0_1(offset(lane0_0.n, 0, -1.6 - 1 * card_pitch), card_width, card_height) [pending]
-label text_card0_0_1(card0_0_1.center, "P-01: Export\nScope") { dir: center }
-assert inside(card0_0_1.nw, lane0_0) and inside(card0_0_1.ne, lane0_0) and inside(card0_0_1.sw, lane0_0) and inside(card0_0_1.se, lane0_0)
-assert vdist(card0_0_1.n, card0_0_0.s) == 0.4
-rect lane0_1(offset(O, 6, 0), 5.4, 6.6) [lane]
-label title0_1(offset(lane0_1.n, 0, -0.45), "Ready (3)") { dir: center }
-rect card0_1_0(offset(lane0_1.n, 0, -1.6 - 0 * card_pitch), card_width, card_height) [pending]
-label text_card0_1_0(card0_1_0.center, "P-10: Export\nReady") { dir: center }
-assert inside(card0_1_0.nw, lane0_1) and inside(card0_1_0.ne, lane0_1) and inside(card0_1_0.sw, lane0_1) and inside(card0_1_0.se, lane0_1)
-rect card0_1_1(offset(lane0_1.n, 0, -1.6 - 1 * card_pitch), card_width, card_height) [pending]
-label text_card0_1_1(card0_1_1.center, "P-11: Auth\nReady") { dir: center }
-assert inside(card0_1_1.nw, lane0_1) and inside(card0_1_1.ne, lane0_1) and inside(card0_1_1.sw, lane0_1) and inside(card0_1_1.se, lane0_1)
-assert vdist(card0_1_1.n, card0_1_0.s) == 0.4
-rect card0_1_2(offset(lane0_1.n, 0, -1.6 - 2 * card_pitch), card_width, card_height) [pending]
-label text_card0_1_2(card0_1_2.center, "P-12: Cache\nReady") { dir: center }
-assert inside(card0_1_2.nw, lane0_1) and inside(card0_1_2.ne, lane0_1) and inside(card0_1_2.sw, lane0_1) and inside(card0_1_2.se, lane0_1)
-assert vdist(card0_1_2.n, card0_1_1.s) == 0.4
-rect lane0_2(offset(O, 12, 0), 5.4, 6.6) [lane]
-label title0_2(offset(lane0_2.n, 0, -0.45), "Doing (2)") { dir: center }
-rect card0_2_0(offset(lane0_2.n, 0, -1.6 - 0 * card_pitch), card_width, card_height) [active]
-label text_card0_2_0(card0_2_0.center, "P-20: Auth\nBuild") { dir: center }
-assert inside(card0_2_0.nw, lane0_2) and inside(card0_2_0.ne, lane0_2) and inside(card0_2_0.sw, lane0_2) and inside(card0_2_0.se, lane0_2)
-rect card0_2_1(offset(lane0_2.n, 0, -1.6 - 1 * card_pitch), card_width, card_height) [active]
-label text_card0_2_1(card0_2_1.center, "P-21: Cache\nBuild") { dir: center }
-assert inside(card0_2_1.nw, lane0_2) and inside(card0_2_1.ne, lane0_2) and inside(card0_2_1.sw, lane0_2) and inside(card0_2_1.se, lane0_2)
-assert vdist(card0_2_1.n, card0_2_0.s) == 0.4
-rect lane0_3(offset(O, 18, 0), 5.4, 6.6) [lane]
-label title0_3(offset(lane0_3.n, 0, -0.45), "Review (3)") { dir: center }
-rect card0_3_0(offset(lane0_3.n, 0, -1.6 - 0 * card_pitch), card_width, card_height) [active]
-label text_card0_3_0(card0_3_0.center, "P-30: Cache\nReview") { dir: center }
-assert inside(card0_3_0.nw, lane0_3) and inside(card0_3_0.ne, lane0_3) and inside(card0_3_0.sw, lane0_3) and inside(card0_3_0.se, lane0_3)
-rect card0_3_1(offset(lane0_3.n, 0, -1.6 - 1 * card_pitch), card_width, card_height) [active]
-label text_card0_3_1(card0_3_1.center, "P-31: Tracing\nReview") { dir: center }
-assert inside(card0_3_1.nw, lane0_3) and inside(card0_3_1.ne, lane0_3) and inside(card0_3_1.sw, lane0_3) and inside(card0_3_1.se, lane0_3)
-assert vdist(card0_3_1.n, card0_3_0.s) == 0.4
-rect card0_3_2(offset(lane0_3.n, 0, -1.6 - 2 * card_pitch), card_width, card_height) [active]
-label text_card0_3_2(card0_3_2.center, "P-32: Billing\nReview") { dir: center }
-assert inside(card0_3_2.nw, lane0_3) and inside(card0_3_2.ne, lane0_3) and inside(card0_3_2.sw, lane0_3) and inside(card0_3_2.se, lane0_3)
-assert vdist(card0_3_2.n, card0_3_1.s) == 0.4
-rect lane0_4(offset(O, 24, 0), 5.4, 6.6) [lane]
-label title0_4(offset(lane0_4.n, 0, -0.45), "Done (2)") { dir: center }
-rect card0_4_0(offset(lane0_4.n, 0, -1.6 - 0 * card_pitch), card_width, card_height) [complete]
-label text_card0_4_0(card0_4_0.center, "P-40: Tracing\nShipped") { dir: center }
-assert inside(card0_4_0.nw, lane0_4) and inside(card0_4_0.ne, lane0_4) and inside(card0_4_0.sw, lane0_4) and inside(card0_4_0.se, lane0_4)
-rect card0_4_1(offset(lane0_4.n, 0, -1.6 - 1 * card_pitch), card_width, card_height) [complete]
-label text_card0_4_1(card0_4_1.center, "P-41: Billing\nShipped") { dir: center }
-assert inside(card0_4_1.nw, lane0_4) and inside(card0_4_1.ne, lane0_4) and inside(card0_4_1.sw, lane0_4) and inside(card0_4_1.se, lane0_4)
-assert vdist(card0_4_1.n, card0_4_0.s) == 0.4
-label team1(offset(O, -3, -7), "Web") { dir: W }
-rect lane1_0(offset(O, 0, -7), 5.4, 6.6) [lane]
-label title1_0(offset(lane1_0.n, 0, -0.45), "Backlog (3)") { dir: center }
-rect card1_0_0(offset(lane1_0.n, 0, -1.6 - 0 * card_pitch), card_width, card_height) [pending]
-label text_card1_0_0(card1_0_0.center, "W-00: Billing\nScope") { dir: center }
-assert inside(card1_0_0.nw, lane1_0) and inside(card1_0_0.ne, lane1_0) and inside(card1_0_0.sw, lane1_0) and inside(card1_0_0.se, lane1_0)
-rect card1_0_1(offset(lane1_0.n, 0, -1.6 - 1 * card_pitch), card_width, card_height) [pending]
-label text_card1_0_1(card1_0_1.center, "W-01: Queue\nScope") { dir: center }
-assert inside(card1_0_1.nw, lane1_0) and inside(card1_0_1.ne, lane1_0) and inside(card1_0_1.sw, lane1_0) and inside(card1_0_1.se, lane1_0)
-assert vdist(card1_0_1.n, card1_0_0.s) == 0.4
-rect card1_0_2(offset(lane1_0.n, 0, -1.6 - 2 * card_pitch), card_width, card_height) [pending]
-label text_card1_0_2(card1_0_2.center, "W-02: Import\nScope") { dir: center }
-assert inside(card1_0_2.nw, lane1_0) and inside(card1_0_2.ne, lane1_0) and inside(card1_0_2.sw, lane1_0) and inside(card1_0_2.se, lane1_0)
-assert vdist(card1_0_2.n, card1_0_1.s) == 0.4
-rect lane1_1(offset(O, 6, -7), 5.4, 6.6) [lane]
-label title1_1(offset(lane1_1.n, 0, -0.45), "Ready (2)") { dir: center }
-rect card1_1_0(offset(lane1_1.n, 0, -1.6 - 0 * card_pitch), card_width, card_height) [pending]
-label text_card1_1_0(card1_1_0.center, "W-10: Queue\nReady") { dir: center }
-assert inside(card1_1_0.nw, lane1_1) and inside(card1_1_0.ne, lane1_1) and inside(card1_1_0.sw, lane1_1) and inside(card1_1_0.se, lane1_1)
-rect card1_1_1(offset(lane1_1.n, 0, -1.6 - 1 * card_pitch), card_width, card_height) [pending]
-label text_card1_1_1(card1_1_1.center, "W-11: Import\nReady") { dir: center }
-assert inside(card1_1_1.nw, lane1_1) and inside(card1_1_1.ne, lane1_1) and inside(card1_1_1.sw, lane1_1) and inside(card1_1_1.se, lane1_1)
-assert vdist(card1_1_1.n, card1_1_0.s) == 0.4
-rect lane1_2(offset(O, 12, -7), 5.4, 6.6) [lane]
-label title1_2(offset(lane1_2.n, 0, -0.45), "Doing (3)") { dir: center }
-rect card1_2_0(offset(lane1_2.n, 0, -1.6 - 0 * card_pitch), card_width, card_height) [blocked]
-label text_card1_2_0(card1_2_0.center, "W-20: Import\nBuild") { dir: center }
-assert inside(card1_2_0.nw, lane1_2) and inside(card1_2_0.ne, lane1_2) and inside(card1_2_0.sw, lane1_2) and inside(card1_2_0.se, lane1_2)
-rect card1_2_1(offset(lane1_2.n, 0, -1.6 - 1 * card_pitch), card_width, card_height) [active]
-label text_card1_2_1(card1_2_1.center, "W-21: Alerts\nBuild") { dir: center }
-assert inside(card1_2_1.nw, lane1_2) and inside(card1_2_1.ne, lane1_2) and inside(card1_2_1.sw, lane1_2) and inside(card1_2_1.se, lane1_2)
-assert vdist(card1_2_1.n, card1_2_0.s) == 0.4
-rect card1_2_2(offset(lane1_2.n, 0, -1.6 - 2 * card_pitch), card_width, card_height) [active]
-label text_card1_2_2(card1_2_2.center, "W-22: Metrics\nBuild") { dir: center }
-assert inside(card1_2_2.nw, lane1_2) and inside(card1_2_2.ne, lane1_2) and inside(card1_2_2.sw, lane1_2) and inside(card1_2_2.se, lane1_2)
-assert vdist(card1_2_2.n, card1_2_1.s) == 0.4
-rect lane1_3(offset(O, 18, -7), 5.4, 6.6) [lane]
-label title1_3(offset(lane1_3.n, 0, -0.45), "Review (2)") { dir: center }
-rect card1_3_0(offset(lane1_3.n, 0, -1.6 - 0 * card_pitch), card_width, card_height) [active]
-label text_card1_3_0(card1_3_0.center, "W-30: Alerts\nReview") { dir: center }
-assert inside(card1_3_0.nw, lane1_3) and inside(card1_3_0.ne, lane1_3) and inside(card1_3_0.sw, lane1_3) and inside(card1_3_0.se, lane1_3)
-rect card1_3_1(offset(lane1_3.n, 0, -1.6 - 1 * card_pitch), card_width, card_height) [active]
-label text_card1_3_1(card1_3_1.center, "W-31: Metrics\nReview") { dir: center }
-assert inside(card1_3_1.nw, lane1_3) and inside(card1_3_1.ne, lane1_3) and inside(card1_3_1.sw, lane1_3) and inside(card1_3_1.se, lane1_3)
-assert vdist(card1_3_1.n, card1_3_0.s) == 0.4
-rect lane1_4(offset(O, 24, -7), 5.4, 6.6) [lane]
-label title1_4(offset(lane1_4.n, 0, -0.45), "Done (3)") { dir: center }
-rect card1_4_0(offset(lane1_4.n, 0, -1.6 - 0 * card_pitch), card_width, card_height) [complete]
-label text_card1_4_0(card1_4_0.center, "W-40: Metrics\nShipped") { dir: center }
-assert inside(card1_4_0.nw, lane1_4) and inside(card1_4_0.ne, lane1_4) and inside(card1_4_0.sw, lane1_4) and inside(card1_4_0.se, lane1_4)
-rect card1_4_1(offset(lane1_4.n, 0, -1.6 - 1 * card_pitch), card_width, card_height) [complete]
-label text_card1_4_1(card1_4_1.center, "W-41: Search\nShipped") { dir: center }
-assert inside(card1_4_1.nw, lane1_4) and inside(card1_4_1.ne, lane1_4) and inside(card1_4_1.sw, lane1_4) and inside(card1_4_1.se, lane1_4)
-assert vdist(card1_4_1.n, card1_4_0.s) == 0.4
-rect card1_4_2(offset(lane1_4.n, 0, -1.6 - 2 * card_pitch), card_width, card_height) [complete]
-label text_card1_4_2(card1_4_2.center, "W-42: Export\nShipped") { dir: center }
-assert inside(card1_4_2.nw, lane1_4) and inside(card1_4_2.ne, lane1_4) and inside(card1_4_2.sw, lane1_4) and inside(card1_4_2.se, lane1_4)
-assert vdist(card1_4_2.n, card1_4_1.s) == 0.4
-label team2(offset(O, -3, -14), "Data") { dir: W }
-rect lane2_0(offset(O, 0, -14), 5.4, 6.6) [lane]
-label title2_0(offset(lane2_0.n, 0, -0.45), "Backlog (2)") { dir: center }
-rect card2_0_0(offset(lane2_0.n, 0, -1.6 - 0 * card_pitch), card_width, card_height) [pending]
-label text_card2_0_0(card2_0_0.center, "D-00: Search\nScope") { dir: center }
-assert inside(card2_0_0.nw, lane2_0) and inside(card2_0_0.ne, lane2_0) and inside(card2_0_0.sw, lane2_0) and inside(card2_0_0.se, lane2_0)
-rect card2_0_1(offset(lane2_0.n, 0, -1.6 - 1 * card_pitch), card_width, card_height) [pending]
-label text_card2_0_1(card2_0_1.center, "D-01: Export\nScope") { dir: center }
-assert inside(card2_0_1.nw, lane2_0) and inside(card2_0_1.ne, lane2_0) and inside(card2_0_1.sw, lane2_0) and inside(card2_0_1.se, lane2_0)
-assert vdist(card2_0_1.n, card2_0_0.s) == 0.4
-rect lane2_1(offset(O, 6, -14), 5.4, 6.6) [lane]
-label title2_1(offset(lane2_1.n, 0, -0.45), "Ready (3)") { dir: center }
-rect card2_1_0(offset(lane2_1.n, 0, -1.6 - 0 * card_pitch), card_width, card_height) [pending]
-label text_card2_1_0(card2_1_0.center, "D-10: Export\nReady") { dir: center }
-assert inside(card2_1_0.nw, lane2_1) and inside(card2_1_0.ne, lane2_1) and inside(card2_1_0.sw, lane2_1) and inside(card2_1_0.se, lane2_1)
-rect card2_1_1(offset(lane2_1.n, 0, -1.6 - 1 * card_pitch), card_width, card_height) [pending]
-label text_card2_1_1(card2_1_1.center, "D-11: Auth\nReady") { dir: center }
-assert inside(card2_1_1.nw, lane2_1) and inside(card2_1_1.ne, lane2_1) and inside(card2_1_1.sw, lane2_1) and inside(card2_1_1.se, lane2_1)
-assert vdist(card2_1_1.n, card2_1_0.s) == 0.4
-rect card2_1_2(offset(lane2_1.n, 0, -1.6 - 2 * card_pitch), card_width, card_height) [pending]
-label text_card2_1_2(card2_1_2.center, "D-12: Cache\nReady") { dir: center }
-assert inside(card2_1_2.nw, lane2_1) and inside(card2_1_2.ne, lane2_1) and inside(card2_1_2.sw, lane2_1) and inside(card2_1_2.se, lane2_1)
-assert vdist(card2_1_2.n, card2_1_1.s) == 0.4
-rect lane2_2(offset(O, 12, -14), 5.4, 6.6) [lane]
-label title2_2(offset(lane2_2.n, 0, -0.45), "Doing (2)") { dir: center }
-rect card2_2_0(offset(lane2_2.n, 0, -1.6 - 0 * card_pitch), card_width, card_height) [active]
-label text_card2_2_0(card2_2_0.center, "D-20: Auth\nBuild") { dir: center }
-assert inside(card2_2_0.nw, lane2_2) and inside(card2_2_0.ne, lane2_2) and inside(card2_2_0.sw, lane2_2) and inside(card2_2_0.se, lane2_2)
-rect card2_2_1(offset(lane2_2.n, 0, -1.6 - 1 * card_pitch), card_width, card_height) [active]
-label text_card2_2_1(card2_2_1.center, "D-21: Cache\nBuild") { dir: center }
-assert inside(card2_2_1.nw, lane2_2) and inside(card2_2_1.ne, lane2_2) and inside(card2_2_1.sw, lane2_2) and inside(card2_2_1.se, lane2_2)
-assert vdist(card2_2_1.n, card2_2_0.s) == 0.4
-rect lane2_3(offset(O, 18, -14), 5.4, 6.6) [lane]
-label title2_3(offset(lane2_3.n, 0, -0.45), "Review (3)") { dir: center }
-rect card2_3_0(offset(lane2_3.n, 0, -1.6 - 0 * card_pitch), card_width, card_height) [active]
-label text_card2_3_0(card2_3_0.center, "D-30: Cache\nReview") { dir: center }
-assert inside(card2_3_0.nw, lane2_3) and inside(card2_3_0.ne, lane2_3) and inside(card2_3_0.sw, lane2_3) and inside(card2_3_0.se, lane2_3)
-rect card2_3_1(offset(lane2_3.n, 0, -1.6 - 1 * card_pitch), card_width, card_height) [active]
-label text_card2_3_1(card2_3_1.center, "D-31: Tracing\nReview") { dir: center }
-assert inside(card2_3_1.nw, lane2_3) and inside(card2_3_1.ne, lane2_3) and inside(card2_3_1.sw, lane2_3) and inside(card2_3_1.se, lane2_3)
-assert vdist(card2_3_1.n, card2_3_0.s) == 0.4
-rect card2_3_2(offset(lane2_3.n, 0, -1.6 - 2 * card_pitch), card_width, card_height) [active]
-label text_card2_3_2(card2_3_2.center, "D-32: Billing\nReview") { dir: center }
-assert inside(card2_3_2.nw, lane2_3) and inside(card2_3_2.ne, lane2_3) and inside(card2_3_2.sw, lane2_3) and inside(card2_3_2.se, lane2_3)
-assert vdist(card2_3_2.n, card2_3_1.s) == 0.4
-rect lane2_4(offset(O, 24, -14), 5.4, 6.6) [lane]
-label title2_4(offset(lane2_4.n, 0, -0.45), "Done (2)") { dir: center }
-rect card2_4_0(offset(lane2_4.n, 0, -1.6 - 0 * card_pitch), card_width, card_height) [complete]
-label text_card2_4_0(card2_4_0.center, "D-40: Tracing\nShipped") { dir: center }
-assert inside(card2_4_0.nw, lane2_4) and inside(card2_4_0.ne, lane2_4) and inside(card2_4_0.sw, lane2_4) and inside(card2_4_0.se, lane2_4)
-rect card2_4_1(offset(lane2_4.n, 0, -1.6 - 1 * card_pitch), card_width, card_height) [complete]
-label text_card2_4_1(card2_4_1.center, "D-41: Billing\nShipped") { dir: center }
-assert inside(card2_4_1.nw, lane2_4) and inside(card2_4_1.ne, lane2_4) and inside(card2_4_1.sw, lane2_4) and inside(card2_4_1.se, lane2_4)
-assert vdist(card2_4_1.n, card2_4_0.s) == 0.4
-arrow blocked_by(card1_2_0.n, card0_2_1.s) [construction] { bend: 25deg }
-arrow review_dependency(card2_3_0.n, card1_3_1.s) [construction] { bend: -25deg }
-num doing_count = card0_2_0.width / card_width + card0_2_1.width / card_width + card1_2_0.width / card_width + card1_2_1.width / card_width + card1_2_2.width / card_width + card2_2_0.width / card_width + card2_2_1.width / card_width
+fn board_lane0_0() {
+    rect lane0_0() [lane]
+    label title0_0("Backlog (2)")
+    rect card0_0_0(card_width, card_height) [pending]
+    label text_card0_0_0("P-00: Search\nScope")
+    rel center(text_card0_0_0, card0_0_0)
+    assert inside(card0_0_0.nw, lane0_0) and inside(card0_0_0.ne, lane0_0) and inside(card0_0_0.sw, lane0_0) and inside(card0_0_0.se, lane0_0)
+    rect card0_0_1(card_width, card_height) [pending]
+    label text_card0_0_1("P-01: Export\nScope")
+    rel center(text_card0_0_1, card0_0_1)
+    assert inside(card0_0_1.nw, lane0_0) and inside(card0_0_1.ne, lane0_0) and inside(card0_0_1.sw, lane0_0) and inside(card0_0_1.se, lane0_0)
+    assert gap_y(card0_0_0, card0_0_1)
+    rel column(title0_0, card0_0_0, card0_0_1)
+    group contents(title0_0, card0_0_0, card0_0_1)
+    rel center(contents, lane0_0)
+    rel contain(lane0_0, contents)
+}
+
+fn board_lane0_1() {
+    rect lane0_1() [lane]
+    label title0_1("Ready (3)")
+    rect card0_1_0(card_width, card_height) [pending]
+    label text_card0_1_0("P-10: Export\nReady")
+    rel center(text_card0_1_0, card0_1_0)
+    assert inside(card0_1_0.nw, lane0_1) and inside(card0_1_0.ne, lane0_1) and inside(card0_1_0.sw, lane0_1) and inside(card0_1_0.se, lane0_1)
+    rect card0_1_1(card_width, card_height) [pending]
+    label text_card0_1_1("P-11: Auth\nReady")
+    rel center(text_card0_1_1, card0_1_1)
+    assert inside(card0_1_1.nw, lane0_1) and inside(card0_1_1.ne, lane0_1) and inside(card0_1_1.sw, lane0_1) and inside(card0_1_1.se, lane0_1)
+    assert gap_y(card0_1_0, card0_1_1)
+    rect card0_1_2(card_width, card_height) [pending]
+    label text_card0_1_2("P-12: Cache\nReady")
+    rel center(text_card0_1_2, card0_1_2)
+    assert inside(card0_1_2.nw, lane0_1) and inside(card0_1_2.ne, lane0_1) and inside(card0_1_2.sw, lane0_1) and inside(card0_1_2.se, lane0_1)
+    assert gap_y(card0_1_1, card0_1_2)
+    rel column(title0_1, card0_1_0, card0_1_1, card0_1_2)
+    group contents(title0_1, card0_1_0, card0_1_1, card0_1_2)
+    rel center(contents, lane0_1)
+    rel contain(lane0_1, contents)
+}
+
+fn board_lane0_2() {
+    rect lane0_2() [lane]
+    label title0_2("Doing (2)")
+    rect card0_2_0(card_width, card_height) [active]
+    label text_card0_2_0("P-20: Auth\nBuild")
+    rel center(text_card0_2_0, card0_2_0)
+    assert inside(card0_2_0.nw, lane0_2) and inside(card0_2_0.ne, lane0_2) and inside(card0_2_0.sw, lane0_2) and inside(card0_2_0.se, lane0_2)
+    rect card0_2_1(card_width, card_height) [active]
+    label text_card0_2_1("P-21: Cache\nBuild")
+    rel center(text_card0_2_1, card0_2_1)
+    assert inside(card0_2_1.nw, lane0_2) and inside(card0_2_1.ne, lane0_2) and inside(card0_2_1.sw, lane0_2) and inside(card0_2_1.se, lane0_2)
+    assert gap_y(card0_2_0, card0_2_1)
+    rel column(title0_2, card0_2_0, card0_2_1)
+    group contents(title0_2, card0_2_0, card0_2_1)
+    rel center(contents, lane0_2)
+    rel contain(lane0_2, contents)
+}
+
+fn board_lane0_3() {
+    rect lane0_3() [lane]
+    label title0_3("Review (3)")
+    rect card0_3_0(card_width, card_height) [active]
+    label text_card0_3_0("P-30: Cache\nReview")
+    rel center(text_card0_3_0, card0_3_0)
+    assert inside(card0_3_0.nw, lane0_3) and inside(card0_3_0.ne, lane0_3) and inside(card0_3_0.sw, lane0_3) and inside(card0_3_0.se, lane0_3)
+    rect card0_3_1(card_width, card_height) [active]
+    label text_card0_3_1("P-31: Tracing\nReview")
+    rel center(text_card0_3_1, card0_3_1)
+    assert inside(card0_3_1.nw, lane0_3) and inside(card0_3_1.ne, lane0_3) and inside(card0_3_1.sw, lane0_3) and inside(card0_3_1.se, lane0_3)
+    assert gap_y(card0_3_0, card0_3_1)
+    rect card0_3_2(card_width, card_height) [active]
+    label text_card0_3_2("P-32: Billing\nReview")
+    rel center(text_card0_3_2, card0_3_2)
+    assert inside(card0_3_2.nw, lane0_3) and inside(card0_3_2.ne, lane0_3) and inside(card0_3_2.sw, lane0_3) and inside(card0_3_2.se, lane0_3)
+    assert gap_y(card0_3_1, card0_3_2)
+    rel column(title0_3, card0_3_0, card0_3_1, card0_3_2)
+    group contents(title0_3, card0_3_0, card0_3_1, card0_3_2)
+    rel center(contents, lane0_3)
+    rel contain(lane0_3, contents)
+}
+
+fn board_lane0_4() {
+    rect lane0_4() [lane]
+    label title0_4("Done (2)")
+    rect card0_4_0(card_width, card_height) [complete]
+    label text_card0_4_0("P-40: Tracing\nShipped")
+    rel center(text_card0_4_0, card0_4_0)
+    assert inside(card0_4_0.nw, lane0_4) and inside(card0_4_0.ne, lane0_4) and inside(card0_4_0.sw, lane0_4) and inside(card0_4_0.se, lane0_4)
+    rect card0_4_1(card_width, card_height) [complete]
+    label text_card0_4_1("P-41: Billing\nShipped")
+    rel center(text_card0_4_1, card0_4_1)
+    assert inside(card0_4_1.nw, lane0_4) and inside(card0_4_1.ne, lane0_4) and inside(card0_4_1.sw, lane0_4) and inside(card0_4_1.se, lane0_4)
+    assert gap_y(card0_4_0, card0_4_1)
+    rel column(title0_4, card0_4_0, card0_4_1)
+    group contents(title0_4, card0_4_0, card0_4_1)
+    rel center(contents, lane0_4)
+    rel contain(lane0_4, contents)
+}
+
+fn board_lane1_0() {
+    rect lane1_0() [lane]
+    label title1_0("Backlog (3)")
+    rect card1_0_0(card_width, card_height) [pending]
+    label text_card1_0_0("W-00: Billing\nScope")
+    rel center(text_card1_0_0, card1_0_0)
+    assert inside(card1_0_0.nw, lane1_0) and inside(card1_0_0.ne, lane1_0) and inside(card1_0_0.sw, lane1_0) and inside(card1_0_0.se, lane1_0)
+    rect card1_0_1(card_width, card_height) [pending]
+    label text_card1_0_1("W-01: Queue\nScope")
+    rel center(text_card1_0_1, card1_0_1)
+    assert inside(card1_0_1.nw, lane1_0) and inside(card1_0_1.ne, lane1_0) and inside(card1_0_1.sw, lane1_0) and inside(card1_0_1.se, lane1_0)
+    assert gap_y(card1_0_0, card1_0_1)
+    rect card1_0_2(card_width, card_height) [pending]
+    label text_card1_0_2("W-02: Import\nScope")
+    rel center(text_card1_0_2, card1_0_2)
+    assert inside(card1_0_2.nw, lane1_0) and inside(card1_0_2.ne, lane1_0) and inside(card1_0_2.sw, lane1_0) and inside(card1_0_2.se, lane1_0)
+    assert gap_y(card1_0_1, card1_0_2)
+    rel column(title1_0, card1_0_0, card1_0_1, card1_0_2)
+    group contents(title1_0, card1_0_0, card1_0_1, card1_0_2)
+    rel center(contents, lane1_0)
+    rel contain(lane1_0, contents)
+}
+
+fn board_lane1_1() {
+    rect lane1_1() [lane]
+    label title1_1("Ready (2)")
+    rect card1_1_0(card_width, card_height) [pending]
+    label text_card1_1_0("W-10: Queue\nReady")
+    rel center(text_card1_1_0, card1_1_0)
+    assert inside(card1_1_0.nw, lane1_1) and inside(card1_1_0.ne, lane1_1) and inside(card1_1_0.sw, lane1_1) and inside(card1_1_0.se, lane1_1)
+    rect card1_1_1(card_width, card_height) [pending]
+    label text_card1_1_1("W-11: Import\nReady")
+    rel center(text_card1_1_1, card1_1_1)
+    assert inside(card1_1_1.nw, lane1_1) and inside(card1_1_1.ne, lane1_1) and inside(card1_1_1.sw, lane1_1) and inside(card1_1_1.se, lane1_1)
+    assert gap_y(card1_1_0, card1_1_1)
+    rel column(title1_1, card1_1_0, card1_1_1)
+    group contents(title1_1, card1_1_0, card1_1_1)
+    rel center(contents, lane1_1)
+    rel contain(lane1_1, contents)
+}
+
+fn board_lane1_2() {
+    rect lane1_2() [lane]
+    label title1_2("Doing (3)")
+    rect card1_2_0(card_width, card_height) [blocked]
+    label text_card1_2_0("W-20: Import\nBuild")
+    rel center(text_card1_2_0, card1_2_0)
+    assert inside(card1_2_0.nw, lane1_2) and inside(card1_2_0.ne, lane1_2) and inside(card1_2_0.sw, lane1_2) and inside(card1_2_0.se, lane1_2)
+    rect card1_2_1(card_width, card_height) [active]
+    label text_card1_2_1("W-21: Alerts\nBuild")
+    rel center(text_card1_2_1, card1_2_1)
+    assert inside(card1_2_1.nw, lane1_2) and inside(card1_2_1.ne, lane1_2) and inside(card1_2_1.sw, lane1_2) and inside(card1_2_1.se, lane1_2)
+    assert gap_y(card1_2_0, card1_2_1)
+    rect card1_2_2(card_width, card_height) [active]
+    label text_card1_2_2("W-22: Metrics\nBuild")
+    rel center(text_card1_2_2, card1_2_2)
+    assert inside(card1_2_2.nw, lane1_2) and inside(card1_2_2.ne, lane1_2) and inside(card1_2_2.sw, lane1_2) and inside(card1_2_2.se, lane1_2)
+    assert gap_y(card1_2_1, card1_2_2)
+    rel column(title1_2, card1_2_0, card1_2_1, card1_2_2)
+    group contents(title1_2, card1_2_0, card1_2_1, card1_2_2)
+    rel center(contents, lane1_2)
+    rel contain(lane1_2, contents)
+}
+
+fn board_lane1_3() {
+    rect lane1_3() [lane]
+    label title1_3("Review (2)")
+    rect card1_3_0(card_width, card_height) [active]
+    label text_card1_3_0("W-30: Alerts\nReview")
+    rel center(text_card1_3_0, card1_3_0)
+    assert inside(card1_3_0.nw, lane1_3) and inside(card1_3_0.ne, lane1_3) and inside(card1_3_0.sw, lane1_3) and inside(card1_3_0.se, lane1_3)
+    rect card1_3_1(card_width, card_height) [active]
+    label text_card1_3_1("W-31: Metrics\nReview")
+    rel center(text_card1_3_1, card1_3_1)
+    assert inside(card1_3_1.nw, lane1_3) and inside(card1_3_1.ne, lane1_3) and inside(card1_3_1.sw, lane1_3) and inside(card1_3_1.se, lane1_3)
+    assert gap_y(card1_3_0, card1_3_1)
+    rel column(title1_3, card1_3_0, card1_3_1)
+    group contents(title1_3, card1_3_0, card1_3_1)
+    rel center(contents, lane1_3)
+    rel contain(lane1_3, contents)
+}
+
+fn board_lane1_4() {
+    rect lane1_4() [lane]
+    label title1_4("Done (3)")
+    rect card1_4_0(card_width, card_height) [complete]
+    label text_card1_4_0("W-40: Metrics\nShipped")
+    rel center(text_card1_4_0, card1_4_0)
+    assert inside(card1_4_0.nw, lane1_4) and inside(card1_4_0.ne, lane1_4) and inside(card1_4_0.sw, lane1_4) and inside(card1_4_0.se, lane1_4)
+    rect card1_4_1(card_width, card_height) [complete]
+    label text_card1_4_1("W-41: Search\nShipped")
+    rel center(text_card1_4_1, card1_4_1)
+    assert inside(card1_4_1.nw, lane1_4) and inside(card1_4_1.ne, lane1_4) and inside(card1_4_1.sw, lane1_4) and inside(card1_4_1.se, lane1_4)
+    assert gap_y(card1_4_0, card1_4_1)
+    rect card1_4_2(card_width, card_height) [complete]
+    label text_card1_4_2("W-42: Export\nShipped")
+    rel center(text_card1_4_2, card1_4_2)
+    assert inside(card1_4_2.nw, lane1_4) and inside(card1_4_2.ne, lane1_4) and inside(card1_4_2.sw, lane1_4) and inside(card1_4_2.se, lane1_4)
+    assert gap_y(card1_4_1, card1_4_2)
+    rel column(title1_4, card1_4_0, card1_4_1, card1_4_2)
+    group contents(title1_4, card1_4_0, card1_4_1, card1_4_2)
+    rel center(contents, lane1_4)
+    rel contain(lane1_4, contents)
+}
+
+fn board_lane2_0() {
+    rect lane2_0() [lane]
+    label title2_0("Backlog (2)")
+    rect card2_0_0(card_width, card_height) [pending]
+    label text_card2_0_0("D-00: Search\nScope")
+    rel center(text_card2_0_0, card2_0_0)
+    assert inside(card2_0_0.nw, lane2_0) and inside(card2_0_0.ne, lane2_0) and inside(card2_0_0.sw, lane2_0) and inside(card2_0_0.se, lane2_0)
+    rect card2_0_1(card_width, card_height) [pending]
+    label text_card2_0_1("D-01: Export\nScope")
+    rel center(text_card2_0_1, card2_0_1)
+    assert inside(card2_0_1.nw, lane2_0) and inside(card2_0_1.ne, lane2_0) and inside(card2_0_1.sw, lane2_0) and inside(card2_0_1.se, lane2_0)
+    assert gap_y(card2_0_0, card2_0_1)
+    rel column(title2_0, card2_0_0, card2_0_1)
+    group contents(title2_0, card2_0_0, card2_0_1)
+    rel center(contents, lane2_0)
+    rel contain(lane2_0, contents)
+}
+
+fn board_lane2_1() {
+    rect lane2_1() [lane]
+    label title2_1("Ready (3)")
+    rect card2_1_0(card_width, card_height) [pending]
+    label text_card2_1_0("D-10: Export\nReady")
+    rel center(text_card2_1_0, card2_1_0)
+    assert inside(card2_1_0.nw, lane2_1) and inside(card2_1_0.ne, lane2_1) and inside(card2_1_0.sw, lane2_1) and inside(card2_1_0.se, lane2_1)
+    rect card2_1_1(card_width, card_height) [pending]
+    label text_card2_1_1("D-11: Auth\nReady")
+    rel center(text_card2_1_1, card2_1_1)
+    assert inside(card2_1_1.nw, lane2_1) and inside(card2_1_1.ne, lane2_1) and inside(card2_1_1.sw, lane2_1) and inside(card2_1_1.se, lane2_1)
+    assert gap_y(card2_1_0, card2_1_1)
+    rect card2_1_2(card_width, card_height) [pending]
+    label text_card2_1_2("D-12: Cache\nReady")
+    rel center(text_card2_1_2, card2_1_2)
+    assert inside(card2_1_2.nw, lane2_1) and inside(card2_1_2.ne, lane2_1) and inside(card2_1_2.sw, lane2_1) and inside(card2_1_2.se, lane2_1)
+    assert gap_y(card2_1_1, card2_1_2)
+    rel column(title2_1, card2_1_0, card2_1_1, card2_1_2)
+    group contents(title2_1, card2_1_0, card2_1_1, card2_1_2)
+    rel center(contents, lane2_1)
+    rel contain(lane2_1, contents)
+}
+
+fn board_lane2_2() {
+    rect lane2_2() [lane]
+    label title2_2("Doing (2)")
+    rect card2_2_0(card_width, card_height) [active]
+    label text_card2_2_0("D-20: Auth\nBuild")
+    rel center(text_card2_2_0, card2_2_0)
+    assert inside(card2_2_0.nw, lane2_2) and inside(card2_2_0.ne, lane2_2) and inside(card2_2_0.sw, lane2_2) and inside(card2_2_0.se, lane2_2)
+    rect card2_2_1(card_width, card_height) [active]
+    label text_card2_2_1("D-21: Cache\nBuild")
+    rel center(text_card2_2_1, card2_2_1)
+    assert inside(card2_2_1.nw, lane2_2) and inside(card2_2_1.ne, lane2_2) and inside(card2_2_1.sw, lane2_2) and inside(card2_2_1.se, lane2_2)
+    assert gap_y(card2_2_0, card2_2_1)
+    rel column(title2_2, card2_2_0, card2_2_1)
+    group contents(title2_2, card2_2_0, card2_2_1)
+    rel center(contents, lane2_2)
+    rel contain(lane2_2, contents)
+}
+
+fn board_lane2_3() {
+    rect lane2_3() [lane]
+    label title2_3("Review (3)")
+    rect card2_3_0(card_width, card_height) [active]
+    label text_card2_3_0("D-30: Cache\nReview")
+    rel center(text_card2_3_0, card2_3_0)
+    assert inside(card2_3_0.nw, lane2_3) and inside(card2_3_0.ne, lane2_3) and inside(card2_3_0.sw, lane2_3) and inside(card2_3_0.se, lane2_3)
+    rect card2_3_1(card_width, card_height) [active]
+    label text_card2_3_1("D-31: Tracing\nReview")
+    rel center(text_card2_3_1, card2_3_1)
+    assert inside(card2_3_1.nw, lane2_3) and inside(card2_3_1.ne, lane2_3) and inside(card2_3_1.sw, lane2_3) and inside(card2_3_1.se, lane2_3)
+    assert gap_y(card2_3_0, card2_3_1)
+    rect card2_3_2(card_width, card_height) [active]
+    label text_card2_3_2("D-32: Billing\nReview")
+    rel center(text_card2_3_2, card2_3_2)
+    assert inside(card2_3_2.nw, lane2_3) and inside(card2_3_2.ne, lane2_3) and inside(card2_3_2.sw, lane2_3) and inside(card2_3_2.se, lane2_3)
+    assert gap_y(card2_3_1, card2_3_2)
+    rel column(title2_3, card2_3_0, card2_3_1, card2_3_2)
+    group contents(title2_3, card2_3_0, card2_3_1, card2_3_2)
+    rel center(contents, lane2_3)
+    rel contain(lane2_3, contents)
+}
+
+fn board_lane2_4() {
+    rect lane2_4() [lane]
+    label title2_4("Done (2)")
+    rect card2_4_0(card_width, card_height) [complete]
+    label text_card2_4_0("D-40: Tracing\nShipped")
+    rel center(text_card2_4_0, card2_4_0)
+    assert inside(card2_4_0.nw, lane2_4) and inside(card2_4_0.ne, lane2_4) and inside(card2_4_0.sw, lane2_4) and inside(card2_4_0.se, lane2_4)
+    rect card2_4_1(card_width, card_height) [complete]
+    label text_card2_4_1("D-41: Billing\nShipped")
+    rel center(text_card2_4_1, card2_4_1)
+    assert inside(card2_4_1.nw, lane2_4) and inside(card2_4_1.ne, lane2_4) and inside(card2_4_1.sw, lane2_4) and inside(card2_4_1.se, lane2_4)
+    assert gap_y(card2_4_0, card2_4_1)
+    rel column(title2_4, card2_4_0, card2_4_1)
+    group contents(title2_4, card2_4_0, card2_4_1)
+    rel center(contents, lane2_4)
+    rel contain(lane2_4, contents)
+}
+
+board_lane0_0 cell0_0()
+board_lane0_1 cell0_1()
+board_lane0_2 cell0_2()
+board_lane0_3 cell0_3()
+board_lane0_4 cell0_4()
+board_lane1_0 cell1_0()
+board_lane1_1 cell1_1()
+board_lane1_2 cell1_2()
+board_lane1_3 cell1_3()
+board_lane1_4 cell1_4()
+board_lane2_0 cell2_0()
+board_lane2_1 cell2_1()
+board_lane2_2 cell2_2()
+board_lane2_3 cell2_3()
+board_lane2_4 cell2_4()
+label team0("Platform")
+rel row(cell0_0, cell0_1, cell0_2, cell0_3, cell0_4)
+rel gap_x(team0, cell0_0)
+rel align_center_y(team0, cell0_0)
+label team1("Web")
+rel row(cell1_0, cell1_1, cell1_2, cell1_3, cell1_4)
+rel gap_x(team1, cell1_0)
+rel align_center_y(team1, cell1_0)
+label team2("Data")
+rel row(cell2_0, cell2_1, cell2_2, cell2_3, cell2_4)
+rel gap_x(team2, cell2_0)
+rel align_center_y(team2, cell2_0)
+rel column(cell0_0, cell1_0, cell2_0)
+rel column(cell0_1, cell1_1, cell2_1)
+rel column(cell0_2, cell1_2, cell2_2)
+rel column(cell0_3, cell1_3, cell2_3)
+rel column(cell0_4, cell1_4, cell2_4)
+arrow blocked_by(cell1_2.card1_2_0.n, cell0_2.card0_2_1.s) [construction] { bend: 25deg }
+arrow review_dependency(cell2_3.card2_3_0.n, cell1_3.card1_3_1.s) [construction] { bend: -25deg }
+num doing_count = cell0_2.card0_2_0.width / card_width + cell0_2.card0_2_1.width / card_width + cell1_2.card1_2_0.width / card_width + cell1_2.card1_2_1.width / card_width + cell1_2.card1_2_2.width / card_width + cell2_2.card2_2_0.width / card_width + cell2_2.card2_2_1.width / card_width
 num wip_limit = 8
 assert doing_count == 7
 assert doing_count <= wip_limit

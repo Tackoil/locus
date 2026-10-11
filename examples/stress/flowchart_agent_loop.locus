@@ -8,34 +8,35 @@ style textbook
 // ---- sizing constants --------------------------------------
 num bw    = 3.4        // box width
 num bh    = 1.1        // box height
-num pitch = 2.3        // vertical center-to-center pitch
-num side  = 5.6        // offset to the fix branch
 
 // ---- spine nodes --------------------------------------------
 rect n1(bw, bh)
 point N1 = n1.center { mark: none }
 label t1(n1.center, "locus init")  { dir: center }
 
-rect n2(bw, bh) where { align_center_x(N1, n2.center), vdist(n2.center, N1) == pitch }
+rect n2(bw, bh)
 point N2 = n2.center { mark: none }
 label t2(n2.center, "locus add < ops.locus")  { dir: center }
 
-rect n3(bw, bh) where { align_center_x(N2, n3.center), vdist(n3.center, N2) == pitch }
+rect n3(bw, bh)
 point N3 = n3.center { mark: none }
 label t3(n3.center, "locus check")  { dir: center }
 
-diamond n4(3.2, 1.5) where { align_center_x(N3, n4.center), vdist(n4.center, N3) == pitch }
+diamond n4(3.2, 1.5)
 point N4 = n4.center { mark: none }
 label t4(n4.center, "exit 0?")  { dir: center }
 
-rect n5(bw, bh) where { align_center_x(N4, n5.center), vdist(n5.center, N4) == pitch }   [highlight]
+rect n5(bw, bh)   [highlight]
 point N5 = n5.center { mark: none }
 label t5(n5.center, "locus render -o fig.svg")  { dir: center }
 
 // ---- side node: fix ------------------------------------------
-rect nf(bw, bh) where { align_center_y(N4, nf.center), hdist(N4, nf.center) == side }
+rect nf(bw, bh)
 point NF = nf.center { mark: none }
 label tf(nf.center, "fix ops (update / edit)")  { dir: center }
+
+rel column(n1, n2, n3, n4, n5)
+rel row(n4, nf)
 
 // ---- edges ----------------------------------------------------
 arrow a1(n1.s, n2.n)  { head: -> }
@@ -55,70 +56,81 @@ assert align_center_y(N4, NF)                          // fix branch on the deci
 
 // ---- stress construction network ----
 // The original authoring loop expands into solver, rejection, and export branches.
-point stage0 = offset(N5, 0.0, -3) { mark: none }
-rect state0(stage0, 4.5, 1.4)
+rect state0(4.5, 1.4)
+point stage0 = state0.center { mark: none }
 label title0(state0.center, "Validate schema") { dir: center }
 assert state0.width == 4.5
-point stage1 = offset(N5, 5.6, -3) { mark: none }
-diamond state1(stage1, 4.5, 1.4)
+diamond state1(4.5, 1.4)
+point stage1 = state1.center { mark: none }
 label title1(state1.center, "Inputs valid?") { dir: center }
 assert state1.width == 4.5
-point stage2 = offset(N5, 11.2, -3) { mark: none }
-rect state2(stage2, 4.5, 1.4)
+rect state2(translate(state1.center, state0.center, state1.center), 4.5, 1.4)
+point stage2 = state2.center { mark: none }
 label title2(state2.center, "Select branch") { dir: center }
 assert state2.width == 4.5
-point stage3 = offset(N5, 16.799999999999997, -3) { mark: none }
-rect state3(stage3, 4.5, 1.4)
+rect state3(translate(state2.center, state0.center, state1.center), 4.5, 1.4)
+point stage3 = state3.center { mark: none }
 label title3(state3.center, "Build Jacobian") { dir: center }
 assert state3.width == 4.5
-point stage4 = offset(N5, 0.0, -6) { mark: none }
-rect state4(stage4, 4.5, 1.4)
+rect state4(4.5, 1.4)
+point stage4 = state4.center { mark: none }
 label title4(state4.center, "Measure residual") { dir: center }
 assert state4.width == 4.5
-point stage5 = offset(N5, 5.6, -6) { mark: none }
-diamond state5(stage5, 4.5, 1.4)
+diamond state5(translate(state4.center, state0.center, state1.center), 4.5, 1.4)
+point stage5 = state5.center { mark: none }
 label title5(state5.center, "Converged?") { dir: center }
 assert state5.width == 4.5
-point stage6 = offset(N5, 11.2, -6) { mark: none }
-rect state6(stage6, 4.5, 1.4)
+rect state6(translate(state5.center, state0.center, state1.center), 4.5, 1.4)
+point stage6 = state6.center { mark: none }
 label title6(state6.center, "Try LM step") { dir: center }
 assert state6.width == 4.5
-point stage7 = offset(N5, 16.799999999999997, -6) { mark: none }
-diamond state7(stage7, 4.5, 1.4)
+diamond state7(translate(state6.center, state0.center, state1.center), 4.5, 1.4)
+point stage7 = state7.center { mark: none }
 label title7(state7.center, "Domain valid?") { dir: center }
 assert state7.width == 4.5
-point stage8 = offset(N5, 0.0, -9) { mark: none }
-diamond state8(stage8, 4.5, 1.4)
+diamond state8(translate(state4.center, state0.center, state4.center), 4.5, 1.4)
+point stage8 = state8.center { mark: none }
 label title8(state8.center, "Accept trial?") { dir: center }
 assert state8.width == 4.5
-point stage9 = offset(N5, 5.6, -9) { mark: none }
-rect state9(stage9, 4.5, 1.4)
+rect state9(translate(state8.center, state0.center, state1.center), 4.5, 1.4)
+point stage9 = state9.center { mark: none }
 label title9(state9.center, "Lower damping") { dir: center }
 assert state9.width == 4.5
-point stage10 = offset(N5, 11.2, -9) { mark: none }
-rect state10(stage10, 4.5, 1.4)
+rect state10(translate(state9.center, state0.center, state1.center), 4.5, 1.4)
+point stage10 = state10.center { mark: none }
 label title10(state10.center, "Raise damping") { dir: center }
 assert state10.width == 4.5
-point stage11 = offset(N5, 16.799999999999997, -9) { mark: none }
-diamond state11(stage11, 4.5, 1.4)
+diamond state11(translate(state10.center, state0.center, state1.center), 4.5, 1.4)
+point stage11 = state11.center { mark: none }
 label title11(state11.center, "Budget left?") { dir: center }
 assert state11.width == 4.5
-point stage12 = offset(N5, 0.0, -12) { mark: none }
-rect state12(stage12, 4.5, 1.4)
+rect state12(translate(state8.center, state0.center, state4.center), 4.5, 1.4)
+point stage12 = state12.center { mark: none }
 label title12(state12.center, "Check assertions") { dir: center }
 assert state12.width == 4.5
-point stage13 = offset(N5, 5.6, -12) { mark: none }
-diamond state13(stage13, 4.5, 1.4)
+diamond state13(translate(state12.center, state0.center, state1.center), 4.5, 1.4)
+point stage13 = state13.center { mark: none }
 label title13(state13.center, "Assertions pass?") { dir: center }
 assert state13.width == 4.5
-point stage14 = offset(N5, 11.2, -12) { mark: none }
-rect state14(stage14, 4.5, 1.4)
+rect state14(translate(state13.center, state0.center, state1.center), 4.5, 1.4)
+point stage14 = state14.center { mark: none }
 label title14(state14.center, "Render outputs") { dir: center }
 assert state14.width == 4.5
-point stage15 = offset(N5, 16.799999999999997, -12) { mark: none }
-rect state15(stage15, 4.5, 1.4)
+rect state15(translate(state14.center, state0.center, state1.center), 4.5, 1.4)
+point stage15 = state15.center { mark: none }
 label title15(state15.center, "Report failure") { dir: center }
 assert state15.width == 4.5
+// Solver-state rows and columns preserve the topology of the constraint graph.
+rel row(state0, state1, state2, state3)
+rel row(state4, state5, state6, state7)
+rel row(state8, state9, state10, state11)
+rel row(state12, state13, state14, state15)
+rel column(state0, state4, state8, state12)
+rel column(state1, state5, state9, state13)
+rel column(state2, state6, state10, state14)
+rel column(state3, state7, state11, state15)
+rel gap_y(n5, state0, state4, state8, state12)
+rel align_center_x(n5, state0)
 arrow solver_edge0(state0.s, state1.n) { bend: -18deg }
 arrow solver_edge1(state1.s, state2.n) { bend: 0deg }
 arrow solver_edge2(state1.s, state15.n) { bend: 18deg }
@@ -158,14 +170,18 @@ fn beta6_step(text, appearance) {
     rel contain(shape, caption)
 }
 
-fn beta6_pair(first_text, second_text) {
-    beta6_step first(first_text, main)
-    beta6_step second(second_text, highlight)
+// Repeated states share measured dimensions; every caption is still contained.
+fn beta6_step_like(text, appearance, template) {
+    rounded_rect shape(template.width, template.height, template.corner_radius) [appearance]
+    label caption(text) [main]
+    rel center(caption, shape)
+    rel contain(shape, caption)
+}
+
+fn beta6_pair_relations(first, second) {
     group stages(first, second)
     group repeated(stages, first, second)
     rel column(stages)
-    rel second.shape.width == first.shape.width
-    rel second.shape.height == first.shape.height
 
     // Clip center-to-center paths without changing their logical measurements.
     arrow forward(first.shape.center, second.shape.center)
@@ -184,22 +200,36 @@ fn beta6_pair(first_text, second_text) {
     assert on(first.shape.e, first.shape) and on(second.shape.e, second.shape)
 }
 
+fn beta6_pair(first_text, second_text) {
+    beta6_step first(first_text, main)
+    beta6_step second(second_text, highlight)
+    rel second.shape.width == first.shape.width
+    rel second.shape.height == first.shape.height
+    beta6_pair_relations links(first, second)
+}
+
+fn beta6_pair_like(first_text, second_text, first_template, second_template) {
+    beta6_step_like first(first_text, main, first_template)
+    beta6_step_like second(second_text, highlight, second_template)
+    beta6_pair_relations links(first, second)
+}
+
 beta6_pair beta6_pair0("State 0", "A measured retry caption for state 0")
-beta6_pair beta6_pair1("State 1", "A measured retry caption for state 1") [construction]
-beta6_pair beta6_pair2("State 2", "A measured retry caption for state 2")
-beta6_pair beta6_pair3("State 3", "A measured retry caption for state 3") [construction]
-beta6_pair beta6_pair4("State 4", "A measured retry caption for state 4")
-beta6_pair beta6_pair5("State 5", "A measured retry caption for state 5") [construction]
-beta6_pair beta6_pair6("State 6", "A measured retry caption for state 6")
-beta6_pair beta6_pair7("State 7", "A measured retry caption for state 7") [construction]
-beta6_pair beta6_pair8("State 8", "A measured retry caption for state 8")
-beta6_pair beta6_pair9("State 9", "A measured retry caption for state 9") [construction]
-beta6_pair beta6_pair10("State 10", "A measured retry caption for state 10")
-beta6_pair beta6_pair11("State 11", "A measured retry caption for state 11") [construction]
-beta6_pair beta6_pair12("State 12", "A measured retry caption for state 12")
-beta6_pair beta6_pair13("State 13", "A measured retry caption for state 13") [construction]
-beta6_pair beta6_pair14("State 14", "A measured retry caption for state 14")
-beta6_pair beta6_pair15("State 15", "A measured retry caption for state 15") [construction]
+beta6_pair_like beta6_pair1("State 1", "A measured retry caption for state 1", beta6_pair0.first.shape, beta6_pair0.second.shape) [construction]
+beta6_pair_like beta6_pair2("State 2", "A measured retry caption for state 2", beta6_pair0.first.shape, beta6_pair0.second.shape)
+beta6_pair_like beta6_pair3("State 3", "A measured retry caption for state 3", beta6_pair0.first.shape, beta6_pair0.second.shape) [construction]
+beta6_pair_like beta6_pair4("State 4", "A measured retry caption for state 4", beta6_pair0.first.shape, beta6_pair0.second.shape)
+beta6_pair_like beta6_pair5("State 5", "A measured retry caption for state 5", beta6_pair0.first.shape, beta6_pair0.second.shape) [construction]
+beta6_pair_like beta6_pair6("State 6", "A measured retry caption for state 6", beta6_pair0.first.shape, beta6_pair0.second.shape)
+beta6_pair_like beta6_pair7("State 7", "A measured retry caption for state 7", beta6_pair0.first.shape, beta6_pair0.second.shape) [construction]
+beta6_pair_like beta6_pair8("State 8", "A measured retry caption for state 8", beta6_pair0.first.shape, beta6_pair0.second.shape)
+beta6_pair_like beta6_pair9("State 9", "A measured retry caption for state 9", beta6_pair0.first.shape, beta6_pair0.second.shape) [construction]
+beta6_pair_like beta6_pair10("State 10", "A measured retry caption for state 10", beta6_pair0.first.shape, beta6_pair0.second.shape)
+beta6_pair_like beta6_pair11("State 11", "A measured retry caption for state 11", beta6_pair0.first.shape, beta6_pair0.second.shape) [construction]
+beta6_pair_like beta6_pair12("State 12", "A measured retry caption for state 12", beta6_pair0.first.shape, beta6_pair0.second.shape)
+beta6_pair_like beta6_pair13("State 13", "A measured retry caption for state 13", beta6_pair0.first.shape, beta6_pair0.second.shape) [construction]
+beta6_pair_like beta6_pair14("State 14", "A measured retry caption for state 14", beta6_pair0.first.shape, beta6_pair0.second.shape)
+beta6_pair_like beta6_pair15("State 15", "A measured retry caption for state 15", beta6_pair0.first.shape, beta6_pair0.second.shape) [construction]
 group beta6_row0(beta6_pair0, beta6_pair1, beta6_pair2, beta6_pair3)
 rel row(beta6_row0)
 group beta6_row1(beta6_pair4, beta6_pair5, beta6_pair6, beta6_pair7)

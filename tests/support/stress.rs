@@ -36,12 +36,14 @@ impl Case {
             self.name,
             parsed.diagnostics
         );
+        let expanded = locus_syntax::expand(&parsed.file);
         assert!(
-            parsed.diagnostics.is_empty(),
-            "{}: expected a valid locus 0 beta 6 file",
-            self.name
+            expanded.diagnostics.is_empty(),
+            "{}: {:?}",
+            self.name,
+            expanded.diagnostics
         );
-        let count = parsed
+        let count = expanded
             .file
             .statements
             .iter()

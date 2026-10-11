@@ -1,8 +1,12 @@
 locus 0 beta 6
 
 point origin()
-rect a(offset(origin, -2, 0), 2, 2)
-rect b(offset(origin, 2, 0), 2, 2)
+rect a(2, 2)
+rel align_center_y(origin,a)
+rel hdist(origin,a.center) == -2
+rect b(2, 2)
+rel align_center_y(origin,b)
+rel hdist(origin,b.center) == 2
 group pair(a, b)
 rect middle(1, 1)
 rect corner(1, 1)

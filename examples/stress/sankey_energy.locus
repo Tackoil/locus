@@ -6,297 +6,338 @@ meta note = "Twenty-eight weighted polygon bands split and merge across two stag
 style textbook
 
 class node { accent: gray, fill: tint }
-point O() { mark: none }
 num scale = 0.12
 class flow0 { accent: #14B8A6, fill: #14B8A6, opacity: 0.55 }
 class flow1 { accent: #3B82F6, fill: #3B82F6, opacity: 0.55 }
 class flow2 { accent: #F59E0B, fill: #F59E0B, opacity: 0.55 }
 class flow3 { accent: #A855F7, fill: #A855F7, opacity: 0.55 }
-point center0_0 = offset(O, 0, 8 - (0 + 40/2) * scale - 0 * 1.6) { mark: none }
-point center0_1 = offset(O, 0, 8 - (40 + 35/2) * scale - 1 * 1.6) { mark: none }
-point center0_2 = offset(O, 0, 8 - (75 + 25/2) * scale - 2 * 1.6) { mark: none }
-point center1_0 = offset(O, 10, 8 - (0 + 32/2) * scale - 0 * 1.6) { mark: none }
-point center1_1 = offset(O, 10, 8 - (32 + 26/2) * scale - 1 * 1.6) { mark: none }
-point center1_2 = offset(O, 10, 8 - (58 + 26/2) * scale - 2 * 1.6) { mark: none }
-point center1_3 = offset(O, 10, 8 - (84 + 16/2) * scale - 3 * 1.6) { mark: none }
-point center2_0 = offset(O, 20, 8 - (0 + 40/2) * scale - 0 * 1.6) { mark: none }
-point center2_1 = offset(O, 20, 8 - (40 + 28/2) * scale - 1 * 1.6) { mark: none }
-point center2_2 = offset(O, 20, 8 - (68 + 22/2) * scale - 2 * 1.6) { mark: none }
-point center2_3 = offset(O, 20, 8 - (90 + 10/2) * scale - 3 * 1.6) { mark: none }
+// Node heights encode values; columns and gaps are chosen by layout.
 num flow0_0_0 = 18
-point f0_0_0st = offset(center0_0, 0.3, 20.0 * scale) { mark: none }
-point f0_0_0sb = offset(f0_0_0st, 0, -flow0_0_0 * scale) { mark: none }
-point f0_0_0tt = offset(center1_0, -0.3, 16.0 * scale) { mark: none }
-point f0_0_0tb = offset(f0_0_0tt, 0, -flow0_0_0 * scale) { mark: none }
+num flow0_0_1 = 12
+num flow0_0_2 = 6
+num flow0_0_3 = 4
+num flow0_1_0 = 10
+num flow0_1_1 = 8
+num flow0_1_2 = 12
+num flow0_1_3 = 5
+num flow0_2_0 = 4
+num flow0_2_1 = 6
+num flow0_2_2 = 8
+num flow0_2_3 = 7
+num flow1_0_0 = 20
+num flow1_0_1 = 6
+num flow1_0_2 = 4
+num flow1_0_3 = 2
+num flow1_1_0 = 10
+num flow1_1_1 = 10
+num flow1_1_2 = 4
+num flow1_1_3 = 2
+num flow1_2_0 = 6
+num flow1_2_1 = 8
+num flow1_2_2 = 10
+num flow1_2_3 = 2
+num flow1_3_0 = 4
+num flow1_3_1 = 4
+num flow1_3_2 = 4
+num flow1_3_3 = 4
+rect node0_0(0.6, 40 * scale) [node]
+point center0_0 = node0_0.center { mark: none }
+label label0_0("Source 1: 40")
+rel align_center_x(label0_0, node0_0)
+rel gap_y(label0_0, node0_0)
+rect node0_1(0.6, 35 * scale) [node]
+point center0_1 = node0_1.center { mark: none }
+label label0_1("Source 2: 35")
+rel align_center_x(label0_1, node0_1)
+rel gap_y(label0_1, node0_1)
+rect node0_2(0.6, 25 * scale) [node]
+point center0_2 = node0_2.center { mark: none }
+label label0_2("Source 3: 25")
+rel align_center_x(label0_2, node0_2)
+rel gap_y(label0_2, node0_2)
+rect node1_0(0.6, 32 * scale) [node]
+point center1_0 = node1_0.center { mark: none }
+label label1_0("Process 1: 32")
+rel align_center_x(label1_0, node1_0)
+rel gap_y(label1_0, node1_0)
+rect node1_1(0.6, 26 * scale) [node]
+point center1_1 = node1_1.center { mark: none }
+label label1_1("Process 2: 26")
+rel align_center_x(label1_1, node1_1)
+rel gap_y(label1_1, node1_1)
+rect node1_2(0.6, 26 * scale) [node]
+point center1_2 = node1_2.center { mark: none }
+label label1_2("Process 3: 26")
+rel align_center_x(label1_2, node1_2)
+rel gap_y(label1_2, node1_2)
+rect node1_3(0.6, 16 * scale) [node]
+point center1_3 = node1_3.center { mark: none }
+label label1_3("Process 4: 16")
+rel align_center_x(label1_3, node1_3)
+rel gap_y(label1_3, node1_3)
+rect node2_0(0.6, 40 * scale) [node]
+point center2_0 = node2_0.center { mark: none }
+label label2_0("Output 1: 40")
+rel align_center_x(label2_0, node2_0)
+rel gap_y(label2_0, node2_0)
+rect node2_1(0.6, 28 * scale) [node]
+point center2_1 = node2_1.center { mark: none }
+label label2_1("Output 2: 28")
+rel align_center_x(label2_1, node2_1)
+rel gap_y(label2_1, node2_1)
+rect node2_2(0.6, 22 * scale) [node]
+point center2_2 = node2_2.center { mark: none }
+label label2_2("Output 3: 22")
+rel align_center_x(label2_2, node2_2)
+rel gap_y(label2_2, node2_2)
+rect node2_3(0.6, 10 * scale) [node]
+point center2_3 = node2_3.center { mark: none }
+label label2_3("Output 4: 10")
+rel align_center_x(label2_3, node2_3)
+rel gap_y(label2_3, node2_3)
+group stage0(node0_0, label0_0, node0_1, label0_1, node0_2, label0_2)
+rel column(node0_0, node0_1, node0_2)
+group stage1(node1_0, label1_0, node1_1, label1_1, node1_2, label1_2, node1_3, label1_3)
+rel column(node1_0, node1_1, node1_2, node1_3)
+group stage2(node2_0, label2_0, node2_1, label2_1, node2_2, label2_2, node2_3, label2_3)
+rel column(node2_0, node2_1, node2_2, node2_3)
+rel gap_x(stage0, stage1, stage2)
+rel align_top(stage0, stage1, stage2)
+// Each heading belongs to its node's stage and clears the preceding node.
+rel gap_y(node0_0, label0_1)
+rel gap_y(node0_1, label0_2)
+rel gap_y(node1_0, label1_1)
+rel gap_y(node1_1, label1_2)
+rel gap_y(node1_2, label1_3)
+rel gap_y(node2_0, label2_1)
+rel gap_y(node2_1, label2_2)
+rel gap_y(node2_2, label2_3)
+
+// Bands partition the incoming and outgoing edges in flow order.
+point f0_0_0st = lerp(node0_0.ne, node0_0.se, (0) / 40) { mark: none }
+point f0_0_0sb = lerp(node0_0.ne, node0_0.se, (flow0_0_0) / 40) { mark: none }
+point f0_0_0tt = lerp(node1_0.nw, node1_0.sw, (0) / 32) { mark: none }
+point f0_0_0tb = lerp(node1_0.nw, node1_0.sw, (flow0_0_0) / 32) { mark: none }
 polygon f0_0_0band(f0_0_0sb, f0_0_0st, f0_0_0tt, f0_0_0tb) [flow0]
 assert vdist(f0_0_0sb, f0_0_0st) / scale == 18
 assert vdist(f0_0_0sb, f0_0_0st) == vdist(f0_0_0tb, f0_0_0tt)
 assert area(f0_0_0band) == 18 * scale * hdist(f0_0_0st, f0_0_0tt)
-num flow0_0_1 = 12
-point f0_0_1st = offset(center0_0, 0.3, 2.0 * scale) { mark: none }
-point f0_0_1sb = offset(f0_0_1st, 0, -flow0_0_1 * scale) { mark: none }
-point f0_0_1tt = offset(center1_1, -0.3, 13.0 * scale) { mark: none }
-point f0_0_1tb = offset(f0_0_1tt, 0, -flow0_0_1 * scale) { mark: none }
+point f0_0_1st = lerp(node0_0.ne, node0_0.se, (flow0_0_0) / 40) { mark: none }
+point f0_0_1sb = lerp(node0_0.ne, node0_0.se, (flow0_0_0 + flow0_0_1) / 40) { mark: none }
+point f0_0_1tt = lerp(node1_1.nw, node1_1.sw, (0) / 26) { mark: none }
+point f0_0_1tb = lerp(node1_1.nw, node1_1.sw, (flow0_0_1) / 26) { mark: none }
 polygon f0_0_1band(f0_0_1sb, f0_0_1st, f0_0_1tt, f0_0_1tb) [flow1]
 assert vdist(f0_0_1sb, f0_0_1st) / scale == 12
 assert vdist(f0_0_1sb, f0_0_1st) == vdist(f0_0_1tb, f0_0_1tt)
 assert area(f0_0_1band) == 12 * scale * hdist(f0_0_1st, f0_0_1tt)
-num flow0_0_2 = 6
-point f0_0_2st = offset(center0_0, 0.3, -10.0 * scale) { mark: none }
-point f0_0_2sb = offset(f0_0_2st, 0, -flow0_0_2 * scale) { mark: none }
-point f0_0_2tt = offset(center1_2, -0.3, 13.0 * scale) { mark: none }
-point f0_0_2tb = offset(f0_0_2tt, 0, -flow0_0_2 * scale) { mark: none }
+point f0_0_2st = lerp(node0_0.ne, node0_0.se, (flow0_0_0 + flow0_0_1) / 40) { mark: none }
+point f0_0_2sb = lerp(node0_0.ne, node0_0.se, (flow0_0_0 + flow0_0_1 + flow0_0_2) / 40) { mark: none }
+point f0_0_2tt = lerp(node1_2.nw, node1_2.sw, (0) / 26) { mark: none }
+point f0_0_2tb = lerp(node1_2.nw, node1_2.sw, (flow0_0_2) / 26) { mark: none }
 polygon f0_0_2band(f0_0_2sb, f0_0_2st, f0_0_2tt, f0_0_2tb) [flow2]
 assert vdist(f0_0_2sb, f0_0_2st) / scale == 6
 assert vdist(f0_0_2sb, f0_0_2st) == vdist(f0_0_2tb, f0_0_2tt)
 assert area(f0_0_2band) == 6 * scale * hdist(f0_0_2st, f0_0_2tt)
-num flow0_0_3 = 4
-point f0_0_3st = offset(center0_0, 0.3, -16.0 * scale) { mark: none }
-point f0_0_3sb = offset(f0_0_3st, 0, -flow0_0_3 * scale) { mark: none }
-point f0_0_3tt = offset(center1_3, -0.3, 8.0 * scale) { mark: none }
-point f0_0_3tb = offset(f0_0_3tt, 0, -flow0_0_3 * scale) { mark: none }
+point f0_0_3st = lerp(node0_0.ne, node0_0.se, (flow0_0_0 + flow0_0_1 + flow0_0_2) / 40) { mark: none }
+point f0_0_3sb = lerp(node0_0.ne, node0_0.se, (flow0_0_0 + flow0_0_1 + flow0_0_2 + flow0_0_3) / 40) { mark: none }
+point f0_0_3tt = lerp(node1_3.nw, node1_3.sw, (0) / 16) { mark: none }
+point f0_0_3tb = lerp(node1_3.nw, node1_3.sw, (flow0_0_3) / 16) { mark: none }
 polygon f0_0_3band(f0_0_3sb, f0_0_3st, f0_0_3tt, f0_0_3tb) [flow3]
 assert vdist(f0_0_3sb, f0_0_3st) / scale == 4
 assert vdist(f0_0_3sb, f0_0_3st) == vdist(f0_0_3tb, f0_0_3tt)
 assert area(f0_0_3band) == 4 * scale * hdist(f0_0_3st, f0_0_3tt)
-num flow0_1_0 = 10
-point f0_1_0st = offset(center0_1, 0.3, 17.5 * scale) { mark: none }
-point f0_1_0sb = offset(f0_1_0st, 0, -flow0_1_0 * scale) { mark: none }
-point f0_1_0tt = offset(center1_0, -0.3, -2.0 * scale) { mark: none }
-point f0_1_0tb = offset(f0_1_0tt, 0, -flow0_1_0 * scale) { mark: none }
+point f0_1_0st = lerp(node0_1.ne, node0_1.se, (0) / 35) { mark: none }
+point f0_1_0sb = lerp(node0_1.ne, node0_1.se, (flow0_1_0) / 35) { mark: none }
+point f0_1_0tt = lerp(node1_0.nw, node1_0.sw, (flow0_0_0) / 32) { mark: none }
+point f0_1_0tb = lerp(node1_0.nw, node1_0.sw, (flow0_0_0 + flow0_1_0) / 32) { mark: none }
 polygon f0_1_0band(f0_1_0sb, f0_1_0st, f0_1_0tt, f0_1_0tb) [flow0]
 assert vdist(f0_1_0sb, f0_1_0st) / scale == 10
 assert vdist(f0_1_0sb, f0_1_0st) == vdist(f0_1_0tb, f0_1_0tt)
 assert area(f0_1_0band) == 10 * scale * hdist(f0_1_0st, f0_1_0tt)
-num flow0_1_1 = 8
-point f0_1_1st = offset(center0_1, 0.3, 7.5 * scale) { mark: none }
-point f0_1_1sb = offset(f0_1_1st, 0, -flow0_1_1 * scale) { mark: none }
-point f0_1_1tt = offset(center1_1, -0.3, 1.0 * scale) { mark: none }
-point f0_1_1tb = offset(f0_1_1tt, 0, -flow0_1_1 * scale) { mark: none }
+point f0_1_1st = lerp(node0_1.ne, node0_1.se, (flow0_1_0) / 35) { mark: none }
+point f0_1_1sb = lerp(node0_1.ne, node0_1.se, (flow0_1_0 + flow0_1_1) / 35) { mark: none }
+point f0_1_1tt = lerp(node1_1.nw, node1_1.sw, (flow0_0_1) / 26) { mark: none }
+point f0_1_1tb = lerp(node1_1.nw, node1_1.sw, (flow0_0_1 + flow0_1_1) / 26) { mark: none }
 polygon f0_1_1band(f0_1_1sb, f0_1_1st, f0_1_1tt, f0_1_1tb) [flow1]
 assert vdist(f0_1_1sb, f0_1_1st) / scale == 8
 assert vdist(f0_1_1sb, f0_1_1st) == vdist(f0_1_1tb, f0_1_1tt)
 assert area(f0_1_1band) == 8 * scale * hdist(f0_1_1st, f0_1_1tt)
-num flow0_1_2 = 12
-point f0_1_2st = offset(center0_1, 0.3, -0.5 * scale) { mark: none }
-point f0_1_2sb = offset(f0_1_2st, 0, -flow0_1_2 * scale) { mark: none }
-point f0_1_2tt = offset(center1_2, -0.3, 7.0 * scale) { mark: none }
-point f0_1_2tb = offset(f0_1_2tt, 0, -flow0_1_2 * scale) { mark: none }
+point f0_1_2st = lerp(node0_1.ne, node0_1.se, (flow0_1_0 + flow0_1_1) / 35) { mark: none }
+point f0_1_2sb = lerp(node0_1.ne, node0_1.se, (flow0_1_0 + flow0_1_1 + flow0_1_2) / 35) { mark: none }
+point f0_1_2tt = lerp(node1_2.nw, node1_2.sw, (flow0_0_2) / 26) { mark: none }
+point f0_1_2tb = lerp(node1_2.nw, node1_2.sw, (flow0_0_2 + flow0_1_2) / 26) { mark: none }
 polygon f0_1_2band(f0_1_2sb, f0_1_2st, f0_1_2tt, f0_1_2tb) [flow2]
 assert vdist(f0_1_2sb, f0_1_2st) / scale == 12
 assert vdist(f0_1_2sb, f0_1_2st) == vdist(f0_1_2tb, f0_1_2tt)
 assert area(f0_1_2band) == 12 * scale * hdist(f0_1_2st, f0_1_2tt)
-num flow0_1_3 = 5
-point f0_1_3st = offset(center0_1, 0.3, -12.5 * scale) { mark: none }
-point f0_1_3sb = offset(f0_1_3st, 0, -flow0_1_3 * scale) { mark: none }
-point f0_1_3tt = offset(center1_3, -0.3, 4.0 * scale) { mark: none }
-point f0_1_3tb = offset(f0_1_3tt, 0, -flow0_1_3 * scale) { mark: none }
+point f0_1_3st = lerp(node0_1.ne, node0_1.se, (flow0_1_0 + flow0_1_1 + flow0_1_2) / 35) { mark: none }
+point f0_1_3sb = lerp(node0_1.ne, node0_1.se, (flow0_1_0 + flow0_1_1 + flow0_1_2 + flow0_1_3) / 35) { mark: none }
+point f0_1_3tt = lerp(node1_3.nw, node1_3.sw, (flow0_0_3) / 16) { mark: none }
+point f0_1_3tb = lerp(node1_3.nw, node1_3.sw, (flow0_0_3 + flow0_1_3) / 16) { mark: none }
 polygon f0_1_3band(f0_1_3sb, f0_1_3st, f0_1_3tt, f0_1_3tb) [flow3]
 assert vdist(f0_1_3sb, f0_1_3st) / scale == 5
 assert vdist(f0_1_3sb, f0_1_3st) == vdist(f0_1_3tb, f0_1_3tt)
 assert area(f0_1_3band) == 5 * scale * hdist(f0_1_3st, f0_1_3tt)
-num flow0_2_0 = 4
-point f0_2_0st = offset(center0_2, 0.3, 12.5 * scale) { mark: none }
-point f0_2_0sb = offset(f0_2_0st, 0, -flow0_2_0 * scale) { mark: none }
-point f0_2_0tt = offset(center1_0, -0.3, -12.0 * scale) { mark: none }
-point f0_2_0tb = offset(f0_2_0tt, 0, -flow0_2_0 * scale) { mark: none }
+point f0_2_0st = lerp(node0_2.ne, node0_2.se, (0) / 25) { mark: none }
+point f0_2_0sb = lerp(node0_2.ne, node0_2.se, (flow0_2_0) / 25) { mark: none }
+point f0_2_0tt = lerp(node1_0.nw, node1_0.sw, (flow0_0_0 + flow0_1_0) / 32) { mark: none }
+point f0_2_0tb = lerp(node1_0.nw, node1_0.sw, (flow0_0_0 + flow0_1_0 + flow0_2_0) / 32) { mark: none }
 polygon f0_2_0band(f0_2_0sb, f0_2_0st, f0_2_0tt, f0_2_0tb) [flow0]
 assert vdist(f0_2_0sb, f0_2_0st) / scale == 4
 assert vdist(f0_2_0sb, f0_2_0st) == vdist(f0_2_0tb, f0_2_0tt)
 assert area(f0_2_0band) == 4 * scale * hdist(f0_2_0st, f0_2_0tt)
-num flow0_2_1 = 6
-point f0_2_1st = offset(center0_2, 0.3, 8.5 * scale) { mark: none }
-point f0_2_1sb = offset(f0_2_1st, 0, -flow0_2_1 * scale) { mark: none }
-point f0_2_1tt = offset(center1_1, -0.3, -7.0 * scale) { mark: none }
-point f0_2_1tb = offset(f0_2_1tt, 0, -flow0_2_1 * scale) { mark: none }
+point f0_2_1st = lerp(node0_2.ne, node0_2.se, (flow0_2_0) / 25) { mark: none }
+point f0_2_1sb = lerp(node0_2.ne, node0_2.se, (flow0_2_0 + flow0_2_1) / 25) { mark: none }
+point f0_2_1tt = lerp(node1_1.nw, node1_1.sw, (flow0_0_1 + flow0_1_1) / 26) { mark: none }
+point f0_2_1tb = lerp(node1_1.nw, node1_1.sw, (flow0_0_1 + flow0_1_1 + flow0_2_1) / 26) { mark: none }
 polygon f0_2_1band(f0_2_1sb, f0_2_1st, f0_2_1tt, f0_2_1tb) [flow1]
 assert vdist(f0_2_1sb, f0_2_1st) / scale == 6
 assert vdist(f0_2_1sb, f0_2_1st) == vdist(f0_2_1tb, f0_2_1tt)
 assert area(f0_2_1band) == 6 * scale * hdist(f0_2_1st, f0_2_1tt)
-num flow0_2_2 = 8
-point f0_2_2st = offset(center0_2, 0.3, 2.5 * scale) { mark: none }
-point f0_2_2sb = offset(f0_2_2st, 0, -flow0_2_2 * scale) { mark: none }
-point f0_2_2tt = offset(center1_2, -0.3, -5.0 * scale) { mark: none }
-point f0_2_2tb = offset(f0_2_2tt, 0, -flow0_2_2 * scale) { mark: none }
+point f0_2_2st = lerp(node0_2.ne, node0_2.se, (flow0_2_0 + flow0_2_1) / 25) { mark: none }
+point f0_2_2sb = lerp(node0_2.ne, node0_2.se, (flow0_2_0 + flow0_2_1 + flow0_2_2) / 25) { mark: none }
+point f0_2_2tt = lerp(node1_2.nw, node1_2.sw, (flow0_0_2 + flow0_1_2) / 26) { mark: none }
+point f0_2_2tb = lerp(node1_2.nw, node1_2.sw, (flow0_0_2 + flow0_1_2 + flow0_2_2) / 26) { mark: none }
 polygon f0_2_2band(f0_2_2sb, f0_2_2st, f0_2_2tt, f0_2_2tb) [flow2]
 assert vdist(f0_2_2sb, f0_2_2st) / scale == 8
 assert vdist(f0_2_2sb, f0_2_2st) == vdist(f0_2_2tb, f0_2_2tt)
 assert area(f0_2_2band) == 8 * scale * hdist(f0_2_2st, f0_2_2tt)
-num flow0_2_3 = 7
-point f0_2_3st = offset(center0_2, 0.3, -5.5 * scale) { mark: none }
-point f0_2_3sb = offset(f0_2_3st, 0, -flow0_2_3 * scale) { mark: none }
-point f0_2_3tt = offset(center1_3, -0.3, -1.0 * scale) { mark: none }
-point f0_2_3tb = offset(f0_2_3tt, 0, -flow0_2_3 * scale) { mark: none }
+point f0_2_3st = lerp(node0_2.ne, node0_2.se, (flow0_2_0 + flow0_2_1 + flow0_2_2) / 25) { mark: none }
+point f0_2_3sb = lerp(node0_2.ne, node0_2.se, (flow0_2_0 + flow0_2_1 + flow0_2_2 + flow0_2_3) / 25) { mark: none }
+point f0_2_3tt = lerp(node1_3.nw, node1_3.sw, (flow0_0_3 + flow0_1_3) / 16) { mark: none }
+point f0_2_3tb = lerp(node1_3.nw, node1_3.sw, (flow0_0_3 + flow0_1_3 + flow0_2_3) / 16) { mark: none }
 polygon f0_2_3band(f0_2_3sb, f0_2_3st, f0_2_3tt, f0_2_3tb) [flow3]
 assert vdist(f0_2_3sb, f0_2_3st) / scale == 7
 assert vdist(f0_2_3sb, f0_2_3st) == vdist(f0_2_3tb, f0_2_3tt)
 assert area(f0_2_3band) == 7 * scale * hdist(f0_2_3st, f0_2_3tt)
-num flow1_0_0 = 20
-point f1_0_0st = offset(center1_0, 0.3, 16.0 * scale) { mark: none }
-point f1_0_0sb = offset(f1_0_0st, 0, -flow1_0_0 * scale) { mark: none }
-point f1_0_0tt = offset(center2_0, -0.3, 20.0 * scale) { mark: none }
-point f1_0_0tb = offset(f1_0_0tt, 0, -flow1_0_0 * scale) { mark: none }
+point f1_0_0st = lerp(node1_0.ne, node1_0.se, (0) / 32) { mark: none }
+point f1_0_0sb = lerp(node1_0.ne, node1_0.se, (flow1_0_0) / 32) { mark: none }
+point f1_0_0tt = lerp(node2_0.nw, node2_0.sw, (0) / 40) { mark: none }
+point f1_0_0tb = lerp(node2_0.nw, node2_0.sw, (flow1_0_0) / 40) { mark: none }
 polygon f1_0_0band(f1_0_0sb, f1_0_0st, f1_0_0tt, f1_0_0tb) [flow0]
 assert vdist(f1_0_0sb, f1_0_0st) / scale == 20
 assert vdist(f1_0_0sb, f1_0_0st) == vdist(f1_0_0tb, f1_0_0tt)
 assert area(f1_0_0band) == 20 * scale * hdist(f1_0_0st, f1_0_0tt)
-num flow1_0_1 = 6
-point f1_0_1st = offset(center1_0, 0.3, -4.0 * scale) { mark: none }
-point f1_0_1sb = offset(f1_0_1st, 0, -flow1_0_1 * scale) { mark: none }
-point f1_0_1tt = offset(center2_1, -0.3, 14.0 * scale) { mark: none }
-point f1_0_1tb = offset(f1_0_1tt, 0, -flow1_0_1 * scale) { mark: none }
+point f1_0_1st = lerp(node1_0.ne, node1_0.se, (flow1_0_0) / 32) { mark: none }
+point f1_0_1sb = lerp(node1_0.ne, node1_0.se, (flow1_0_0 + flow1_0_1) / 32) { mark: none }
+point f1_0_1tt = lerp(node2_1.nw, node2_1.sw, (0) / 28) { mark: none }
+point f1_0_1tb = lerp(node2_1.nw, node2_1.sw, (flow1_0_1) / 28) { mark: none }
 polygon f1_0_1band(f1_0_1sb, f1_0_1st, f1_0_1tt, f1_0_1tb) [flow1]
 assert vdist(f1_0_1sb, f1_0_1st) / scale == 6
 assert vdist(f1_0_1sb, f1_0_1st) == vdist(f1_0_1tb, f1_0_1tt)
 assert area(f1_0_1band) == 6 * scale * hdist(f1_0_1st, f1_0_1tt)
-num flow1_0_2 = 4
-point f1_0_2st = offset(center1_0, 0.3, -10.0 * scale) { mark: none }
-point f1_0_2sb = offset(f1_0_2st, 0, -flow1_0_2 * scale) { mark: none }
-point f1_0_2tt = offset(center2_2, -0.3, 11.0 * scale) { mark: none }
-point f1_0_2tb = offset(f1_0_2tt, 0, -flow1_0_2 * scale) { mark: none }
+point f1_0_2st = lerp(node1_0.ne, node1_0.se, (flow1_0_0 + flow1_0_1) / 32) { mark: none }
+point f1_0_2sb = lerp(node1_0.ne, node1_0.se, (flow1_0_0 + flow1_0_1 + flow1_0_2) / 32) { mark: none }
+point f1_0_2tt = lerp(node2_2.nw, node2_2.sw, (0) / 22) { mark: none }
+point f1_0_2tb = lerp(node2_2.nw, node2_2.sw, (flow1_0_2) / 22) { mark: none }
 polygon f1_0_2band(f1_0_2sb, f1_0_2st, f1_0_2tt, f1_0_2tb) [flow2]
 assert vdist(f1_0_2sb, f1_0_2st) / scale == 4
 assert vdist(f1_0_2sb, f1_0_2st) == vdist(f1_0_2tb, f1_0_2tt)
 assert area(f1_0_2band) == 4 * scale * hdist(f1_0_2st, f1_0_2tt)
-num flow1_0_3 = 2
-point f1_0_3st = offset(center1_0, 0.3, -14.0 * scale) { mark: none }
-point f1_0_3sb = offset(f1_0_3st, 0, -flow1_0_3 * scale) { mark: none }
-point f1_0_3tt = offset(center2_3, -0.3, 5.0 * scale) { mark: none }
-point f1_0_3tb = offset(f1_0_3tt, 0, -flow1_0_3 * scale) { mark: none }
+point f1_0_3st = lerp(node1_0.ne, node1_0.se, (flow1_0_0 + flow1_0_1 + flow1_0_2) / 32) { mark: none }
+point f1_0_3sb = lerp(node1_0.ne, node1_0.se, (flow1_0_0 + flow1_0_1 + flow1_0_2 + flow1_0_3) / 32) { mark: none }
+point f1_0_3tt = lerp(node2_3.nw, node2_3.sw, (0) / 10) { mark: none }
+point f1_0_3tb = lerp(node2_3.nw, node2_3.sw, (flow1_0_3) / 10) { mark: none }
 polygon f1_0_3band(f1_0_3sb, f1_0_3st, f1_0_3tt, f1_0_3tb) [flow3]
 assert vdist(f1_0_3sb, f1_0_3st) / scale == 2
 assert vdist(f1_0_3sb, f1_0_3st) == vdist(f1_0_3tb, f1_0_3tt)
 assert area(f1_0_3band) == 2 * scale * hdist(f1_0_3st, f1_0_3tt)
-num flow1_1_0 = 10
-point f1_1_0st = offset(center1_1, 0.3, 13.0 * scale) { mark: none }
-point f1_1_0sb = offset(f1_1_0st, 0, -flow1_1_0 * scale) { mark: none }
-point f1_1_0tt = offset(center2_0, -0.3, 0.0 * scale) { mark: none }
-point f1_1_0tb = offset(f1_1_0tt, 0, -flow1_1_0 * scale) { mark: none }
+point f1_1_0st = lerp(node1_1.ne, node1_1.se, (0) / 26) { mark: none }
+point f1_1_0sb = lerp(node1_1.ne, node1_1.se, (flow1_1_0) / 26) { mark: none }
+point f1_1_0tt = lerp(node2_0.nw, node2_0.sw, (flow1_0_0) / 40) { mark: none }
+point f1_1_0tb = lerp(node2_0.nw, node2_0.sw, (flow1_0_0 + flow1_1_0) / 40) { mark: none }
 polygon f1_1_0band(f1_1_0sb, f1_1_0st, f1_1_0tt, f1_1_0tb) [flow0]
 assert vdist(f1_1_0sb, f1_1_0st) / scale == 10
 assert vdist(f1_1_0sb, f1_1_0st) == vdist(f1_1_0tb, f1_1_0tt)
 assert area(f1_1_0band) == 10 * scale * hdist(f1_1_0st, f1_1_0tt)
-num flow1_1_1 = 10
-point f1_1_1st = offset(center1_1, 0.3, 3.0 * scale) { mark: none }
-point f1_1_1sb = offset(f1_1_1st, 0, -flow1_1_1 * scale) { mark: none }
-point f1_1_1tt = offset(center2_1, -0.3, 8.0 * scale) { mark: none }
-point f1_1_1tb = offset(f1_1_1tt, 0, -flow1_1_1 * scale) { mark: none }
+point f1_1_1st = lerp(node1_1.ne, node1_1.se, (flow1_1_0) / 26) { mark: none }
+point f1_1_1sb = lerp(node1_1.ne, node1_1.se, (flow1_1_0 + flow1_1_1) / 26) { mark: none }
+point f1_1_1tt = lerp(node2_1.nw, node2_1.sw, (flow1_0_1) / 28) { mark: none }
+point f1_1_1tb = lerp(node2_1.nw, node2_1.sw, (flow1_0_1 + flow1_1_1) / 28) { mark: none }
 polygon f1_1_1band(f1_1_1sb, f1_1_1st, f1_1_1tt, f1_1_1tb) [flow1]
 assert vdist(f1_1_1sb, f1_1_1st) / scale == 10
 assert vdist(f1_1_1sb, f1_1_1st) == vdist(f1_1_1tb, f1_1_1tt)
 assert area(f1_1_1band) == 10 * scale * hdist(f1_1_1st, f1_1_1tt)
-num flow1_1_2 = 4
-point f1_1_2st = offset(center1_1, 0.3, -7.0 * scale) { mark: none }
-point f1_1_2sb = offset(f1_1_2st, 0, -flow1_1_2 * scale) { mark: none }
-point f1_1_2tt = offset(center2_2, -0.3, 7.0 * scale) { mark: none }
-point f1_1_2tb = offset(f1_1_2tt, 0, -flow1_1_2 * scale) { mark: none }
+point f1_1_2st = lerp(node1_1.ne, node1_1.se, (flow1_1_0 + flow1_1_1) / 26) { mark: none }
+point f1_1_2sb = lerp(node1_1.ne, node1_1.se, (flow1_1_0 + flow1_1_1 + flow1_1_2) / 26) { mark: none }
+point f1_1_2tt = lerp(node2_2.nw, node2_2.sw, (flow1_0_2) / 22) { mark: none }
+point f1_1_2tb = lerp(node2_2.nw, node2_2.sw, (flow1_0_2 + flow1_1_2) / 22) { mark: none }
 polygon f1_1_2band(f1_1_2sb, f1_1_2st, f1_1_2tt, f1_1_2tb) [flow2]
 assert vdist(f1_1_2sb, f1_1_2st) / scale == 4
 assert vdist(f1_1_2sb, f1_1_2st) == vdist(f1_1_2tb, f1_1_2tt)
 assert area(f1_1_2band) == 4 * scale * hdist(f1_1_2st, f1_1_2tt)
-num flow1_1_3 = 2
-point f1_1_3st = offset(center1_1, 0.3, -11.0 * scale) { mark: none }
-point f1_1_3sb = offset(f1_1_3st, 0, -flow1_1_3 * scale) { mark: none }
-point f1_1_3tt = offset(center2_3, -0.3, 3.0 * scale) { mark: none }
-point f1_1_3tb = offset(f1_1_3tt, 0, -flow1_1_3 * scale) { mark: none }
+point f1_1_3st = lerp(node1_1.ne, node1_1.se, (flow1_1_0 + flow1_1_1 + flow1_1_2) / 26) { mark: none }
+point f1_1_3sb = lerp(node1_1.ne, node1_1.se, (flow1_1_0 + flow1_1_1 + flow1_1_2 + flow1_1_3) / 26) { mark: none }
+point f1_1_3tt = lerp(node2_3.nw, node2_3.sw, (flow1_0_3) / 10) { mark: none }
+point f1_1_3tb = lerp(node2_3.nw, node2_3.sw, (flow1_0_3 + flow1_1_3) / 10) { mark: none }
 polygon f1_1_3band(f1_1_3sb, f1_1_3st, f1_1_3tt, f1_1_3tb) [flow3]
 assert vdist(f1_1_3sb, f1_1_3st) / scale == 2
 assert vdist(f1_1_3sb, f1_1_3st) == vdist(f1_1_3tb, f1_1_3tt)
 assert area(f1_1_3band) == 2 * scale * hdist(f1_1_3st, f1_1_3tt)
-num flow1_2_0 = 6
-point f1_2_0st = offset(center1_2, 0.3, 13.0 * scale) { mark: none }
-point f1_2_0sb = offset(f1_2_0st, 0, -flow1_2_0 * scale) { mark: none }
-point f1_2_0tt = offset(center2_0, -0.3, -10.0 * scale) { mark: none }
-point f1_2_0tb = offset(f1_2_0tt, 0, -flow1_2_0 * scale) { mark: none }
+point f1_2_0st = lerp(node1_2.ne, node1_2.se, (0) / 26) { mark: none }
+point f1_2_0sb = lerp(node1_2.ne, node1_2.se, (flow1_2_0) / 26) { mark: none }
+point f1_2_0tt = lerp(node2_0.nw, node2_0.sw, (flow1_0_0 + flow1_1_0) / 40) { mark: none }
+point f1_2_0tb = lerp(node2_0.nw, node2_0.sw, (flow1_0_0 + flow1_1_0 + flow1_2_0) / 40) { mark: none }
 polygon f1_2_0band(f1_2_0sb, f1_2_0st, f1_2_0tt, f1_2_0tb) [flow0]
 assert vdist(f1_2_0sb, f1_2_0st) / scale == 6
 assert vdist(f1_2_0sb, f1_2_0st) == vdist(f1_2_0tb, f1_2_0tt)
 assert area(f1_2_0band) == 6 * scale * hdist(f1_2_0st, f1_2_0tt)
-num flow1_2_1 = 8
-point f1_2_1st = offset(center1_2, 0.3, 7.0 * scale) { mark: none }
-point f1_2_1sb = offset(f1_2_1st, 0, -flow1_2_1 * scale) { mark: none }
-point f1_2_1tt = offset(center2_1, -0.3, -2.0 * scale) { mark: none }
-point f1_2_1tb = offset(f1_2_1tt, 0, -flow1_2_1 * scale) { mark: none }
+point f1_2_1st = lerp(node1_2.ne, node1_2.se, (flow1_2_0) / 26) { mark: none }
+point f1_2_1sb = lerp(node1_2.ne, node1_2.se, (flow1_2_0 + flow1_2_1) / 26) { mark: none }
+point f1_2_1tt = lerp(node2_1.nw, node2_1.sw, (flow1_0_1 + flow1_1_1) / 28) { mark: none }
+point f1_2_1tb = lerp(node2_1.nw, node2_1.sw, (flow1_0_1 + flow1_1_1 + flow1_2_1) / 28) { mark: none }
 polygon f1_2_1band(f1_2_1sb, f1_2_1st, f1_2_1tt, f1_2_1tb) [flow1]
 assert vdist(f1_2_1sb, f1_2_1st) / scale == 8
 assert vdist(f1_2_1sb, f1_2_1st) == vdist(f1_2_1tb, f1_2_1tt)
 assert area(f1_2_1band) == 8 * scale * hdist(f1_2_1st, f1_2_1tt)
-num flow1_2_2 = 10
-point f1_2_2st = offset(center1_2, 0.3, -1.0 * scale) { mark: none }
-point f1_2_2sb = offset(f1_2_2st, 0, -flow1_2_2 * scale) { mark: none }
-point f1_2_2tt = offset(center2_2, -0.3, 3.0 * scale) { mark: none }
-point f1_2_2tb = offset(f1_2_2tt, 0, -flow1_2_2 * scale) { mark: none }
+point f1_2_2st = lerp(node1_2.ne, node1_2.se, (flow1_2_0 + flow1_2_1) / 26) { mark: none }
+point f1_2_2sb = lerp(node1_2.ne, node1_2.se, (flow1_2_0 + flow1_2_1 + flow1_2_2) / 26) { mark: none }
+point f1_2_2tt = lerp(node2_2.nw, node2_2.sw, (flow1_0_2 + flow1_1_2) / 22) { mark: none }
+point f1_2_2tb = lerp(node2_2.nw, node2_2.sw, (flow1_0_2 + flow1_1_2 + flow1_2_2) / 22) { mark: none }
 polygon f1_2_2band(f1_2_2sb, f1_2_2st, f1_2_2tt, f1_2_2tb) [flow2]
 assert vdist(f1_2_2sb, f1_2_2st) / scale == 10
 assert vdist(f1_2_2sb, f1_2_2st) == vdist(f1_2_2tb, f1_2_2tt)
 assert area(f1_2_2band) == 10 * scale * hdist(f1_2_2st, f1_2_2tt)
-num flow1_2_3 = 2
-point f1_2_3st = offset(center1_2, 0.3, -11.0 * scale) { mark: none }
-point f1_2_3sb = offset(f1_2_3st, 0, -flow1_2_3 * scale) { mark: none }
-point f1_2_3tt = offset(center2_3, -0.3, 1.0 * scale) { mark: none }
-point f1_2_3tb = offset(f1_2_3tt, 0, -flow1_2_3 * scale) { mark: none }
+point f1_2_3st = lerp(node1_2.ne, node1_2.se, (flow1_2_0 + flow1_2_1 + flow1_2_2) / 26) { mark: none }
+point f1_2_3sb = lerp(node1_2.ne, node1_2.se, (flow1_2_0 + flow1_2_1 + flow1_2_2 + flow1_2_3) / 26) { mark: none }
+point f1_2_3tt = lerp(node2_3.nw, node2_3.sw, (flow1_0_3 + flow1_1_3) / 10) { mark: none }
+point f1_2_3tb = lerp(node2_3.nw, node2_3.sw, (flow1_0_3 + flow1_1_3 + flow1_2_3) / 10) { mark: none }
 polygon f1_2_3band(f1_2_3sb, f1_2_3st, f1_2_3tt, f1_2_3tb) [flow3]
 assert vdist(f1_2_3sb, f1_2_3st) / scale == 2
 assert vdist(f1_2_3sb, f1_2_3st) == vdist(f1_2_3tb, f1_2_3tt)
 assert area(f1_2_3band) == 2 * scale * hdist(f1_2_3st, f1_2_3tt)
-num flow1_3_0 = 4
-point f1_3_0st = offset(center1_3, 0.3, 8.0 * scale) { mark: none }
-point f1_3_0sb = offset(f1_3_0st, 0, -flow1_3_0 * scale) { mark: none }
-point f1_3_0tt = offset(center2_0, -0.3, -16.0 * scale) { mark: none }
-point f1_3_0tb = offset(f1_3_0tt, 0, -flow1_3_0 * scale) { mark: none }
+point f1_3_0st = lerp(node1_3.ne, node1_3.se, (0) / 16) { mark: none }
+point f1_3_0sb = lerp(node1_3.ne, node1_3.se, (flow1_3_0) / 16) { mark: none }
+point f1_3_0tt = lerp(node2_0.nw, node2_0.sw, (flow1_0_0 + flow1_1_0 + flow1_2_0) / 40) { mark: none }
+point f1_3_0tb = lerp(node2_0.nw, node2_0.sw, (flow1_0_0 + flow1_1_0 + flow1_2_0 + flow1_3_0) / 40) { mark: none }
 polygon f1_3_0band(f1_3_0sb, f1_3_0st, f1_3_0tt, f1_3_0tb) [flow0]
 assert vdist(f1_3_0sb, f1_3_0st) / scale == 4
 assert vdist(f1_3_0sb, f1_3_0st) == vdist(f1_3_0tb, f1_3_0tt)
 assert area(f1_3_0band) == 4 * scale * hdist(f1_3_0st, f1_3_0tt)
-num flow1_3_1 = 4
-point f1_3_1st = offset(center1_3, 0.3, 4.0 * scale) { mark: none }
-point f1_3_1sb = offset(f1_3_1st, 0, -flow1_3_1 * scale) { mark: none }
-point f1_3_1tt = offset(center2_1, -0.3, -10.0 * scale) { mark: none }
-point f1_3_1tb = offset(f1_3_1tt, 0, -flow1_3_1 * scale) { mark: none }
+point f1_3_1st = lerp(node1_3.ne, node1_3.se, (flow1_3_0) / 16) { mark: none }
+point f1_3_1sb = lerp(node1_3.ne, node1_3.se, (flow1_3_0 + flow1_3_1) / 16) { mark: none }
+point f1_3_1tt = lerp(node2_1.nw, node2_1.sw, (flow1_0_1 + flow1_1_1 + flow1_2_1) / 28) { mark: none }
+point f1_3_1tb = lerp(node2_1.nw, node2_1.sw, (flow1_0_1 + flow1_1_1 + flow1_2_1 + flow1_3_1) / 28) { mark: none }
 polygon f1_3_1band(f1_3_1sb, f1_3_1st, f1_3_1tt, f1_3_1tb) [flow1]
 assert vdist(f1_3_1sb, f1_3_1st) / scale == 4
 assert vdist(f1_3_1sb, f1_3_1st) == vdist(f1_3_1tb, f1_3_1tt)
 assert area(f1_3_1band) == 4 * scale * hdist(f1_3_1st, f1_3_1tt)
-num flow1_3_2 = 4
-point f1_3_2st = offset(center1_3, 0.3, 0.0 * scale) { mark: none }
-point f1_3_2sb = offset(f1_3_2st, 0, -flow1_3_2 * scale) { mark: none }
-point f1_3_2tt = offset(center2_2, -0.3, -7.0 * scale) { mark: none }
-point f1_3_2tb = offset(f1_3_2tt, 0, -flow1_3_2 * scale) { mark: none }
+point f1_3_2st = lerp(node1_3.ne, node1_3.se, (flow1_3_0 + flow1_3_1) / 16) { mark: none }
+point f1_3_2sb = lerp(node1_3.ne, node1_3.se, (flow1_3_0 + flow1_3_1 + flow1_3_2) / 16) { mark: none }
+point f1_3_2tt = lerp(node2_2.nw, node2_2.sw, (flow1_0_2 + flow1_1_2 + flow1_2_2) / 22) { mark: none }
+point f1_3_2tb = lerp(node2_2.nw, node2_2.sw, (flow1_0_2 + flow1_1_2 + flow1_2_2 + flow1_3_2) / 22) { mark: none }
 polygon f1_3_2band(f1_3_2sb, f1_3_2st, f1_3_2tt, f1_3_2tb) [flow2]
 assert vdist(f1_3_2sb, f1_3_2st) / scale == 4
 assert vdist(f1_3_2sb, f1_3_2st) == vdist(f1_3_2tb, f1_3_2tt)
 assert area(f1_3_2band) == 4 * scale * hdist(f1_3_2st, f1_3_2tt)
-num flow1_3_3 = 4
-point f1_3_3st = offset(center1_3, 0.3, -4.0 * scale) { mark: none }
-point f1_3_3sb = offset(f1_3_3st, 0, -flow1_3_3 * scale) { mark: none }
-point f1_3_3tt = offset(center2_3, -0.3, -1.0 * scale) { mark: none }
-point f1_3_3tb = offset(f1_3_3tt, 0, -flow1_3_3 * scale) { mark: none }
+point f1_3_3st = lerp(node1_3.ne, node1_3.se, (flow1_3_0 + flow1_3_1 + flow1_3_2) / 16) { mark: none }
+point f1_3_3sb = lerp(node1_3.ne, node1_3.se, (flow1_3_0 + flow1_3_1 + flow1_3_2 + flow1_3_3) / 16) { mark: none }
+point f1_3_3tt = lerp(node2_3.nw, node2_3.sw, (flow1_0_3 + flow1_1_3 + flow1_2_3) / 10) { mark: none }
+point f1_3_3tb = lerp(node2_3.nw, node2_3.sw, (flow1_0_3 + flow1_1_3 + flow1_2_3 + flow1_3_3) / 10) { mark: none }
 polygon f1_3_3band(f1_3_3sb, f1_3_3st, f1_3_3tt, f1_3_3tb) [flow3]
 assert vdist(f1_3_3sb, f1_3_3st) / scale == 4
 assert vdist(f1_3_3sb, f1_3_3st) == vdist(f1_3_3tb, f1_3_3tt)
 assert area(f1_3_3band) == 4 * scale * hdist(f1_3_3st, f1_3_3tt)
-rect node0_0(center0_0, 0.6, 40 * scale) [node]
-label label0_0(node0_0.n, "Source 1: 40") { dir: N }
-rect node0_1(center0_1, 0.6, 35 * scale) [node]
-label label0_1(node0_1.n, "Source 2: 35") { dir: N }
-rect node0_2(center0_2, 0.6, 25 * scale) [node]
-label label0_2(node0_2.n, "Source 3: 25") { dir: N }
-rect node1_0(center1_0, 0.6, 32 * scale) [node]
-label label1_0(node1_0.n, "Process 1: 32") { dir: N }
-rect node1_1(center1_1, 0.6, 26 * scale) [node]
-label label1_1(node1_1.n, "Process 2: 26") { dir: N }
-rect node1_2(center1_2, 0.6, 26 * scale) [node]
-label label1_2(node1_2.n, "Process 3: 26") { dir: N }
-rect node1_3(center1_3, 0.6, 16 * scale) [node]
-label label1_3(node1_3.n, "Process 4: 16") { dir: N }
-rect node2_0(center2_0, 0.6, 40 * scale) [node]
-label label2_0(node2_0.n, "Output 1: 40") { dir: N }
-rect node2_1(center2_1, 0.6, 28 * scale) [node]
-label label2_1(node2_1.n, "Output 2: 28") { dir: N }
-rect node2_2(center2_2, 0.6, 22 * scale) [node]
-label label2_2(node2_2.n, "Output 3: 22") { dir: N }
-rect node2_3(center2_3, 0.6, 10 * scale) [node]
-label label2_3(node2_3.n, "Output 4: 10") { dir: N }
 assert flow0_0_0 + flow0_1_0 + flow0_2_0 == flow1_0_0 + flow1_0_1 + flow1_0_2 + flow1_0_3
 assert node1_0.height / scale == flow0_0_0 + flow0_1_0 + flow0_2_0
 assert flow0_0_1 + flow0_1_1 + flow0_2_1 == flow1_1_0 + flow1_1_1 + flow1_1_2 + flow1_1_3

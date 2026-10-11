@@ -312,7 +312,7 @@ fn vector_and_raster_parity_cover_mixed_geometry_and_text() -> Result<(), Box<dy
 fn function_class_parameters_style_expanded_vector_and_raster_paths() -> Result<(), Box<dyn Error>>
 {
     let parsed = locus_syntax::parse(
-        "locus 0 beta 6\nclass blue_dash { accent: #2563EB, stroke: dash(12, 8), weight: 4 }\npoint start() { mark: none }\npoint finish = offset(start, 6, 0) { mark: none }\nfn connector(a, b, stroke_style) {\n    segment path(a, b) [stroke_style]\n}\nconnector signal(start, finish, blue_dash)\n",
+        "locus 0 beta 6\nclass blue_dash { accent: #2563EB, stroke: dash(12, 8), weight: 4 }\npoint start() { mark: none }\npoint finish = on_circle(circle(start, 6), 0deg) { mark: none }\nfn connector(a, b, stroke_style) {\n    segment path(a, b) [stroke_style]\n}\nconnector signal(start, finish, blue_dash)\n",
     );
     assert!(parsed.diagnostics.is_empty(), "{:?}", parsed.diagnostics);
     let (inputs, measured) = measure_file(
@@ -397,7 +397,7 @@ fn all_demonstrations_render_with_shared_measurements() -> Result<(), Box<dyn Er
 
 #[test]
 fn all_stress_sources_render_with_shared_measurements() -> Result<(), Box<dyn Error>> {
-    render_group("examples/stress", 16)
+    render_group("examples/stress", 14)
 }
 
 #[test]

@@ -224,8 +224,9 @@ fn cover(
     } else {
         vec![aggregate_content(d, &args[1..])?]
     };
+    let padding = Jet::constant(padding, container.minimum.x.gradient.len());
     for content in content {
-        cover_faces(&container, &content, name == "cover_x", padding, sink);
+        cover_faces(&container, &content, name == "cover_x", &padding, sink);
     }
     Ok(())
 }
@@ -246,7 +247,7 @@ fn cover_faces(
     container: &MeasuredBounds,
     content: &MeasuredBounds,
     horizontal: bool,
-    padding: f64,
+    padding: &Jet,
     sink: &mut Sink<'_>,
 ) {
     let (low, high) = if horizontal {
@@ -261,7 +262,7 @@ fn cover_faces(
         )
     };
     for value in [low, high] {
-        sink.requirement(value.sub(&Jet::constant(padding, value.gradient.len())));
+        sink.requirement(value.sub(padding));
     }
 }
 
@@ -276,12 +277,7 @@ fn contain(
         return Err(error(span, "contain requires a shape and content"));
     }
     let container = d.object(&args[0])?;
-    if sink.expanded && matches!(container, DObject::Polygon(_, _, true)) {
-        let bounds = measured_bounds(d, &args[0])?;
-        for content in measured_contributors(d, &args[1..])? {
-            cover_faces(&bounds, &content, true, padding, sink);
-            cover_faces(&bounds, &content, false, padding, sink);
-        }
+    if contain_straight_faces(d, &container, args, padding, sink)? {
         return Ok(());
     }
     for item in &args[1..] {
@@ -307,6 +303,36 @@ fn contain(
         }
     }
     Ok(())
+}
+
+/// Returns whether the straight faces fully describe the padded container.
+fn contain_straight_faces(
+    d: &DifferentiatedFile,
+    container: &DObject,
+    args: &[Expr],
+    padding: f64,
+    sink: &mut Sink<'_>,
+) -> Result<bool, EvalError> {
+    if !sink.expanded
+        || !matches!(
+            container,
+            DObject::Polygon(_, _, true) | DObject::RoundedRect(_)
+        )
+    {
+        return Ok(false);
+    }
+    let bounds = measured_bounds(d, &args[0])?;
+    let face_padding = match container {
+        DObject::RoundedRect(rounded) => rounded.containment_face_padding(padding),
+        _ => Jet::constant(padding, bounds.minimum.x.gradient.len()),
+    };
+    for content in measured_contributors(d, &args[1..])? {
+        cover_faces(&bounds, &content, true, &face_padding, sink);
+        cover_faces(&bounds, &content, false, &face_padding, sink);
+    }
+    // Rounded-distance rows still enforce arcs. The extra straight faces expose
+    // core ties but stay slack on arcs, avoiding nearly parallel active constraints.
+    Ok(matches!(container, DObject::Polygon(_, _, true)))
 }
 
 fn avoid(
@@ -416,7 +442,7 @@ mod tests {
 
     #[test]
     fn rectangular_containment_keeps_all_faces_across_nearest_face_switch() {
-        let source = "locus 0 beta 6\npoint origin()\nnum x = free 0\npoint item = offset(origin,x,0.5)\nrect panel(origin,2,2)\nrel contain(panel,item)\n";
+        let source = "locus 0 beta 6\npoint origin()\nnum x = free 0\npoint axis = on_circle(circle(origin, 1), 0deg)\npoint level = on_circle(circle(origin, 0.5), 90deg)\npoint item = translate(lerp(origin, axis, x), origin, level)\nrect panel(origin,2,2)\nrel contain(panel,item)\n";
         let before = at(source, 0.5 - 1e-7, 0.5);
         let after = at(source, 0.5 + 1e-7, 0.5);
         assert_eq!(before.0.inequalities.len(), 4);
@@ -426,8 +452,72 @@ mod tests {
     }
 
     #[test]
+    fn rounded_containment_keeps_both_binding_edges_at_a_corner() {
+        let source = "locus 0 beta 6\npoint origin()\nnum x = free 2\npoint east = on_circle(circle(origin, 0.75), 0deg)\npoint north = on_circle(circle(origin, 0.75), 90deg)\npoint item = translate(east, origin, north)\nrounded_rect panel(origin, 2, x, 0.08)\nrel contain(panel, item)\n";
+        let result = settle_parameter(source, 2.0, 1.0);
+        assert!(result.report.complete, "{:?}", result.report);
+        assert!((result.z[0] - 2.0).abs() < 1e-12);
+        assert!(minimum(&at(source, result.z[0], 0.5).0) > -1e-12);
+    }
+
+    fn settle_parameter(
+        source: &str,
+        initial: f64,
+        target: f64,
+    ) -> super::super::settling::SettlingResult {
+        use super::super::settling::{ConstraintState, Rows, optimize};
+
+        optimize(&[initial], |parameter| {
+            let (layout, index, scale) = at(source, parameter[0], 0.5);
+            Some(ConstraintState {
+                inequalities: Rows {
+                    values: layout
+                        .inequalities
+                        .iter()
+                        .map(|r| r.residual.value)
+                        .collect(),
+                    jacobian: layout
+                        .inequalities
+                        .iter()
+                        .map(|r| vec![r.residual.gradient[index] / scale])
+                        .collect(),
+                },
+                preferences: Rows {
+                    values: vec![parameter[0] - target],
+                    jacobian: vec![vec![1.0]],
+                },
+                ..ConstraintState::default()
+            })
+        })
+    }
+
+    #[test]
+    fn rounded_containment_allows_tangent_motion_near_a_straight_edge() {
+        let source = "locus 0 beta 6\npoint origin()\nnum x = free 90deg\npoint east = on_circle(circle(origin, 0.5), 0deg)\npoint north = on_circle(circle(origin, 0.5), 90deg)\npoint corner = translate(east, origin, north)\npoint item = on_circle(circle(corner, 0.25), x)\nrounded_rect panel(origin, 2, 2, 0.5)\nrel contain(panel, item)\n";
+        let target = core::f64::consts::PI / 3.0;
+        let result = settle_parameter(source, core::f64::consts::FRAC_PI_2 - 1e-7, target);
+        assert!(result.report.complete, "{:?}", result.report);
+        assert!((result.z[0] - target).abs() < 1e-9);
+        assert!(minimum(&at(source, result.z[0], 0.5).0) > -1e-12);
+    }
+
+    #[test]
+    fn rounded_containment_still_enforces_curved_corner_clearance() {
+        let source = "locus 0 beta 6\npoint origin()\nnum x = free 0\npoint axis = on_circle(circle(origin, 1), 0deg)\npoint level = on_circle(circle(origin, 0.72), 90deg)\npoint item = translate(lerp(origin, axis, x), origin, level)\nrounded_rect panel(origin, 2, 2, 0.5)\nrel contain(panel, item)\n";
+        let (layout, _, _) = at(source, 0.72, 0.5);
+        assert!(
+            (1.0 - 0.72) > crate::preset::LayoutMetrics::default().padding,
+            "the point clears both straight edges"
+        );
+        assert!(
+            minimum(&layout) < 0.0,
+            "the curved corner excludes the point"
+        );
+    }
+
+    #[test]
     fn loop_caption_and_geometry_exchange_the_bottom_bound_without_changing_rows() {
-        let source = "locus 0 beta 6\npoint origin()\nnum x = free 0\npoint end = offset(origin,0,-x)\npoint below = offset(origin,0,-3)\narrow path(origin,end) { route: orthogonal, side: right }\nlabel caption(path,\"Loop\") { near: middle, side: right }\ngroup content(path,caption)\nrel gap_y(content,below)\n";
+        let source = "locus 0 beta 6\npoint origin()\nnum x = free 0\npoint below = on_circle(circle(origin, 3), 270deg)\npoint end = lerp(origin, below, x / 3)\narrow path(origin,end) { route: orthogonal, side: right }\nlabel caption(path,\"Loop\") { near: middle, side: right }\ngroup content(path,caption)\nrel gap_y(content,below)\n";
         let before = at(source, 1.0 - 1e-7, 1.0);
         let after = at(source, 1.0 + 1e-7, 1.0);
         assert!(before.0.inequalities.len() > 1);

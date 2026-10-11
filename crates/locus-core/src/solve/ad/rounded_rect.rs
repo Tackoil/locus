@@ -30,6 +30,15 @@ impl RelationEvaluator<'_> {
 }
 
 impl DRoundedRect {
+    /// Straight support faces bind only when padding reaches the rounding radius.
+    /// Curved-distance rows retain the exact containment requirement everywhere.
+    pub(crate) fn containment_face_padding(&self, padding: f64) -> Jet {
+        let padding = Jet::constant(padding, self.radius.gradient.len());
+        let zero = Jet::constant(0.0, self.radius.gradient.len());
+        let slack = zero.max_live(&self.radius.sub(&padding));
+        padding.sub(&slack)
+    }
+
     pub(super) fn automatic(center: DPoint, width: Jet, height: Jet, radius: Jet) -> Self {
         Self {
             center,

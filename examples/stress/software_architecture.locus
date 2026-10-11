@@ -9,95 +9,109 @@ class boundary { accent: gray, stroke: dashed }
 class service { accent: blue, fill: tint }
 class storage { accent: teal, fill: tint }
 class async { accent: purple, stroke: dashed }
-point Origin() { mark: none }
-rect zone0(offset(Origin, 0, -6), 4.8, 15.2) [boundary]
+rect zone0() [boundary]
 label zone_title0(zone0.n, "Clients") { dir: N }
-point p_web = offset(Origin, 0, 0) { mark: none }
-rect web(p_web, 3.5, 1.2) [service]
+rect web(3.5, 1.2) [service]
+point p_web = web.center { mark: none }
 label label_web(web.center, "Web client") { dir: center }
 assert inside(web.nw, zone0) and inside(web.ne, zone0) and inside(web.sw, zone0) and inside(web.se, zone0)
-point p_mobile = offset(Origin, 0, -3) { mark: none }
-rect mobile(p_mobile, 3.5, 1.2) [service]
+rect mobile(3.5, 1.2) [service]
+point p_mobile = mobile.center { mark: none }
 label label_mobile(mobile.center, "Mobile app") { dir: center }
 assert inside(mobile.nw, zone0) and inside(mobile.ne, zone0) and inside(mobile.sw, zone0) and inside(mobile.se, zone0)
-point p_partner = offset(Origin, 0, -6) { mark: none }
-rect partner(p_partner, 3.5, 1.2) [service]
+rect partner(3.5, 1.2) [service]
+point p_partner = partner.center { mark: none }
 label label_partner(partner.center, "Partner API") { dir: center }
 assert inside(partner.nw, zone0) and inside(partner.ne, zone0) and inside(partner.sw, zone0) and inside(partner.se, zone0)
-point p_cdn = offset(Origin, 0, -9) { mark: none }
-rect cdn(p_cdn, 3.5, 1.2) [service]
+rect cdn(3.5, 1.2) [service]
+point p_cdn = cdn.center { mark: none }
 label label_cdn(cdn.center, "CDN") { dir: center }
 assert inside(cdn.nw, zone0) and inside(cdn.ne, zone0) and inside(cdn.sw, zone0) and inside(cdn.se, zone0)
-point p_monitor = offset(Origin, 0, -12) { mark: none }
-rect monitor(p_monitor, 3.5, 1.2) [service]
+rect monitor(3.5, 1.2) [service]
+point p_monitor = monitor.center { mark: none }
 label label_monitor(monitor.center, "Monitoring") { dir: center }
 assert inside(monitor.nw, zone0) and inside(monitor.ne, zone0) and inside(monitor.sw, zone0) and inside(monitor.se, zone0)
-rect zone1(offset(Origin, 6, -6), 4.8, 15.2) [boundary]
+rect zone1() [boundary]
 label zone_title1(zone1.n, "Edge and control") { dir: N }
-rect gateway(3.5, 1.2) where { hdist(Origin, gateway.center) == 6, vdist(Origin, gateway.center) == 0 } [service]
+rect gateway(3.5, 1.2) [service]
 point p_gateway = gateway.center { mark: none }
 label label_gateway(gateway.center, "API gateway") { dir: center }
 assert inside(gateway.nw, zone1) and inside(gateway.ne, zone1) and inside(gateway.sw, zone1) and inside(gateway.se, zone1)
-rect auth(3.5, 1.2) where { hdist(Origin, auth.center) == 6, vdist(Origin, auth.center) == -3 } [service]
+rect auth(3.5, 1.2) [service]
 point p_auth = auth.center { mark: none }
 label label_auth(auth.center, "Auth service") { dir: center }
 assert inside(auth.nw, zone1) and inside(auth.ne, zone1) and inside(auth.sw, zone1) and inside(auth.se, zone1)
-rect limit(3.5, 1.2) where { hdist(Origin, limit.center) == 6, vdist(Origin, limit.center) == -6 } [service]
+rect limit(3.5, 1.2) [service]
 point p_limit = limit.center { mark: none }
 label label_limit(limit.center, "Rate limiter") { dir: center }
 assert inside(limit.nw, zone1) and inside(limit.ne, zone1) and inside(limit.sw, zone1) and inside(limit.se, zone1)
-point p_events = offset(Origin, 6, -9) { mark: none }
-rect events(p_events, 3.5, 1.2) [service]
+rect events(3.5, 1.2) [service]
+point p_events = events.center { mark: none }
 label label_events(events.center, "Event ingress") { dir: center }
 assert inside(events.nw, zone1) and inside(events.ne, zone1) and inside(events.sw, zone1) and inside(events.se, zone1)
-point p_schedule = offset(Origin, 6, -12) { mark: none }
-rect schedule(p_schedule, 3.5, 1.2) [service]
+rect schedule(3.5, 1.2) [service]
+point p_schedule = schedule.center { mark: none }
 label label_schedule(schedule.center, "Scheduler") { dir: center }
 assert inside(schedule.nw, zone1) and inside(schedule.ne, zone1) and inside(schedule.sw, zone1) and inside(schedule.se, zone1)
-rect zone2(offset(Origin, 12, -6), 4.8, 15.2) [boundary]
+rect zone2() [boundary]
 label zone_title2(zone2.n, "Application") { dir: N }
-rect catalog(3.5, 1.2) where { hdist(Origin, catalog.center) == 12, vdist(Origin, catalog.center) == 0 } [service]
+rect catalog(3.5, 1.2) [service]
 point p_catalog = catalog.center { mark: none }
 label label_catalog(catalog.center, "Catalog") { dir: center }
 assert inside(catalog.nw, zone2) and inside(catalog.ne, zone2) and inside(catalog.sw, zone2) and inside(catalog.se, zone2)
-rect orders(3.5, 1.2) where { hdist(Origin, orders.center) == 12, vdist(Origin, orders.center) == -3 } [service]
+rect orders(3.5, 1.2) [service]
 point p_orders = orders.center { mark: none }
 label label_orders(orders.center, "Orders") { dir: center }
 assert inside(orders.nw, zone2) and inside(orders.ne, zone2) and inside(orders.sw, zone2) and inside(orders.se, zone2)
-rect payments(3.5, 1.2) where { hdist(Origin, payments.center) == 12, vdist(Origin, payments.center) == -6 } [service]
+rect payments(3.5, 1.2) [service]
 point p_payments = payments.center { mark: none }
 label label_payments(payments.center, "Payments") { dir: center }
 assert inside(payments.nw, zone2) and inside(payments.ne, zone2) and inside(payments.sw, zone2) and inside(payments.se, zone2)
-point p_inventory = offset(Origin, 12, -9) { mark: none }
-rect inventory(p_inventory, 3.5, 1.2) [service]
+rect inventory(3.5, 1.2) [service]
+point p_inventory = inventory.center { mark: none }
 label label_inventory(inventory.center, "Inventory") { dir: center }
 assert inside(inventory.nw, zone2) and inside(inventory.ne, zone2) and inside(inventory.sw, zone2) and inside(inventory.se, zone2)
-point p_worker = offset(Origin, 12, -12) { mark: none }
-rect worker(p_worker, 3.5, 1.2) [service]
+rect worker(3.5, 1.2) [service]
+point p_worker = worker.center { mark: none }
 label label_worker(worker.center, "Worker pool") { dir: center }
 assert inside(worker.nw, zone2) and inside(worker.ne, zone2) and inside(worker.sw, zone2) and inside(worker.se, zone2)
-rect zone3(offset(Origin, 18, -6), 4.8, 15.2) [boundary]
+rect zone3() [boundary]
 label zone_title3(zone3.n, "Persistence") { dir: N }
-point p_products = offset(Origin, 18, 0) { mark: none }
-rect products(p_products, 3.5, 1.2) [storage]
+rect products(3.5, 1.2) [storage]
+point p_products = products.center { mark: none }
 label label_products(products.center, "Product DB") { dir: center }
 assert inside(products.nw, zone3) and inside(products.ne, zone3) and inside(products.sw, zone3) and inside(products.se, zone3)
-point p_orderdb = offset(Origin, 18, -3) { mark: none }
-rect orderdb(p_orderdb, 3.5, 1.2) [storage]
+rect orderdb(3.5, 1.2) [storage]
+point p_orderdb = orderdb.center { mark: none }
 label label_orderdb(orderdb.center, "Order DB") { dir: center }
 assert inside(orderdb.nw, zone3) and inside(orderdb.ne, zone3) and inside(orderdb.sw, zone3) and inside(orderdb.se, zone3)
-point p_cache = offset(Origin, 18, -6) { mark: none }
-rect cache(p_cache, 3.5, 1.2) [storage]
+rect cache(3.5, 1.2) [storage]
+point p_cache = cache.center { mark: none }
 label label_cache(cache.center, "Cache") { dir: center }
 assert inside(cache.nw, zone3) and inside(cache.ne, zone3) and inside(cache.sw, zone3) and inside(cache.se, zone3)
-point p_queue = offset(Origin, 18, -9) { mark: none }
-rect queue(p_queue, 3.5, 1.2) [storage]
+rect queue(3.5, 1.2) [storage]
+point p_queue = queue.center { mark: none }
 label label_queue(queue.center, "Job queue") { dir: center }
 assert inside(queue.nw, zone3) and inside(queue.ne, zone3) and inside(queue.sw, zone3) and inside(queue.se, zone3)
-point p_audit = offset(Origin, 18, -12) { mark: none }
-rect audit(p_audit, 3.5, 1.2) [storage]
+rect audit(3.5, 1.2) [storage]
+point p_audit = audit.center { mark: none }
 label label_audit(audit.center, "Audit log") { dir: center }
 assert inside(audit.nw, zone3) and inside(audit.ne, zone3) and inside(audit.sw, zone3) and inside(audit.se, zone3)
+// Boundaries follow their components; layout selects all spacing.
+rel column(web, mobile, partner, cdn, monitor)
+rel contain(zone0, web, mobile, partner, cdn, monitor)
+rel column(gateway, auth, limit, events, schedule)
+rel contain(zone1, gateway, auth, limit, events, schedule)
+rel column(catalog, orders, payments, inventory, worker)
+rel contain(zone2, catalog, orders, payments, inventory, worker)
+rel column(products, orderdb, cache, queue, audit)
+rel contain(zone3, products, orderdb, cache, queue, audit)
+rel row(zone0, zone1, zone2, zone3)
+rel align_center_y(web, gateway, catalog, products)
+rel align_center_y(mobile, auth, orders, orderdb)
+rel align_center_y(partner, limit, payments, cache)
+rel align_center_y(cdn, events, inventory, queue)
+rel align_center_y(monitor, schedule, worker, audit)
 arrow edge0(web.e, gateway.w) [main] { bend: -12deg }
 arrow edge1(mobile.e, gateway.w) [main] { bend: 0deg }
 arrow edge2(partner.e, gateway.w) [main] { bend: 12deg }
@@ -130,22 +144,22 @@ arrow edge28(partner.e, events.w) [async] { bend: 0deg }
 arrow edge29(mobile.e, auth.w) [async] { bend: 12deg }
 arrow edge30(web.e, cdn.w) [async] { bend: -12deg }
 arrow edge31(schedule.e, worker.w) [async] { bend: 0deg }
-assert vdist(mobile.n, web.s) == 1.8
-assert vdist(partner.n, mobile.s) == 1.8
-assert vdist(cdn.n, partner.s) == 1.8
-assert vdist(monitor.n, cdn.s) == 1.8
-assert vdist(auth.n, gateway.s) == 1.8
-assert vdist(limit.n, auth.s) == 1.8
-assert vdist(events.n, limit.s) == 1.8
-assert vdist(schedule.n, events.s) == 1.8
-assert vdist(orders.n, catalog.s) == 1.8
-assert vdist(payments.n, orders.s) == 1.8
-assert vdist(inventory.n, payments.s) == 1.8
-assert vdist(worker.n, inventory.s) == 1.8
-assert vdist(orderdb.n, products.s) == 1.8
-assert vdist(cache.n, orderdb.s) == 1.8
-assert vdist(queue.n, cache.s) == 1.8
-assert vdist(audit.n, queue.s) == 1.8
+assert gap_y(web, mobile)
+assert gap_y(mobile, partner)
+assert gap_y(partner, cdn)
+assert gap_y(cdn, monitor)
+assert gap_y(gateway, auth)
+assert gap_y(auth, limit)
+assert gap_y(limit, events)
+assert gap_y(events, schedule)
+assert gap_y(catalog, orders)
+assert gap_y(orders, payments)
+assert gap_y(payments, inventory)
+assert gap_y(inventory, worker)
+assert gap_y(products, orderdb)
+assert gap_y(orderdb, cache)
+assert gap_y(cache, queue)
+assert gap_y(queue, audit)
 assert align_center_y(web.center, gateway.center) and align_center_y(gateway.center, catalog.center)
-assert hdist(gateway.e, catalog.w) == 2.5
+assert gap_x(gateway, catalog)
 assert hdist(orders.e, orderdb.w) == hdist(catalog.e, products.w)

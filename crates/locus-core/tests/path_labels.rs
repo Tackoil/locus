@@ -47,12 +47,12 @@ fn label(scene: &Scene) -> (&PathLabel, locus_core::BBox) {
     (path, *bounds)
 }
 
-const DIRECT: &str = "locus 0 beta 6\npoint start()\npoint end = offset(start, 10, 0)\narrow path(start, end)\nlabel caption(path, \"caption\") { near: start, side: above }\n";
+const DIRECT: &str = "locus 0 beta 6\npoint start()\npoint end = on_circle(circle(start, 10), 0deg)\narrow path(start, end)\nlabel caption(path, \"caption\") { near: start, side: above }\n";
 
 #[test]
 fn label_parameters_solve_to_authored_center_and_keep_measured_extents() {
     let source = format!(
-        "{DIRECT}point target = offset(start, 2.5, 2)\nrel center(caption, target)\nassert center(caption, target)\nassert caption.width == 1\nassert caption.height == 0.5\n"
+        "{DIRECT}point target = translate(on_circle(circle(start, 2.5), 0deg), start, on_circle(circle(start, 2), 90deg))\nrel center(caption, target)\nassert center(caption, target)\nassert caption.width == 1\nassert caption.height == 0.5\n"
     );
     let scene = solve(&source, inputs()).expect("continuous t/o");
     let (path, bounds) = label(&scene);
@@ -75,11 +75,13 @@ fn label_parameters_solve_to_authored_center_and_keep_measured_extents() {
 
 #[test]
 fn near_region_and_clearance_are_hard_domains() {
-    let source =
-        format!("{DIRECT}point target = offset(start, 8, 2)\nrel center(caption, target)\n");
+    let source = format!(
+        "{DIRECT}point target = translate(on_circle(circle(start, 8), 0deg), start, on_circle(circle(start, 2), 90deg))\nrel center(caption, target)\n"
+    );
     assert!(solve(&source, inputs()).is_err());
-    let source =
-        format!("{DIRECT}point target = offset(start, 2, 0)\nrel center(caption, target)\n");
+    let source = format!(
+        "{DIRECT}point target = on_circle(circle(start, 2), 0deg)\nrel center(caption, target)\n"
+    );
     assert!(solve(&source, inputs()).is_err());
 }
 
@@ -108,7 +110,7 @@ fn frozen_candidates_and_retained_intervals_change_the_same_accepted_bounds() {
 
 #[test]
 fn plain_path_attachment_owns_two_internal_parameters() {
-    let source = "locus 0 beta 6\npoint start()\npoint end = offset(start, 10, 0)\narrow path(start, end)\nlabel caption(path, \"caption\")\n";
+    let source = "locus 0 beta 6\npoint start()\npoint end = on_circle(circle(start, 10), 0deg)\narrow path(start, end)\nlabel caption(path, \"caption\")\n";
     let scene = solve(source, inputs()).expect("default attachment");
     let (path, bounds) = label(&scene);
     assert!((path.parameter - 0.5).abs() < 1e-12);
@@ -177,7 +179,7 @@ fn frozen_label_choices_preserve_an_authored_side() {
 #[test]
 fn continuous_failure_retries_automatic_label_sides() {
     let source = format!(
-        "{}point target = offset(start, 5, -2)\nrel center(caption, target)\nassert center(caption, target)\n",
+        "{}point target = translate(on_circle(circle(start, 5), 0deg), start, on_circle(circle(start, 2), 270deg))\nrel center(caption, target)\nassert center(caption, target)\n",
         DIRECT.replace("{ near: start, side: above }", "{ near: middle }")
     );
     let scene = solve(&source, inputs()).expect("below-side retry");
@@ -203,7 +205,7 @@ fn continuous_failure_retries_automatic_label_sides() {
 
 #[test]
 fn joint_label_search_retains_earlier_accepted_side_choices() {
-    let source = "locus 0 beta 6\npoint start()\npoint end = offset(start, 10, 0)\narrow path(start,end)\nlabel caption(path, \"first\")\nlabel second(path, \"second\")\npoint below = offset(start,5,-2)\npoint right = offset(start,8,0)\nrel center(caption,below)\nrel center(second,right)\nassert center(caption,below)\nassert center(second,right)\n";
+    let source = "locus 0 beta 6\npoint start()\npoint end = on_circle(circle(start, 10), 0deg)\narrow path(start,end)\nlabel caption(path, \"first\")\nlabel second(path, \"second\")\npoint below = translate(on_circle(circle(start, 5), 0deg), start, on_circle(circle(start, 2), 270deg))\npoint right = on_circle(circle(start, 8), 0deg)\nrel center(caption,below)\nrel center(second,right)\nassert center(caption,below)\nassert center(second,right)\n";
     let mut inputs = inputs();
     inputs.measured.insert(
         "second".to_owned(),
@@ -251,7 +253,7 @@ fn ordered_finite_guide_incidence_solves_with_existing_geometric_pieces() {
 
 #[test]
 fn arrow_aliases_share_attached_bounds_and_retained_label_placement() {
-    let source = "locus 0 beta 6\npoint start()\npoint end = offset(start,10,0)\narrow path(start,end)\narrow alias = path\nlabel caption(alias,\"near target\") {near:end,side:above}\nassert path.width == alias.width\nassert path.height == alias.height\nassert path.height > 0\nassert path.length == 10\nassert alias.length == 10\n";
+    let source = "locus 0 beta 6\npoint start()\npoint end = on_circle(circle(start, 10), 0deg)\narrow path(start,end)\narrow alias = path\nlabel caption(alias,\"near target\") {near:end,side:above}\nassert path.width == alias.width\nassert path.height == alias.height\nassert path.height > 0\nassert path.length == 10\nassert alias.length == 10\n";
     let mut measured = inputs();
     measured
         .choices
@@ -274,7 +276,7 @@ fn arrow_aliases_share_attached_bounds_and_retained_label_placement() {
 
 #[test]
 fn physical_trims_follow_the_solved_route_length_in_label_bounds_and_assertions() {
-    let source = "locus 0 beta 6\npoint start()\nnum extent = free 10\npoint end = offset(start,extent,0)\narrow path(start,end)\nlabel caption(path,\"physical retained\") {near:end,side:below}\npoint target = offset(start,14.6,-2)\nrel path.length == 20\nrel center(caption,target)\nassert path.length == 20\nassert center(caption,target)\n";
+    let source = "locus 0 beta 6\npoint start()\nnum extent = free 10\npoint end = lerp(start, on_circle(circle(start, style_metric(\"short_length\")), 0deg), (extent) / style_metric(\"short_length\"))\narrow path(start,end)\nlabel caption(path,\"physical retained\") {near:end,side:below}\npoint target = translate(on_circle(circle(start, 14.6), 0deg), start, on_circle(circle(start, 2), 270deg))\nrel path.length == 20\nrel center(caption,target)\nassert path.length == 20\nassert center(caption,target)\n";
     let mut measured = inputs();
     measured
         .choices
@@ -301,7 +303,7 @@ fn physical_trims_follow_the_solved_route_length_in_label_bounds_and_assertions(
 
 #[test]
 fn aliased_physical_and_scalar_retained_avoidance_share_assertion_semantics() {
-    let source = "locus 0 beta 6\npoint start()\npoint end = offset(start,10,0)\narrow path(start,end)\narrow alias = path\npoint obstacle = offset(start,9,0)\nrel avoid(obstacle,path)\nassert avoid(obstacle,path)\nassert avoid(obstacle,alias)\n";
+    let source = "locus 0 beta 6\npoint start()\npoint end = on_circle(circle(start, 10), 0deg)\narrow path(start,end)\narrow alias = path\npoint obstacle = on_circle(circle(start, 9), 0deg)\nrel avoid(obstacle,path)\nassert avoid(obstacle,path)\nassert avoid(obstacle,alias)\n";
     for physical in [false, true] {
         let mut inputs = EvaluationInputs::default();
         if physical {
@@ -331,7 +333,7 @@ fn aliased_physical_and_scalar_retained_avoidance_share_assertion_semantics() {
 #[test]
 fn explicit_auto_near_and_side_match_default_label_search() {
     let source = format!(
-        "{}point target = offset(start,5,-2)\nrel center(caption,target)\nassert center(caption,target)\n",
+        "{}point target = translate(on_circle(circle(start, 5), 0deg), start, on_circle(circle(start, 2), 270deg))\nrel center(caption,target)\nassert center(caption,target)\n",
         DIRECT.replace("{ near: start, side: above }", "{ near: auto, side: auto }")
     );
     let scene = solve(&source, inputs()).expect("explicit automatic placement");

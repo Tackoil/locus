@@ -23,7 +23,7 @@ fn ordinary_check_observes_accepted_route_clearance_and_length() -> Result {
     let path = directory.path().join("routing.locus");
     fs::write(
         &path,
-        "locus 0 beta 6\npoint start()\npoint finish = offset(start, 0, 4)\npoint middle = offset(start, 0, 2)\nrect obstacle(middle, 2.5, 1)\narrow path(start, finish) { route: orthogonal, side: right }\nrel avoid(path, obstacle)\nassert avoid(path, obstacle)\nassert path.length >= 8\n",
+        "locus 0 beta 6\npoint start()\npoint finish = on_circle(circle(start, 4), 90deg)\npoint middle = on_circle(circle(start, 2), 90deg)\nrect obstacle(middle, 2.5, 1)\narrow path(start, finish) { route: orthogonal, side: right }\nrel avoid(path, obstacle)\nassert avoid(path, obstacle)\nassert path.length >= 8\n",
     )?;
     let output = check(&path)?;
     assert!(
@@ -61,7 +61,7 @@ fn attached_endpoint_contacts_pass_the_same_avoidance_assertion() -> Result {
     let path = directory.path().join("attachment.locus");
     fs::write(
         &path,
-        "locus 0 beta 6\npoint center()\nrect first(center, 2, 2)\npoint second_center = offset(center, 0, 4)\nrect second(second_center, 2, 2)\narrow path(first.e, second.e) { route: orthogonal, side: right }\nrel avoid(path, first, second)\nassert avoid(path, first, second)\n",
+        "locus 0 beta 6\npoint center()\nrect first(center, 2, 2)\npoint second_center = on_circle(circle(center, 4), 90deg)\nrect second(second_center, 2, 2)\narrow path(first.e, second.e) { route: orthogonal, side: right }\nrel avoid(path, first, second)\nassert avoid(path, first, second)\n",
     )?;
     let output = check(&path)?;
     assert!(
@@ -78,7 +78,7 @@ fn required_clipping_failure_blocks_check_and_preserves_render_output() -> Resul
     let path = directory.path().join("enclosed.locus");
     fs::write(
         &path,
-        "locus 0 beta 6\npoint start()\npoint end = offset(start, 0.5, 0)\nrect boundary(start, 2, 2)\narrow path(start, end)\nrel trim_endpoints(path, boundary)\n",
+        "locus 0 beta 6\npoint start()\npoint end = on_circle(circle(start, 0.5), 0deg)\nrect boundary(start, 2, 2)\narrow path(start, end)\nrel trim_endpoints(path, boundary)\n",
     )?;
     let output = check(&path)?;
     assert_eq!(output.status.code(), Some(2));

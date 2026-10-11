@@ -1,7 +1,11 @@
 locus 0 beta 6
 point origin()
-point start = offset(origin,-2,0)
-point end = offset(origin,2,0)
+point start()
+rel hdist(origin, start) == -2
+rel vdist(origin, start) == 0
+point end()
+rel hdist(origin, end) == 2
+rel vdist(origin, end) == 0
 segment crossing(start, end)
 rect box(origin, 2, 2)
 rel avoid(crossing, box)

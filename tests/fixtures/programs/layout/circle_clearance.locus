@@ -1,6 +1,8 @@
 locus 0 beta 6
 point a()
-point b = offset(a, 1.5, 1.5)
+point b()
+rel hdist(a, b) == 1.5
+rel vdist(a, b) == 1.5
 circle first(a, 1)
 circle second(b, 1)
 rel avoid(first, second)

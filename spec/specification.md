@@ -4,7 +4,7 @@
 
 This document is self-contained and normative. The project is under development and supports only this latest draft; earlier file formats are not accepted.
 
-This revision incorporates the beta 6 proposal into the normative language and toolchain contract. The [relation diagram](reference/relations.svg), its [Locus source](reference/relations.locus), and both [composition examples](../examples/composition) are formal reference material. It adds reusable functions, constructor declarations, ordered groups, automatic box sizing, standalone and path-attached labels, automatic connector routing, preset measurements, and rectangular boundary edges. The draft remains unfrozen pending the numerical and implementation contracts listed in Part 12. The measured runtime and 30-source acceptance now implement the contracts pinned in §7.7, §8.7 and §9. Remaining freeze questions stay listed in Part 12.
+This revision incorporates the beta 6 proposal into the normative language and toolchain contract. The [relation diagram](reference/relations.svg), its [Locus source](reference/relations.locus), and both [composition examples](../examples/composition) are formal reference material. It adds reusable functions, constructor declarations, ordered groups, automatic box sizing, standalone and path-attached labels, automatic connector routing, preset measurements, and rectangular boundary edges. The draft remains unfrozen pending the numerical and implementation contracts listed in Part 12. The measured runtime and 28-source acceptance now implement the contracts pinned in §7.7, §8.7 and §9. Remaining freeze questions stay listed in Part 12.
 
 ---
 
@@ -507,7 +507,6 @@ following constructors and anchor expressions remain derived and introduce no un
 ```
 midpoint(A, B)
 lerp(A, B, t)                   -- t=0 → A, t=1 → B; t may lie outside [0,1]
-offset(P, dx, dy)               -- derived displacement relative to P; introduces no unknowns
 intersect(o1, o2 [, k])         -- k: branch index, optional when the intersection is unique
 foot(P, l)                      -- perpendicular foot of P on line/ray/segment l
 project(P, c)                   -- nearest point on circle c to P
@@ -522,6 +521,12 @@ incenter(A, B, C)
 orthocenter(A, B, C)
 center(c)                       -- center of circle/arc/ellipse
 ```
+
+Diagram placement uses anchors and measured relations such as `row`, `column`,
+`gap_x`, `gap_y`, `center`, and `contain`. Numeric `hdist`/`vdist` equalities express
+dimensions or data, such as time differences and flow thicknesses. Geometric
+constructions such as `lerp`, `translate`, and `on_circle` retain their documented
+meaning. Internal routing and annotation displacements remain engine-owned.
 
 An independently declared point may instead be constrained by relations, for example `point T() where { on(T, c1), on(T, c2) }`. Such relations do not distinguish multiple intersections; use an explicit construction branch when that distinction matters. `intersect` omits `k` only when the intersection is unique; when two branches exist and `k` is omitted, that is an error (never a default). Branch ordering for explicit `k`: sorted by the parameter of `o1` — along its direction for a line/ray/segment, by CCW angle from +x for a circle. `locus describe` reports the selected index, defining objects, and distinguishing relative measurements. A non-integer or out-of-range branch is a type error.
 
@@ -782,12 +787,12 @@ silently sampling the curve or treating its control polygon as the curve.
 
 Every numeric expression has one of four dimensions: **scalar**, **length**, **area**, or **angle**. Length is measured in the file's arbitrary scene unit; area is its square. Angles are stored internally in radians, with `deg` and `rad` accepted at the source boundary. Dimensions are semantic types, not user-selectable unit systems.
 
-- Geometry determines dimensions: `dist`, `hdist`, `vdist`, `radius`, `length`, arrow `.length`, `style_metric`, box dimensions, ellipse semiaxes, and relative point offsets are lengths; `area` is area; `angle`, `dir_angle`, ellipse rotation and ellipse `.at` arguments, and direct-arrow `bend` are angles; B-spline `.at` arguments, counts, and ratios are scalars. Typography roles, route modes, label preferences, and boundary directions are symbolic choices, not numeric dimensions.
+- Geometry determines dimensions: `dist`, `hdist`, `vdist`, `radius`, `length`, arrow `.length`, `style_metric`, box dimensions, ellipse semiaxes, and relative point distances are lengths; `area` is area; `angle`, `dir_angle`, ellipse rotation and ellipse `.at` arguments, and direct-arrow `bend` are angles; B-spline `.at` arguments, counts, and ratios are scalars. Typography roles, route modes, label preferences, and boundary directions are symbolic choices, not numeric dimensions.
 - A numeric literal without `deg` or `rad` begins as a dimension variable and is unified from context. Thus the `6` in `dist(A, B) == 6` becomes a length, while the `2` in `2 * angle(A, B, C)` is scalar. An otherwise unconstrained literal defaults to scalar.
 - Each named `num`, including a free `num`, has one dimension inferred from all of its uses in the file. Conflicting uses are a type error. A free numeric hint has the inferred dimension of its declaration.
 - Addition, subtraction, comparison, `min`, and `max` require matching dimensions. Multiplication or division by a scalar preserves the other operand's dimension. `length * length` produces area; `area / length` produces length; equal-dimension division produces scalar. Other dimension products are errors in `0 beta 6`.
 - `abs` preserves dimension. `sqrt` accepts a scalar or an area and returns a scalar or length respectively. `ratio(a, b)` requires equal dimensions and returns scalar.
-- Constructor arguments and properties impose their documented dimensions. In particular, circle radii, rectangle/diamond sizes, label gaps, tick/right-angle sizes, and all point offsets are lengths. A bare number in an angle position remains an error; contextual inference never turns it into an angle without `deg` or `rad`.
+- Constructor arguments and properties impose their documented dimensions. In particular, circle radii, rectangle/diamond sizes, label gaps, tick/right-angle sizes, and signed point distances are lengths. A bare number in an angle position remains an error; contextual inference never turns it into an angle without `deg` or `rad`.
 
 Dimension inference is whole-file and deterministic even though value references remain definition-before-use. The JSON AST reports the inferred dimension for every numeric declaration and expression so agents can localize type errors.
 
@@ -1599,7 +1604,7 @@ The two composition examples in §0.2 are broader acceptance cases: together the
 7. **Measured layout and path operations — pinned** in §7.7–§8.7: live hinges, hard feasibility, working-set preferences, exact boundary distances, bounded search, measurement feedback and honest incomplete-settling reports.
 8. **Function expansion, source JSON and CLI editing — pinned** in §1.5 and §9.1–§9.4. Independent, nested, object/class arguments, source tracing and qualified-member edits are validated.
 9. **Ordered groups — pinned** in §1.6, §8.7 and §9.4: normalized membership, atomic instance row/column operands, aggregate bounds, recursive member avoidance, source chains and removal dependencies.
-10. **Diagram presets and rendering constants — pinned** in §8.7, with accepted-route SVG/TikZ/PNG parity and the 30-source corpus. Rounded-rectangle preference settling can stall while remaining feasible; strict checking retains its warning.
+10. **Diagram presets and rendering constants — pinned** in §8.7, with accepted-route SVG/TikZ/PNG parity and the 28-source corpus. Rounded-rectangle preference settling can stall while remaining feasible; strict checking retains its warning.
 
 ### Decided (previously open)
 

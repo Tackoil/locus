@@ -34,7 +34,7 @@ ARITIES = {
     "rounded_rect": {0, 3, 4}, "label": {1, 2}, "arrow": {2},
     "tick": {2}, "right_angle": {3}, "text_block": {1},
 }
-BUILTINS = set(KINDS) | set("seg midpoint lerp offset intersect foot project rotate reflect translate on_circle extend centroid circumcenter incenter orthocenter center perpendicular parallel perp_bisector angle_bisector tangent_line circle_through circle_diameter circumcircle incircle angle_arc edge dist hdist vdist angle dir_angle ratio radius length area perimeter sqrt abs min max style_metric dash".split())
+BUILTINS = set(KINDS) | set("seg midpoint lerp intersect foot project rotate reflect translate on_circle extend centroid circumcenter incenter orthocenter center perpendicular parallel perp_bisector angle_bisector tangent_line circle_through circle_diameter circumcircle incircle angle_arc edge dist hdist vdist angle dir_angle ratio radius length area perimeter sqrt abs min max style_metric dash".split())
 PREDICATES = set("center align_center_x align_center_y align_left align_right align_top align_bottom gap_x gap_y row column inset_left inset_right inset_top inset_bottom cover_x cover_y contain inside on avoid trim_endpoints tangent internally_tangent parallel perpendicular collinear concyclic midpoint between".split())
 SYMBOLS = set("free where true false and or not tol deg rad textbook solid dashed dotted thin normal bold ink gray blue orange teal green red purple none tint auto N NE E SE S SW W NW round miter bevel butt square direct curved orthogonal left right above below start middle end title dot cross".split())
 PROP_KEYS = set("stroke weight accent fill opacity cap join dir gap role near side route head bend n size place anchor mark padding".split())
@@ -251,7 +251,7 @@ def audit(path: Path) -> dict[str, object]:
     delimiters(code)
     if not source.endswith("\n") or code.splitlines()[0].strip() != "locus 0 beta 6":
         raise ValueError("needs beta 6 header and terminal newline")
-    if re.search(r"\b(?:horizontal|vertical|coincident|congruent|pin)\s*\(", code):
+    if re.search(r"\b(?:horizontal|vertical|coincident|congruent|pin|offset)\s*\(", code):
         raise ValueError("removed relation vocabulary")
     return audit_lines(path, source)
 

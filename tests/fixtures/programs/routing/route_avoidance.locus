@@ -1,7 +1,11 @@
 locus 0 beta 6
 point start()
-point finish = offset(start, 0, 4)
-point center = offset(start, 0, 2)
+point finish()
+rel hdist(start, finish) == 0
+rel vdist(start, finish) == 4
+point center()
+rel hdist(start, center) == 0
+rel vdist(start, center) == 2
 rect obstacle(center, 2.5, 1)
 arrow path(start, finish) { route: orthogonal, side: right }
 rel avoid(path, obstacle)

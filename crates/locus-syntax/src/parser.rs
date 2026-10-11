@@ -711,6 +711,14 @@ impl<'a> LineParser<'a> {
 
     fn parse_named_constructor(&mut self) -> Option<Constructor> {
         let name = self.take_ident("constructor name")?;
+        if name.name == "offset" {
+            self.diagnostics.push(offset_migration(Diagnostic::new(
+                "E140",
+                name.span,
+                "unknown constructor `offset`",
+            )));
+            return None;
+        }
         let start = name.span;
         if self
             .expect_simple(is_lparen, "`(` after constructor name")
@@ -1064,7 +1072,9 @@ impl<'a> LineParser<'a> {
                 ident.span,
                 format!("unknown function or predicate `{}`", ident.name),
             );
-            if let Some(suggestion) = did_you_mean(&ident.name, &vocabulary) {
+            if ident.name == "offset" {
+                diagnostic = offset_migration(diagnostic);
+            } else if let Some(suggestion) = did_you_mean(&ident.name, &vocabulary) {
                 diagnostic = diagnostic.with_suggestion(suggestion);
             }
             self.diagnostics.push(diagnostic);
@@ -1330,6 +1340,14 @@ fn line_span(line: &[Token]) -> Span {
         })
 }
 
+fn offset_migration(diagnostic: Diagnostic) -> Diagnostic {
+    diagnostic
+        .with_note("`offset` has been removed from the public language")
+        .with_suggestion(
+            "use anchors, row/column, alignment, containment, or geometric constructions; use hdist/vdist equalities for actual measured dimensions",
+        )
+}
+
 fn validate_constructor_kind(op: &OpStmt, diagnostics: &mut Vec<Diagnostic>) {
     let Constructor::Call { name, .. } = &op.ctor else {
         return;
@@ -1340,7 +1358,9 @@ fn validate_constructor_kind(op: &OpStmt, diagnostics: &mut Vec<Diagnostic>) {
             name.span,
             format!("unknown constructor `{}`", name.name),
         );
-        if let Some(suggestion) = did_you_mean(&name.name, CONSTRUCTOR_NAMES) {
+        if name.name == "offset" {
+            diagnostic = offset_migration(diagnostic);
+        } else if let Some(suggestion) = did_you_mean(&name.name, CONSTRUCTOR_NAMES) {
             diagnostic = diagnostic.with_suggestion(suggestion);
         }
         diagnostics.push(diagnostic);
@@ -1369,7 +1389,6 @@ fn constructors_for_kind(kind: Kind) -> &'static [&'static str] {
             "point",
             "midpoint",
             "lerp",
-            "offset",
             "intersect",
             "foot",
             "project",

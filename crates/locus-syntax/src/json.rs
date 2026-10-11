@@ -1225,7 +1225,6 @@ fn call_arg_dimensions(name: &str, args: &[Option<usize>]) -> &'static [(usize, 
     use Dimension::{Angle, Length, Scalar};
     const CALL_ARGS: &[(&str, &[(usize, Dimension)])] = &[
         ("lerp", &[(2, Scalar)]),
-        ("offset", &[(1, Length), (2, Length)]),
         ("rotate", &[(2, Angle)]),
         ("on_circle", &[(1, Angle)]),
         ("extend", &[(2, Length)]),

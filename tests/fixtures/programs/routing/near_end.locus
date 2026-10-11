@@ -1,6 +1,8 @@
 locus 0 beta 6
 point origin()
-point tip = offset(origin, 6, 3)
+point tip()
+rel hdist(origin, tip) == 6
+rel vdist(origin, tip) == 3
 arrow path(origin, tip) { route: curved, side: above }
 label caption(path, "Target-side caption") { near: end, side: below }
 assert caption.width > 0

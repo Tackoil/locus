@@ -6,15 +6,15 @@ The positive `.locus` corpus is split by purpose:
   [`0 beta 6` specification](../spec/specification.md): canonical constructor declarations,
   derived geometry, measured content, and relational diagram layout.
 - [`composition/`](composition) contains the reusable agent-loop and checkout sequence examples.
-- [`stress/`](stress) contains 16 expanded workloads. These exercise large construction
+- [`stress/`](stress) contains 14 expanded workloads. These exercise large construction
   graphs, dense annotations, shared constraints, assertions, deterministic layout, and every
   rendering backend.
 
 Invalid-input fixtures remain in [`tests/fixtures/errors/`](../tests/fixtures/errors) so they are not
 mistaken for runnable examples.
 
-All 30 runnable examples use `0 beta 6`. The source audit also covers the historical solver-limit fixture in `tests/fixtures/solver/`.
-The 28 supported demonstration/stress sources and both composition examples pass the beta 6 measured solver, assertions and SVG/TikZ/PNG parity checks with bundled fonts. The historical solver-limit fixture remains a negative acceptance contract. Earlier format headers are rejected. Feasible preference settling may remain incomplete and produces a strict-check warning.
+All 28 runnable examples use `0 beta 6`. The source audit also covers the historical solver-limit fixture in `tests/fixtures/solver/`.
+The 26 supported demonstration/stress sources and both composition examples pass the beta 6 measured solver, assertions and SVG/TikZ/PNG parity checks with bundled fonts. The historical solver-limit fixture remains a negative acceptance contract. Feasible preference settling may remain incomplete and produces a strict-check warning.
 
 Run the available source audit from the repository root:
 
@@ -64,13 +64,13 @@ The twelve demonstrations exercise parameterless points; dimension-only circles,
 rectangles, rounded rectangles, and diamonds; derived object aliases; explicit external and internal tangency;
 and cubic, open, non-rational, clamped B-splines. The original 69 demonstration assertion
 statements are retained. Function expansion and added layout cases bring the intended
-demonstration total to 91 assertions and 360 declared objects, as counted by the source audit.
+demonstration total to 93 assertions and 365 declared objects, as counted by the source audit.
 
 Same-kind constructors use `kind id(args)`; aliases and differently named constructions
 retain `= rhs`, such as `point M = midpoint(A, B)` and `arc m = angle_arc(...)`.
 `horizontal`, `vertical`, and `coincident` are replaced by `align_center_y`,
 `align_center_x`, and `center`. Segment congruence becomes numeric length equality.
-Relative offsets, explicit dimensions, numeric seeds, construction branches, styles,
+Measured relationships, explicit dimensions, numeric seeds, construction branches, styles,
 and the original mathematical assertions are preserved.
 
 The measured-layout panels additionally exercise functions with object/text/class arguments,
@@ -92,27 +92,25 @@ exercise convergence without authoring point coordinates or placement hints.
 
 | File | Stress coverage | Objects | Assertions |
 | --- | --- | ---: | ---: |
-| [aec3_filter_alignment.locus](stress/aec3_filter_alignment.locus) | Five filter banks, 64 additional coefficient stems, shared delay estimates and range reduction | 241 | 144 |
+| [aec3_filter_alignment.locus](stress/aec3_filter_alignment.locus) | Five filter banks, 64 additional coefficient stems, shared delay estimates and range reduction | 241 | 149 |
 | [angle_bisector_ratio.locus](stress/angle_bisector_ratio.locus) | Three solved cevians, Ceva identity, four coupled triangle-center networks | 75 | 29 |
 | [euler_nine_point.locus](stress/euler_nine_point.locus) | Five medial levels, Euler and nine-point constructions, Feuerbach contact across shrinking scales | 93 | 32 |
-| [flowchart_agent_loop.locus](stress/flowchart_agent_loop.locus) | Original authoring/solver-state graph plus 16 nested measured pairs, repeated groups, orthogonal returns, and clipped forward paths | 227 | 125 |
-| [gantt_chart.locus](stress/gantt_chart.locus) | 20 solved durations, four parallel teams, five phases, 32 dependencies, progress bars, release join | 204 | 117 |
+| [flowchart_agent_loop.locus](stress/flowchart_agent_loop.locus) | Original authoring/solver-state graph plus 16 nested measured pairs, repeated groups, orthogonal returns, and clipped forward paths | 225 | 125 |
+| [gantt_chart.locus](stress/gantt_chart.locus) | 20 solved durations, four parallel teams, five phases, 32 dependencies, progress bars, release join | 216 | 117 |
 | [inscribed_angle.locus](stress/inscribed_angle.locus) | 16 shared-endpoint chord fans, opposite arcs, supplementary angles, perpendicular chord bisectors | 116 | 51 |
-| [kanban_board.locus](stress/kanban_board.locus) | 37 cards, three teams, five states, cross-team blockers, corner containment and WIP | 115 | 61 |
+| [kanban_board.locus](stress/kanban_board.locus) | 37 cards, three teams, five states, cross-team blockers, corner containment and WIP | 113 | 61 |
 | [pentagon_golden.locus](stress/pentagon_golden.locus) | Five nested pentagrams, diagonal intersections, equal sides and golden-ratio scaling | 79 | 40 |
 | [right_triangle_altitude.locus](stress/right_triangle_altitude.locus) | 14 recursive child triangles, altitude identities, incircle contacts and area checks | 131 | 78 |
-| [sankey_energy.locus](stress/sankey_energy.locus) | 28 bands, three sources, four intermediate processes, four outputs, split/merge conservation | 203 | 94 |
-| [sequence_check.locus](stress/sequence_check.locus) | Original four-participant/26-message graph plus a composed measured sequence, divided frame, legend, narrow overlay, and clipping | 179 | 58 |
-| [software_architecture.locus](stress/software_architecture.locus) | 20 components, four boundaries, 32 shared dependency edges, placed service anchors | 101 | 39 |
+| [sankey_energy.locus](stress/sankey_energy.locus) | 28 bands, three sources, four intermediate processes, four outputs, split/merge conservation | 202 | 94 |
+| [sequence_check.locus](stress/sequence_check.locus) | Original four-participant/26-message graph plus a composed measured sequence, divided frame, legend, narrow overlay, and clipping | 181 | 58 |
+| [software_architecture.locus](stress/software_architecture.locus) | 20 components, four boundaries, 32 shared dependency edges, placed service anchors | 100 | 39 |
 | [tangent_circles.locus](stress/tangent_circles.locus) | Noncollinear three-circle solve feeding seven further contacts and common tangents | 83 | 36 |
 | [tangent_internal_branches.locus](stress/tangent_internal_branches.locus) | Eight additional nonlinear internal contacts, radial carriers, both exterior tangent branches | 119 | 51 |
-| [xy_parabola.locus](stress/xy_parabola.locus) | 129 connected samples, two nonlinear intersections, 32-cell composite area | 318 | 145 |
-| [xy_reciprocal.locus](stress/xy_reciprocal.locus) | 130 samples across a discontinuity, nonlinear fixed points, tangent and secant identities | 284 | 273 |
 
 Counts include geometry, numbers, and annotations after function expansion; group and
-instance namespaces contribute no extra objects. The sixteen positive stress sources
-contain 2,568 declared objects and 1,373 intended assertion statements. Purely derived
-figures can legitimately take zero solver iterations.
+instance namespaces contribute no extra objects. The fourteen positive stress sources
+contain 1,974 declared objects and 960 intended assertion statements. Purely derived figures and layouts fully initialized from their relations can
+legitimately take zero solver iterations.
 
 ## Automated stress contract
 
@@ -184,8 +182,6 @@ is not the historical solver failure. The native corpus test checks the source-a
 
 ## Representations and previews
 
-- Function curves are piecewise-linear samples. Their analytically solved intersections are
-  checked against the actual function equations, and no reciprocal segment crosses `x = 0`.
 - Sankey thickness is vertical at the ports. Routing is explicit. Gantt time is numeric days,
   and Kanban WIP is computed from the explicitly listed active cards.
 - Dense geometry and crossing connectors may produce crowding or collision diagnostics.
@@ -193,7 +189,7 @@ is not the historical solver failure. The native corpus test checks the source-a
 - Plain labels use bundled Noto Sans outlines. TeX segments use `RexEngine` and
   bundled STIX Two Math outlines, matching the CLI's default math renderer.
 
-Export all 16 stress previews into the ignored
+Export all 14 stress previews into the ignored
 `target/spec-examples` directory. SVG,
 TikZ, and PNG use an opaque white viewport background; other renderer callers retain
 transparent output unless they set `RenderOptions.background`. The export also creates
