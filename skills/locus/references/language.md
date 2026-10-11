@@ -131,6 +131,8 @@ This fragment needs a version header when used as a complete file.
 `label(anchor, text)` accepts directions `auto`, `center`, or the eight compass
 directions and a nonnegative `gap`. Use `dir: center` for node text.
 `arrow(from, to)` accepts `head: -> | <-> | -` and an angle-valued `bend`.
+Use a gentle bend such as `45deg`. Singular and near-singular bends around
+`90deg` modulo `180deg` fail with `E210`: `|tan(bend)|` must not exceed 1000.
 Other annotations are `tick(segment, n)` (n from 1 to 4),
 `right_angle(V, P, Q)` (vertex V), and `text_block(text)` with
 `{ place: below | above | left | right }` or explicit `anchor` and `dir`.

@@ -196,6 +196,10 @@ fn include_leader(
             control,
             head,
         } => {
+            if let Some(control) = control {
+                locus_core::geom::arrow::validate_control(*from, *to, *control)
+                    .map_err(|error| RenderError::invalid(span, error.to_string()))?;
+            }
             let points = [Some(*from), Some(*to), *control].into_iter().flatten();
             let bbox =
                 BBox::from_points(points).map_err(|e| RenderError::invalid(span, e.to_string()))?;

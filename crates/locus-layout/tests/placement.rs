@@ -31,6 +31,36 @@ fn placed(scene: &ResolvedScene) -> LayoutScene {
     layout(scene, &measured(scene), LayoutOptions::default()).expect("layout")
 }
 
+#[test]
+fn manually_supplied_unsafe_arrow_bends_fail_layout() {
+    let mut scene = resolved(
+        "locus 0 beta 5\npoint A = point()\npoint B = offset(A, 4, 0)\n\
+         arrow link = arrow(A, B) { bend: 45deg }\n",
+    );
+    let id = scene
+        .objects
+        .iter()
+        .find(|(id, _)| id.name == "link")
+        .expect("arrow")
+        .0
+        .clone();
+    for angle in [90.0_f64, -90.0, 89.99, 90.01] {
+        let ResolvedObject::Annotation(AnnotationSpec::Arrow { bend, .. }) =
+            scene.objects.get_mut(&id).expect("arrow")
+        else {
+            unreachable!("arrow fixture");
+        };
+        *bend = angle.to_radians();
+        assert_eq!(
+            layout(&scene, &TextBoxes::new(), LayoutOptions::default()),
+            Err(LayoutError::Invalid {
+                id: id.name.clone(),
+                span: id.span
+            }),
+        );
+    }
+}
+
 fn triangle() -> ResolvedScene {
     resolved(
         "locus 0 beta 5\npoint A = point()\npoint B = offset(A, 6, 0)\npoint C = offset(A, 0, 6)\nsegment AB = seg(A, B)\nsegment BC = seg(B, C)\nsegment CA = seg(C, A)\nlabel a = label(A, \"A\")\nlabel b = label(B, \"B\")\nlabel c = label(C, \"C\")\n",

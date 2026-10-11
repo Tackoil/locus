@@ -51,6 +51,36 @@ fn empty_layout() -> LayoutScene {
     }
 }
 
+#[test]
+fn excessive_finite_arrow_controls_are_rejected_by_all_exporters() {
+    let (scene, mut layout, sheet) = triangle();
+    let mut annotation = label("arrow", bounds(p(0.0, 0.0), p(4.0, 1e17)), TexBox::empty());
+    annotation.text = None;
+    annotation.leader = Leader::Arrow {
+        from: p(0.0, 0.0),
+        to: p(4.0, 0.0),
+        control: Some(p(2.0, 1e17)),
+        head: HeadKind::Forward,
+    };
+    layout.annotations.insert("arrow".into(), annotation);
+    let options = RenderOptions::default();
+    for error in [
+        render_svg(&scene, &layout, &sheet, options).expect_err("excessive SVG bounds"),
+        render_tikz(&scene, &layout, &sheet, options).expect_err("excessive TikZ bounds"),
+    ] {
+        assert_eq!(error.code(), "E415");
+        assert!(matches!(error, RenderError::Invalid { span, .. } if span == id("arrow").span));
+        assert!(error.to_string().contains("gentler bend"));
+    }
+    #[cfg(feature = "png")]
+    assert_eq!(
+        locus_render::png::render(&scene, &layout, &sheet, options)
+            .expect_err("excessive PNG bounds")
+            .code(),
+        "E415"
+    );
+}
+
 fn label(name: &str, bbox: BBox, measured: TexBox) -> PlacedAnnotation {
     let baseline = p(
         bbox.min.x + measured.baseline_x,

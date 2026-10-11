@@ -143,7 +143,7 @@ pub(crate) fn mark(
             Leader::None,
         ),
         AnnotationSpec::Arrow { head, bend, .. } => {
-            (Vec::new(), arrow(anchors[0], anchors[1], *head, *bend))
+            (Vec::new(), arrow(id, anchors[0], anchors[1], *head, *bend)?)
         }
         _ => return Err(LayoutError::invalid(id)),
     };
@@ -202,17 +202,21 @@ fn right_angle(vertex: Point, first: Point, second: Point, size: f64) -> Vec<Seg
     ]
 }
 
-fn arrow(from: Point, to: Point, head: locus_syntax::HeadKind, bend: f64) -> Leader {
-    // A quadratic whose initial tangent is rotated by `bend` from the chord.
-    // Control-hull bounds conservatively contain the full curve.
-    let control = (bend != 0.0)
-        .then(|| from + (to - from) * 0.5 + (to - from).perpendicular() * (libm::tan(bend) * 0.5));
-    Leader::Arrow {
+fn arrow(
+    id: &Ident,
+    from: Point,
+    to: Point,
+    head: locus_syntax::HeadKind,
+    bend: f64,
+) -> Result<Leader, LayoutError> {
+    let control =
+        locus_core::geom::arrow::control(from, to, bend).map_err(|_| LayoutError::invalid(id))?;
+    Ok(Leader::Arrow {
         from,
         to,
         control,
         head,
-    }
+    })
 }
 
 pub(crate) fn unit(vector: Vec2) -> Vec2 {

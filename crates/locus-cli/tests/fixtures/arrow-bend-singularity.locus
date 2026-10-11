@@ -1,0 +1,42 @@
+locus 0 beta 5
+style textbook
+
+rect a = rect(3, 1)
+rect b = rect(3, 1) where { vertical(a.center, b.center), vdist(a.center, b.center) == -2 }
+diamond d = diamond(3, 1.4) where { vertical(b.center, d.center), vdist(b.center, d.center) == -2.2 }
+rect f = rect(3, 1) where { horizontal(d.center, f.center), hdist(d.center, f.center) == 4.5 }
+label la = label(a.center, "locus init") { dir: center }
+label lb = label(b.center, "locus add") { dir: center }
+label ld = label(d.center, "exit 0?") { dir: center }
+label lf = label(f.center, "fix ops") { dir: center }
+arrow e1 = arrow(a.s, b.n) { head: -> }
+arrow e2 = arrow(b.s, d.n) { head: -> }
+arrow e3 = arrow(d.s, f.w) { head: -> }
+arrow e4 = arrow(f.n, b.e) { head: ->, bend: 90deg }
+assert vdist(a.center, b.center) == -2
+assert vdist(b.center, d.center) == -2.2
+assert hdist(d.center, f.center) == 4.5
+assert hdist(a.center, b.center) == 0
+assert vdist(a.center, d.center) == -4.2
+assert hdist(a.center, f.center) == 4.5
+assert vdist(a.center, f.center) == -4.2
+assert vdist(b.center, f.center) == -2.2
+assert hdist(b.center, f.center) == 4.5
+assert vdist(d.center, f.center) == 0
+assert hdist(b.center, d.center) == 0
+assert hdist(a.center, d.center) == 0
+assert vdist(a.center, b.center) == -2
+assert vdist(a.center, b.center) == -2
+assert vdist(a.center, b.center) == -2
+assert vdist(a.center, b.center) == -2
+assert vdist(a.center, b.center) == -2
+assert vdist(a.center, b.center) == -2
+assert vdist(a.center, b.center) == -2
+assert vdist(a.center, b.center) == -2
+assert vdist(a.center, b.center) == -2
+assert vdist(a.center, b.center) == -2
+assert vdist(a.center, b.center) == -2
+assert vdist(a.center, b.center) == -2
+assert vdist(a.center, b.center) == -2
+assert vdist(a.center, b.center) == -2
+assert vdist(a.center, b.center) == -2

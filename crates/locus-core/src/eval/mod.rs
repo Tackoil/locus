@@ -1346,6 +1346,16 @@ fn eval_arrow(
         )),
     })?;
     let bend = optional_angle_prop(evaluator, props, "bend")?.unwrap_or(0.0);
+    crate::geom::arrow::bend_tangent(bend).map_err(|error| {
+        let bend_span = prop(props, "bend").map_or(span, PropValue::span);
+        let degrees = bend * (180.0 / core::f64::consts::PI);
+        let (actual, unit) = if degrees.is_finite() {
+            (degrees, "deg")
+        } else {
+            (bend, "rad")
+        };
+        EvalError::construction(bend_span, error).with_measurement("arrow bend", actual, Some(unit))
+    })?;
     Ok(AnnotationSpec::Arrow {
         from,
         to,

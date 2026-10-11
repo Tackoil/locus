@@ -6,6 +6,7 @@ use thiserror::Error;
 
 use crate::tol::Tolerance;
 
+pub mod arrow;
 pub mod construct;
 mod curve;
 pub mod intersect;
@@ -47,6 +48,11 @@ pub enum ConstructError {
     /// A requested arc endpoint was not incident on its circle.
     #[error("E206: arc endpoint is not on its circle")]
     ArcEndpointNotOnCircle,
+    /// An arrow's tangent would create unbounded or excessive control geometry.
+    #[error(
+        "E210: arrow bend is too close to 90deg modulo 180deg; use a gentler bend such as 45deg (|tan(bend)| must be <= 1000)"
+    )]
+    ArrowBend,
 }
 
 impl ConstructError {
@@ -59,6 +65,7 @@ impl ConstructError {
             Self::Domain { .. } => "E204",
             Self::InvalidPolygon { .. } => "E205",
             Self::ArcEndpointNotOnCircle => "E206",
+            Self::ArrowBend => "E210",
         }
     }
 }

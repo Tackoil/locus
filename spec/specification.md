@@ -398,6 +398,14 @@ The `text` argument accepts a quoted text string, including any number of inline
 
 Labels do not draw a connector from the anchor to the text box by default. The `gap` property controls spacing only; use an explicit `arrow` for a visible connection.
 
+Arrow bends use a quadratic control point at the chord midpoint plus
+`0.5 * tan(bend)` times the perpendicular chord. Bends must satisfy
+`|tan(bend)| <= 1000`; singular and near-singular angles (within approximately
+0.0573° of an odd multiple of 90°) fail with `E210` at the bend expression,
+including during checking of solved scenes. Use a gentler bend such as `45deg`.
+Layout and export also reject non-finite control geometry or a control point
+more than 500 chord lengths from the midpoint (allowing floating-point rounding).
+
 ### 5.8 Anchors
 
 Anywhere a point is accepted, an **anchor expression** is accepted:

@@ -857,6 +857,10 @@ fn nonconvergence_error(
 }
 
 fn degenerate_seed(mut error: EvalError) -> EvalError {
+    // Arrow-bend domains cannot be repaired by changing placement hints.
+    if error.code == "E210" {
+        return error;
+    }
     error.code = "E404";
     error.message = format!(
         "degenerate solver seed: {}; spread or correct hints",
