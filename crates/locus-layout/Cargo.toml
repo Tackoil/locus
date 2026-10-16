@@ -10,6 +10,7 @@ readme.workspace = true
 publish = false
 
 [dependencies]
+serde_json.workspace = true
 locus-core = { path = "../locus-core" }
 locus-tex = { path = "../locus-tex" }
 

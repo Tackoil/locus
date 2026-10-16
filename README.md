@@ -219,6 +219,32 @@ cargo run -p locus-cli --features png -- render figure.locus --png -o figure.png
 cargo run -p locus-cli --features png -- render figure.locus --png --background white --dpi 300 -o figure.png
 ```
 
+Rendering does not create a dump unless `--dump PATH` is supplied. This opt-in
+capture writes a versioned JSON file containing render snapshots. Dump recording
+adds runtime and memory overhead, especially for scenes requiring many solver trials.
+`--no-dump` explicitly disables capture and conflicts with `--dump`.
+
+```sh
+locus render figure.locus -o figure.svg --dump figure.trace.json
+locus visualize figure.trace.json -o figure.trace.html
+```
+
+Open the generated HTML file in a browser. It works offline and includes the
+original source, so the `.locus` file is no longer needed. Browse parsing,
+expansion, text measurements, every numerical solver trial (including rejected
+trials), preference-settling iterations and evaluations, each solve/layout pass,
+and the final export. Geometry steps include SVG previews; other steps display
+their structured results. Failed renders retain completed steps and diagnostics.
+
+Hover over a shape or a group boundary to see its original identifier and source
+location, including qualified names from function instances. Select two objects
+or groups to list authored constraints, declaration dependencies, and group
+membership connecting them or their members. Group outlines and names appear
+only while hovering. Hover over an object or group to show authored constraints
+that explicitly reference it as labeled connectors on the figure. Hover over a listed
+relationship to isolate that connection and highlight its participants; moving
+the pointer away clears the overlays. `locus visualize dump.json` defaults to `dump.html`.
+
 SVG is the default. `--tikz` and feature-gated `--png` select one alternative
 format; output extensions do not select a backend. Supply `-o`, `--stdout`, or
 both (the file and stdout receive identical bytes). `--stdout` emits only the

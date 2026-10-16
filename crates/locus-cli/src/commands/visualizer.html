@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'">
+<title>Locus render explorer</title>
+<style>
+:root{font-family:Inter,ui-sans-serif,system-ui,sans-serif;color:#e4e8ef;background:#10141d;color-scheme:dark}*{box-sizing:border-box}body{margin:0}button,select,input{font:inherit}button,select{background:#202838;color:inherit;border:1px solid #3a465a;border-radius:6px;padding:7px}button{cursor:pointer}button:disabled{opacity:.4;cursor:default}header{display:flex;align-items:center;gap:18px;padding:18px 24px;border-bottom:1px solid #303949}header h1{font-size:18px;margin:0}#filename{font-size:13px;color:#a3b1c7;overflow-wrap:anywhere}.status{margin-left:auto;font-size:12px;color:#9ee0ba}main{display:grid;grid-template-columns:245px minmax(320px,1fr) 360px;min-height:calc(100vh - 65px)}nav{padding:16px;border-right:1px solid #303949}nav h2,aside h2{font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:#9babc0}#steps{display:flex;flex-direction:column;gap:5px;max-height:80vh;overflow:auto}#steps button{text-align:left;font-size:12px;border-color:transparent}#steps button[aria-current=true]{background:#31445f;border-color:#789cd3}#steps small{color:#a7b8d0}article{padding:20px;min-width:0}.toolbar{display:flex;align-items:center;gap:10px}.toolbar input{flex:1;min-width:60px}#step-title{font-size:19px;margin:22px 0 6px}#step-note{font-size:12px;color:#a7b8d0;margin-bottom:16px}#canvas{background:#fff;border-radius:10px;min-height:420px;display:flex;align-items:center;justify-content:center;padding:20px;overflow:auto;color:#334155}#canvas svg{max-width:100%;height:auto;max-height:65vh;overflow:visible}#canvas g[data-entity]{cursor:crosshair}#canvas .hovered{filter:drop-shadow(0 0 3px #7c3aed)}#canvas .group-hit-area{fill:none;stroke:transparent;stroke-width:10;pointer-events:stroke;cursor:crosshair}#canvas .group-box{fill:none;stroke:#8b5cf6;stroke-width:1;stroke-dasharray:5 4;pointer-events:none;opacity:0}#canvas .group-label{font:11px system-ui;fill:#6d28d9;pointer-events:none;opacity:0}#canvas .group-overlay.hovered .group-box,#canvas .group-overlay.hovered .group-label{opacity:1}aside{border-left:1px solid #303949;padding:18px;min-width:0}label{font-size:12px;display:block;margin:12px 0}label select{display:block;width:100%;margin-top:6px}.hint{color:#a7b8d0;font-size:12px;line-height:1.6}#relations{padding-left:18px;font-size:12px;line-height:1.6;max-height:220px;overflow:auto}#relations li{padding:5px 0;overflow-wrap:anywhere;border-radius:4px}#relations li.hovered{background:#344767;color:#fff}#hover{min-height:70px;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere;background:#1b2230;border-radius:7px;padding:10px}details{margin-top:18px;font-size:13px}pre{white-space:pre-wrap;overflow-wrap:anywhere;font:11px/1.6 ui-monospace,monospace;max-height:380px;overflow:auto;background:#171e2b;border-radius:6px;padding:12px}.source-line{display:block;white-space:pre}.source-line.active{background:#344767}.source-number{display:inline-block;width:35px;color:#91a1b8;user-select:none}#tooltip{position:fixed;z-index:10;pointer-events:none;max-width:360px;background:#172033;color:white;padding:9px 12px;border:1px solid #7588a4;border-radius:6px;font-size:12px;white-space:pre-wrap;box-shadow:0 4px 15px #0005}#kind{width:100%;margin-bottom:12px}@media(max-width:1100px){main{grid-template-columns:200px 1fr}aside{grid-column:1/-1;border-top:1px solid #303949;border-left:none}}@media(max-width:650px){main{display:block}nav{border-right:none}#steps{max-height:180px}#canvas{min-height:280px}header{padding:14px;flex-wrap:wrap}}
+#canvas.measurement-gallery{display:block;max-height:65vh}#canvas.measurement-gallery svg{max-height:none}
+#canvas .relation-layer{pointer-events:none}#canvas .relation-layer path{fill:none;stroke:#a21caf;stroke-width:1.5;stroke-dasharray:5 3}#canvas .relation-layer circle{fill:#a21caf;stroke:#fff;stroke-width:1}#canvas .relation-layer text{font:11px ui-sans-serif,system-ui;fill:#86198f;stroke:#fff;stroke-width:4;paint-order:stroke;stroke-linejoin:round}
+</style>
+</head>
+<body>
+<header><h1>Locus / render explorer</h1><span id="filename"></span><span class="status" id="status"></span></header>
+<main>
+<nav aria-label="Render steps"><h2>Pipeline</h2><select id="kind" aria-label="Filter steps"><option value="all">All steps</option><option value="visual">Steps with a preview</option><option value="solver">Solver and settling</option></select><div id="steps"></div></nav>
+<article>
+<div class="toolbar"><button id="previous" aria-label="Previous step">←</button><input id="position" type="range" min="0" value="0" aria-label="Render step"><button id="next" aria-label="Next step">→</button><span id="counter"></span></div>
+<h2 id="step-title"></h2><div id="step-note"></div>
+<div id="canvas" aria-label="Step preview"></div>
+<label><input id="show-groups" type="checkbox" checked> Inspect groups on hover</label>
+<details open><summary>Step result</summary><pre id="data"></pre></details>
+<details><summary>Original source</summary><pre id="source"></pre></details>
+</article>
+<aside>
+<h2>Object / group</h2><div id="hover">Hover over a shape or group boundary to inspect it.</div>
+<p class="hint">Click to select the first object. Shift-click to select the second. You can also choose objects or groups below. Hover over an object or group to show its constraints on the figure. Hover over a relationship below to show that connection.</p>
+<label>First object / group<select id="first"></select></label>
+<label>Second object / group<select id="second"></select></label>
+<h2>Relationships</h2><p class="hint" id="relation-note"></p><ul id="relations"></ul>
+</aside>
+</main>
+<div id="tooltip" hidden></div>
+<script type="application/json" id="dump">__LOCUS_DUMP__</script>
+<script>__LOCUS_RELATIONS__
+__LOCUS_SCRIPT__</script>
+</body>
+</html>

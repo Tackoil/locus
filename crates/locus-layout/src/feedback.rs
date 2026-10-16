@@ -42,9 +42,24 @@ pub enum SolveLayoutError {
 /// when routing, clipping, or measurement feedback cannot converge.
 pub fn solve_layout(
     file: &File,
+    inputs: EvaluationInputs,
+    measured: &TextBoxes,
+    options: LayoutOptions,
+) -> Result<(Scene, LayoutScene), SolveLayoutError> {
+    solve_layout_observed(file, inputs, measured, options, |_, _, _| {})
+}
+
+/// Solves and places a program, observing each continuous and discrete pass.
+/// The observer receives `None` before layout and the actual layout afterward.
+///
+/// # Errors
+/// Returns the same evaluation and layout failures as [`solve_layout`].
+pub fn solve_layout_observed(
+    file: &File,
     mut inputs: EvaluationInputs,
     measured: &TextBoxes,
     options: LayoutOptions,
+    mut observe: impl FnMut(usize, &Scene, Option<&LayoutScene>),
 ) -> Result<(Scene, LayoutScene), SolveLayoutError> {
     let _layout = locus_core::metrics::span("solve_layout");
     let mut changed = Vec::new();
@@ -61,6 +76,7 @@ pub fn solve_layout(
             pass == 0,
             &mut counters,
         )?;
+        observe(pass + 1, &scene, None);
         counters.searches += scene
             .solve_summary()
             .map_or(0, |summary| summary.outer_search_attempts);
@@ -70,6 +86,7 @@ pub fn solve_layout(
             options,
             counters.remaining_routes(),
         )?;
+        observe(pass + 1, &scene, Some(&feedback.layout));
         counters.routes += feedback.route_search_attempts;
         let accepted = accepted_choices(&scene);
         let next = merge_choices(&accepted, &feedback);

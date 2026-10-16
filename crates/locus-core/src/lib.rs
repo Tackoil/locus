@@ -18,6 +18,7 @@ mod program;
 pub mod scene;
 pub mod solve;
 pub mod tol;
+pub mod trace;
 
 pub use r#assert::{
     ActualValue, AssertionReport, AssertionResult, ReportDimension, SubtermActual,

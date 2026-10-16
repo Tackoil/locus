@@ -33,6 +33,12 @@ fn recover(
     counters: &mut Counters,
 ) -> Option<Scene> {
     let seed = Scene::layout_seed_with_inputs(file.clone(), inputs.clone()).ok()?;
+    locus_core::trace::record("layout_recovery_seed", || {
+        (
+            serde_json::json!({"solved": false}),
+            seed.resolved().cloned(),
+        )
+    });
     let feedback = crate::discrete::layout_program_with_budget(
         &seed,
         measured,
@@ -40,6 +46,15 @@ fn recover(
         counters.remaining_routes(),
     )
     .ok()?;
+    locus_core::trace::record("layout_recovery", || {
+        (
+            serde_json::json!({
+                "solved": false, "layout": format!("{:?}", feedback.layout),
+                "route_search_attempts": feedback.route_search_attempts,
+            }),
+            seed.resolved().cloned(),
+        )
+    });
     counters.routes += feedback.route_search_attempts;
     if !feedback
         .retained_distances

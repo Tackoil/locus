@@ -18,7 +18,7 @@ mod routing;
 pub mod score;
 pub use discrete::{LayoutFeedback, layout_program};
 mod feedback;
-pub use feedback::{SolveLayoutError, solve_layout};
+pub use feedback::{SolveLayoutError, solve_layout, solve_layout_observed};
 
 use indexmap::IndexMap;
 use locus_core::{BBox, InspectDiagnostic, Point, ResolvedObject, ResolvedScene, Segment};

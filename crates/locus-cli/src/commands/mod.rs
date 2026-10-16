@@ -2,10 +2,12 @@
 #![allow(missing_docs, reason = "command report plumbing is crate-internal")]
 
 mod diagram_report;
+mod dump;
 mod edit_collections;
 mod layout;
 mod measurement;
 mod render;
+mod visualize;
 
 use locus_core::{PathGeometry, ResolvedPath};
 use std::fs::{self, OpenOptions};
@@ -39,6 +41,7 @@ pub(crate) fn execute(command: Command) -> Execution {
         Command::Check(args) => check(&args),
         Command::Fmt(args) => fmt(&args.file),
         Command::Render(args) => render::execute(&args),
+        Command::Visualize(args) => visualize::execute(&args),
     }
 }
 
@@ -57,7 +60,8 @@ fn execute_mutation(command: Command) -> Execution {
         | Command::Inspect(_)
         | Command::Check(_)
         | Command::Fmt(_)
-        | Command::Render(_) => unreachable!("mutation dispatcher received an analysis command"),
+        | Command::Render(_)
+        | Command::Visualize(_) => unreachable!("mutation dispatcher received an analysis command"),
     }
 }
 
@@ -71,7 +75,8 @@ fn execute_analysis(command: Command) -> Execution {
         | Command::Remove(_)
         | Command::Check(_)
         | Command::Fmt(_)
-        | Command::Render(_) => unreachable!("analysis dispatcher received another command"),
+        | Command::Render(_)
+        | Command::Visualize(_) => unreachable!("analysis dispatcher received another command"),
     }
 }
 
@@ -502,10 +507,20 @@ impl LoadedScene {
 
 fn read_source(command: &'static str, path: &Path) -> Result<LoadedSource, Box<Execution>> {
     match measure("read_source", || fs::read_to_string(path)) {
-        Ok(source) => Ok(LoadedSource {
-            path: path.to_owned(),
-            source,
-        }),
+        Ok(source) => {
+            locus_core::trace::record("read_source", || {
+                (
+                    serde_json::json!({
+                        "path": path_string(path), "source": source,
+                    }),
+                    None,
+                )
+            });
+            Ok(LoadedSource {
+                path: path.to_owned(),
+                source,
+            })
+        }
         Err(error) => Err(Box::new(io_failure(command, path, &error))),
     }
 }
@@ -513,6 +528,14 @@ fn read_source(command: &'static str, path: &Path) -> Result<LoadedSource, Box<E
 fn load_parsed(command: &'static str, path: &Path) -> Result<LoadedFile, Box<Execution>> {
     let loaded = read_source(command, path)?;
     let parsed = measure("parse", || parse(&loaded.source));
+    locus_core::trace::record("parse", || {
+        (
+            serde_json::json!({
+                "file": parsed.file, "diagnostics": parsed.diagnostics,
+            }),
+            None,
+        )
+    });
     if !parsed.diagnostics.is_empty() {
         return Err(Box::new(syntax_failure(
             command,
@@ -540,7 +563,13 @@ fn load_scene_with_engine(
     let (inputs, measured) = measurement::prepare(&loaded.file, engine)
         .map_err(|error| Box::new(layout::file_failure(command, &loaded, &error)))?;
     let options = layout::options(inputs.metrics);
-    match locus_layout::solve_layout(&loaded.file, inputs, &measured, options) {
+    match locus_layout::solve_layout_observed(
+        &loaded.file,
+        inputs,
+        &measured,
+        options,
+        dump::layout_step,
+    ) {
         Ok((scene, placed)) => Ok(LoadedScene {
             path: loaded.path,
             source: loaded.source,

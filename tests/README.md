@@ -32,3 +32,13 @@ For the focused source and measurement checks:
 cargo test -p locus-syntax --test example_corpus
 cargo test -p locus-render --all-features --test corpus_acceptance core_corpus_measurement_fixture_matches_real_font_engines
 ```
+
+For render dump capture and the standalone viewer:
+
+```sh
+cargo test -p locus-cli --features png --test render_dump --test render_options
+node --test crates/locus-cli/tests/visualizer.test.cjs
+```
+
+The viewer logic tests use only Node's built-in test runner; the generated HTML
+requires no Node installation or external assets.

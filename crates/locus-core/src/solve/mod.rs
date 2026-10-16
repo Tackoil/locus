@@ -9,6 +9,7 @@ mod linear;
 mod model;
 mod search;
 mod settling;
+mod trace;
 use model::{append_domains, equality_analysis, settle, unknown_preferences};
 mod relations;
 
@@ -338,6 +339,9 @@ fn run_lm(
     let mut damping = INITIAL_DAMPING;
     let mut attempts = 0;
     let mut accepted = 0;
+    trace::iteration("solver_start", prepared, system, &normalized, || {
+        trace::state(&state)
+    });
     while max_residual(&state.residuals) >= SOLVE_EPSILON && attempts < max_attempts {
         let primary = linear::lm_primary_step(&state.jacobian, &state.residuals, damping)
             .ok_or_else(|| {
@@ -365,10 +369,15 @@ fn run_lm(
         );
         attempts += 1;
         let trial = evaluate_state(prepared, system, sources, branches, &trial_vector);
-        if trial
+        let trial_accepted = trial
             .as_ref()
-            .is_ok_and(|trial| accepted_trial(&state, trial))
-        {
+            .is_ok_and(|trial| accepted_trial(&state, trial));
+        trace::iteration("solver_iteration", prepared, system, &trial_vector, || {
+            serde_json::json!({"iteration": attempts, "accepted": trial_accepted,
+                "damping": damping, "state": trial.as_ref().ok().map(trace::state),
+                "error": trial.as_ref().err().map(ToString::to_string)})
+        });
+        if trial_accepted {
             normalized = trial_vector;
             state = trial.unwrap_or_else(|_| unreachable!());
             accepted += 1;

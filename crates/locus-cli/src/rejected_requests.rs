@@ -98,18 +98,32 @@ fn decode_source(file: &mut OriginalFile, bytes: Vec<u8>) {
 }
 
 pub(crate) fn begin(command: &Command) {
-    let paths = match command {
-        Command::Init(args) => vec![args.file.clone()],
-        Command::Add(args) | Command::Describe(args) | Command::Fmt(args) => {
-            vec![args.file.clone()]
-        }
-        Command::Update(args) => vec![args.file.clone()],
-        Command::Inspect(args) => vec![args.file.clone()],
-        Command::Remove(args) => vec![args.file.clone()],
-        Command::Render(args) => vec![args.file.clone()],
-        Command::Check(args) => args.files.clone(),
-    };
+    let paths = command_paths(command);
     REQUEST.with(|request| *request.borrow_mut() = Some(Request::new(&paths)));
+}
+
+fn command_paths(command: &Command) -> Vec<PathBuf> {
+    if let Some(path) = mutation_path(command) {
+        return vec![path.clone()];
+    }
+    match command {
+        Command::Describe(args) | Command::Fmt(args) => vec![args.file.clone()],
+        Command::Inspect(args) => vec![args.file.clone()],
+        Command::Render(args) => vec![args.file.clone()],
+        Command::Visualize(args) => vec![args.file.clone()],
+        Command::Check(args) => args.files.clone(),
+        _ => unreachable!("mutation paths handled above"),
+    }
+}
+
+fn mutation_path(command: &Command) -> Option<&PathBuf> {
+    match command {
+        Command::Init(args) => Some(&args.file),
+        Command::Add(args) => Some(&args.file),
+        Command::Update(args) => Some(&args.file),
+        Command::Remove(args) => Some(&args.file),
+        _ => None,
+    }
 }
 
 pub(crate) fn stdin(source: &str) {

@@ -21,6 +21,7 @@ pub fn measure_file(
 ) -> Result<(EvaluationInputs, TextBoxes), LayoutError> {
     let _measurement = locus_core::metrics::span("measure_text");
     let expanded = locus_core::metrics::measure("expand", || locus_syntax::expand(source));
+    locus_core::trace::record("expand_text", || (serde_json::json!(expanded), None));
     let mut inputs = EvaluationInputs {
         metrics,
         ..EvaluationInputs::default()

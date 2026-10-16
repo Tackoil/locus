@@ -82,6 +82,18 @@ fn optimize_counted(
             break;
         }
         result.report.steps += 1;
+        crate::trace::record("settling_iteration", || {
+            (
+                serde_json::json!({
+                    "iteration": result.report.steps, "normalized": result.z,
+                    "active": active, "equalities": state.equalities.values,
+                    "inequalities": state.inequalities.values,
+                    "preferences": state.preferences.values, "trust_radius": radius,
+                    "accepted_moves": result.report.accepted_moves,
+                }),
+                None,
+            )
+        });
         let Some(independent) = independent_boundaries(&state, &active, initial.len()) else {
             result.report.reason = "stalled";
             break;
@@ -434,6 +446,15 @@ fn line_search(
     let mut alpha = 1.0;
     while alpha >= LINE_SEARCH_MIN_ALPHA {
         report.line_search_evaluations += 1;
+        crate::trace::record("settling_line_search", || {
+            (
+                serde_json::json!({
+                    "iteration": report.line_search_evaluations, "alpha": alpha, "ratio": ratio,
+                    "normalized": z, "direction": direction.delta,
+                }),
+                None,
+            )
+        });
         let trial = add_step(z, &direction.delta, alpha * ratio);
         let restored = restore(trial, active, evaluate, report);
         if let Some((trial, trial_state)) = restored {
@@ -460,6 +481,16 @@ fn restore(
             return Some((z, state));
         }
         report.restoration_steps += 1;
+        crate::trace::record("settling_restoration", || {
+            (
+                serde_json::json!({
+                    "iteration": report.restoration_steps, "normalized": z,
+                    "equalities": state.equalities.values, "inequalities": state.inequalities.values,
+                    "damping": damping,
+                }),
+                None,
+            )
+        });
         let rows = restoration_rows(&state, active);
         let step = linear::lm_primary_step(&rows.jacobian, &rows.values, damping)?;
         let trial = add_step(&z, &step, 1.0);

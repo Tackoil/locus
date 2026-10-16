@@ -7,6 +7,7 @@ use crate::EvalError;
 pub(crate) fn expand_program(file: &File) -> Result<ExpandOutput, EvalError> {
     let _expand = crate::metrics::span("expand");
     let expanded = expand(file);
+    crate::trace::record("expand", || (serde_json::json!(expanded), None));
     if let Some(diagnostic) = expanded.diagnostics.first() {
         let mut error = EvalError::new(diagnostic.code, diagnostic.span, &diagnostic.message);
         if !diagnostic.notes.is_empty() {

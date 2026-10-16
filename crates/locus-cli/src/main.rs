@@ -60,6 +60,8 @@ enum Command {
     Fmt(FileArgs),
     /// Render a scene as SVG, PNG, or `TikZ`.
     Render(RenderArgs),
+    /// Build a standalone HTML viewer for a render dump.
+    Visualize(VisualizeArgs),
 }
 
 #[derive(Debug, Args)]
@@ -151,12 +153,22 @@ struct CheckArgs {
 }
 
 #[derive(Debug, Args)]
+#[allow(
+    clippy::struct_excessive_bools,
+    reason = "clap models independent export and capture switches as flags"
+)]
 struct RenderArgs {
     /// Locus source file.
     file: PathBuf,
     /// Output path.
     #[arg(short, long, required_unless_present = "stdout")]
     output: Option<PathBuf>,
+    /// Save render snapshots here (disabled by default).
+    #[arg(long, conflicts_with = "no_dump")]
+    dump: Option<PathBuf>,
+    /// Disable render snapshots.
+    #[arg(long)]
+    no_dump: bool,
     /// Request PNG output (requires the png build feature).
     #[cfg(feature = "png")]
     #[arg(long, conflicts_with = "tikz")]
@@ -177,6 +189,15 @@ struct RenderArgs {
     /// Select the TeX engine; mock is reserved for deterministic tests.
     #[arg(long, value_enum, default_value_t, hide = true)]
     tex_engine: TextEngine,
+}
+
+#[derive(Debug, Args)]
+struct VisualizeArgs {
+    /// Render dump JSON file.
+    file: PathBuf,
+    /// HTML output path (default: dump path with .html extension).
+    #[arg(short, long)]
+    output: Option<PathBuf>,
 }
 
 #[derive(Clone, Copy, Debug, Default, ValueEnum)]

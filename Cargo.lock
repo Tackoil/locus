@@ -760,6 +760,7 @@ dependencies = [
  "assert_cmd",
  "clap",
  "criterion",
+ "indexmap",
  "insta",
  "locus-core",
  "locus-layout",
@@ -796,6 +797,7 @@ dependencies = [
  "locus-core",
  "locus-syntax",
  "locus-tex",
+ "serde_json",
  "thiserror",
 ]
 

@@ -339,6 +339,8 @@ pub(crate) struct RenderResult {
     pub format: &'static str,
     pub output: Option<String>,
     pub diagnostics: Vec<CliDiagnostic>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub dump: Option<String>,
     #[serde(skip)]
     pub stdout: Option<Vec<u8>>,
 }
@@ -434,6 +436,9 @@ fn emit_human(execution: &Execution) {
 fn emit_render(value: &RenderResult, sources: &[SourceDocument]) {
     if let Some(path) = &value.output {
         println!("rendered {} to {path}", value.format);
+    }
+    if let Some(path) = &value.dump {
+        println!("saved render dump to {path}");
     }
     emit_diagnostics(&value.diagnostics, sources);
 }

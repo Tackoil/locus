@@ -159,7 +159,12 @@ pub(super) fn settle(
         return Ok(());
     }
     let result = settling::optimize(&outcome.normalized, |z| {
-        let state = evaluate_state_for(prepared, system, sources, branches, z, true).ok()?;
+        let evaluated = evaluate_state_for(prepared, system, sources, branches, z, true);
+        super::trace::iteration("settling_evaluation", prepared, system, z, || {
+            serde_json::json!({"state": evaluated.as_ref().ok().map(super::trace::state),
+                "error": evaluated.as_ref().err().map(ToString::to_string)})
+        });
+        let state = evaluated.ok()?;
         Some(settling::ConstraintState {
             equalities: constraint_rows(state.equalities.into_iter().map(|r| r.residual)),
             inequalities: constraint_rows(state.inequalities.into_iter().map(|r| r.residual)),

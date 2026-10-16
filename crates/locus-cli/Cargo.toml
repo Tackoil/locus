@@ -19,6 +19,7 @@ png = ["locus-render/png"]
 
 [dependencies]
 clap.workspace = true
+indexmap.workspace = true
 locus-core = { path = "../locus-core" }
 locus-layout = { path = "../locus-layout" }
 locus-render = { path = "../locus-render" }

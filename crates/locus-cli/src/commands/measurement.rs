@@ -15,10 +15,17 @@ pub(super) fn prepare(
         TextEngine::Rex => &RexEngine,
         TextEngine::Mock => &MockEngine,
     };
-    measure_file(
+    let result = measure_file(
         source,
         &PlaintextEngine::new(),
         tex,
         LayoutMetrics::default(),
-    )
+    );
+    match &result {
+        Ok((inputs, boxes)) => super::dump::measured_step(inputs, boxes),
+        Err(error) => locus_core::trace::record("measure_text", || {
+            (serde_json::json!({"error": error.to_string()}), None)
+        }),
+    }
+    result
 }
