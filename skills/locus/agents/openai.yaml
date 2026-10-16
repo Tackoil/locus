@@ -1,0 +1,3 @@
+interface:
+  display_name: "Locus"
+  short_description: "Author and verify Locus geometry diagrams"

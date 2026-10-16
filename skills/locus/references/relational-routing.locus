@@ -1,0 +1,31 @@
+locus 0 beta 6
+
+style textbook
+
+fn node(text) {
+    rounded_rect shape()
+    label caption(text)
+    rel center(caption, shape)
+    rel contain(shape, caption)
+}
+
+label title("Validate before rendering") { role: title }
+node check("Check source")
+node render("Render SVG") [highlight]
+group nodes(check.shape, render.shape)
+rel column(nodes)
+rel align_center_x(title, nodes)
+rel gap_y(title, nodes)
+rel check.shape.width == render.shape.width
+rel check.shape.height == render.shape.height
+
+arrow success(check.shape.s, render.shape.n)
+label pass(success, "pass") { near: middle, side: left }
+arrow retry(render.shape.e, check.shape.e) { route: curved, side: right }
+label again(retry, "retry") { near: middle, side: right }
+rel avoid(retry, success)
+rel avoid(pass, check.shape, render.shape)
+
+assert contain(check.shape, check.caption)
+assert contain(render.shape, render.caption)
+assert align_center_x(check.shape, render.shape)

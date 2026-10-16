@@ -24,7 +24,8 @@ The project is under active development. The `locus 0 beta 6` frontend supports 
 | [`tests/`](tests/README.md) | Shared fixtures, expected outputs, and stress-test support |
 | [`scripts/`](scripts/) | Repository checks, including the example source audit |
 | [`ecosystem/`](ecosystem/) | Tree-sitter grammar and Zed editor integration |
-| [`benchmarks/`](benchmarks/) | Comparison workloads used by crate-local benchmarks |
+| [`benchmarks/`](benchmarks/) | Agent drawing comparisons and crate-local performance workloads |
+| [`skills/locus/`](skills/locus/SKILL.md) | Beta 6 authoring skill and portable language reference |
 | [`assets/`](assets/) | Project logo source and artwork |
 | [`licenses/`](licenses/) | Supplemental third-party license texts, provenance, and ReX licensing investigation |
 | [`vendor/`](vendor/) | Pinned compatibility patches for dependencies |
@@ -127,6 +128,14 @@ also snapshot available `.locus` file arguments. Successful commands, help, and
 version requests produce no records. Archive write failures warn on stderr and
 preserve the command's normal output and exit code. Records are local files;
 remove the directory when you no longer need them.
+
+## Authoring skill and drawing benchmark
+
+The [Locus skill](skills/locus/SKILL.md) teaches the current beta 6 authoring and
+verification workflow. The [agent drawing benchmark](benchmarks/locus/README.md)
+compares it with handwritten native SVG on the same triangle, sequence, and
+flowchart tasks. It freezes trial inputs, retains failed attempts, and keeps
+image review separate from native syntax checks.
 
 ## Editor integration
 

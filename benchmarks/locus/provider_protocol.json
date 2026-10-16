@@ -1,0 +1,44 @@
+{
+  "id": "locus-provider-http",
+  "version": "2.0",
+  "filesystem_search": "disabled: native allowlists/plugins/MCP; exact tool catalog checked before forwarding",
+  "model": "deepseek-flash",
+  "thinking": "disabled",
+  "temperature": 0,
+  "max_output_tokens": 8192,
+  "runs": 3,
+  "tasks": [
+    "triangle",
+    "sequence",
+    "flowchart"
+  ],
+  "harnesses": [
+    "dsh",
+    "pi",
+    "opencode"
+  ],
+  "backends": [
+    "locus",
+    "svg"
+  ],
+  "max_requests": 64,
+  "timeout": 600,
+  "versions": {
+    "dsh": "0.1.5-rc.2",
+    "pi": "0.84.4",
+    "opencode": "1.18.35",
+    "sharp": "0.35.4"
+  },
+  "node_minimum": "22.19.0",
+  "rubric": {
+    "geometry": 40,
+    "completeness": 25,
+    "readability": 20,
+    "styling": 15
+  },
+  "decision_rule": "Lower tokens, all Locus SVGs exported, and no lower mean correctness, completeness or visual score",
+  "locus_version": "0.0.0-beta.6",
+  "workers": 1,
+  "historical_source_revision": "bf323b7^",
+  "scope": "Source-only HTTP tools in pinned native DSH/Pi/OpenCode; incompatible with exploratory 1.6 evidence"
+}

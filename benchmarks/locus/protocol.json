@@ -1,0 +1,10 @@
+{
+  "id": "locus-drawing-effort",
+  "version": "2.0",
+  "locus_version": "0.0.0-beta.6",
+  "tasks": ["triangle", "sequence", "flowchart"],
+  "workflows": ["locus", "svg"],
+  "rubric": {"geometry": 40, "completeness": 25, "readability": 20, "styling": 15},
+  "usage_policy": "Unknown provider token counts and costs are null. Subagent self-estimates are not measurements.",
+  "scope": "Full workflow comparison; native validation does not establish image quality."
+}
