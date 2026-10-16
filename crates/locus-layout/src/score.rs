@@ -11,6 +11,7 @@ use locus_core::{
     Arc, BBox, Circle, LayoutCollision, Point, PointMark, ResolvedObject, ResolvedScene, Tolerance,
     Vec2,
 };
+use locus_core::{PathGeometry, ResolvedPath};
 
 /// Components of a candidate's penalty. Zero means collision-free.
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
@@ -258,7 +259,10 @@ fn object_strokes(object: &ResolvedObject, strokes: &mut Vec<Stroke>) {
         ResolvedObject::Ray(ray) => {
             strokes.push(linear(ray.start, ray.direction(), 0.0, f64::INFINITY));
         }
-        ResolvedObject::Segment(segment) => {
+        ResolvedObject::Path(ResolvedPath {
+            geometry: PathGeometry::Segment(segment),
+            ..
+        }) => {
             strokes.push(linear(segment.start, segment.direction(), 0.0, 1.0));
         }
         _ => curved_strokes(object, strokes),

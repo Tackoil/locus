@@ -171,21 +171,6 @@ pub enum AnnotationSpec {
         /// Optional nonnegative gap in scene units.
         gap: Option<f64>,
     },
-    /// Directed annotation between two anchors.
-    Arrow {
-        /// Combined accepted attached-caption bounds, excluded from logical length.
-        label_bounds: Option<BBox>,
-        /// Accepted logical route, including internal continuous parameters.
-        route: Option<crate::geom::route::Route>,
-        /// Start anchor.
-        from: AnchorSpec,
-        /// End anchor.
-        to: AnchorSpec,
-        /// Arrow-head style.
-        head: HeadKind,
-        /// Bend angle in radians.
-        bend: f64,
-    },
     /// Equal-length tick marks on a segment.
     Tick {
         /// Marked segment.
@@ -213,6 +198,83 @@ pub enum AnnotationSpec {
     },
 }
 
+/// Finite path geometry, preserving the straight-segment contract.
+#[derive(Clone, Debug, PartialEq)]
+pub enum PathGeometry {
+    /// An exact straight segment, including a possible zero-length segment.
+    Segment(Segment),
+    /// A connector with existing endpoint identities and an optional accepted route.
+    Routed {
+        /// Accepted logical route, including internal continuous parameters.
+        route: Option<crate::geom::route::Route>,
+        /// Logical source anchor, before visible endpoint clipping.
+        from: AnchorSpec,
+        /// Logical target anchor, before visible endpoint clipping.
+        to: AnchorSpec,
+        /// Direct-route bend angle in radians.
+        bend: f64,
+    },
+}
+
+/// Shared finite path with arrowheads independent of its centerline geometry.
+#[derive(Clone, Debug, PartialEq)]
+pub struct ResolvedPath {
+    /// Straight or routed centerline definition.
+    pub geometry: PathGeometry,
+    /// Endpoint decoration; does not change mathematical geometry or measurements.
+    pub head: HeadKind,
+    /// Attached-caption bounds, included only in layout bounds.
+    pub label_bounds: Option<BBox>,
+}
+
+impl ResolvedPath {
+    /// Constructs an undecorated straight path.
+    #[must_use]
+    pub const fn segment(segment: Segment) -> Self {
+        Self {
+            geometry: PathGeometry::Segment(segment),
+            head: HeadKind::None,
+            label_bounds: None,
+        }
+    }
+
+    /// Resolves the logical centerline when its anchors are geometric points.
+    pub fn route(&self) -> Result<Option<crate::geom::route::Route>, crate::ConstructError> {
+        use crate::geom::route::Route;
+        match &self.geometry {
+            PathGeometry::Segment(segment) => {
+                Route::direct(segment.start, segment.end, 0.0).map(Some)
+            }
+            PathGeometry::Routed {
+                route: Some(route), ..
+            } => Ok(Some(route.clone())),
+            PathGeometry::Routed {
+                from: AnchorSpec::Point(from),
+                to: AnchorSpec::Point(to),
+                bend,
+                ..
+            } => Route::direct(*from, *to, *bend).map(Some),
+            PathGeometry::Routed { .. } => Ok(None),
+        }
+    }
+
+    /// Logical centerline bounds without arrowheads or attached captions.
+    #[must_use]
+    pub fn geometry_bbox(&self) -> Option<BBox> {
+        self.route().ok().flatten().map(|route| route.bbox())
+    }
+
+    /// Layout bounds including attached captions.
+    #[must_use]
+    pub fn layout_bbox(&self) -> Option<BBox> {
+        let bounds = self.geometry_bbox()?;
+        Some(
+            self.label_bounds
+                .map_or(bounds, |labels| bounds.union(labels)),
+        )
+    }
+}
+
 /// A fully evaluated declaration.
 #[derive(Clone, Debug, PartialEq)]
 pub enum ResolvedObject {
@@ -226,8 +288,8 @@ pub enum ResolvedObject {
     Line(Line),
     /// Half-line geometry.
     Ray(Ray),
-    /// Segment geometry.
-    Segment(Segment),
+    /// Finite straight or routed path with independent endpoint decoration.
+    Path(ResolvedPath),
     /// Circle geometry.
     Circle(Circle),
     /// Arc geometry.
@@ -249,6 +311,22 @@ pub enum ResolvedObject {
 }
 
 impl ResolvedObject {
+    /// Constructs a straight finite path without arrowheads.
+    #[must_use]
+    pub const fn segment(segment: Segment) -> Self {
+        Self::Path(ResolvedPath::segment(segment))
+    }
+
+    /// Borrows a finite path independently of its constructor spelling.
+    #[must_use]
+    pub const fn as_path(&self) -> Option<&ResolvedPath> {
+        if let Self::Path(path) = self {
+            Some(path)
+        } else {
+            None
+        }
+    }
+
     /// Returns the geometry-only bounds, if this object contributes geometry.
     #[must_use]
     pub fn bbox(&self) -> Option<BBox> {
@@ -256,17 +334,10 @@ impl ResolvedObject {
             Self::Point(point) => BBox::from_points([point.geometry]).ok(),
             Self::Line(line) => Some(BBox::for_line(*line)),
             Self::Ray(ray) => Some(BBox::for_ray(*ray)),
-            Self::Segment(segment) => Some(BBox::for_segment(*segment)),
+            Self::Path(path) => path.layout_bbox(),
             Self::Annotation(annotation) => annotation_bbox(annotation),
             Self::Num(_) | Self::Angle(_) => None,
-            Self::Circle(_)
-            | Self::Arc(_)
-            | Self::Ellipse(_)
-            | Self::Bspline(_)
-            | Self::Polygon(_)
-            | Self::Rect(_)
-            | Self::RoundedRect(_)
-            | Self::Diamond(_) => self.curved_bbox(),
+            _ => self.curved_bbox(),
         }
     }
 
@@ -288,22 +359,6 @@ impl ResolvedObject {
 fn annotation_bbox(annotation: &AnnotationSpec) -> Option<BBox> {
     match annotation {
         AnnotationSpec::Label { bounds, .. } => *bounds,
-        AnnotationSpec::Arrow {
-            route: Some(route),
-            label_bounds,
-            ..
-        } => Some(label_bounds.map_or_else(|| route.bbox(), |bounds| route.bbox().union(bounds))),
-        AnnotationSpec::Arrow {
-            from: AnchorSpec::Point(from),
-            to: AnchorSpec::Point(to),
-            bend,
-            label_bounds,
-            ..
-        } => crate::geom::route::Route::direct(*from, *to, *bend)
-            .ok()
-            .map(|route| {
-                label_bounds.map_or_else(|| route.bbox(), |bounds| route.bbox().union(bounds))
-            }),
         _ => None,
     }
 }

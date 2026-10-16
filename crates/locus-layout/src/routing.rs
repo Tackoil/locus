@@ -6,6 +6,7 @@ use indexmap::IndexMap;
 use locus_core::Scene;
 use locus_core::geom::route::{Route, RouteChoice, RouteKind, RouteSide};
 use locus_core::geom::sdf::attached_route_separation;
+use locus_core::{PathGeometry, ResolvedPath};
 use locus_syntax::{Expr, OpStmt, PropValue, Statement};
 
 pub(crate) fn search(
@@ -75,9 +76,10 @@ fn collect_routes(
     for name in members(scene, subject) {
         if matches!(
             object(scene, &name),
-            Some(locus_core::ResolvedObject::Annotation(
-                locus_core::AnnotationSpec::Arrow { .. }
-            ))
+            Some(locus_core::ResolvedObject::Path(ResolvedPath {
+                geometry: PathGeometry::Routed { .. },
+                ..
+            }))
         ) {
             let entry = routes.entry(name).or_insert((Vec::new(), requirement.span));
             for obstacle in &obstacles {
@@ -352,10 +354,14 @@ fn visible_object(
     visible: Route,
 ) -> locus_core::ResolvedObject {
     match &mut object {
-        locus_core::ResolvedObject::Annotation(locus_core::AnnotationSpec::Arrow {
-            route, ..
+        locus_core::ResolvedObject::Path(ResolvedPath {
+            geometry: PathGeometry::Routed { route, .. },
+            ..
         }) => *route = Some(visible),
-        locus_core::ResolvedObject::Segment(segment) => {
+        locus_core::ResolvedObject::Path(ResolvedPath {
+            geometry: PathGeometry::Segment(segment),
+            ..
+        }) => {
             segment.start = visible.from.into();
             segment.end = visible.to.into();
         }

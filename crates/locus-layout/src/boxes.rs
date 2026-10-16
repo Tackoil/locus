@@ -1,6 +1,7 @@
 //! Measured text composition and final annotation box geometry.
 
 use locus_core::{AnnotationSpec, BBox, Point, ResolvedObject, ResolvedScene, Segment, Vec2};
+use locus_core::{PathGeometry, ResolvedPath};
 use locus_syntax::{Ident, TextSegmentKind};
 use locus_tex::{FontSize, TexBox, TexEngine, TextSegment, render_segments};
 
@@ -125,28 +126,30 @@ pub(crate) fn connector(anchor: Point, bounds: BBox) -> Leader {
 
 pub(crate) fn mark(
     id: &Ident,
-    spec: &AnnotationSpec,
+    spec: &ResolvedObject,
     anchors: &[Point],
     options: LayoutOptions,
 ) -> Result<PlacedAnnotation, LayoutError> {
     let (strokes, leader) = match spec {
-        AnnotationSpec::Tick { segment, count } => {
+        ResolvedObject::Annotation(AnnotationSpec::Tick { segment, count }) => {
             (ticks(*segment, *count, options.mark_size), Leader::None)
         }
-        AnnotationSpec::RightAngle {
+        ResolvedObject::Annotation(AnnotationSpec::RightAngle {
             vertex,
             first,
             second,
             size,
-        } => (
+        }) => (
             right_angle(*vertex, *first, *second, size.unwrap_or(options.mark_size)),
             Leader::None,
         ),
-        AnnotationSpec::Arrow {
-            route: Some(route),
+        ResolvedObject::Path(ResolvedPath {
+            geometry: PathGeometry::Routed {
+                route: Some(route), ..
+            },
             head,
             ..
-        } => {
+        }) => {
             let leader = if route.via.is_empty() {
                 Leader::Arrow {
                     from: route.from.clone().into(),
@@ -162,9 +165,11 @@ pub(crate) fn mark(
             };
             (Vec::new(), leader)
         }
-        AnnotationSpec::Arrow { head, bend, .. } => {
-            (Vec::new(), arrow(id, anchors[0], anchors[1], *head, *bend)?)
-        }
+        ResolvedObject::Path(ResolvedPath {
+            geometry: PathGeometry::Routed { bend, .. },
+            head,
+            ..
+        }) => (Vec::new(), arrow(id, anchors[0], anchors[1], *head, *bend)?),
         _ => return Err(LayoutError::invalid(id)),
     };
     let bounds = mark_bounds(id, &strokes, &leader)?;

@@ -3,16 +3,19 @@
 
 use locus_core::geom::Bspline;
 use locus_core::geom::{route::Route, sdf::object_separation};
-use locus_core::{AnchorSpec, AnnotationSpec, BBox, Point, ResolvedObject};
+use locus_core::{AnchorSpec, BBox, Point, ResolvedObject};
+use locus_core::{PathGeometry, ResolvedPath};
 
 fn arrow(route: Route) -> ResolvedObject {
-    ResolvedObject::Annotation(AnnotationSpec::Arrow {
+    ResolvedObject::Path(ResolvedPath {
+        geometry: PathGeometry::Routed {
+            from: AnchorSpec::Point(route.from.clone().into()),
+            to: AnchorSpec::Point(route.to.clone().into()),
+            route: Some(route),
+            bend: 0.0,
+        },
         label_bounds: None,
-        from: AnchorSpec::Point(route.from.clone().into()),
-        to: AnchorSpec::Point(route.to.clone().into()),
-        route: Some(route),
         head: locus_syntax::HeadKind::None,
-        bend: 0.0,
     })
 }
 

@@ -10,6 +10,7 @@
 use indexmap::IndexMap;
 use locus_core::scene::{CompassDirection, LabelDirection, TextBlockPlacement};
 use locus_core::{AnchorSpec, AnnotationSpec, BBox, Point, ResolvedObject, ResolvedScene};
+use locus_core::{PathGeometry, ResolvedPath};
 use locus_syntax::Ident;
 use locus_tex::TexBox;
 
@@ -20,7 +21,7 @@ use crate::{LayoutError, LayoutOptions, LayoutScene, PlacedAnnotation, TextBoxes
 
 struct Pending<'a> {
     id: &'a Ident,
-    spec: &'a AnnotationSpec,
+    spec: &'a ResolvedObject,
     measured: Option<&'a TexBox>,
 }
 
@@ -58,9 +59,17 @@ fn prepare<'a>(
 ) -> Result<Vec<Pending<'a>>, LayoutError> {
     let mut pending = Vec::new();
     for (id, object) in &scene.objects {
-        let ResolvedObject::Annotation(spec) = object else {
+        if !matches!(
+            object,
+            ResolvedObject::Annotation(_)
+                | ResolvedObject::Path(ResolvedPath {
+                    geometry: PathGeometry::Routed { .. },
+                    ..
+                })
+        ) {
             continue;
-        };
+        }
+        let spec = object;
         let text = required_measurement(id, object, measured)?;
         if let Some(text) = text {
             dimensions(id, text, options.em_size)?;
@@ -185,17 +194,17 @@ fn eligible(
 }
 
 fn text_candidates(
-    spec: &AnnotationSpec,
+    spec: &ResolvedObject,
     scene: &ResolvedScene,
     anchor: Point,
     size: locus_core::Vec2,
     direction: LabelDirection,
     gap: f64,
 ) -> Vec<crate::candidates::Candidate> {
-    if let AnnotationSpec::Label {
+    if let ResolvedObject::Annotation(AnnotationSpec::Label {
         bounds: Some(bounds),
         ..
-    } = spec
+    }) = spec
     {
         return vec![crate::candidates::Candidate { bounds: *bounds }];
     }
@@ -203,16 +212,16 @@ fn text_candidates(
 }
 
 fn text_request(
-    spec: &AnnotationSpec,
+    spec: &ResolvedObject,
     bbox: BBox,
     anchors: &[Point],
     default_gap: f64,
 ) -> (Point, LabelDirection, f64) {
     match spec {
-        AnnotationSpec::Label { direction, gap, .. } => {
+        ResolvedObject::Annotation(AnnotationSpec::Label { direction, gap, .. }) => {
             (anchors[0], *direction, gap.unwrap_or(default_gap))
         }
-        AnnotationSpec::TextBlock { placement, .. } => {
+        ResolvedObject::Annotation(AnnotationSpec::TextBlock { placement, .. }) => {
             let (anchor, direction) = block_request(placement, bbox, anchors);
             (anchor, direction, default_gap)
         }
@@ -235,14 +244,19 @@ fn block_request(
     (anchor, LabelDirection::Compass(compass))
 }
 
-fn anchors(spec: &AnnotationSpec) -> Vec<&AnchorSpec> {
+fn anchors(spec: &ResolvedObject) -> Vec<&AnchorSpec> {
     match spec {
-        AnnotationSpec::Arrow { from, to, .. } => vec![from, to],
-        AnnotationSpec::TextBlock {
-            placement: TextBlockPlacement::Anchor { anchor, .. },
+        ResolvedObject::Path(ResolvedPath {
+            geometry: PathGeometry::Routed { from, to, .. },
             ..
-        }
-        | AnnotationSpec::Label { anchor, .. } => vec![anchor],
+        }) => vec![from, to],
+        ResolvedObject::Annotation(
+            AnnotationSpec::TextBlock {
+                placement: TextBlockPlacement::Anchor { anchor, .. },
+                ..
+            }
+            | AnnotationSpec::Label { anchor, .. },
+        ) => vec![anchor],
         _ => Vec::new(),
     }
 }
@@ -287,7 +301,13 @@ fn place(
     let leader = choice
         .anchors
         .first()
-        .filter(|_| options.label_connectors || !matches!(item.spec, AnnotationSpec::Label { .. }))
+        .filter(|_| {
+            options.label_connectors
+                || !matches!(
+                    item.spec,
+                    ResolvedObject::Annotation(AnnotationSpec::Label { .. })
+                )
+        })
         .map_or(crate::Leader::None, |a| connector(*a, bounds));
     Ok(PlacedAnnotation {
         id: item.id.clone(),

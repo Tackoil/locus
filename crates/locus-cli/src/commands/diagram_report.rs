@@ -1,6 +1,7 @@
 //! Public accepted layout metadata without positions or control coordinates.
 
 use locus_core::{AnnotationSpec, Evaluation, ResolvedObject, Scene};
+use locus_core::{PathGeometry, ResolvedPath};
 use locus_layout::LayoutScene;
 use locus_syntax::{ExpansionOrigin, Statement, to_interchange};
 use serde_json::{Value, json};
@@ -42,11 +43,15 @@ fn metadata(
         ResolvedObject::Annotation(AnnotationSpec::Label { path, .. }) => {
             label_metadata(scene, id, path.as_ref())
         }
-        ResolvedObject::Annotation(AnnotationSpec::Arrow {
-            route,
-            from,
-            to,
-            bend,
+        ResolvedObject::Path(ResolvedPath {
+            geometry:
+                PathGeometry::Routed {
+                    route,
+                    from,
+                    to,
+                    bend,
+                    ..
+                },
             ..
         }) => {
             let logical = route

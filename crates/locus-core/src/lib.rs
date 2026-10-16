@@ -41,8 +41,8 @@ pub use inspect::{
 };
 pub use preset::LayoutMetrics;
 pub use scene::{
-    AnchorSpec, AnnotationSpec, Dimension, Evaluation, NumericValue, PointMark, ResolvedArc,
-    ResolvedObject, ResolvedPoint, ResolvedScene, Scene,
+    AnchorSpec, AnnotationSpec, Dimension, Evaluation, NumericValue, PathGeometry, PointMark,
+    ResolvedArc, ResolvedObject, ResolvedPath, ResolvedPoint, ResolvedScene, Scene,
 };
 pub use solve::{
     BranchResolution, DofReport, HintDisplacement, ObjectDof, RelationReport, SettlingSummary,

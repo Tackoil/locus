@@ -2,7 +2,7 @@
 
 use crate::{LayoutError, LayoutOptions, LayoutScene, TextBoxes};
 use locus_core::geom::route::{Route, RouteChoice};
-use locus_core::{AnnotationSpec, ResolvedObject, Scene};
+use locus_core::{ResolvedObject, Scene};
 use locus_syntax::{Expr, Span, Statement};
 use std::collections::BTreeMap;
 
@@ -194,19 +194,7 @@ pub(crate) fn object<'a>(scene: &'a Scene, name: &str) -> Option<&'a ResolvedObj
 }
 
 pub(crate) fn route(object: &ResolvedObject) -> Option<Route> {
-    match object {
-        ResolvedObject::Annotation(AnnotationSpec::Arrow {
-            route: Some(route), ..
-        }) => Some(route.clone()),
-        ResolvedObject::Annotation(AnnotationSpec::Arrow {
-            from: locus_core::AnchorSpec::Point(from),
-            to: locus_core::AnchorSpec::Point(to),
-            bend,
-            ..
-        }) => Route::direct(*from, *to, *bend).ok(),
-        ResolvedObject::Segment(segment) => Route::direct(segment.start, segment.end, 0.0).ok(),
-        _ => None,
-    }
+    object.as_path()?.route().ok().flatten()
 }
 
 pub(crate) fn conflict(span: Span, measurements: &[String], message: &str) -> LayoutError {

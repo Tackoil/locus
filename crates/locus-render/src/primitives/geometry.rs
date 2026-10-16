@@ -2,11 +2,15 @@
 use super::{Command, Shape, path};
 use crate::viewport::Viewport;
 use locus_core::{Arc, BBox, Point, PointMark, ResolvedObject, Segment, Vec2, geom::Bspline};
+use locus_core::{PathGeometry, ResolvedPath};
 
 pub(super) fn geometry(object: &ResolvedObject, view: Viewport) -> Vec<Shape> {
     match object {
         ResolvedObject::Point(point) => point_shapes(point.geometry, point.mark, view),
-        ResolvedObject::Segment(segment) => vec![segment_shape(*segment, view)],
+        ResolvedObject::Path(ResolvedPath {
+            geometry: PathGeometry::Segment(segment),
+            ..
+        }) => vec![segment_shape(*segment, view)],
         ResolvedObject::Line(line) => {
             clipped(line.start, line.direction(), f64::NEG_INFINITY, view)
         }

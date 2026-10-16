@@ -7,6 +7,7 @@ mod layout;
 mod measurement;
 mod render;
 
+use locus_core::{PathGeometry, ResolvedPath};
 use std::fs::{self, OpenOptions};
 use std::io::{self, Read as _, Write as _};
 use std::path::{Path, PathBuf};
@@ -1007,9 +1008,12 @@ fn resolved_value(object: &ResolvedObject) -> ResolvedValue {
         ResolvedObject::Num(_) | ResolvedObject::Angle(_) | ResolvedObject::Point(_) => {
             scalar_value(object)
         }
-        ResolvedObject::Line(_) | ResolvedObject::Ray(_) | ResolvedObject::Segment(_) => {
-            linear_value(object)
-        }
+        ResolvedObject::Line(_)
+        | ResolvedObject::Ray(_)
+        | ResolvedObject::Path(ResolvedPath {
+            geometry: PathGeometry::Segment(_),
+            ..
+        }) => linear_value(object),
         ResolvedObject::Circle(_)
         | ResolvedObject::Arc(_)
         | ResolvedObject::Ellipse(_)
@@ -1018,7 +1022,7 @@ fn resolved_value(object: &ResolvedObject) -> ResolvedValue {
         ResolvedObject::Polygon(_) | ResolvedObject::Rect(_) | ResolvedObject::Diamond(_) => {
             polygon_object_value(object)
         }
-        ResolvedObject::Annotation(_) => ResolvedValue::Annotation,
+        ResolvedObject::Annotation(_) | ResolvedObject::Path(_) => ResolvedValue::Annotation,
     }
 }
 
@@ -1048,7 +1052,10 @@ fn linear_value(object: &ResolvedObject) -> ResolvedValue {
             start: None,
             through: None,
         },
-        ResolvedObject::Segment(segment) => ResolvedValue::Segment {
+        ResolvedObject::Path(ResolvedPath {
+            geometry: PathGeometry::Segment(segment),
+            ..
+        }) => ResolvedValue::Segment {
             start: None,
             end: None,
             length: locus_core::geom::measure::length(*segment),

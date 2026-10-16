@@ -1,5 +1,6 @@
 //! Layout preserves the solver's accepted text and route bounds.
 
+use locus_core::{PathGeometry, ResolvedPath};
 use std::error::Error;
 
 use locus_core::{EvaluationInputs, MeasuredRole, MeasuredText, Scene};
@@ -60,8 +61,11 @@ fn orthogonal_layout_retains_solved_route_and_curved_layout_retains_solved_contr
             .objects
             .values()
             .find_map(|object| match object {
-                locus_core::ResolvedObject::Annotation(locus_core::AnnotationSpec::Arrow {
-                    route: Some(route),
+                locus_core::ResolvedObject::Path(ResolvedPath {
+                    geometry:
+                        PathGeometry::Routed {
+                            route: Some(route), ..
+                        },
                     ..
                 }) => Some(route),
                 _ => None,

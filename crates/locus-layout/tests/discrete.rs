@@ -4,7 +4,8 @@
     clippy::panic,
     reason = "fixture failures require context"
 )]
-use locus_core::{AnnotationSpec, EvaluationInputs, ResolvedObject, Scene};
+use locus_core::{EvaluationInputs, ResolvedObject, Scene};
+use locus_core::{PathGeometry, ResolvedPath};
 use locus_layout::{LayoutError, LayoutOptions, Leader, TextBoxes, layout_program, solve_layout};
 
 fn scene(source: &str) -> Scene {
@@ -20,13 +21,21 @@ fn path(scene: &Scene) -> locus_core::geom::route::Route {
         .objects
         .values()
         .find_map(|object| match object {
-            ResolvedObject::Annotation(AnnotationSpec::Arrow {
-                route: Some(route), ..
+            ResolvedObject::Path(ResolvedPath {
+                geometry:
+                    PathGeometry::Routed {
+                        route: Some(route), ..
+                    },
+                ..
             }) => Some(route.clone()),
-            ResolvedObject::Annotation(AnnotationSpec::Arrow {
-                from: locus_core::AnchorSpec::Point(from),
-                to: locus_core::AnchorSpec::Point(to),
-                bend,
+            ResolvedObject::Path(ResolvedPath {
+                geometry:
+                    PathGeometry::Routed {
+                        from: locus_core::AnchorSpec::Point(from),
+                        to: locus_core::AnchorSpec::Point(to),
+                        bend,
+                        ..
+                    },
                 ..
             }) => locus_core::geom::route::Route::direct(*from, *to, *bend).ok(),
             _ => None,

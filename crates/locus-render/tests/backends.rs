@@ -8,6 +8,7 @@ use locus_core::{
     ResolvedObject, ResolvedPoint, ResolvedScene, Segment,
     geom::{Bspline, Ellipse},
 };
+use locus_core::{PathGeometry, ResolvedPath};
 use locus_layout::{LabelBox, LayoutScene, Leader, PlacedAnnotation};
 use locus_render::{
     RenderError, RenderOptions, render_svg, render_tikz,
@@ -30,7 +31,7 @@ fn bounds(a: Point, b: Point) -> BBox {
     BBox { min: a, max: b }
 }
 fn segment(a: Point, b: Point) -> ResolvedObject {
-    ResolvedObject::Segment(Segment { start: a, end: b })
+    ResolvedObject::segment(Segment { start: a, end: b })
 }
 fn styles(source: &str) -> StyleSheet {
     let source = source.replacen(
@@ -89,7 +90,7 @@ fn label(name: &str, bbox: BBox, measured: TexBox) -> PlacedAnnotation {
     );
     PlacedAnnotation {
         id: id(name),
-        spec: AnnotationSpec::Label {
+        spec: ResolvedObject::Annotation(AnnotationSpec::Label {
             path: None,
             anchor: AnchorSpec::Point(p(0.0, 0.0)),
             text: TextValue {
@@ -99,7 +100,7 @@ fn label(name: &str, bbox: BBox, measured: TexBox) -> PlacedAnnotation {
             direction: LabelDirection::Center,
             gap: None,
             bounds: None,
-        },
+        }),
         bounds: bbox,
         text: Some(LabelBox {
             bounds: bbox,
@@ -217,14 +218,16 @@ fn circles() -> (ResolvedScene, LayoutScene, StyleSheet) {
     let mut layout = empty_layout();
     let mut arrow = label("arrow", bounds(p(0.0, -1.0), p(4.0, 1.0)), TexBox::empty());
     arrow.text = None;
-    arrow.spec = AnnotationSpec::Arrow {
+    arrow.spec = ResolvedObject::Path(ResolvedPath {
+        geometry: PathGeometry::Routed {
+            route: None,
+            from: AnchorSpec::Point(p(0.0, 0.0)),
+            to: AnchorSpec::Point(p(4.0, 0.0)),
+            bend: 0.0,
+        },
         label_bounds: None,
-        route: None,
-        from: AnchorSpec::Point(p(0.0, 0.0)),
-        to: AnchorSpec::Point(p(4.0, 0.0)),
         head: HeadKind::Both,
-        bend: 0.0,
-    };
+    });
     arrow.leader = Leader::Arrow {
         from: p(0.0, 0.0),
         to: p(4.0, 0.0),

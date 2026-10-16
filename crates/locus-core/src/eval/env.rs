@@ -1,5 +1,6 @@
 //! Deterministic identifier-to-object evaluation environment.
 
+use crate::scene::ResolvedPath;
 use std::collections::BTreeMap;
 
 use indexmap::IndexMap;
@@ -56,10 +57,7 @@ impl Environment {
         for (id, object) in &mut self.objects {
             let identity = aliases.get(&id.name).unwrap_or(&id.name);
             if let Some(bounds) = combined.get(identity)
-                && let ResolvedObject::Annotation(crate::scene::AnnotationSpec::Arrow {
-                    label_bounds,
-                    ..
-                }) = object
+                && let ResolvedObject::Path(ResolvedPath { label_bounds, .. }) = object
             {
                 *label_bounds = Some(*bounds);
             }

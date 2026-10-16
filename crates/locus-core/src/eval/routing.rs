@@ -1,10 +1,11 @@
 //! Internal continuous route parameters and frozen discrete choices.
 
+use crate::scene::{PathGeometry, ResolvedPath};
 use locus_syntax::{Kind, OpStmt, PropValue};
 
 use super::{EvalError, FileEvaluator, UnknownCursor, include_bbox};
 use crate::geom::route::{Route, RouteChoice, RouteKind, RouteSide};
-use crate::{AnchorSpec, AnnotationSpec, ResolvedObject};
+use crate::{AnchorSpec, ResolvedObject};
 
 pub(crate) fn route_kind(op: &OpStmt) -> Option<RouteKind> {
     if op.kind != Kind::Arrow {
@@ -34,8 +35,11 @@ pub(crate) const fn default_parameter(kind: RouteKind) -> f64 {
 
 pub(crate) fn route_parameter(object: &ResolvedObject) -> Option<f64> {
     match object {
-        ResolvedObject::Annotation(AnnotationSpec::Arrow {
-            route: Some(route), ..
+        ResolvedObject::Path(ResolvedPath {
+            geometry: PathGeometry::Routed {
+                route: Some(route), ..
+            },
+            ..
         }) => route.parameter,
         _ => None,
     }
@@ -102,10 +106,14 @@ impl FileEvaluator {
             super::ExpressionEvaluator::new(&self.env, tolerance, &self.dimensions)
                 .with_metrics(self.inputs.metrics);
         let mut object = super::evaluate_op_value(&mut expressions, op)?;
-        let ResolvedObject::Annotation(AnnotationSpec::Arrow {
-            from: AnchorSpec::Point(from),
-            to: AnchorSpec::Point(to),
-            route,
+        let ResolvedObject::Path(ResolvedPath {
+            geometry:
+                PathGeometry::Routed {
+                    from: AnchorSpec::Point(from),
+                    to: AnchorSpec::Point(to),
+                    route,
+                    ..
+                },
             ..
         }) = &mut object
         else {

@@ -1,6 +1,7 @@
 //! Shared route measurements and finite rectangular boundary expression checks.
 #![allow(clippy::expect_used, reason = "fixture diagnostics need test context")]
 
+use locus_core::{PathGeometry, ResolvedPath};
 use locus_core::{ResolvedObject, Scene, evaluate_assertions};
 use locus_syntax::parse;
 
@@ -32,8 +33,11 @@ fn frozen_route_context_cannot_override_an_authored_side() {
         .objects
         .values()
         .find_map(|object| match object {
-            ResolvedObject::Annotation(locus_core::AnnotationSpec::Arrow {
-                route: Some(route),
+            ResolvedObject::Path(ResolvedPath {
+                geometry:
+                    PathGeometry::Routed {
+                        route: Some(route), ..
+                    },
                 ..
             }) => Some(route),
             _ => None,
@@ -70,7 +74,11 @@ fn all_rectangular_edges_have_directed_closed_endpoints() {
         .objects
         .values()
         .filter_map(|object| {
-            if let ResolvedObject::Segment(segment) = object {
+            if let ResolvedObject::Path(ResolvedPath {
+                geometry: PathGeometry::Segment(segment),
+                ..
+            }) = object
+            {
                 Some(*segment)
             } else {
                 None
@@ -166,8 +174,11 @@ fn orthogonal_authored_length_solves_internal_detour_without_avoidance() {
         .objects
         .values()
         .find_map(|object| match object {
-            ResolvedObject::Annotation(locus_core::AnnotationSpec::Arrow {
-                route: Some(route),
+            ResolvedObject::Path(ResolvedPath {
+                geometry:
+                    PathGeometry::Routed {
+                        route: Some(route), ..
+                    },
                 ..
             }) => Some(route),
             _ => None,

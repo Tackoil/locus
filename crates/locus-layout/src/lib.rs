@@ -21,7 +21,7 @@ mod feedback;
 pub use feedback::{SolveLayoutError, solve_layout};
 
 use indexmap::IndexMap;
-use locus_core::{AnnotationSpec, BBox, InspectDiagnostic, Point, ResolvedScene, Segment};
+use locus_core::{BBox, InspectDiagnostic, Point, ResolvedObject, ResolvedScene, Segment};
 use locus_syntax::{Ident, Span};
 use locus_tex::TexBox;
 use thiserror::Error;
@@ -119,8 +119,8 @@ pub enum Leader {
 pub struct PlacedAnnotation {
     /// Identifier and original source span.
     pub id: Ident,
-    /// Original semantic annotation, including text and anchor spans.
-    pub spec: AnnotationSpec,
+    /// Original semantic path or annotation, including text and anchor spans.
+    pub spec: ResolvedObject,
     /// Final bounds (text bounds or annotation stroke bounds).
     pub bounds: BBox,
     /// Measured text for labels and text blocks.

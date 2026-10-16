@@ -8,6 +8,7 @@
 use crate::boxes::{centered, unit};
 use locus_core::scene::{CompassDirection, LabelDirection};
 use locus_core::{BBox, Point, ResolvedObject, ResolvedScene, Segment, Tolerance, Vec2};
+use locus_core::{PathGeometry, ResolvedPath};
 
 /// One ordered placement possibility.
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -125,7 +126,10 @@ fn geometry_preferences(
     incident: &mut Vec<Vec2>,
 ) {
     match object {
-        ResolvedObject::Segment(segment) => {
+        ResolvedObject::Path(ResolvedPath {
+            geometry: PathGeometry::Segment(segment),
+            ..
+        }) => {
             segment_preferences(*segment, anchor, tolerance, directions, incident);
         }
         ResolvedObject::Polygon(polygon)

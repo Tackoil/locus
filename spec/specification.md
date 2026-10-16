@@ -551,6 +551,16 @@ tangent_line(P, c, k)               -- P strictly outside c; k is 0 or 1
 
 The contact point is derived as `foot(c.center, tangent_line(P, c, k))`; no independently placed point is needed.
 
+Segments and arrows share a finite path model. A path has centerline geometry and an independent `head: -> | <-> | -` property. `segment(A, B)` (expression form `seg(A, B)`) constructs an exact straight segment with `head: -` by default; `arrow(A, B)` constructs a connector with `head: ->` and a direct straight route by default. Existing constructor spellings and defaults are preserved.
+
+Adding arrowheads to a segment does not change its endpoints, length, incidence, intersections, projection, ticks, or other geometric operations. A zero-length segment remains valid; arrowheads are omitted when it has no direction. Segments never accept `bend`, `route`, or routing `side` properties. Routed connectors may be straight, curved, or orthogonal; their geometry is not implicitly coerced to a segment, even when a particular route happens to be straight. Both path kinds support attached labels and endpoint clipping. Clipping and arrowheads affect visible rendering, not logical centerline measurements or geometric anchors. Aliases inherit the path's head property unless explicitly overridden.
+
+```locus
+segment vector(A, B) { head: -> }
+arrow connector(A, B) { head: -, route: orthogonal }
+label caption(vector, "Displacement") { near: middle, side: above }
+```
+
 ### 5.4 `circle`, `arc`
 
 ```
@@ -595,12 +605,12 @@ SVG renders a native rounded rectangle; PNG follows SVG, and TikZ uses the same 
 
 `rect` and `diamond` exist because box-and-arrow diagrams drowned in corner plumbing without them. Their anchors (§5.8) are ordinary derived points, legal in constructors and relations.
 
-### 5.6 Annotations
+### 5.6 Connectors and annotations
 
 ```
 label(text)                        -- standalone measured content; layout owns placement
 label(anchor, text)                -- point/anchor attachment
-label(path, text)                  -- arrow attachment; placement follows the resolved path
+label(path, text)                  -- segment/arrow attachment; placement follows the resolved path
 arrow(from_anchor, to_anchor)
 tick(s, n)                          -- n equal-length tick marks on segment s, n ∈ 1..4
 right_angle(V, P, Q)                -- square mark at V between rays V→P and V→Q
@@ -611,7 +621,7 @@ The `text` argument accepts a quoted text string, including any number of inline
 
 `label(text)` measures text independently and can participate directly in `center`, alignment, containment, ordered spacing, and avoidance. Text width and height come from the renderer, including its typography role, and cannot be independently stretched. No anchor point is synthesized. A standalone label without relations uses deterministic layout defaults; it needs no authored position.
 
-The two-argument `label` overload is selected by its first argument's kind. A point value uses the existing anchor-relative placement. An arrow attaches the label to its resolved centerline with the `near` and `side` preferences in §5.7. Attachment creates no connector or additional geometric point. Several labels may attach to one arrow, and each is drawn and measured once. A path's layout bounds include its full route and attached labels, excluding external source/target objects, guides, and overlays. These extents participate in collection bounds and layout without making resolved label-box anchors valid inputs to geometric constructors (§5.8).
+The two-argument `label` overload is selected by its first argument's kind. A point value uses the existing anchor-relative placement. A segment or arrow attaches the label to its resolved centerline with the `near` and `side` preferences in §5.7. Attachment creates no connector or additional geometric point. Several labels may attach to one path, and each is drawn and measured once. A path's layout bounds include its full route and attached labels, excluding external source/target objects, guides, and overlays. These extents participate in collection bounds and layout without making resolved label-box anchors valid inputs to geometric constructors (§5.8).
 
 `arrow(from_anchor, to_anchor)` always retains those endpoint identities, including points constrained to slide along segments. Its route uses the modes in §5.7; automatic routing introduces no authored controls or special loop constructor. Distinct points on the same guide can be connected by an ordinary orthogonal route. Arrowheads and path labels follow the visible routed path, including endpoint clipping (§8.6).
 
@@ -622,6 +632,7 @@ The two-argument `label` overload is selected by its first argument's kind. A po
 | `label` (all modes) | `role: normal \| title` | `normal` |
 | `label` (point-anchored) | `dir: auto \| center \| N \| NE \| E \| SE \| S \| SW \| W \| NW`; `gap: expr` | `auto`; style-derived gap |
 | `label` (path-attached) | `near: auto \| start \| middle \| end`; `side: auto \| left \| right \| above \| below` | `auto`; `auto` |
+| `segment` | `head: -> \| <-> \| -` | `-` |
 | `arrow` | `head: -> \| <-> \| -`; `route: direct \| curved \| orthogonal`; `bend: angle` (direct only); `side: auto \| left \| right \| above \| below` (automatic routes only) | `->`; `direct`; `0deg`; `auto` |
 | `angle_arc` | `n: 1..4` (multiplicity marks, for distinguishing equal-angle families) | `1` |
 | `right_angle` | `size: expr` | style-derived |

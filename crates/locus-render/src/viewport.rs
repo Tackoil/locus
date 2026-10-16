@@ -137,6 +137,11 @@ fn geometry_bounds(
 fn geometry_padding(object: &ResolvedObject, weight: f64) -> f64 {
     let extra = match object {
         ResolvedObject::Point(_) => 2.0,
+        ResolvedObject::Path(path)
+            if matches!(path.geometry, locus_core::PathGeometry::Segment(_)) =>
+        {
+            arrow_margin(path.head, weight)
+        }
         ResolvedObject::Arc(arc) => {
             f64::from(arc.angle_mark_count.unwrap_or(1).saturating_sub(1)) * 3.0
         }

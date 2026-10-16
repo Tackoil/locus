@@ -827,7 +827,12 @@ pub(super) fn measured_bounds(
     if let Some(members) = collection_members(differentiated, expression) {
         return collection_bounds(differentiated, members, expression.span());
     }
-    match differentiated.object(expression)? {
+    let object = differentiated.object(expression)?;
+    if let Some(route) = differentiated.layout_route(expression, &object) {
+        let (minimum, maximum) = differentiated.route_bounds(expression, &route);
+        return Ok(MeasuredBounds { minimum, maximum });
+    }
+    match object {
         DObject::Point(point) => Ok(MeasuredBounds::from_point(point)),
         DObject::Linear(linear) => {
             bounds_of_points(&[linear.start, linear.through], expression.span())
@@ -856,7 +861,8 @@ pub(super) fn measured_contributors(
     let mut seen = std::collections::BTreeSet::new();
     let mut result = Vec::new();
     for member in members {
-        if let DObject::Route(route) = differentiated.object(&member)? {
+        if let Some(route) = differentiated.layout_route(&member, &differentiated.object(&member)?)
+        {
             append_route_contributors(differentiated, &member, &route, &mut seen, &mut result);
         } else if contributor_identity(&member).is_none_or(|id| seen.insert(id.to_owned())) {
             result.extend(primitive_contributors(differentiated, &member)?);

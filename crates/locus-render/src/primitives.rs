@@ -1,6 +1,7 @@
 //! A single backend-neutral display list in physical, y-down CSS pixels.
 mod geometry;
 use geometry::{geometry, segment_shape};
+use locus_core::{PathGeometry, ResolvedPath};
 
 use crate::{
     RenderError, RenderOptions,
@@ -71,15 +72,23 @@ pub(crate) fn prepare(
     let viewport = Viewport::fit(scene, layout, styles, options)?;
     let mut ops = Vec::new();
     for (id, object) in &scene.objects {
-        if matches!(object, ResolvedObject::Annotation(_))
-            || styles.for_object(&id.name).opacity == 0.0
+        if matches!(
+            object,
+            ResolvedObject::Annotation(_)
+                | ResolvedObject::Path(ResolvedPath {
+                    geometry: PathGeometry::Routed { .. },
+                    ..
+                })
+        ) || styles.for_object(&id.name).opacity == 0.0
         {
             continue;
         }
         let style = styles.for_object(&id.name);
-        let shapes = layout.visible_paths.get(&id.name).map_or_else(
-            || geometry(object, viewport),
-            |route| routed_arrow(route, HeadKind::None, viewport, style.weight),
+        let shapes = object_shapes(
+            object,
+            layout.visible_paths.get(&id.name),
+            viewport,
+            style.weight,
         );
         push(&mut ops, id, style, shapes)?;
     }
@@ -96,6 +105,22 @@ pub(crate) fn prepare(
         ops,
         background: options.background,
     })
+}
+
+fn object_shapes(
+    object: &ResolvedObject,
+    visible: Option<&locus_core::geom::route::Route>,
+    view: Viewport,
+    weight: f64,
+) -> Vec<Shape> {
+    let Some(path) = object.as_path() else {
+        return geometry(object, view);
+    };
+    let logical = path.route().ok().flatten();
+    visible.or(logical.as_ref()).map_or_else(
+        || geometry(object, view),
+        |route| routed_arrow(route, path.head, view, weight),
+    )
 }
 
 fn push(
@@ -227,6 +252,15 @@ fn routed_arrow(
     view: Viewport,
     weight: f64,
 ) -> Vec<Shape> {
+    if route.via.is_empty() {
+        return arrow(
+            view.to_svg(route.from.clone().into()),
+            view.to_svg(route.to.clone().into()),
+            route.control.clone().map(|point| view.to_svg(point.into())),
+            head,
+            weight,
+        );
+    }
     let points: Vec<Point> = core::iter::once(&route.from)
         .chain(route.via.iter())
         .chain(core::iter::once(&route.to))
@@ -272,10 +306,10 @@ fn arrow(
         closed: false,
         ink: false,
     }];
-    if head != HeadKind::None {
+    if head != HeadKind::None && from != to {
         result.push(arrowhead(to, to - control.unwrap_or(from), weight));
     }
-    if head == HeadKind::Both {
+    if head == HeadKind::Both && from != to {
         result.push(arrowhead(from, from - control.unwrap_or(to), weight));
     }
     result

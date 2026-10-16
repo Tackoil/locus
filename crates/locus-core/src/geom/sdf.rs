@@ -11,6 +11,7 @@ pub use separation::{Core, core_separation};
 use super::route::{RoutePoint, RouteScalar};
 use super::{Point, Vec2};
 use crate::scene::ResolvedObject;
+use crate::scene::{PathGeometry, ResolvedPath};
 
 pub(crate) fn sub<S: RouteScalar>(a: &RoutePoint<S>, b: &RoutePoint<S>) -> RoutePoint<S> {
     RoutePoint {
@@ -215,19 +216,7 @@ fn object_cores(object: &ResolvedObject, stroke: f64) -> Option<Vec<Core<f64>>> 
     Some(vec![object_core(object, stroke)?])
 }
 fn object_route(object: &ResolvedObject) -> Option<super::route::Route<f64>> {
-    use crate::scene::{AnchorSpec, AnnotationSpec};
-    match object {
-        ResolvedObject::Annotation(AnnotationSpec::Arrow {
-            route: Some(route), ..
-        }) => Some(route.clone()),
-        ResolvedObject::Annotation(AnnotationSpec::Arrow {
-            from: AnchorSpec::Point(from),
-            to: AnchorSpec::Point(to),
-            bend,
-            ..
-        }) => super::route::Route::direct(*from, *to, *bend).ok(),
-        _ => None,
-    }
+    object.as_path()?.route().ok().flatten()
 }
 
 /// Avoidance separation permitting outward contact at an attached shape endpoint.
@@ -338,7 +327,10 @@ fn object_core(object: &ResolvedObject, stroke: f64) -> Option<Core<f64>> {
             radius = c.radius;
             vec![c.center.into()]
         }
-        ResolvedObject::Segment(s) => {
+        ResolvedObject::Path(ResolvedPath {
+            geometry: PathGeometry::Segment(s),
+            ..
+        }) => {
             radius = stroke;
             vec![s.start.into(), s.end.into()]
         }

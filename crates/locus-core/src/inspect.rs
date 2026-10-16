@@ -1,5 +1,6 @@
 //! Deterministic, machine-readable measurements and scene diagnostics.
 
+use crate::scene::{PathGeometry, ResolvedPath};
 use std::collections::BTreeMap;
 
 use locus_syntax::{File, Ident, Span};
@@ -400,6 +401,10 @@ fn is_visible(object: &ResolvedObject) -> bool {
         ResolvedObject::Num(_)
             | ResolvedObject::Angle(_)
             | ResolvedObject::Annotation(_)
+            | ResolvedObject::Path(ResolvedPath {
+                geometry: PathGeometry::Routed { .. },
+                ..
+            })
             | ResolvedObject::Point(crate::scene::ResolvedPoint {
                 mark: crate::scene::PointMark::None,
                 ..
@@ -590,7 +595,10 @@ fn is_incidence_target(object: &ResolvedObject) -> bool {
         object,
         ResolvedObject::Line(_)
             | ResolvedObject::Ray(_)
-            | ResolvedObject::Segment(_)
+            | ResolvedObject::Path(ResolvedPath {
+                geometry: PathGeometry::Segment(_),
+                ..
+            })
             | ResolvedObject::Circle(_)
             | ResolvedObject::Arc(_)
             | ResolvedObject::Ellipse(_)
@@ -643,7 +651,10 @@ fn is_circle_or_linear(object: &ResolvedObject) -> bool {
         ResolvedObject::Circle(_)
             | ResolvedObject::Line(_)
             | ResolvedObject::Ray(_)
-            | ResolvedObject::Segment(_)
+            | ResolvedObject::Path(ResolvedPath {
+                geometry: PathGeometry::Segment(_),
+                ..
+            })
     )
 }
 
@@ -743,7 +754,7 @@ fn stage_object_diagnostics(
 }
 
 fn is_degenerate(object: &ResolvedObject, tolerance: Tolerance) -> bool {
-    matches!(object, ResolvedObject::Segment(segment) if tolerance.construction_length_zero(segment.direction().norm()))
+    matches!(object, ResolvedObject::Path(ResolvedPath { geometry: PathGeometry::Segment(segment), .. }) if tolerance.construction_length_zero(segment.direction().norm()))
 }
 
 fn hint_diagnostics(solve: Option<&SolveSummary>) -> BTreeMap<String, InspectDiagnostic> {
@@ -828,7 +839,7 @@ mod tests {
         objects.insert(ident("B", 3), point(b));
         objects.insert(
             ident("AB", 4),
-            ResolvedObject::Segment(Segment::new(a, b).expect("segment")),
+            ResolvedObject::segment(Segment::new(a, b).expect("segment")),
         );
         objects.insert(
             ident("inc", 5),

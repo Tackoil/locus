@@ -42,6 +42,17 @@ fn attached_bounds(
 }
 
 impl DifferentiatedFile {
+    /// Uncaptioned segments retain their original bound faces and tie derivatives.
+    pub(crate) fn layout_route(&self, base: &Expr, object: &DObject) -> Option<Route<Jet>> {
+        if let DObject::Route(route) = object {
+            return Some(route.clone());
+        }
+        if reference_name(base).is_some_and(|name| self.path_labels.contains_key(name)) {
+            return object.path_route();
+        }
+        None
+    }
+
     /// Route geometry and captions keep distinct identities for hard bound faces.
     pub(crate) fn route_bound_contributors(
         &self,
@@ -158,7 +169,7 @@ impl AdEvaluator<'_> {
     pub(super) fn path_label_object(&mut self, op: &OpStmt) -> Result<DObject, EvalError> {
         let path =
             path_label::path_name(op).ok_or_else(|| solver_error(op.span, "invalid path label"))?;
-        let Some(DObject::Route(route)) = self.objects.get(path).cloned() else {
+        let Some(route) = self.objects.get(path).and_then(DObject::path_route) else {
             return Err(solver_error(op.span, "path label requires a route"));
         };
         let parameter = self.variable(op.span)?;

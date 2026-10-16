@@ -1,5 +1,6 @@
 //! Typed expression evaluation and numeric dimension checking.
 
+use crate::scene::{PathGeometry, ResolvedPath};
 use std::collections::BTreeMap;
 
 use locus_syntax::{AngleUnit, BinOp, Expr, Span, UnaryOp};
@@ -755,6 +756,16 @@ impl<'a> ExpressionEvaluator<'a> {
             return Ok(Value::ObjectRef(ObjectRef::Anchor(anchor)));
         }
         let object = self.resolve_object(&reference, span)?;
+        if matches!(
+            &object,
+            ResolvedObject::Path(ResolvedPath {
+                geometry: PathGeometry::Segment(_),
+                ..
+            })
+        ) && matches!(name, "start" | "end" | "midpoint")
+        {
+            return self.eval_geometry_property(&object, name, args, span);
+        }
         if name != "length" && super::path_label::is_route(&object) {
             let bounds = self.attached_route_bounds(&reference, &object, span)?;
             expect_arity(name, args, 0, span)?;
@@ -814,7 +825,7 @@ impl<'a> ExpressionEvaluator<'a> {
             "S" => (bounds.southeast(), bounds.southwest()),
             _ => (bounds.southwest(), bounds.northwest()),
         };
-        Ok(ResolvedObject::Segment(Segment {
+        Ok(ResolvedObject::segment(Segment {
             start: from,
             end: to,
         }))
@@ -830,7 +841,11 @@ impl<'a> ExpressionEvaluator<'a> {
         let ObjectRef::Named(id) = reference else {
             return Ok(None);
         };
-        if !matches!(self.env.get(id), Some(ResolvedObject::Annotation(_))) || name != "center" {
+        if !matches!(
+            self.env.get(id),
+            Some(ResolvedObject::Annotation(_) | ResolvedObject::Path(_))
+        ) || name != "center"
+        {
             return Ok(None);
         }
         if self.env.get(id).and_then(ResolvedObject::bbox).is_some() {
@@ -862,7 +877,10 @@ impl<'a> ExpressionEvaluator<'a> {
             return self.eval_curve_property(object, name, args, span);
         }
         match object {
-            ResolvedObject::Segment(segment) => segment_property(*segment, name, args, span),
+            ResolvedObject::Path(ResolvedPath {
+                geometry: PathGeometry::Segment(segment),
+                ..
+            }) => segment_property(*segment, name, args, span),
             ResolvedObject::Circle(circle) => self.circle_property(*circle, name, args, span),
             ResolvedObject::Arc(arc) => Self::arc_property(arc.geometry, name, args, span),
             ResolvedObject::Polygon(polygon) => polygon_property(polygon, name, args, span, false),
@@ -1038,9 +1056,12 @@ impl<'a> ExpressionEvaluator<'a> {
     pub(crate) fn eval_linear(&mut self, expression: &Expr) -> Result<ResolvedObject, EvalError> {
         let object = self.eval_resolved_object(expression)?;
         match object {
-            ResolvedObject::Line(_) | ResolvedObject::Ray(_) | ResolvedObject::Segment(_) => {
-                Ok(object)
-            }
+            ResolvedObject::Line(_)
+            | ResolvedObject::Ray(_)
+            | ResolvedObject::Path(ResolvedPath {
+                geometry: PathGeometry::Segment(_),
+                ..
+            }) => Ok(object),
             _ => Err(type_error(
                 expression.span(),
                 "expected a line, ray, or segment",
@@ -1057,7 +1078,10 @@ impl<'a> ExpressionEvaluator<'a> {
 
     pub(crate) fn eval_segment(&mut self, expression: &Expr) -> Result<Segment, EvalError> {
         match self.eval_resolved_object(expression)? {
-            ResolvedObject::Segment(value) => Ok(value),
+            ResolvedObject::Path(ResolvedPath {
+                geometry: PathGeometry::Segment(value),
+                ..
+            }) => Ok(value),
             _ => Err(type_error(expression.span(), "expected a segment")),
         }
     }
@@ -1154,24 +1178,14 @@ fn resolved_route(
     object: &ResolvedObject,
     span: Span,
 ) -> Result<Option<crate::geom::route::Route>, EvalError> {
-    if let ResolvedObject::Annotation(crate::scene::AnnotationSpec::Arrow {
-        route: Some(route),
-        ..
-    }) = object
-    {
-        return Ok(Some(route.clone()));
-    }
-    let ResolvedObject::Annotation(crate::scene::AnnotationSpec::Arrow {
-        from: AnchorSpec::Point(from),
-        to: AnchorSpec::Point(to),
-        bend,
-        ..
-    }) = object
-    else {
+    // Segment anchors keep their existing geometric semantics.
+    let ResolvedObject::Path(path) = object else {
         return Ok(None);
     };
-    crate::geom::route::Route::direct(*from, *to, *bend)
-        .map(Some)
+    if matches!(path.geometry, PathGeometry::Segment(_)) {
+        return Ok(None);
+    }
+    path.route()
         .map_err(|error| EvalError::construction(span, error))
 }
 

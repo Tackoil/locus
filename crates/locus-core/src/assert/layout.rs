@@ -1,5 +1,6 @@
 //! Boolean layout checks sharing the solve's shape-distance kernel.
 use super::{AssertionContext, EvalError, Expr, Point, Span, assertion_error};
+use crate::scene::{PathGeometry, ResolvedPath};
 
 pub(super) fn is_layout(name: &str) -> bool {
     matches!(
@@ -157,8 +158,10 @@ impl AssertionContext<'_> {
     ) -> Option<f64> {
         let a = self.visible_object(subject, a);
         let b = self.visible_object(obstacle, b);
-        if let crate::ResolvedObject::Annotation(crate::AnnotationSpec::Arrow {
-            route: Some(route),
+        if let crate::ResolvedObject::Path(ResolvedPath {
+            geometry: PathGeometry::Routed {
+                route: Some(route), ..
+            },
             ..
         }) = &a
         {
@@ -182,11 +185,15 @@ impl AssertionContext<'_> {
         };
         let mut visible = object.clone();
         match &mut visible {
-            crate::ResolvedObject::Annotation(crate::AnnotationSpec::Arrow {
-                route,
-                from: crate::AnchorSpec::Point(from),
-                to: crate::AnchorSpec::Point(to),
-                bend,
+            crate::ResolvedObject::Path(ResolvedPath {
+                geometry:
+                    PathGeometry::Routed {
+                        route,
+                        from: crate::AnchorSpec::Point(from),
+                        to: crate::AnchorSpec::Point(to),
+                        bend,
+                        ..
+                    },
                 ..
             }) => {
                 if let Some(logical) = route
@@ -203,7 +210,10 @@ impl AssertionContext<'_> {
                     *route = Some(logical.retained_parameters((&range.0, &range.1)));
                 }
             }
-            crate::ResolvedObject::Segment(segment) => {
+            crate::ResolvedObject::Path(ResolvedPath {
+                geometry: PathGeometry::Segment(segment),
+                ..
+            }) => {
                 if let Ok(logical) =
                     crate::geom::route::Route::direct(segment.start, segment.end, 0.0)
                 {

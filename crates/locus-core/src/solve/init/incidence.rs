@@ -1,6 +1,7 @@
 //! Interior finite-carrier seeds for diagrams with layout ordering requirements.
 use super::{BTreeMap, EvalError, Expr, PreparedEvaluation, UnknownClass, UnknownSystem};
 use crate::eval::{env::Environment, expr::ExpressionEvaluator};
+use crate::scene::{PathGeometry, ResolvedPath};
 use crate::{BBox, Point, ResolvedObject, Segment};
 use locus_syntax::{Constructor, Kind, Statement};
 
@@ -153,7 +154,11 @@ fn extend_carriers(
         let Some(bounds) = boxes.get(point).copied() else {
             continue;
         };
-        let ResolvedObject::Segment(mut segment) = expressions.eval_resolved_object(target)? else {
+        let ResolvedObject::Path(ResolvedPath {
+            geometry: PathGeometry::Segment(mut segment),
+            ..
+        }) = expressions.eval_resolved_object(target)?
+        else {
             continue;
         };
         let Some(finish) = carrier_finish(prepared, target) else {
@@ -224,7 +229,11 @@ fn project_points(
         let Some(bounds) = boxes.get(point).copied() else {
             continue;
         };
-        let ResolvedObject::Segment(segment) = expressions.eval_resolved_object(target)? else {
+        let ResolvedObject::Path(ResolvedPath {
+            geometry: PathGeometry::Segment(segment),
+            ..
+        }) = expressions.eval_resolved_object(target)?
+        else {
             continue;
         };
         super::move_center(

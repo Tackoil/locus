@@ -1,6 +1,7 @@
 //! Post-resolution assertion evaluation with source-anchored actual values.
 
 mod layout;
+use crate::scene::{PathGeometry, ResolvedPath};
 use std::collections::BTreeMap;
 
 use locus_syntax::{AssertStmt, BinOp, Collection, Expr, File, Ident, Span, Statement, UnaryOp};
@@ -419,7 +420,10 @@ impl AssertionContext<'_> {
             object,
             ResolvedObject::Line(_)
                 | ResolvedObject::Ray(_)
-                | ResolvedObject::Segment(_)
+                | ResolvedObject::Path(ResolvedPath {
+                    geometry: PathGeometry::Segment(_),
+                    ..
+                })
                 | ResolvedObject::Circle(_)
                 | ResolvedObject::Arc(_)
                 | ResolvedObject::Ellipse(_)
@@ -921,9 +925,10 @@ pub(crate) fn point_on_object(
         ResolvedObject::Ray(ray) => {
             point_linear_distance(point, Linear::Ray(*ray), tolerance, span)?
         }
-        ResolvedObject::Segment(segment) => {
-            point_linear_distance(point, Linear::Segment(*segment), tolerance, span)?
-        }
+        ResolvedObject::Path(ResolvedPath {
+            geometry: PathGeometry::Segment(segment),
+            ..
+        }) => point_linear_distance(point, Linear::Segment(*segment), tolerance, span)?,
         ResolvedObject::Circle(circle) => {
             (measure::dist(point, circle.center) - circle.radius).abs()
         }
@@ -1043,9 +1048,10 @@ fn circle_linear_distance(
         ResolvedObject::Ray(ray) => {
             point_linear_distance(center, Linear::Ray(*ray), tolerance, span)
         }
-        ResolvedObject::Segment(segment) => {
-            point_linear_distance(center, Linear::Segment(*segment), tolerance, span)
-        }
+        ResolvedObject::Path(ResolvedPath {
+            geometry: PathGeometry::Segment(segment),
+            ..
+        }) => point_linear_distance(center, Linear::Segment(*segment), tolerance, span),
         _ => Err(assertion_error(span, "expected a linear object")),
     }
 }
@@ -1148,13 +1154,20 @@ fn linear_direction(object: &ResolvedObject, span: Span) -> Result<Vec2, EvalErr
     match object {
         ResolvedObject::Line(line) => Ok(line.direction()),
         ResolvedObject::Ray(ray) => Ok(ray.direction()),
-        ResolvedObject::Segment(segment) => Ok(segment.direction()),
+        ResolvedObject::Path(ResolvedPath {
+            geometry: PathGeometry::Segment(segment),
+            ..
+        }) => Ok(segment.direction()),
         _ => Err(assertion_error(span, "expected a linear object")),
     }
 }
 
 fn expect_segment(object: &ResolvedObject, span: Span) -> Result<Segment, EvalError> {
-    if let ResolvedObject::Segment(segment) = object {
+    if let ResolvedObject::Path(ResolvedPath {
+        geometry: PathGeometry::Segment(segment),
+        ..
+    }) = object
+    {
         Ok(*segment)
     } else {
         Err(assertion_error(span, "expected a segment"))

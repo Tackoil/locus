@@ -32,15 +32,12 @@ pub(crate) fn owns_parameters(op: &OpStmt, file: &File) -> bool {
         return false;
     };
     file.statements.iter().any(|statement| {
-        matches!(statement, Statement::Op(target) if target.id.name == path && target.kind == Kind::Arrow)
+        matches!(statement, Statement::Op(target) if target.id.name == path && matches!(target.kind, Kind::Arrow | Kind::Segment))
     })
 }
 
 pub(crate) fn is_route(object: &ResolvedObject) -> bool {
-    matches!(
-        object,
-        ResolvedObject::Annotation(AnnotationSpec::Arrow { .. })
-    )
+    object.as_path().is_some()
 }
 
 pub(crate) fn attachments(file: &File) -> std::collections::BTreeMap<String, Vec<String>> {
@@ -331,22 +328,13 @@ fn path_route(
     object: Option<&ResolvedObject>,
     span: locus_syntax::Span,
 ) -> Result<Route, EvalError> {
-    match object {
-        Some(ResolvedObject::Annotation(AnnotationSpec::Arrow {
-            route: Some(route), ..
-        })) => Ok(route.clone()),
-        Some(ResolvedObject::Annotation(AnnotationSpec::Arrow {
-            from: AnchorSpec::Point(from),
-            to: AnchorSpec::Point(to),
-            bend,
-            ..
-        })) => {
-            Route::direct(*from, *to, *bend).map_err(|error| EvalError::construction(span, error))
-        }
-        _ => Err(EvalError::new(
-            "E410",
-            span,
-            "path label requires a measured logical route",
-        )),
-    }
+    object
+        .and_then(ResolvedObject::as_path)
+        .map(|path| {
+            path.route()
+                .map_err(|error| EvalError::construction(span, error))
+        })
+        .transpose()?
+        .flatten()
+        .ok_or_else(|| EvalError::new("E410", span, "path label requires a measured logical route"))
 }

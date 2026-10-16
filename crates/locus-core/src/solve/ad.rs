@@ -412,6 +412,24 @@ pub(crate) enum DObject {
     Annotation,
 }
 
+impl DObject {
+    pub(crate) fn path_route(&self) -> Option<crate::geom::route::Route<Jet>> {
+        match self {
+            Self::Route(route) => Some(route.clone()),
+            Self::Linear(linear) if linear.domain == LinearDomain::Segment => {
+                Some(crate::geom::route::Route {
+                    from: linear.start.clone().into(),
+                    to: linear.through.clone().into(),
+                    control: None,
+                    via: Vec::new(),
+                    parameter: None,
+                })
+            }
+            _ => None,
+        }
+    }
+}
+
 #[derive(Clone, Debug)]
 #[allow(
     clippy::large_enum_variant,
@@ -615,9 +633,12 @@ fn has_engine_layout(prepared: &PreparedEvaluation<'_>) -> bool {
 
 impl AdEvaluator<'_> {
     fn eval_op(&mut self, op: &OpStmt) -> Result<(), EvalError> {
-        let object = if crate::eval::path_label::path_name(op)
-            .is_some_and(|name| matches!(self.objects.get(name), Some(DObject::Route(_))))
-        {
+        let object = if crate::eval::path_label::path_name(op).is_some_and(|name| {
+            self.objects
+                .get(name)
+                .and_then(DObject::path_route)
+                .is_some()
+        }) {
             self.path_label_object(op)?
         } else if crate::eval::automatic::is_automatic_box(op)
             || crate::eval::automatic::is_standalone_label(op)
@@ -2201,6 +2222,11 @@ impl<'a> RelationEvaluator<'a> {
         let object = self.eval_object(base)?;
         if let DObject::Route(route) = &object {
             return self.attached_route_property(base, route, name, span);
+        }
+        if let Some(route) = object.path_route()
+            && !matches!(name, "length" | "start" | "end" | "midpoint")
+        {
+            return self.attached_route_property(base, &route, name, span);
         }
         match object {
             DObject::Point(point) => Ok(DValue::Object(DObject::Point(point))),

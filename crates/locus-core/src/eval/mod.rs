@@ -17,6 +17,7 @@ pub use deps::{
 pub use error::{EvalError, MeasuredValue};
 pub use expr::Value;
 
+use crate::scene::{PathGeometry, ResolvedPath};
 use std::collections::BTreeSet;
 
 use locus_syntax::json::{
@@ -603,7 +604,7 @@ fn evaluate_op_value(
     evaluator: &mut ExpressionEvaluator<'_>,
     op: &OpStmt,
 ) -> Result<ResolvedObject, EvalError> {
-    match &op.ctor {
+    let mut object = match &op.ctor {
         Constructor::Expr { expr, .. } if op.kind == Kind::Num => {
             evaluate_named_num(evaluator, expr, &op.id.name)
         }
@@ -616,7 +617,27 @@ fn evaluate_op_value(
             op.ctor.span(),
             "free declarations require the relational solver",
         )),
+    }?;
+    apply_path_props(&mut object, &op.props)?;
+    Ok(object)
+}
+
+fn apply_path_props(
+    object: &mut ResolvedObject,
+    props: &locus_syntax::Props,
+) -> Result<(), EvalError> {
+    if let ResolvedObject::Path(path) = object
+        && let Some(value) = prop(props, "head")
+    {
+        let PropValue::Head(head) = value else {
+            return Err(type_error(
+                value.span(),
+                "path head requires `->`, `<->`, or `-`",
+            ));
+        };
+        path.head = head.kind;
     }
+    Ok(())
 }
 
 fn evaluate_named_num(
@@ -664,6 +685,9 @@ fn eval_constructor_object(
     props: &locus_syntax::Props,
     span: Span,
 ) -> Result<ResolvedObject, EvalError> {
+    if name == "arrow" {
+        return eval_arrow(evaluator, args, props, span).map(ResolvedObject::Path);
+    }
     if name == "edge" {
         return evaluator.eval_edge_object(args, span);
     }
@@ -747,10 +771,7 @@ fn is_polygon_constructor(name: &str) -> bool {
 }
 
 fn is_annotation_constructor(name: &str) -> bool {
-    matches!(
-        name,
-        "label" | "arrow" | "tick" | "right_angle" | "text_block"
-    )
+    matches!(name, "label" | "tick" | "right_angle" | "text_block")
 }
 
 fn eval_point_constructor(
@@ -979,9 +1000,10 @@ fn eval_foot(
     let result = match target {
         ResolvedObject::Line(line) => construct::foot(point, line, evaluator.tolerance),
         ResolvedObject::Ray(ray) => construct::closest_foot(point, ray, evaluator.tolerance),
-        ResolvedObject::Segment(segment) => {
-            construct::closest_foot(point, segment, evaluator.tolerance)
-        }
+        ResolvedObject::Path(ResolvedPath {
+            geometry: PathGeometry::Segment(segment),
+            ..
+        }) => construct::closest_foot(point, segment, evaluator.tolerance),
         _ => return Err(type_error(args[1].span(), "foot target must be line-like")),
     };
     result
@@ -1062,7 +1084,7 @@ fn eval_basic_linear(
     let object = match name {
         "line" => Line::new(points[0], points[1]).map(ResolvedObject::Line),
         "ray" => Ray::new(points[0], points[1]).map(ResolvedObject::Ray),
-        "seg" => Segment::new(points[0], points[1]).map(ResolvedObject::Segment),
+        "seg" => Segment::new(points[0], points[1]).map(ResolvedObject::segment),
         _ => {
             return Err(type_error(
                 span,
@@ -1360,7 +1382,6 @@ fn eval_annotation_constructor(
 ) -> Result<ResolvedObject, EvalError> {
     let annotation = match name {
         "label" => eval_label(evaluator, args, props, span)?,
-        "arrow" => eval_arrow(evaluator, args, props, span)?,
         "tick" => eval_tick(evaluator, args, span)?,
         "right_angle" => eval_right_angle(evaluator, args, props, span)?,
         "text_block" => eval_text_block(evaluator, args, props, span)?,
@@ -1407,7 +1428,7 @@ fn eval_arrow(
     args: &[Expr],
     props: &locus_syntax::Props,
     span: Span,
-) -> Result<AnnotationSpec, EvalError> {
+) -> Result<ResolvedPath, EvalError> {
     expect_arity("arrow", args, 2, span)?;
     let from = evaluator.eval_anchor(&args[0])?;
     let to = evaluator.eval_anchor(&args[1])?;
@@ -1429,13 +1450,15 @@ fn eval_arrow(
         };
         EvalError::construction(bend_span, error).with_measurement("arrow bend", actual, Some(unit))
     })?;
-    Ok(AnnotationSpec::Arrow {
-        label_bounds: None,
-        route: None,
-        from,
-        to,
+    Ok(ResolvedPath {
+        geometry: PathGeometry::Routed {
+            route: None,
+            from,
+            to,
+            bend,
+        },
         head,
-        bend,
+        label_bounds: None,
     })
 }
 
@@ -1721,7 +1744,10 @@ fn intersect_objects(
     match lhs {
         ResolvedObject::Line(value) => intersect_from_line(value, rhs, branch, tolerance),
         ResolvedObject::Ray(value) => intersect_from_ray(value, rhs, branch, tolerance),
-        ResolvedObject::Segment(value) => intersect_from_segment(value, rhs, branch, tolerance),
+        ResolvedObject::Path(ResolvedPath {
+            geometry: PathGeometry::Segment(value),
+            ..
+        }) => intersect_from_segment(value, rhs, branch, tolerance),
         ResolvedObject::Circle(value) => intersect_from_circle(value, rhs, branch, tolerance),
         ResolvedObject::Arc(value) => intersect_from_arc(&value.geometry, rhs, branch, tolerance),
         _ => Err(crate::geom::intersect::IntersectError::Degenerate {
@@ -1735,7 +1761,10 @@ macro_rules! intersection_rhs {
         match $rhs {
             ResolvedObject::Line(value) => intersect($lhs, value, $branch, $tolerance),
             ResolvedObject::Ray(value) => intersect($lhs, value, $branch, $tolerance),
-            ResolvedObject::Segment(value) => intersect($lhs, value, $branch, $tolerance),
+            ResolvedObject::Path(ResolvedPath {
+                geometry: PathGeometry::Segment(value),
+                ..
+            }) => intersect($lhs, value, $branch, $tolerance),
             ResolvedObject::Circle(value) => intersect($lhs, value, $branch, $tolerance),
             ResolvedObject::Arc(value) => intersect($lhs, &value.geometry, $branch, $tolerance),
             _ => Err(crate::geom::intersect::IntersectError::Degenerate {
@@ -1815,8 +1844,20 @@ fn enrich_intersection_error(
         | (ResolvedObject::Circle(circle), ResolvedObject::Ray(ray)) => {
             circle_carrier_measurements(diagnostic, *circle, ray.start, ray.through, Some(false))
         }
-        (ResolvedObject::Segment(segment), ResolvedObject::Circle(circle))
-        | (ResolvedObject::Circle(circle), ResolvedObject::Segment(segment)) => {
+        (
+            ResolvedObject::Path(ResolvedPath {
+                geometry: PathGeometry::Segment(segment),
+                ..
+            }),
+            ResolvedObject::Circle(circle),
+        )
+        | (
+            ResolvedObject::Circle(circle),
+            ResolvedObject::Path(ResolvedPath {
+                geometry: PathGeometry::Segment(segment),
+                ..
+            }),
+        ) => {
             circle_carrier_measurements(diagnostic, *circle, segment.start, segment.end, Some(true))
         }
         _ => diagnostic,
@@ -1871,7 +1912,6 @@ fn annotation_kind_matches(kind: Kind, annotation: &AnnotationSpec) -> bool {
     matches!(
         (kind, annotation),
         (Kind::Label, AnnotationSpec::Label { .. })
-            | (Kind::Arrow, AnnotationSpec::Arrow { .. })
             | (Kind::Tick, AnnotationSpec::Tick { .. })
             | (Kind::RightAngle, AnnotationSpec::RightAngle { .. })
             | (Kind::TextBlock, AnnotationSpec::TextBlock { .. })
@@ -1884,7 +1924,20 @@ fn geometry_kind_matches(kind: Kind, object: &ResolvedObject) -> bool {
         Kind::Num => matches!(object, ResolvedObject::Num(_) | ResolvedObject::Angle(_)),
         Kind::Line => matches!(object, ResolvedObject::Line(_)),
         Kind::Ray => matches!(object, ResolvedObject::Ray(_)),
-        Kind::Segment => matches!(object, ResolvedObject::Segment(_)),
+        Kind::Arrow => matches!(
+            object,
+            ResolvedObject::Path(ResolvedPath {
+                geometry: PathGeometry::Routed { .. },
+                ..
+            })
+        ),
+        Kind::Segment => matches!(
+            object,
+            ResolvedObject::Path(ResolvedPath {
+                geometry: PathGeometry::Segment(_),
+                ..
+            })
+        ),
         _ => secondary_geometry_kind_matches(kind, object),
     }
 }

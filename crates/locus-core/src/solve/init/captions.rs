@@ -1,6 +1,7 @@
 //! Seed freely placed guide spacing from actual attached-caption measurements.
 
 use super::{BTreeMap, BTreeSet, EvalError, Expr, PreparedEvaluation, UnknownClass, UnknownSystem};
+use crate::scene::{PathGeometry, ResolvedPath};
 use crate::{AnnotationSpec, BBox, ResolvedObject, Segment, Vec2};
 use locus_syntax::{Constructor, Statement};
 
@@ -131,10 +132,18 @@ fn carrier_spacing(
     trial: &crate::eval::TrialEvaluation,
     carriers: &[String; 2],
 ) -> Option<(Vec2, f64)> {
-    let ResolvedObject::Segment(first) = find_object(trial, &carriers[0])? else {
+    let ResolvedObject::Path(ResolvedPath {
+        geometry: PathGeometry::Segment(first),
+        ..
+    }) = find_object(trial, &carriers[0])?
+    else {
         return None;
     };
-    let ResolvedObject::Segment(second) = find_object(trial, &carriers[1])? else {
+    let ResolvedObject::Path(ResolvedPath {
+        geometry: PathGeometry::Segment(second),
+        ..
+    }) = find_object(trial, &carriers[1])?
+    else {
         return None;
     };
     let normal = guide_normal(*first, *second)?;

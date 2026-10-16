@@ -64,7 +64,7 @@ pub(crate) fn refresh_collisions(
     let mut visible = scene.clone();
     for (id, object) in &mut visible.objects {
         if let Some(route) = layout.visible_paths.get(&id.name) {
-            *object = locus_core::ResolvedObject::Segment(locus_core::Segment {
+            *object = locus_core::ResolvedObject::segment(locus_core::Segment {
                 start: route.from.clone().into(),
                 end: route.to.clone().into(),
             });
