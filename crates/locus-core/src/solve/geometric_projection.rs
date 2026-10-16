@@ -64,6 +64,8 @@ mod tests {
             })
             .collect();
         UnknownSystem {
+            seed_owners: BTreeMap::new(),
+            seed_lengths: Vec::new(),
             objects,
             hints: vec![0.0; classes.len()],
             normalized_hints: vec![0.0; classes.len()],

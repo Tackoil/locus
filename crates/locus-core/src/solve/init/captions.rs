@@ -6,6 +6,7 @@ use crate::{AnnotationSpec, BBox, ResolvedObject, Segment, Vec2};
 use locus_syntax::{Constructor, Statement};
 
 type Boxes = BTreeMap<String, BBox>;
+mod clearance;
 
 pub(super) fn seed(
     prepared: &PreparedEvaluation<'_>,
@@ -57,6 +58,18 @@ fn seed_avoidance(
         let Some(carriers) = endpoint_carriers(prepared, sources, &label.path) else {
             continue;
         };
+        if carriers[0] == carriers[1] {
+            if let Some((pair, normal, extra)) = clearance::loop_spacing(
+                &trial,
+                &carriers[0],
+                *bounds,
+                obstacles,
+                prepared.inputs().metrics,
+            ) {
+                widen(prepared, system, sources, boxes, &pair, normal, extra);
+            }
+            continue;
+        }
         if !carriers.iter().all(|name| {
             obstacles
                 .iter()
@@ -67,7 +80,8 @@ fn seed_avoidance(
         let Some((normal, gap)) = carrier_spacing(&trial, &carriers) else {
             continue;
         };
-        let required = required_spacing(prepared, label, *bounds, normal);
+        let padding = clearance::carrier_padding(&trial, &carriers, obstacles, normal);
+        let required = required_spacing(prepared, label, *bounds, normal, padding);
         widen(
             prepared,
             system,
@@ -106,7 +120,7 @@ fn endpoint_carriers(
     let aliases = crate::program::alias_identities(prepared.file());
     let first = on_carrier(sources, &aliases, &from.name)?;
     let second = on_carrier(sources, &aliases, &to.name)?;
-    (first != second).then_some([first, second])
+    Some([first, second])
 }
 
 fn on_carrier(
@@ -158,7 +172,14 @@ fn guide_normal(first: Segment, second: Segment) -> Option<Vec2> {
     if lengths == 0.0 || a.cross(b).abs() > lengths * 1e-10 {
         return None;
     }
-    Some(a.perpendicular() / a.norm())
+    let mut normal = a.perpendicular() / a.norm();
+    if normal.x.abs() < 1e-10 {
+        normal.x = 0.0;
+    }
+    if normal.y.abs() < 1e-10 {
+        normal.y = 0.0;
+    }
+    Some(normal / normal.norm())
 }
 
 fn required_spacing(
@@ -166,13 +187,14 @@ fn required_spacing(
     label: &crate::scene::PathLabel,
     bounds: BBox,
     normal: Vec2,
+    padding: [f64; 2],
 ) -> f64 {
     let half_extent = (normal.x.abs() * bounds.width()).midpoint(normal.y.abs() * bounds.height());
     let metrics = prepared.inputs().metrics;
     let reach = half_extent + metrics.clearance + metrics.stroke_width / 2.0;
     let offset = page_offset(label.side, bounds, label.offset).dot(normal);
-    ((reach - offset) / label.parameter.max(1e-6))
-        .max((reach + offset) / (1.0 - label.parameter).max(1e-6))
+    ((reach + padding[0] - offset) / label.parameter.max(1e-6))
+        .max((reach + padding[1] + offset) / (1.0 - label.parameter).max(1e-6))
 }
 
 fn page_offset(side: crate::geom::route::RouteSide, bounds: BBox, gap: f64) -> Vec2 {
@@ -508,5 +530,33 @@ mod tests {
         let bounds = seeded(&source, 7.0);
         let gap = bounds["right_guide"].center().x - bounds["left_guide"].center().x;
         assert!(gap >= 7.34 - 1e-12, "aliased guide distance {gap}");
+    }
+
+    #[test]
+    fn caption_spacing_includes_activation_band_widths() {
+        let source = GUIDES.replace("rel avoid(caption,left_guide,right_guide)",
+            "rect left_band(1,20)\nrect right_band(2,20)\nrel align_center_x(left_band,left_guide)\nrel align_center_x(right_band,right_guide)\nrel avoid(caption,left_guide,right_guide,left_band,right_band)");
+        let b = seeded(&source, 7.0);
+        assert!(b["caption"].min.x - b["left_band"].max.x >= 0.17 - 1e-10);
+        assert!(b["right_band"].min.x - b["caption"].max.x >= 0.17 - 1e-10);
+    }
+
+    #[test]
+    fn loop_caption_moves_a_neighboring_guide_with_its_header() {
+        let source = format!(
+            "{GUIDES}\npoint loop_tail()\npoint loop_tip()\nrel on(loop_tail,left_guide)\nrel on(loop_tip,left_guide)\nrel gap_y(loop_tail,loop_tip)\narrow loop_path(loop_tail,loop_tip) {{ route: orthogonal, side: right }}\nlabel loop_caption(loop_path,\"Wide loop\") {{ near: middle, side: right }}\nrel avoid(loop_caption,left_guide,right_guide)\n"
+        );
+        let mut measurements = inputs(0.3);
+        measurements.measured.insert(
+            "loop_caption".to_owned(),
+            crate::MeasuredText {
+                width: 5.0,
+                height: 0.3,
+                role: crate::MeasuredRole::Normal,
+            },
+        );
+        let b = seeded_with_inputs(&source, &measurements);
+        assert!(b["right_guide"].min.x - b["loop_caption"].max.x >= 0.17 - 1e-10);
+        assert!((b["second"].center().x - b["second_title"].center().x).abs() < 1e-12);
     }
 }

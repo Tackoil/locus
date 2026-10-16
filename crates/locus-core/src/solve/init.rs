@@ -5,6 +5,9 @@ use locus_syntax::Expr;
 use std::collections::{BTreeMap, BTreeSet};
 mod captions;
 mod incidence;
+mod movement;
+mod numeric;
+pub(super) mod repair;
 
 pub(super) fn initialize(
     prepared: &PreparedEvaluation<'_>,
@@ -17,6 +20,7 @@ pub(super) fn initialize(
     {
         return Ok(());
     }
+    system.seed_owners = movement::index(prepared, system);
     let seed = prepared.evaluate_trial(Some(&system.hints))?;
     let mut boxes = BTreeMap::new();
     for (id, object) in seed.objects() {
@@ -27,6 +31,7 @@ pub(super) fn initialize(
     for source in &sources {
         seed_anchor(prepared, system, source, &mut boxes);
     }
+    numeric::seed(prepared, system, &sources, &mut boxes)?;
     for horizontal in [true, false] {
         seed_order_axis(prepared, system, &sources, &mut boxes, horizontal);
     }
@@ -54,7 +59,7 @@ fn seed_order_axis(
         let mut graph_boxes = boxes.clone();
         let mut movable = movable_names(system);
         append_collection_bounds(prepared, boxes, &mut graph_boxes, &mut movable);
-        let graph = order_graph(prepared, sources, &graph_boxes, horizontal);
+        let graph = order_graph(prepared, system, sources, &graph_boxes, horizontal);
         let positions = longest_paths(&graph, &graph_boxes, &movable, horizontal);
         apply_positions(prepared, system, boxes, &positions, horizontal, !horizontal);
     }
@@ -118,6 +123,13 @@ fn movable_names(system: &UnknownSystem) -> BTreeSet<String> {
                 )
         })
         .map(|object| object.id.clone())
+        .chain(
+            system
+                .seed_owners
+                .iter()
+                .filter(|(_, owners)| !owners.is_empty())
+                .map(|(name, _)| name.clone()),
+        )
         .collect()
 }
 
@@ -313,6 +325,10 @@ fn movable_members(
     name: &str,
     names: &mut BTreeSet<String>,
 ) {
+    if let Some(owners) = system.seed_owners.get(name) {
+        names.extend(owners.iter().cloned());
+        return;
+    }
     let Some(collection) = prepared.collections().get(name) else {
         names.insert(
             crate::program::alias_identities(prepared.file())
@@ -529,6 +545,7 @@ type OrderGraph = BTreeMap<String, Vec<(String, f64)>>;
 
 fn order_graph(
     prepared: &PreparedEvaluation<'_>,
+    system: &UnknownSystem,
     sources: &[super::SourceRelation<'_>],
     boxes: &BTreeMap<String, crate::BBox>,
     horizontal: bool,
@@ -554,6 +571,14 @@ fn order_graph(
             );
         } else {
             append_container(&mut graph, prepared, source, boxes, horizontal);
+        }
+    }
+    for (first, second, offset) in &system.seed_lengths {
+        let distance = if horizontal { offset.x } else { -offset.y };
+        if distance > 0.0 {
+            append_edge(&mut graph, first, second, distance);
+        } else if distance < 0.0 {
+            append_edge(&mut graph, second, first, -distance);
         }
     }
     graph
@@ -683,8 +708,6 @@ fn longest_paths(
         propagate(
             &graph[&name],
             coordinate,
-            boxes,
-            horizontal,
             &mut positions,
             &mut degree,
             &mut ready,
@@ -711,22 +734,12 @@ fn incoming_counts(graph: &OrderGraph) -> BTreeMap<String, usize> {
 fn propagate(
     edges: &[(String, f64)],
     coordinate: f64,
-    boxes: &BTreeMap<String, crate::BBox>,
-    horizontal: bool,
     positions: &mut BTreeMap<String, f64>,
     degree: &mut BTreeMap<String, usize>,
     ready: &mut BTreeSet<String>,
 ) {
     for (target, distance) in edges {
-        let value = positions.entry(target.clone()).or_insert_with(|| {
-            boxes.get(target).map_or(0.0, |b| {
-                if horizontal {
-                    b.center().x
-                } else {
-                    -b.center().y
-                }
-            })
-        });
+        let value = positions.entry(target.clone()).or_insert(f64::NEG_INFINITY);
         *value = value.max(coordinate + distance);
         if let Some(count) = degree.get_mut(target) {
             *count -= 1;
@@ -748,7 +761,8 @@ fn seed_shared_coordinates(
         let mut movable = movable_names(system);
         append_collection_bounds(prepared, boxes, &mut bounds, &mut movable);
         let graph = alignment_graph(prepared, sources, &bounds, horizontal);
-        let positions = shared_positions(&graph, &bounds, &movable, horizontal);
+        let preferred = inset_containers(sources);
+        let positions = shared_positions(&graph, &bounds, &movable, &preferred, horizontal);
         apply_positions(prepared, system, boxes, &positions, horizontal, false);
     }
 }
@@ -803,7 +817,11 @@ fn alignment_graph(
         let Some(alignment) = axis_alignment(&name.name, horizontal) else {
             continue;
         };
-        let ids = chain_members(prepared, args, &name.name);
+        let mut ids = chain_members(prepared, args, &name.name);
+        let padding = alignment_padding(prepared, source, &name.name);
+        if name.name.starts_with("inset_") {
+            ids.reverse();
+        }
         let Some(first) = ids.first() else {
             continue;
         };
@@ -814,7 +832,7 @@ fn alignment_graph(
             let Some(bounds) = boxes.get(id) else {
                 continue;
             };
-            let center = aligned_center(*reference, *bounds, alignment, 0.0);
+            let center = aligned_center(*reference, *bounds, alignment, padding);
             let distance = if horizontal {
                 center.x - reference.center().x
             } else {
@@ -828,6 +846,12 @@ fn alignment_graph(
 }
 
 fn axis_alignment(name: &str, horizontal: bool) -> Option<&str> {
+    if matches!(
+        (name, horizontal),
+        ("inset_left" | "inset_right", true) | ("inset_top" | "inset_bottom", false)
+    ) {
+        return Some(name);
+    }
     if name == "center" {
         return Some(if horizontal {
             "align_center_x"
@@ -849,10 +873,40 @@ fn axis_alignment(name: &str, horizontal: bool) -> Option<&str> {
     names.contains(&name).then_some(name)
 }
 
+fn alignment_padding(
+    prepared: &PreparedEvaluation<'_>,
+    source: &super::SourceRelation<'_>,
+    name: &str,
+) -> f64 {
+    if name.starts_with("inset_") && !source.padding_none {
+        prepared.inputs().metrics.padding
+    } else {
+        0.0
+    }
+}
+
+fn inset_containers(sources: &[super::SourceRelation<'_>]) -> BTreeSet<String> {
+    sources
+        .iter()
+        .filter_map(|source| {
+            let Expr::Call { name, args, .. } = source.expression else {
+                return None;
+            };
+            let [_, Expr::Ref(container)] = args.as_slice() else {
+                return None;
+            };
+            name.name
+                .starts_with("inset_")
+                .then(|| container.name.clone())
+        })
+        .collect()
+}
+
 fn shared_positions(
     graph: &OrderGraph,
     boxes: &BTreeMap<String, crate::BBox>,
     movable: &BTreeSet<String>,
+    preferred: &BTreeSet<String>,
     horizontal: bool,
 ) -> BTreeMap<String, f64> {
     let mut positions = BTreeMap::new();
@@ -864,6 +918,7 @@ fn shared_positions(
         let anchor = offsets
             .keys()
             .find(|id| !movable.contains(*id))
+            .or_else(|| offsets.keys().find(|id| preferred.contains(*id)))
             .unwrap_or(start);
         let Some(bounds) = boxes.get(anchor) else {
             continue;
@@ -933,7 +988,9 @@ mod tests {
         }
     }
 
-    fn seeded(source: &str) -> (BTreeMap<String, crate::BBox>, BTreeMap<String, crate::BBox>) {
+    pub(super) fn seeded(
+        source: &str,
+    ) -> (BTreeMap<String, crate::BBox>, BTreeMap<String, crate::BBox>) {
         let parsed = locus_syntax::parse(source);
         assert!(parsed.diagnostics.is_empty(), "{:?}", parsed.diagnostics);
         let expanded = crate::program::expand_program(&parsed.file).expect("expand seed source");
@@ -1046,6 +1103,31 @@ mod tests {
         );
         assert!((boxes["content"].min.x - boxes["panel"].min.x).abs() < 1.0e-12);
         assert!((boxes["panel"].max.y - boxes["content"].max.y - 0.25).abs() < 1.0e-12);
+    }
+
+    #[test]
+    fn exact_insets_survive_automatic_container_growth_on_every_side() {
+        for (horizontal, vertical) in [("left", "top"), ("right", "bottom")] {
+            let source = format!(
+                "locus 0 beta 6\nrect panel()\nrect tab(2,1)\nrect content(8,3)\nrel inset_{horizontal}(tab,panel) {{ padding: none }}\nrel inset_{vertical}(tab,panel) {{ padding: none }}\nrel contain(panel,content)\n"
+            );
+            let (_, b) = seeded(&source);
+            let (tab, panel) = (b["tab"], b["panel"]);
+            let x = if horizontal == "left" {
+                tab.min.x - panel.min.x
+            } else {
+                tab.max.x - panel.max.x
+            };
+            let y = if vertical == "top" {
+                tab.max.y - panel.max.y
+            } else {
+                tab.min.y - panel.min.y
+            };
+            assert!(
+                x.abs() < 1e-12 && y.abs() < 1e-12,
+                "{horizontal}/{vertical}: {x},{y}"
+            );
+        }
     }
 
     #[test]

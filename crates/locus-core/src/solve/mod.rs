@@ -4,6 +4,8 @@ mod ad;
 mod conflict;
 mod geometric_projection;
 mod init;
+#[cfg(test)]
+mod initialization_benchmark;
 mod layout;
 mod linear;
 mod model;
@@ -13,7 +15,7 @@ mod trace;
 use model::{append_domains, equality_analysis, settle, unknown_preferences};
 mod relations;
 
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 
 use locus_syntax::{Constructor, File, Span, Statement};
 
@@ -214,6 +216,8 @@ struct UnknownSystem {
     dimensions: BTreeMap<String, NumericDimension>,
     diameter: f64,
     avoidance_axes: BTreeMap<usize, usize>,
+    seed_owners: BTreeMap<String, BTreeSet<String>>,
+    seed_lengths: Vec<(String, String, crate::Vec2)>,
 }
 
 struct SolveState {
@@ -313,6 +317,9 @@ fn initialize_at_scale(
         seed_trial.tolerance(),
     )?;
     seed_ad.validate_branch_sensitive_primal(prepared.file(), seed_trial.objects())?;
+    if sources.iter().any(|s| layout::is_layout(s.expression)) {
+        init::repair::repair(prepared, &mut system, sources);
+    }
     Ok(system)
 }
 
@@ -638,6 +645,8 @@ impl UnknownSystem {
             dimensions,
             diameter,
             avoidance_axes: BTreeMap::new(),
+            seed_owners: BTreeMap::new(),
+            seed_lengths: Vec::new(),
         })
     }
 }
