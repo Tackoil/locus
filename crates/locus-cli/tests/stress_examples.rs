@@ -59,7 +59,7 @@ fn every_stress_example_passes_its_assertions() -> Result<(), Box<dyn Error>> {
 }
 
 #[test]
-fn closed_segment_bisectors_report_known_solver_limit() -> Result<(), Box<dyn Error>> {
+fn closed_segment_bisectors_converge_with_finite_membership() -> Result<(), Box<dyn Error>> {
     let path = Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("../../tests/fixtures/solver/closed_segment_bisectors.locus");
     let output = Command::cargo_bin("locus")?
@@ -67,19 +67,19 @@ fn closed_segment_bisectors_report_known_solver_limit() -> Result<(), Box<dyn Er
         .arg(&path)
         .arg("--json")
         .output()?;
-    assert_eq!(output.status.code(), Some(2));
+    assert!(output.status.success());
     let report: serde_json::Value = serde_json::from_slice(&output.stdout)?;
-    assert_eq!(report["passed"], false);
-    let diagnostic = &report["files"][0]["diagnostics"][0];
-    assert_eq!(diagnostic["code"], "E403");
+    assert_eq!(report["passed"], true);
+    let file = &report["files"][0];
+    assert_eq!(file["assertions"]["passed"], true);
     assert!(
-        diagnostic["span"]["line"]
-            .as_u64()
-            .ok_or("missing source line")?
-            > 0
+        file["solve"]["max_normalized_residual"]
+            .as_f64()
+            .ok_or("missing solve residual")?
+            < 1e-12
     );
 
-    // The same intended intersections solve on supporting lines; containment is still asserted.
+    // Preserve the historical source; also check its supporting-line equivalent.
     let source = fs::read_to_string(path)?
         .replace("on(D, seg(B, C))", "on(D, line(B, C))")
         .replace("on(E, seg(A, C))", "on(E, line(A, C))")

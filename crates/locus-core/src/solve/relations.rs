@@ -367,7 +367,9 @@ fn on_relation(
     require_arity("on", args, 2, span)?;
     let point = expect_point(differentiated.object(&args[0])?, args[0].span())?;
     let residual = match differentiated.object(&args[1])? {
-        DObject::Linear(linear) => point_linear_residual(&point, &linear, span)?,
+        // Incidence must differentiate the distance it currently measures, even
+        // when a point crosses an endpoint or the supporting line during LM.
+        DObject::Linear(linear) => point_linear_distance(&point, &linear, span, true)?,
         DObject::Circle(circle) => point_circle_residual(&point, &circle, span)?,
         DObject::Arc(arc) => point_arc_residual(&point, &arc, span)?,
         DObject::Ellipse(ellipse) => point_ellipse_residual(&point, &ellipse, span)?,
@@ -1090,6 +1092,15 @@ fn point_circle_residual(point: &DPoint, circle: &DCircle, span: Span) -> Result
 }
 
 fn point_linear_residual(point: &DPoint, linear: &DLinear, span: Span) -> Result<Jet, EvalError> {
+    point_linear_distance(point, linear, span, linear.layout_live)
+}
+
+fn point_linear_distance(
+    point: &DPoint,
+    linear: &DLinear,
+    span: Span,
+    live_derivative: bool,
+) -> Result<Jet, EvalError> {
     let direction = linear.direction();
     let length = direction
         .norm()
@@ -1102,12 +1113,8 @@ fn point_linear_residual(point: &DPoint, linear: &DLinear, span: Span) -> Result
     if linear.domain == LinearDomain::Line {
         return Ok(signed);
     }
-    let carrier = if linear.layout_live {
-        if signed.value < 0.0 {
-            signed.scale(-1.0)
-        } else {
-            signed
-        }
+    let carrier = if live_derivative {
+        signed.abs_live()
     } else {
         signed.abs()
     };
@@ -1120,7 +1127,7 @@ fn point_linear_residual(point: &DPoint, linear: &DLinear, span: Span) -> Result
         .norm()
         .map_err(|()| relation_error(span, "distance to linear end is not finite"))?;
     let live = select_linear_piece(parameter.value, linear.domain, &carrier, &start, &end);
-    if linear.layout_live {
+    if live_derivative {
         return Ok(live.clone());
     }
     let seed = select_linear_piece(parameter.seed_value, linear.domain, &carrier, &start, &end);
@@ -1385,5 +1392,62 @@ mod tests {
             point_linear_residual(&point, &linear, Span::default()).expect("live interior");
         assert_eq!(interior.gradient, vec![0.0]);
         assert_eq!(interior.value, 1.0);
+    }
+
+    fn incidence_distance(x: f64, y: f64, seed_x: f64, seed_y: f64) -> Jet {
+        let point = DPoint {
+            x: Jet {
+                value: x,
+                seed_value: seed_x,
+                gradient: vec![1.0, 0.0],
+            },
+            y: Jet {
+                value: y,
+                seed_value: seed_y,
+                gradient: vec![0.0, 1.0],
+            },
+        };
+        let linear = DLinear {
+            start: DPoint {
+                x: Jet::constant(0.0, 2),
+                y: Jet::constant(0.0, 2),
+            },
+            through: DPoint {
+                x: Jet::constant(1.0, 2),
+                y: Jet::constant(0.0, 2),
+            },
+            domain: LinearDomain::Segment,
+            layout_live: false,
+        };
+        point_linear_distance(&point, &linear, Span::default(), true).expect("finite incidence")
+    }
+
+    #[test]
+    fn geometric_incidence_derivatives_follow_current_distance_across_seed_pieces() {
+        // Each current point is on a different piece or side from its seed.
+        for (x, y, seed_x, seed_y) in [
+            (-2.0, 1.0, 0.5, 1.0),
+            (3.0, 1.0, 0.5, 1.0),
+            (0.5, 1.0, 3.0, 1.0),
+            (0.5, -1.0, 0.5, 1.0),
+            (0.5, 1.0, 0.5, -1.0),
+        ] {
+            let residual = incidence_distance(x, y, seed_x, seed_y);
+            let step = 1e-6;
+            let dx = (incidence_distance(x + step, y, seed_x, seed_y).value
+                - incidence_distance(x - step, y, seed_x, seed_y).value)
+                / (2.0 * step);
+            let dy = (incidence_distance(x, y + step, seed_x, seed_y).value
+                - incidence_distance(x, y - step, seed_x, seed_y).value)
+                / (2.0 * step);
+            assert!(
+                (residual.gradient[0] - dx).abs() < 1e-9,
+                "{residual:?} vs {dx}"
+            );
+            assert!(
+                (residual.gradient[1] - dy).abs() < 1e-9,
+                "{residual:?} vs {dy}"
+            );
+        }
     }
 }
