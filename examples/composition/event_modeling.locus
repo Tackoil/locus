@@ -1,0 +1,40 @@
+locus 0 beta 6
+
+meta title = "Event modeling: inventory event processor"
+meta note = "The documented CartUI/AddItem/ItemAdded sequence and external inventory event → processor → command → cart inventory event chain."
+
+style textbook
+
+// Mermaid reference: https://mermaid.js.org/syntax/eventmodeling.html
+// Reference example: Reference events and processors
+
+class blue_style { accent: blue, fill: tint }
+class teal_style { accent: teal, fill: tint }
+class orange_style { accent: orange, fill: tint }
+class purple_style { accent: purple, fill: tint }
+
+fn card(text) {
+    rect shape()
+    label caption(text)
+    rel center(caption, shape)
+    rel contain(shape, caption)
+}
+
+card ui("01 · UI\nCartUI") [purple_style]
+card add("02 · command\nAddItem") [blue_style]
+card added("03 · event\nItemAdded") [orange_style]
+card external("04 · referenced event\nExternal.InventoryChanged") [orange_style]
+card processor("05 · processor\nInventoryProcessor") [teal_style]
+card change("06 · command\nChangeInventory") [blue_style]
+card changed("07 · event\nCart.InventoryChanged") [orange_style]
+rel row(ui.shape, add.shape, added.shape)
+rel row(external.shape, processor.shape, change.shape, changed.shape)
+group upper(ui, add, added)
+group lower(external, processor, change, changed)
+rel gap_y(upper, lower)
+rel align_left(upper, lower)
+arrow action(ui.shape.e, add.shape.w)
+arrow accepted(add.shape.e, added.shape.w)
+arrow trigger(external.shape.e, processor.shape.w)
+arrow command(processor.shape.e, change.shape.w)
+arrow published(change.shape.e, changed.shape.w)

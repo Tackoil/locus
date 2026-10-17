@@ -1,0 +1,57 @@
+locus 0 beta 6
+
+meta title = "Architecture: sources, storage, and output"
+meta note = "The documented nine services in three groups and six connections; service icons use labeled shapes."
+
+style textbook
+
+// Mermaid reference: https://mermaid.js.org/syntax/architecture.html
+// Reference example: Aligning services · sources/storage/output
+
+class boundary { accent: gray, fill: none }
+
+fn node(text) {
+    rounded_rect shape()
+    label caption(text)
+    rel center(caption, shape)
+    rel contain(shape, caption)
+}
+fn frame(text, contents) {
+    rect shape() [boundary]
+    label caption(text)
+    rel gap_y(caption, contents)
+    rel align_left(caption, contents)
+    rel contain(shape, caption, contents)
+}
+
+node src_a("Source A")
+node src_b("Source B")
+node src_c("Source C")
+node db_one("DB One")
+node db_two("DB Two")
+node db_three("DB Three")
+node brief("Brief")
+node analyst("Analyst")
+node delivery("Delivery")
+rel row(src_a.shape, src_b.shape, src_c.shape)
+rel row(db_one.shape, db_two.shape, db_three.shape)
+rel row(brief.shape, analyst.shape, delivery.shape)
+group source_nodes(src_a, src_b, src_c)
+group storage_nodes(db_one, db_two, db_three)
+group output_nodes(brief, analyst, delivery)
+frame sources("Sources", source_nodes)
+frame storage("Storage", storage_nodes)
+frame output("Output", output_nodes)
+rel column(sources.shape, storage.shape, output.shape)
+rel align_center_x(src_a.shape, db_one.shape)
+rel align_center_x(src_b.shape, db_two.shape, brief.shape)
+rel align_center_x(src_c.shape, db_three.shape)
+arrow first(src_a.shape.s, db_one.shape.n) { route: curved, side: left }
+arrow second(src_b.shape.s, db_two.shape.n)
+arrow third(src_c.shape.s, db_three.shape.n)
+arrow summarize(db_two.shape.s, brief.shape.n) { route: curved, side: left }
+arrow analyze(brief.shape.e, analyst.shape.w)
+arrow deliver(analyst.shape.e, delivery.shape.w)
+
+rel avoid(first, storage.caption)
+rel avoid(summarize, output.caption)

@@ -1,0 +1,53 @@
+locus 0 beta 6
+
+meta title = "Kanban: diagram implementation work"
+meta note = "The documented six columns and ten cards, including ticket/assignee/priority metadata. Long demonstration filler titles are abbreviated."
+
+style textbook
+
+// Mermaid reference: https://mermaid.js.org/syntax/kanban.html
+// Reference example: Complete Kanban example
+
+class boundary { accent: gray, fill: none }
+
+fn card(text) {
+    rect shape()
+    label caption(text)
+    rel center(caption, shape)
+    rel contain(shape, caption)
+}
+fn frame(text, contents) {
+    rect shape() [boundary]
+    label caption(text)
+    rel gap_y(caption, contents)
+    rel align_left(caption, contents)
+    rel contain(shape, caption, contents)
+}
+
+card docs("Create documentation")
+card blog("Write diagram blog")
+rel column(docs.shape, blog.shape)
+group todo_cards(docs, blog)
+frame todo("Todo", todo_cards)
+card renderer("Create renderer\nHandle all cases")
+group progress_cards(renderer)
+frame progress("In progress", progress_cards)
+card grammar("Design grammar\nAssigned: knsv")
+group deploy_cards(grammar)
+frame deploy("Ready for deploy", deploy_cards)
+card tests("Parsing tests\nMC-2038 · K. Sveidqvist\nPriority: High")
+card last("Last item\nknsv · Very Low")
+rel column(tests.shape, last.shape)
+group test_cards(tests, last)
+frame test("Ready for test", test_cards)
+card getdata("Define getData")
+card duplicate("Long diagram title\nMC-2036 · Very High")
+card database("Update DB function\nMC-2037 · knsv · High")
+rel column(getdata.shape, duplicate.shape, database.shape)
+group done_cards(getdata, duplicate, database)
+frame done("Done", done_cards)
+card firefox("Firefox flicker")
+group unreproduced_cards(firefox)
+frame unreproduced("Can't reproduce", unreproduced_cards)
+rel row(todo.shape, progress.shape, deploy.shape, test.shape, done.shape, unreproduced.shape)
+rel align_top(todo.shape, progress.shape, deploy.shape, test.shape, done.shape, unreproduced.shape)

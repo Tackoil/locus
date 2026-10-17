@@ -1,0 +1,37 @@
+locus 0 beta 6
+
+meta title = "Venn: what makes a good feature"
+meta note = "Three intersecting sets, all three pairwise intersections, a triple intersection, and an asserted shared membership point; areas are schematic."
+
+style textbook
+
+// Mermaid reference: https://mermaid.js.org/syntax/venn.html
+// Reference example: What makes a good feature. Three intersecting sets, all three pairwise intersections, a triple intersection, and an asserted shared membership point; areas are schematic.
+
+class hidden { opacity: 0 }
+class dashed { accent: gray, stroke: dashed }
+
+
+class set_a { accent: blue, fill: blue, opacity: 0.23 }
+class set_b { accent: orange, fill: orange, opacity: 0.23 }
+class set_c { accent: teal, fill: teal, opacity: 0.23 }
+circle desirable(3.6) [set_a]
+circle feasible(3.6) [set_b]
+circle viable(3.6) [set_c]
+rel align_center_y(desirable, feasible)
+rel hdist(desirable.center, feasible.center) == 3.6
+point top_middle = midpoint(desirable.center, feasible.center) [hidden] { mark: none }
+rel align_center_x(viable.center, top_middle)
+rel vdist(viable.center, top_middle) == 3.0
+point all_three = centroid(desirable.center, feasible.center, viable.center) [hidden] { mark: none }
+label ship(all_three, "Ship it") { dir: center }
+point buildable = lerp(top_middle, desirable.at(90deg), 0.25) [hidden] { mark: none }
+label df(buildable, "Buildable") { dir: N }
+point marketable = midpoint(desirable.center, viable.center) [hidden] { mark: none }
+label dv(marketable, "Marketable") { dir: SW }
+point sustainable = midpoint(feasible.center, viable.center) [hidden] { mark: none }
+label fv(sustainable, "Sustainable") { dir: SE }
+label d(desirable.at(150deg), "Desirable") { dir: NW }
+label f(feasible.at(30deg), "Feasible") { dir: NE }
+label v(viable.at(270deg), "Viable") { dir: S }
+assert inside(all_three, desirable) and inside(all_three, feasible) and inside(all_three, viable)

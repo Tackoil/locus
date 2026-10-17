@@ -1,0 +1,41 @@
+locus 0 beta 6
+
+meta title = "Journey: my working day"
+meta note = "The documented five tasks, two journey sections, actors, and 1–5 satisfaction scores."
+
+style textbook
+
+// Mermaid reference: https://mermaid.js.org/syntax/userJourney.html
+// Reference example: My working day
+
+class boundary { accent: gray, fill: none }
+class teal_style { accent: teal, fill: tint }
+
+fn frame(text, contents) {
+    rect shape() [boundary]
+    label caption(text)
+    rel gap_y(caption, contents)
+    rel align_left(caption, contents)
+    rel contain(shape, caption, contents)
+}
+
+fn step(text, actor, score) {
+    label caption(text)
+    label owner(actor)
+    rect bar(score * 0.6, 0.35) [teal_style]
+    rel column(caption, owner, bar)
+    assert bar.width / 0.6 == score
+}
+step tea("Make tea", "Me · 5/5", 5)
+step upstairs("Go upstairs", "Me · 3/5", 3)
+step work("Do work", "Me + Cat · 1/5", 1)
+step downstairs("Go downstairs", "Me · 5/5", 5)
+step sit("Sit down", "Me · 5/5", 5)
+rel row(tea, upstairs, work)
+rel row(downstairs, sit)
+group outbound(tea, upstairs, work)
+group homeward(downstairs, sit)
+frame go_work("Go to work", outbound)
+frame go_home("Go home", homeward)
+rel row(go_work.shape, go_home.shape)
+arrow next(work.bar.e, downstairs.bar.w)

@@ -1,0 +1,36 @@
+locus 0 beta 6
+
+meta title = "Pie: pets adopted by volunteers"
+meta note = "The documented Dogs=386, Cats=85, Rats=15 dataset. Filled circular boundaries use chords of at most five degrees."
+
+style textbook
+
+// Mermaid reference: https://mermaid.js.org/syntax/pie.html
+// Reference example: Pets adopted by volunteers
+
+class hidden { opacity: 0 }
+
+
+num total = 486
+circle guide(3.5) [hidden]
+point O = guide.center [hidden] { mark: none }
+class sector0 { accent: blue, fill: blue, opacity: 0.65 }
+class legend0 { accent: blue }
+num value0 = 386
+polygon wedge0(O, guide.at(0.0000000000deg), guide.at(4.9297573436deg), guide.at(9.8595146871deg), guide.at(14.7892720307deg), guide.at(19.7190293742deg), guide.at(24.6487867178deg), guide.at(29.5785440613deg), guide.at(34.5083014049deg), guide.at(39.4380587484deg), guide.at(44.3678160920deg), guide.at(49.2975734355deg), guide.at(54.2273307791deg), guide.at(59.1570881226deg), guide.at(64.0868454662deg), guide.at(69.0166028097deg), guide.at(73.9463601533deg), guide.at(78.8761174968deg), guide.at(83.8058748404deg), guide.at(88.7356321839deg), guide.at(93.6653895275deg), guide.at(98.5951468710deg), guide.at(103.5249042146deg), guide.at(108.4546615581deg), guide.at(113.3844189017deg), guide.at(118.3141762452deg), guide.at(123.2439335888deg), guide.at(128.1736909323deg), guide.at(133.1034482759deg), guide.at(138.0332056194deg), guide.at(142.9629629630deg), guide.at(147.8927203065deg), guide.at(152.8224776501deg), guide.at(157.7522349936deg), guide.at(162.6819923372deg), guide.at(167.6117496807deg), guide.at(172.5415070243deg), guide.at(177.4712643678deg), guide.at(182.4010217114deg), guide.at(187.3307790549deg), guide.at(192.2605363985deg), guide.at(197.1902937420deg), guide.at(202.1200510856deg), guide.at(207.0498084291deg), guide.at(211.9795657727deg), guide.at(216.9093231162deg), guide.at(221.8390804598deg), guide.at(226.7688378033deg), guide.at(231.6985951469deg), guide.at(236.6283524904deg), guide.at(241.5581098340deg), guide.at(246.4878671775deg), guide.at(251.4176245211deg), guide.at(256.3473818646deg), guide.at(261.2771392082deg), guide.at(266.2068965517deg), guide.at(271.1366538953deg), guide.at(276.0664112388deg), guide.at(280.9961685824deg), guide.at(285.9259259259deg)) [sector0]
+label key0("Dogs: 386") [legend0]
+class sector1 { accent: teal, fill: teal, opacity: 0.65 }
+class legend1 { accent: teal }
+num value1 = 85
+polygon wedge1(O, guide.at(285.9259259259deg), guide.at(290.7692307692deg), guide.at(295.6125356125deg), guide.at(300.4558404558deg), guide.at(305.2991452991deg), guide.at(310.1424501425deg), guide.at(314.9857549858deg), guide.at(319.8290598291deg), guide.at(324.6723646724deg), guide.at(329.5156695157deg), guide.at(334.3589743590deg), guide.at(339.2022792023deg), guide.at(344.0455840456deg), guide.at(348.8888888889deg)) [sector1]
+label key1("Cats: 85") [legend1]
+class sector2 { accent: orange, fill: orange, opacity: 0.65 }
+class legend2 { accent: orange }
+num value2 = 15
+polygon wedge2(O, guide.at(348.8888888889deg), guide.at(352.5925925926deg), guide.at(356.2962962963deg), guide.at(360.0000000000deg)) [sector2]
+label key2("Rats: 15") [legend2]
+rel column(key0, key1, key2)
+group legend(key0, key1, key2)
+rel gap_x(guide, legend)
+rel align_center_y(guide, legend)
+assert value0 + value1 + value2 == total

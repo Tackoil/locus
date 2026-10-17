@@ -402,5 +402,5 @@ fn all_stress_sources_render_with_shared_measurements() -> Result<(), Box<dyn Er
 
 #[test]
 fn composition_examples_render_with_shared_measurements() -> Result<(), Box<dyn Error>> {
-    render_group("examples/composition", 2)
+    render_group("examples/composition", 31)
 }

@@ -1,0 +1,47 @@
+locus 0 beta 6
+
+meta title = "Sankey: electricity distribution"
+meta note = "The documented Electricity grid flows to homes (113.726), Industry (342.165), and Losses (56.691), with proportional port thicknesses."
+
+style textbook
+
+// Mermaid reference: https://mermaid.js.org/syntax/sankey.html
+// Reference example: Node labels / Node spacing example
+
+class hidden { opacity: 0 }
+class blue_style { accent: blue, fill: tint }
+class teal_style { accent: teal, fill: tint }
+class orange_style { accent: orange, fill: tint }
+class purple_style { accent: purple, fill: tint }
+
+
+num scale = 0.015
+num input = 512.582
+rect grid(0.4, input * scale) [purple_style]
+label grid_label(grid.w, "Electricity grid") { dir: W }
+num homes_value = 113.726
+rect homes(0.4, homes_value * scale) [teal_style]
+label homes_label(homes.e, "Heating and cooling · homes: 113.726") { dir: E }
+num industry_value = 342.165
+rect industry(0.4, industry_value * scale) [blue_style]
+label industry_label(industry.e, "Industry: 342.165") { dir: E }
+num losses_value = 56.691
+rect losses(0.4, losses_value * scale) [orange_style]
+label losses_label(losses.e, "Losses: 56.691") { dir: E }
+rel column(homes, industry, losses)
+group outputs(homes, industry, losses)
+label transfer("Electricity distribution")
+rel gap_x(grid, transfer, outputs)
+rel align_center_y(grid, outputs)
+rel gap_y(transfer, grid)
+point source0a = lerp(grid.ne, grid.se, 0 / input) [hidden] { mark: none }
+point source0b = lerp(grid.ne, grid.se, 113.726 / input) [hidden] { mark: none }
+polygon band0(source0a, homes.nw, homes.sw, source0b) [teal_style]
+point source1a = lerp(grid.ne, grid.se, 113.726 / input) [hidden] { mark: none }
+point source1b = lerp(grid.ne, grid.se, 455.891 / input) [hidden] { mark: none }
+polygon band1(source1a, industry.nw, industry.sw, source1b) [blue_style]
+point source2a = lerp(grid.ne, grid.se, 455.891 / input) [hidden] { mark: none }
+point source2b = lerp(grid.ne, grid.se, 512.582 / input) [hidden] { mark: none }
+polygon band2(source2a, losses.nw, losses.sw, source2b) [orange_style]
+assert homes_value + industry_value + losses_value == input
+assert homes.height + industry.height + losses.height == grid.height

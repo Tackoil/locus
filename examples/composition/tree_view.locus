@@ -1,0 +1,68 @@
+locus 0 beta 6
+
+meta title = "Tree view: package hierarchy"
+meta note = "The documented packages/mermaid/parser hierarchy and source files, with a project root added to anchor the single figure."
+
+style textbook
+
+// Mermaid reference: https://mermaid.js.org/syntax/treeView.html
+// Reference example: Nested packages/mermaid/parser example
+
+class hidden { opacity: 0 }
+class boundary { accent: gray, fill: none }
+
+fn node(text) {
+    rounded_rect shape()
+    label caption(text)
+    rel center(caption, shape)
+    rel contain(shape, caption)
+}
+
+node entry0("project/")
+node entry1("packages/")
+node entry2("mermaid/")
+node entry3("src/")
+node entry4("parser.ts")
+node entry5("renderer.ts")
+node entry6("package.json")
+node entry7("parser/")
+node entry8("src/")
+node entry9("README.md")
+rel gap_y(entry0.shape, entry1.shape, entry2.shape, entry3.shape, entry4.shape, entry5.shape, entry6.shape, entry7.shape, entry8.shape, entry9.shape)
+group depth0(entry0.shape)
+group depth1(entry1.shape, entry9.shape)
+rel align_left(entry1.shape, entry9.shape)
+group depth2(entry2.shape, entry7.shape)
+rel align_left(entry2.shape, entry7.shape)
+group depth3(entry3.shape, entry6.shape, entry8.shape)
+rel align_left(entry3.shape, entry6.shape, entry8.shape)
+group depth4(entry4.shape, entry5.shape)
+rel align_left(entry4.shape, entry5.shape)
+rel gap_x(depth0, depth1, depth2, depth3, depth4)
+point entry1_elbow = intersect(line(entry0.shape.nw, entry0.shape.sw), line(entry1.shape.w, entry1.shape.e)) [hidden] { mark: none }
+segment entry1_stem(entry0.shape.sw, entry1_elbow) [boundary]
+segment entry1_twig(entry1_elbow, entry1.shape.w) [boundary]
+point entry2_elbow = intersect(line(entry1.shape.nw, entry1.shape.sw), line(entry2.shape.w, entry2.shape.e)) [hidden] { mark: none }
+segment entry2_stem(entry1.shape.sw, entry2_elbow) [boundary]
+segment entry2_twig(entry2_elbow, entry2.shape.w) [boundary]
+point entry3_elbow = intersect(line(entry2.shape.nw, entry2.shape.sw), line(entry3.shape.w, entry3.shape.e)) [hidden] { mark: none }
+segment entry3_stem(entry2.shape.sw, entry3_elbow) [boundary]
+segment entry3_twig(entry3_elbow, entry3.shape.w) [boundary]
+point entry4_elbow = intersect(line(entry3.shape.nw, entry3.shape.sw), line(entry4.shape.w, entry4.shape.e)) [hidden] { mark: none }
+segment entry4_stem(entry3.shape.sw, entry4_elbow) [boundary]
+segment entry4_twig(entry4_elbow, entry4.shape.w) [boundary]
+point entry5_elbow = intersect(line(entry3.shape.nw, entry3.shape.sw), line(entry5.shape.w, entry5.shape.e)) [hidden] { mark: none }
+segment entry5_stem(entry3.shape.sw, entry5_elbow) [boundary]
+segment entry5_twig(entry5_elbow, entry5.shape.w) [boundary]
+point entry6_elbow = intersect(line(entry2.shape.nw, entry2.shape.sw), line(entry6.shape.w, entry6.shape.e)) [hidden] { mark: none }
+segment entry6_stem(entry2.shape.sw, entry6_elbow) [boundary]
+segment entry6_twig(entry6_elbow, entry6.shape.w) [boundary]
+point entry7_elbow = intersect(line(entry1.shape.nw, entry1.shape.sw), line(entry7.shape.w, entry7.shape.e)) [hidden] { mark: none }
+segment entry7_stem(entry1.shape.sw, entry7_elbow) [boundary]
+segment entry7_twig(entry7_elbow, entry7.shape.w) [boundary]
+point entry8_elbow = intersect(line(entry7.shape.nw, entry7.shape.sw), line(entry8.shape.w, entry8.shape.e)) [hidden] { mark: none }
+segment entry8_stem(entry7.shape.sw, entry8_elbow) [boundary]
+segment entry8_twig(entry8_elbow, entry8.shape.w) [boundary]
+point entry9_elbow = intersect(line(entry0.shape.nw, entry0.shape.sw), line(entry9.shape.w, entry9.shape.e)) [hidden] { mark: none }
+segment entry9_stem(entry0.shape.sw, entry9_elbow) [boundary]
+segment entry9_twig(entry9_elbow, entry9.shape.w) [boundary]

@@ -1,0 +1,57 @@
+locus 0 beta 6
+
+meta title = "Requirements: larger example"
+meta note = "The documented six requirement kinds, three elements, metadata, and eight typed relationships; long prose is shortened for the cards."
+
+style textbook
+
+// Mermaid reference: https://mermaid.js.org/syntax/requirementDiagram.html
+// Reference example: Larger Example
+
+class response { accent: blue, stroke: dashed }
+
+fn card(text) {
+    rect shape()
+    label caption(text)
+    rel center(caption, shape)
+    rel contain(shape, caption)
+}
+fn hlink(source, target, text) {
+    arrow path(source.e, target.w) [response]
+    label caption(path, text) { side: above }
+    rel gap_x(source, caption, target)
+}
+
+card req("«requirement»\nid: 1\nThe test text\nrisk: high · verify: test")
+card functional("«functional requirement»\nid: 1.1\nSecond test text\nrisk: low · verify: inspection")
+card performance("«performance requirement»\nid: 1.2\nThird test text\nrisk: medium · verify: demonstration")
+card interface("«interface requirement»\nid: 1.2.1\nFourth test text\nrisk: medium · verify: analysis")
+card physical("«physical requirement»\nid: 1.2.2\nFifth test text\nrisk: medium · verify: analysis")
+card design("«design constraint»\nid: 1.2.3\nSixth test text\nrisk: medium · verify: analysis")
+card simulation("«element»\nSimulation")
+card document("«element»\nWord document\nref: reqs/test_entity")
+card suite("«element»\nTest suite\nref: all_the_tests")
+rel column(req.shape, performance.shape, interface.shape, physical.shape, design.shape)
+rel row(document.shape, req.shape, functional.shape, simulation.shape)
+rel row(physical.shape, suite.shape)
+hlink traces(req.shape, functional.shape, "traces")
+arrow satisfies(simulation.shape.w, functional.shape.e) [response]
+label satisfies_label(satisfies, "satisfies") { side: above }
+rel gap_x(functional.shape, satisfies_label, simulation.shape)
+hlink copies(document.shape, req.shape, "copies")
+arrow contains(req.shape.s, performance.shape.n) [response]
+label contains_label(contains, "contains") { side: left }
+arrow contained(performance.shape.s, interface.shape.n) [response]
+label contained_label(contained, "contains") { side: left }
+arrow derives(interface.shape.s, physical.shape.n) [response]
+label derives_label(derives, "derives") { side: left }
+arrow refines(physical.shape.s, design.shape.n) [response]
+label refines_label(refines, "refines") { side: left }
+arrow verifies(suite.shape.w, physical.shape.e) [response]
+label verifies_label(verifies, "verifies") { side: above }
+rel gap_x(physical.shape, verifies_label, suite.shape)
+
+rel gap_y(req.shape, contains_label, performance.shape)
+rel gap_y(performance.shape, contained_label, interface.shape)
+rel gap_y(interface.shape, derives_label, physical.shape)
+rel gap_y(physical.shape, refines_label, design.shape)

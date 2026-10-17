@@ -1,0 +1,47 @@
+locus 0 beta 6
+
+meta title = "Git: cherry-picking a merge commit"
+meta note = "The documented main/develop/release branches, ZERO/A/ONE/B/MERGE/TWO/THREE/C commits, and merge cherry-pick with parent B."
+
+style textbook
+
+// Mermaid reference: https://mermaid.js.org/syntax/gitgraph.html
+// Reference example: Cherry-pick from a merge commit
+
+class hidden { opacity: 0 }
+class blue_style { accent: blue, fill: tint }
+class teal_style { accent: teal, fill: tint }
+class orange_style { accent: orange, fill: tint }
+class response { accent: blue, stroke: dashed }
+
+
+point epoch() [hidden] { mark: none }
+fn commit(text, time, lane, appearance) {
+    circle shape(0.16) [appearance]
+    rel hdist(epoch, shape.center) == time * 2.6
+    rel vdist(epoch, shape.center) == -lane * 2.3
+    label caption(shape.center, text) { dir: N }
+}
+commit zero("ZERO", 0, 0, blue_style)
+commit a("A", 1, 2, orange_style)
+commit one("ONE", 2, 0, blue_style)
+commit b("B", 3, 1, teal_style)
+commit merge("MERGE", 4, 0, blue_style)
+commit two("TWO", 5, 0, blue_style)
+commit picked("MERGE′", 6, 2, orange_style)
+commit three("THREE", 7, 2, orange_style)
+commit c("C", 8, 1, teal_style)
+arrow main1(zero.shape.at(0deg), one.shape.at(180deg))
+arrow main2(one.shape.at(0deg), merge.shape.at(180deg))
+arrow main3(merge.shape.at(0deg), two.shape.at(180deg))
+arrow fork_release(zero.shape.at(0deg), a.shape.at(180deg))
+arrow fork_develop(zero.shape.at(0deg), b.shape.at(180deg))
+arrow develop(b.shape.at(0deg), c.shape.at(180deg))
+arrow release1(a.shape.at(0deg), picked.shape.at(180deg))
+arrow release2(picked.shape.at(0deg), three.shape.at(180deg))
+arrow merged(b.shape.at(0deg), merge.shape.at(180deg)) [response]
+arrow cherry_pick(merge.shape.at(270deg), picked.shape.at(90deg)) [response]
+label cherry_label(cherry_pick, "cherry-pick · parent B") { side: right }
+label main_label(zero.shape.center, "main") { dir: W }
+label develop_label(b.shape.center, "develop") { dir: W }
+label release_label(a.shape.center, "release") { dir: W }

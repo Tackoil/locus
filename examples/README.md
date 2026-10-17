@@ -5,7 +5,8 @@ The positive `.locus` corpus is split by purpose:
 - [`demonstrations/`](demonstrations) contains twelve readable examples of the
   [`0 beta 6` specification](../spec/specification.md): canonical constructor declarations,
   derived geometry, measured content, and relational diagram layout.
-- [`composition/`](composition) contains the reusable agent-loop and checkout sequence examples.
+- [`composition/`](composition/README.md) contains one figure for each of 31 Mermaid diagram types,
+  including reusable agent-loop and checkout sequence examples.
 - [`stress/`](stress) contains 14 expanded workloads. These exercise large construction
   graphs, dense annotations, shared constraints, assertions, deterministic layout, and every
   rendering backend.
@@ -13,8 +14,8 @@ The positive `.locus` corpus is split by purpose:
 Invalid-input fixtures remain in [`tests/fixtures/errors/`](../tests/fixtures/errors) so they are not
 mistaken for runnable examples.
 
-All 28 runnable examples use `0 beta 6`. The source audit also covers the historical solver-limit fixture in `tests/fixtures/solver/`.
-The 26 supported demonstration/stress sources and both composition examples pass the beta 6 measured solver, assertions and SVG/TikZ/PNG parity checks with bundled fonts. The historical solver-limit fixture remains a negative acceptance contract. Feasible preference settling may remain incomplete and produces a strict-check warning.
+All 57 runnable examples use `0 beta 6`. The source audit also covers the historical solver-limit fixture in `tests/fixtures/solver/`.
+The 26 demonstration/stress sources and 31 composition examples participate in the beta 6 measured-solver, assertion, and SVG/TikZ/PNG parity checks with bundled fonts. The historical solver-limit fixture remains a negative acceptance contract. Feasible preference settling may remain incomplete and produces a strict-check warning.
 
 Run the available source audit from the repository root:
 

@@ -1,0 +1,85 @@
+locus 0 beta 6
+
+meta title = "Packet: TCP packet"
+meta note = "The documented TCP header, options, and two 32-bit payload rows; field widths preserve their bit counts."
+
+style textbook
+
+// Mermaid reference: https://mermaid.js.org/syntax/packet.html
+// Reference example: TCP Packet. The documented TCP header, options, and two 32-bit payload rows; field widths preserve their bit counts.
+
+class blue_style { accent: blue, fill: tint }
+class dashed { accent: gray, stroke: dashed }
+
+
+num bit = 0.75
+fn field(text, bits) {
+    rect shape(bits * bit, 2.0) [blue_style]
+    label caption(text)
+    rel center(caption, shape)
+    rel contain(shape, caption)
+    assert shape.width / bit == bits
+}
+field r0f0("Source port", 16)
+field r0f1("Destination port", 16)
+rel center(r0f0.shape.e, r0f1.shape.w)
+group row0(r0f0.shape, r0f1.shape)
+assert r0f0.shape.width + r0f1.shape.width == 32 * bit
+field r1f0("Sequence number", 32)
+group row1(r1f0.shape)
+rel gap_y(row0, row1)
+rel align_left(row0, row1)
+assert r1f0.shape.width == 32 * bit
+field r2f0("Acknowledgment number", 32)
+group row2(r2f0.shape)
+rel gap_y(row1, row2)
+rel align_left(row1, row2)
+assert r2f0.shape.width == 32 * bit
+field r3f0("Data\noffset", 4)
+field r3f1("Reserved", 6)
+rel center(r3f0.shape.e, r3f1.shape.w)
+field r3f2("U", 1)
+rel center(r3f1.shape.e, r3f2.shape.w)
+field r3f3("A", 1)
+rel center(r3f2.shape.e, r3f3.shape.w)
+field r3f4("P", 1)
+rel center(r3f3.shape.e, r3f4.shape.w)
+field r3f5("R", 1)
+rel center(r3f4.shape.e, r3f5.shape.w)
+field r3f6("S", 1)
+rel center(r3f5.shape.e, r3f6.shape.w)
+field r3f7("F", 1)
+rel center(r3f6.shape.e, r3f7.shape.w)
+field r3f8("Window", 16)
+rel center(r3f7.shape.e, r3f8.shape.w)
+group row3(r3f0.shape, r3f1.shape, r3f2.shape, r3f3.shape, r3f4.shape, r3f5.shape, r3f6.shape, r3f7.shape, r3f8.shape)
+rel gap_y(row2, row3)
+rel align_left(row2, row3)
+assert r3f0.shape.width + r3f1.shape.width + r3f2.shape.width + r3f3.shape.width + r3f4.shape.width + r3f5.shape.width + r3f6.shape.width + r3f7.shape.width + r3f8.shape.width == 32 * bit
+field r4f0("Checksum", 16)
+field r4f1("Urgent pointer", 16)
+rel center(r4f0.shape.e, r4f1.shape.w)
+group row4(r4f0.shape, r4f1.shape)
+rel gap_y(row3, row4)
+rel align_left(row3, row4)
+assert r4f0.shape.width + r4f1.shape.width == 32 * bit
+field r5f0("Options + padding", 32)
+group row5(r5f0.shape)
+rel gap_y(row4, row5)
+rel align_left(row4, row5)
+assert r5f0.shape.width == 32 * bit
+field r6f0("Payload word 1", 32)
+group row6(r6f0.shape)
+rel gap_y(row5, row6)
+rel align_left(row5, row6)
+assert r6f0.shape.width == 32 * bit
+field r7f0("Payload word 2 · variable data continues", 32)
+group row7(r7f0.shape)
+rel gap_y(row6, row7)
+rel align_left(row6, row7)
+assert r7f0.shape.width == 32 * bit
+label flags("Flags: U=URG · A=ACK · P=PSH · R=RST · S=SYN · F=FIN")
+rel gap_y(row7, flags)
+rel align_left(flags, row7)
+label bit0(r0f0.shape.nw, "0") { dir: N }
+label bit31(r0f1.shape.ne, "31 bits per row") { dir: N }

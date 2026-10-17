@@ -1,0 +1,54 @@
+locus 0 beta 6
+
+meta title = "State: submission and review"
+meta note = "The documented Draft, Submitted, nested Review(Screening→Decision), Published, and rejected return to Draft."
+
+style textbook
+
+// Mermaid reference: https://mermaid.js.org/syntax/stateDiagram.html
+// Reference example: Default theme, look and layout · Draft/Review/Published
+
+class boundary { accent: gray, fill: none }
+class response { accent: blue, stroke: dashed }
+
+fn node(text) {
+    rounded_rect shape()
+    label caption(text)
+    rel center(caption, shape)
+    rel contain(shape, caption)
+}
+fn frame(text, contents) {
+    rect shape() [boundary]
+    label caption(text)
+    rel gap_y(caption, contents)
+    rel align_left(caption, contents)
+    rel contain(shape, caption, contents)
+}
+
+class dot_style { accent: ink, fill: ink }
+circle initial(0.12) [dot_style]
+node draft("Draft")
+node submitted("Submitted")
+node screening("Screening")
+node decision("Decision")
+circle review_initial(0.1) [dot_style]
+rel column(review_initial, screening.shape, decision.shape)
+arrow review_begin(review_initial.at(270deg), screening.shape.n)
+arrow review_decide(screening.shape.s, decision.shape.n)
+group review_states(review_initial, screening, decision)
+frame review("Review", review_states)
+node published("Published")
+circle final_outer(0.18)
+circle final_inner(final_outer.center, 0.10) [dot_style]
+rel column(initial, draft.shape, submitted.shape, review.shape, published.shape, final_outer)
+arrow begin(initial.at(270deg), draft.shape.n)
+arrow submit(draft.shape.s, submitted.shape.n)
+label submitted_label(submit, "submit") { side: right }
+arrow enter(submitted.shape.s, review.shape.n)
+arrow approve(review.shape.s, published.shape.n)
+label approved_label(approve, "approved") { side: right }
+arrow finish(published.shape.s, final_outer.at(90deg))
+arrow reject(review.shape.e, draft.shape.e) [response] { route: curved, side: right }
+label rejected_label(reject, "rejected") { side: right }
+rel gap_y(draft.shape, submitted_label, submitted.shape)
+rel gap_y(review.shape, approved_label, published.shape)

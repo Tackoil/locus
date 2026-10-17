@@ -1,0 +1,68 @@
+locus 0 beta 6
+
+meta title = "ZenUML: try, catch, and finally"
+meta note = "The documented Consumer/API/BookingService participants, four messages, and try/catch/finally fragments."
+
+style textbook
+
+// Mermaid reference: https://mermaid.js.org/syntax/zenuml.html
+// Reference example: Try/Catch/Finally (Break)
+
+class hidden { opacity: 0 }
+class boundary { accent: gray, fill: none }
+class response { accent: blue, stroke: dashed }
+
+fn node(text) {
+    rounded_rect shape()
+    label caption(text)
+    rel center(caption, shape)
+    rel contain(shape, caption)
+}
+fn frame(text, contents) {
+    rect shape() [boundary]
+    label caption(text)
+    rel gap_y(caption, contents)
+    rel align_left(caption, contents)
+    rel contain(shape, caption, contents)
+}
+fn message(source, target, text, appearance) {
+    point tail() [hidden] { mark: none }
+    point tip() [hidden] { mark: none }
+    rel align_center_x(tail, source)
+    rel align_center_x(tip, target)
+    rel align_center_y(tail, tip)
+    arrow path(tail, tip) [appearance]
+    label caption(path, text) { side: above }
+}
+
+class lifeline { accent: gray, stroke: dashed }
+node consumer("Consumer")
+node api("API")
+node booking("BookingService")
+rel row(consumer.shape, api.shape, booking.shape)
+rel api.shape.width == consumer.shape.width and api.shape.height == consumer.shape.height
+rel booking.shape.width == consumer.shape.width and booking.shape.height == consumer.shape.height
+message book(consumer.shape, api.shape, "Book something", main)
+message start(api.shape, booking.shape, "Start booking process", main)
+message failure(api.shape, consumer.shape, "show failure", response)
+message rollback(api.shape, booking.shape, "rollback status", main)
+rel gap_y(consumer.shape, book, start, failure, rollback)
+group attempt(book, start)
+frame try_frame("try", attempt)
+frame catch_frame("catch", failure)
+frame finally_frame("finally", rollback)
+rel gap_y(consumer.shape, try_frame.shape, catch_frame.shape, finally_frame.shape)
+rel gap_x(consumer.shape, book.caption, api.shape, start.caption, booking.shape)
+point consumer_end() [hidden] { mark: none }
+rel align_center_x(consumer_end, consumer.shape)
+rel gap_y(finally_frame.shape, consumer_end)
+segment consumer_line(consumer.shape.s, consumer_end) [lifeline]
+point api_end() [hidden] { mark: none }
+rel align_center_x(api_end, api.shape)
+rel gap_y(finally_frame.shape, api_end)
+segment api_line(api.shape.s, api_end) [lifeline]
+point booking_end() [hidden] { mark: none }
+rel align_center_x(booking_end, booking.shape)
+rel gap_y(finally_frame.shape, booking_end)
+segment booking_line(booking.shape.s, booking_end) [lifeline]
+rel align_center_y(consumer_end, api_end, booking_end)

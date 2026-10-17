@@ -1,0 +1,52 @@
+locus 0 beta 6
+
+meta title = "Ishikawa: blurry photo"
+meta note = "The documented Process/User/Equipment/Environment categories; lens and sensor subtrees are grouped into multiline labels to keep the figure compact."
+
+style textbook
+
+// Mermaid reference: https://mermaid.js.org/syntax/ishikawa.html
+// Reference example: Blurry Photo
+
+class hidden { opacity: 0 }
+
+
+point tail() [hidden] { mark: none }
+point head() [hidden] { mark: none }
+rel align_center_y(tail, head)
+rel hdist(tail, head) == 26
+arrow spine(tail, head)
+label effect(head, "Blurry Photo") { dir: E }
+fn cause(joint, angle, text) {
+    circle guide(joint, 5) [hidden]
+    point tip = guide.at(angle) [hidden] { mark: none }
+    segment bone(tip, joint)
+    label caption(text)
+    rel align_center_x(caption, tip)
+}
+fn detail(start, end, fraction, text) {
+    point root = lerp(start, end, fraction) [hidden] { mark: none }
+    circle guide(root, 1.0) [hidden]
+    point tip = guide.at(180deg) [hidden] { mark: none }
+    segment twig(tip, root)
+    label caption(tip, text) { dir: W }
+}
+point first = lerp(tail, head, 0.24) [hidden] { mark: none }
+point second = lerp(tail, head, 0.74) [hidden] { mark: none }
+cause process(first, 130deg, "Process")
+cause equipment(second, 130deg, "Equipment")
+cause user(first, -130deg, "User")
+cause environment(second, -130deg, "Environment")
+rel gap_y(process.caption, process.tip)
+rel gap_y(equipment.caption, equipment.tip)
+rel gap_y(user.tip, user.caption)
+rel gap_y(environment.tip, environment.caption)
+detail focus(first, process.tip, 0.15, "Out of focus")
+detail shutter(first, process.tip, 0.35, "Shutter too slow")
+detail film(first, process.tip, 0.55, "Protective film")
+detail filter(first, process.tip, 0.75, "Beauty filter")
+detail lens(second, equipment.tip, 0.32, "LENS\nUnsuitable · damaged · dirty")
+detail sensor(second, equipment.tip, 0.76, "SENSOR\nDamaged · dirty")
+detail shaky(first, user.tip, 0.5, "Shaky hands")
+detail motion(second, environment.tip, 0.3, "Subject too fast")
+detail dark(second, environment.tip, 0.7, "Too dark")

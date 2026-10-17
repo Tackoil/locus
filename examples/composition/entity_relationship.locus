@@ -1,0 +1,34 @@
+locus 0 beta 6
+
+meta title = "ER: customer orders and products"
+meta note = "The documented four entities, attributes, and places/contains/appears-in cardinalities."
+
+style textbook
+
+// Mermaid reference: https://mermaid.js.org/syntax/entityRelationshipDiagram.html
+// Reference example: Default theme, look and layout · order model
+
+
+fn card(text) {
+    rect shape()
+    label caption(text)
+    rel center(caption, shape)
+    rel contain(shape, caption)
+}
+fn hlink(source, target, text) {
+    arrow path(source.e, target.w)
+    label caption(path, text) { side: above }
+    rel gap_x(source, caption, target)
+}
+
+card customer("CUSTOMER\nname string\nemail string")
+card order("ORDER\nid int\nplacedAt date")
+card item("LINE_ITEM\nquantity int\nprice float")
+card product("PRODUCT\nsku string\ntitle string")
+rel row(customer.shape, order.shape, item.shape)
+rel column(item.shape, product.shape)
+hlink places(customer.shape, order.shape, "1 places 0..*")
+hlink contains(order.shape, item.shape, "1 contains 1..*")
+arrow appears(product.shape.n, item.shape.s)
+label appears_label(appears, "1 appears in 0..*") { side: right }
+rel gap_y(item.shape, appears_label, product.shape)

@@ -1,0 +1,55 @@
+locus 0 beta 6
+
+meta title = "Treemap: products"
+meta note = "The documented Electronics/Clothing hierarchy and five values (50, 30, 20, 40, 40), represented by an explicit area-preserving tiling."
+
+style textbook
+
+// Mermaid reference: https://mermaid.js.org/syntax/treemap.html
+// Reference example: Products
+
+class boundary { accent: gray, fill: none }
+class blue_style { accent: blue, fill: tint }
+class teal_style { accent: teal, fill: tint }
+class orange_style { accent: orange, fill: tint }
+
+
+rect products(18, 10) [boundary]
+rect electronics(10, 10) [boundary]
+rect clothing(8, 10) [boundary]
+rel center(electronics.nw, products.nw)
+rel center(clothing.ne, products.ne)
+rect phones(10, 5) [blue_style]
+rect computers(10, 3) [teal_style]
+rect accessories(10, 2) [orange_style]
+rel center(phones.nw, electronics.nw)
+rel center(computers.nw, phones.sw)
+rel center(accessories.nw, computers.sw)
+rect men(8, 5) [blue_style]
+rect women(8, 5) [teal_style]
+rel center(men.nw, clothing.nw)
+rel center(women.nw, men.sw)
+label phones_caption("Phones: 50")
+rel center(phones_caption, phones)
+rel contain(phones, phones_caption)
+label computers_caption("Computers: 30")
+rel center(computers_caption, computers)
+rel contain(computers, computers_caption)
+label accessories_caption("Accessories: 20")
+rel center(accessories_caption, accessories)
+rel contain(accessories, accessories_caption)
+label men_caption("Men's: 40")
+rel center(men_caption, men)
+rel contain(men, men_caption)
+label women_caption("Women's: 40")
+rel center(women_caption, women)
+rel contain(women, women_caption)
+label electronics_title("Electronics")
+label clothing_title("Clothing")
+rel gap_y(electronics_title, electronics)
+rel align_center_x(electronics_title, electronics)
+rel gap_y(clothing_title, clothing)
+rel align_center_x(clothing_title, clothing)
+assert area(phones) + area(computers) + area(accessories) == area(electronics)
+assert area(men) + area(women) == area(clothing)
+assert area(electronics) + area(clothing) == area(products)

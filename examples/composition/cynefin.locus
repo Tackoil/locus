@@ -1,0 +1,38 @@
+locus 0 beta 6
+
+meta title = "Cynefin: incident response"
+meta note = "The documented practices in the four domains and the Unknown failure mode item in the central confusion domain."
+
+style textbook
+
+// Mermaid reference: https://mermaid.js.org/syntax/cynefin.html
+// Reference example: Incident Response
+
+class hidden { opacity: 0 }
+class purple_style { accent: purple, fill: tint }
+class response { accent: blue, stroke: dashed }
+
+fn node(text) {
+    rounded_rect shape()
+    label caption(text)
+    rel center(caption, shape)
+    rel contain(shape, caption)
+}
+
+node complex("COMPLEX\nInvestigate root cause\nRun chaos experiment")
+node complicated("COMPLICATED\nAnalyze performance data\nExpert review needed")
+node chaotic("CHAOTIC\nPage on-call immediately")
+node clear("CLEAR\nRestart service\nApply known fix")
+rel row(complex.shape, complicated.shape)
+rel row(chaotic.shape, clear.shape)
+rel column(complex.shape, chaotic.shape)
+rel column(complicated.shape, clear.shape)
+rel complicated.shape.width == complex.shape.width and complicated.shape.height == complex.shape.height
+rel chaotic.shape.width == complex.shape.width and chaotic.shape.height == complex.shape.height
+rel clear.shape.width == complex.shape.width and clear.shape.height == complex.shape.height
+point middle = midpoint(complex.shape.se, clear.shape.nw) [hidden] { mark: none }
+circle confusion(middle, 1.2) [purple_style]
+label confused("CONFUSION\nUnknown failure mode")
+rel center(confused, confusion)
+rel gap_x(complex.shape, confusion, complicated.shape)
+rel gap_y(complex.shape, confusion, chaotic.shape)

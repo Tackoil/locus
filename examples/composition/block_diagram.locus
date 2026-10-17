@@ -1,0 +1,41 @@
+locus 0 beta 6
+
+meta title = "Block: compound blocks and connections"
+meta note = "The documented DB, nested A/B/C blocks with a wider B, and D output with two incoming connections."
+
+style textbook
+
+// Mermaid reference: https://mermaid.js.org/syntax/block.html
+// Reference example: Introduction to Block Diagrams
+
+class boundary { accent: gray, fill: none }
+class purple_style { accent: purple, fill: tint }
+
+fn card(text) {
+    rect shape()
+    label caption(text)
+    rel center(caption, shape)
+    rel contain(shape, caption)
+}
+fn frame(text, contents) {
+    rect shape() [boundary]
+    label caption(text)
+    rel gap_y(caption, contents)
+    rel align_left(caption, contents)
+    rel contain(shape, caption, contents)
+}
+
+ellipse database(1.2, 0.7)
+label database_label("DB")
+rel center(database_label, database)
+card a("A")
+card b("A wide one in the middle") [purple_style]
+card c("C")
+rel row(a.shape, b.shape, c.shape)
+group blocks(a, b, c)
+frame compound("ID", blocks)
+card d("D")
+rel column(database, compound.shape, d.shape)
+arrow down(database.at(270deg), compound.shape.n)
+arrow output(compound.shape.s, d.shape.n)
+arrow extra(c.shape.s, d.shape.e) { route: curved, side: right }

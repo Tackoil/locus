@@ -1,0 +1,48 @@
+locus 0 beta 6
+
+meta title = "Wardley: tea shop value chain"
+meta note = "The documented six components, five dependencies, two evolution targets, and standardising-power note. Coordinates preserve visibility/evolution order."
+
+style textbook
+
+// Mermaid reference: https://mermaid.js.org/syntax/wardley.html
+// Reference example: Tea Shop Value Chain
+
+class boundary { accent: gray, fill: none }
+class blue_style { accent: blue, fill: tint }
+class teal_style { accent: teal, fill: tint }
+class orange_style { accent: orange, fill: tint }
+class purple_style { accent: purple, fill: tint }
+class response { accent: blue, stroke: dashed }
+
+
+rect map(16, 12) [boundary]
+fn component(text, visibility, evolution, appearance) {
+    circle marker(0.12) [appearance]
+    rel hdist(map.sw, marker.center) == evolution * map.width
+    rel vdist(map.sw, marker.center) == visibility * map.height
+    label caption(marker.center, text) { dir: N }
+    assert inside(marker.center, map)
+}
+component business("Business", 0.95, 0.63, blue_style)
+component cup("Cup of Tea", 0.79, 0.61, blue_style)
+component tea("Tea", 0.63, 0.81, teal_style)
+component water("Hot Water", 0.52, 0.80, teal_style)
+component kettle("Kettle", 0.43, 0.35, orange_style)
+component power("Power", 0.10, 0.70, purple_style)
+component future_kettle("target", 0.43, 0.62, purple_style)
+component future_power("target", 0.10, 0.89, purple_style)
+arrow need(business.marker.at(270deg), cup.marker.at(90deg)) { head: - }
+arrow tea_input(cup.marker.at(270deg), tea.marker.at(90deg)) { head: - }
+arrow water_input(cup.marker.at(270deg), water.marker.at(90deg)) { head: - }
+arrow heat(water.marker.at(270deg), kettle.marker.at(90deg)) { head: - }
+arrow energy(kettle.marker.at(270deg), power.marker.at(90deg)) { head: - }
+arrow evolve_kettle(kettle.marker.at(0deg), future_kettle.marker.at(180deg)) [response]
+arrow evolve_power(power.marker.at(0deg), future_power.marker.at(180deg)) [response]
+label note("Standardising power allows kettles to evolve faster")
+rel gap_y(map, note)
+rel align_center_x(map, note)
+label evolution("Evolution: genesis → custom → product → commodity")
+rel gap_y(note, evolution)
+rel align_center_x(map, evolution)
+label visibility(map.w, "Visibility: low → high") { dir: W }

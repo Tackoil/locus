@@ -1,0 +1,43 @@
+locus 0 beta 6
+
+meta title = "Timeline: industrial revolution"
+meta note = "The documented two eras and five Industry 1.0–5.0 periods, preserving their event categories."
+
+style textbook
+
+// Mermaid reference: https://mermaid.js.org/syntax/timeline.html
+// Reference example: Timeline of Industrial Revolution
+
+class boundary { accent: gray, fill: none }
+class blue_style { accent: blue, fill: tint }
+
+fn frame(text, contents) {
+    rect shape() [boundary]
+    label caption(text)
+    rel gap_y(caption, contents)
+    rel align_left(caption, contents)
+    rel contain(shape, caption, contents)
+}
+
+fn period(text, events) {
+    label heading(text)
+    circle marker(0.12) [blue_style]
+    label caption(events)
+    rel column(heading, marker, caption)
+}
+period first("Industry 1.0", "Machinery\nWater and steam power")
+period second("Industry 2.0", "Electricity\nCombustion engines\nMass production")
+period third("Industry 3.0", "Electronics\nComputers\nAutomation")
+period fourth("Industry 4.0", "Internet\nRobotics\nInternet of Things")
+period fifth("Industry 5.0", "Artificial intelligence\nBig data\n3D printing")
+rel row(first, second, third)
+rel row(fourth, fifth)
+group early(first, second, third)
+group recent(fourth, fifth)
+frame early_period("17th–20th century", early)
+frame recent_period("21st century", recent)
+rel row(early_period.shape, recent_period.shape)
+segment line1(first.marker.at(0deg), second.marker.at(180deg))
+segment line2(second.marker.at(0deg), third.marker.at(180deg))
+segment line3(third.marker.at(0deg), fourth.marker.at(180deg))
+segment line4(fourth.marker.at(0deg), fifth.marker.at(180deg))

@@ -1,0 +1,61 @@
+locus 0 beta 6
+
+meta title = "Use case: storefront and fulfilment"
+meta note = "The documented two actors, Storefront/Fulfilment boundaries, three use cases, and Checkout includes Browse relationship."
+
+style textbook
+
+// Mermaid reference: https://mermaid.js.org/syntax/usecase.html
+// Reference example: Default theme, look and layout · Customer/Support
+
+class hidden { opacity: 0 }
+class boundary { accent: gray, fill: none }
+class response { accent: blue, stroke: dashed }
+
+fn actor(text) {
+    rect shape(1.2, 2.5) [hidden]
+    point head_center = lerp(shape.n, shape.center, 0.2) [hidden] { mark: none }
+    circle head(head_center, 0.22)
+    point hip = lerp(shape.center, shape.s, 0.2) [hidden] { mark: none }
+    segment torso(head.at(270deg), hip)
+    point left_hand = lerp(shape.nw, shape.sw, 0.42) [hidden] { mark: none }
+    point right_hand = lerp(shape.ne, shape.se, 0.42) [hidden] { mark: none }
+    segment arms(left_hand, right_hand)
+    segment left_leg(hip, shape.sw)
+    segment right_leg(hip, shape.se)
+    label caption(text)
+    rel column(shape, caption)
+}
+fn use_case(text) {
+    ellipse shape(3, 1.1)
+    label caption(text)
+    rel center(caption, shape)
+    rel contain(shape, caption)
+}
+fn frame(text, contents) {
+    rect shape() [boundary]
+    label caption(text)
+    rel gap_y(caption, contents)
+    rel align_left(caption, contents)
+    rel contain(shape, caption, contents)
+}
+
+actor customer("Customer")
+actor support("Support")
+use_case browse("Browse catalogue")
+use_case checkout("Checkout")
+rel column(browse.shape, checkout.shape)
+group storefront_cases(browse, checkout)
+frame storefront("Storefront", storefront_cases)
+use_case track("Track delivery")
+frame fulfillment("Fulfilment", track)
+rel row(customer.shape, storefront.shape, fulfillment.shape, support.shape)
+arrow customer_browse(customer.shape.e, browse.shape.at(180deg)) { head: - }
+arrow customer_checkout(customer.shape.e, checkout.shape.at(180deg)) { head: - }
+arrow customer_track(customer.shape.s, track.shape.at(270deg)) { head: -, route: curved, side: below }
+arrow support_track(support.shape.w, track.shape.at(0deg)) { head: - }
+arrow include(checkout.shape.at(90deg), browse.shape.at(270deg)) [response]
+label included(include, "«include»") { side: right }
+rel gap_y(browse.shape, included, checkout.shape)
+
+rel avoid(customer_track, storefront.shape)

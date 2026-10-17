@@ -1,0 +1,71 @@
+locus 0 beta 6
+
+meta title = "C4: Internet Banking containers"
+meta note = "The documented customer, five containers, two external systems, and banking boundary; long descriptions and protocol labels are condensed."
+
+style textbook
+
+// Mermaid reference: https://mermaid.js.org/syntax/c4.html
+// Reference example: C4 Container diagram
+
+class boundary { accent: gray, fill: none }
+class blue_style { accent: blue, fill: tint }
+class teal_style { accent: teal, fill: tint }
+class orange_style { accent: orange, fill: tint }
+class response { accent: blue, stroke: dashed }
+
+fn node(text) {
+    rounded_rect shape()
+    label caption(text)
+    rel center(caption, shape)
+    rel contain(shape, caption)
+}
+fn card(text) {
+    rect shape()
+    label caption(text)
+    rel center(caption, shape)
+    rel contain(shape, caption)
+}
+fn frame(text, contents) {
+    rect shape() [boundary]
+    label caption(text)
+    rel gap_y(caption, contents)
+    rel align_left(caption, contents)
+    rel contain(shape, caption, contents)
+}
+
+node customer("Person\nCustomer")
+card spa("Single-Page App\nJavaScript · Angular") [blue_style]
+card mobile("Mobile App\nC# · Xamarin") [blue_style]
+card web("Web Application\nJava · Spring MVC") [blue_style]
+card database("Database\nSQL Database") [teal_style]
+card api("API Application\nJava · Docker") [blue_style]
+rel column(web.shape, spa.shape, mobile.shape)
+rel column(api.shape, database.shape)
+group channels(web, spa, mobile)
+group backend(api, database)
+rel gap_x(channels, backend)
+rel align_center_y(channels, backend)
+group containers(channels, backend)
+frame bank("Internet Banking", containers)
+card email("External system\nE-Mail System") [orange_style]
+card mainframe("External system\nMainframe Banking System") [orange_style]
+rel column(email.shape, mainframe.shape)
+group external(email, mainframe)
+rel gap_x(customer.shape, bank.shape, external)
+rel align_center_y(customer.shape, bank.shape, external)
+arrow uses_web(customer.shape.e, web.shape.w)
+arrow uses_spa(customer.shape.e, spa.shape.w)
+arrow uses_mobile(customer.shape.e, mobile.shape.w)
+arrow delivers(web.shape.s, spa.shape.n)
+arrow spa_api(spa.shape.e, api.shape.w) [response]
+arrow mobile_api(mobile.shape.e, api.shape.w) [response]
+arrow records(api.shape.s, database.shape.n)
+arrow sends(api.shape.e, email.shape.w)
+arrow legacy(api.shape.e, mainframe.shape.w)
+arrow email_customer(email.shape.n, customer.shape.n) [response] { route: curved, side: above }
+label api_protocol("Web/mobile: JSON / HTTPS · Database: JDBC · Email: SMTP · Mainframe: XML / HTTPS")
+rel gap_y(bank.shape, api_protocol)
+rel align_center_x(bank.shape, api_protocol)
+
+rel avoid(email_customer, bank.shape)

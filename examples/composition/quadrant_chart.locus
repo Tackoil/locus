@@ -1,0 +1,50 @@
+locus 0 beta 6
+
+meta title = "Quadrant: campaign reach and engagement"
+meta note = "Six campaigns at the documented normalized positions, with the four documented quadrant captions."
+
+style textbook
+
+// Mermaid reference: https://mermaid.js.org/syntax/quadrantChart.html
+// Reference example: Reach and engagement of campaigns
+
+class hidden { opacity: 0 }
+class boundary { accent: gray, fill: none }
+
+
+rect plot(14, 11) [boundary]
+segment vertical_axis(plot.n, plot.s) [construction]
+segment horizontal_axis(plot.w, plot.e) [construction]
+label reach("Reach: low → high")
+rel gap_y(plot, reach)
+rel align_center_x(plot, reach)
+label engagement(plot.w, "Engagement: low → high") { dir: W }
+fn campaign(name, x, y) {
+    point position() { mark: dot }
+    rel hdist(plot.sw, position) == x * plot.width
+    rel vdist(plot.sw, position) == y * plot.height
+    label caption(position, name) { dir: N }
+    assert inside(position, plot)
+}
+campaign campaignA("A", 0.3, 0.6)
+campaign campaignB("B", 0.45, 0.23)
+campaign campaignC("C", 0.57, 0.69)
+campaign campaignD("D", 0.78, 0.34)
+campaign campaignE("E", 0.4, 0.34)
+campaign campaignF("F", 0.35, 0.78)
+point promote_point() [hidden] { mark: none }
+rel hdist(plot.sw, promote_point) == 0.25 * plot.width
+rel vdist(plot.sw, promote_point) == 0.94 * plot.height
+label promote(promote_point, "Need to promote") { dir: center }
+point expand_point() [hidden] { mark: none }
+rel hdist(plot.sw, expand_point) == 0.75 * plot.width
+rel vdist(plot.sw, expand_point) == 0.94 * plot.height
+label expand(expand_point, "We should expand") { dir: center }
+point reevaluate_point() [hidden] { mark: none }
+rel hdist(plot.sw, reevaluate_point) == 0.25 * plot.width
+rel vdist(plot.sw, reevaluate_point) == 0.07 * plot.height
+label reevaluate(reevaluate_point, "Re-evaluate") { dir: center }
+point improve_point() [hidden] { mark: none }
+rel hdist(plot.sw, improve_point) == 0.75 * plot.width
+rel vdist(plot.sw, improve_point) == 0.07 * plot.height
+label improve(improve_point, "May be improved") { dir: center }

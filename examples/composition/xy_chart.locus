@@ -1,0 +1,79 @@
+locus 0 beta 6
+
+meta title = "XY: sales revenue"
+meta note = "The documented twelve monthly values, with a shared bar/line series and the documented USD 4000–11000 vertical range."
+
+style textbook
+
+// Mermaid reference: https://mermaid.js.org/syntax/xyChart.html
+// Reference example: Sales Revenue
+
+class hidden { opacity: 0 }
+class blue_style { accent: blue, fill: tint }
+class orange_style { accent: orange, fill: tint }
+
+
+num baseline = 4000
+num unit = 0.001
+point origin() [hidden] { mark: none }
+point x_end() [hidden] { mark: none }
+point y_end() [hidden] { mark: none }
+rel align_center_y(origin, x_end)
+rel hdist(origin, x_end) == 26
+rel align_center_x(origin, y_end)
+rel vdist(origin, y_end) == 7000 * unit
+arrow x_axis(origin, x_end)
+arrow y_axis(origin, y_end)
+label units(y_end, "Revenue · USD") { dir: N }
+fn month(index, value, text) {
+    rect bar(0.7, (value - baseline) * unit) [blue_style]
+    rel hdist(origin, bar.s) == index * 2
+    rel align_center_y(origin, bar.s)
+    label caption(text)
+    rel gap_y(bar, caption)
+    rel align_center_x(bar, caption)
+    assert bar.height / unit + baseline == value
+}
+month month0(1, 5000, "Jan")
+month month1(2, 6000, "Feb")
+segment trend1(month0.bar.n, month1.bar.n) [orange_style]
+month month2(3, 7500, "Mar")
+segment trend2(month1.bar.n, month2.bar.n) [orange_style]
+month month3(4, 8200, "Apr")
+segment trend3(month2.bar.n, month3.bar.n) [orange_style]
+month month4(5, 9500, "May")
+segment trend4(month3.bar.n, month4.bar.n) [orange_style]
+month month5(6, 10500, "Jun")
+segment trend5(month4.bar.n, month5.bar.n) [orange_style]
+month month6(7, 11000, "Jul")
+segment trend6(month5.bar.n, month6.bar.n) [orange_style]
+month month7(8, 10200, "Aug")
+segment trend7(month6.bar.n, month7.bar.n) [orange_style]
+month month8(9, 9200, "Sep")
+segment trend8(month7.bar.n, month8.bar.n) [orange_style]
+month month9(10, 8500, "Oct")
+segment trend9(month8.bar.n, month9.bar.n) [orange_style]
+month month10(11, 7000, "Nov")
+segment trend10(month9.bar.n, month10.bar.n) [orange_style]
+month month11(12, 6000, "Dec")
+segment trend11(month10.bar.n, month11.bar.n) [orange_style]
+point tick0() [hidden] { mark: none }
+rel align_center_x(tick0, origin)
+rel vdist(origin, tick0) == (4000 - baseline) * unit
+label value0(tick0, "4000") { dir: W }
+point tick1() [hidden] { mark: none }
+rel align_center_x(tick1, origin)
+rel vdist(origin, tick1) == (6000 - baseline) * unit
+label value1(tick1, "6000") { dir: W }
+point tick2() [hidden] { mark: none }
+rel align_center_x(tick2, origin)
+rel vdist(origin, tick2) == (8000 - baseline) * unit
+label value2(tick2, "8000") { dir: W }
+point tick3() [hidden] { mark: none }
+rel align_center_x(tick3, origin)
+rel vdist(origin, tick3) == (10000 - baseline) * unit
+label value3(tick3, "10000") { dir: W }
+point tick4() [hidden] { mark: none }
+rel align_center_x(tick4, origin)
+rel vdist(origin, tick4) == (11000 - baseline) * unit
+label value4(tick4, "11000") { dir: W }

@@ -1,0 +1,63 @@
+locus 0 beta 6
+
+meta title = "Radar: grades"
+meta note = "The documented Alice/Bob scores over Math, Science, English, History, Geography, and Art on a 0–100 scale."
+
+style textbook
+
+// Mermaid reference: https://mermaid.js.org/syntax/radar.html
+// Reference example: Grades
+
+class hidden { opacity: 0 }
+
+
+circle scale(4.5) [construction]
+point O = scale.center [hidden] { mark: none }
+circle ring15(O, 1.5) [construction]
+circle ring30(O, 3) [construction]
+point axis0 = scale.at(90deg) [hidden] { mark: none }
+segment spoke0(O, axis0) [construction]
+label name0(axis0, "Math") { dir: N }
+point axis1 = scale.at(30deg) [hidden] { mark: none }
+segment spoke1(O, axis1) [construction]
+label name1(axis1, "Science") { dir: NE }
+point axis2 = scale.at(-30deg) [hidden] { mark: none }
+segment spoke2(O, axis2) [construction]
+label name2(axis2, "English") { dir: SE }
+point axis3 = scale.at(-90deg) [hidden] { mark: none }
+segment spoke3(O, axis3) [construction]
+label name3("History")
+rel gap_y(scale, name3)
+rel align_center_x(scale, name3)
+point axis4 = scale.at(-150deg) [hidden] { mark: none }
+segment spoke4(O, axis4) [construction]
+label name4(axis4, "Geography") { dir: SW }
+point axis5 = scale.at(-210deg) [hidden] { mark: none }
+segment spoke5(O, axis5) [construction]
+label name5(axis5, "Art") { dir: NW }
+class series0 { accent: blue, fill: blue, opacity: 0.22 }
+class key0_style { accent: blue }
+point p0_0 = lerp(O, axis0, 85 / 100) [hidden] { mark: none }
+point p0_1 = lerp(O, axis1, 90 / 100) [hidden] { mark: none }
+point p0_2 = lerp(O, axis2, 80 / 100) [hidden] { mark: none }
+point p0_3 = lerp(O, axis3, 70 / 100) [hidden] { mark: none }
+point p0_4 = lerp(O, axis4, 75 / 100) [hidden] { mark: none }
+point p0_5 = lerp(O, axis5, 90 / 100) [hidden] { mark: none }
+polygon scores0(p0_0, p0_1, p0_2, p0_3, p0_4, p0_5) [series0]
+label key0("Alice: 85, 90, 80, 70, 75, 90") [key0_style]
+assert dist(O, p0_0) / radius(scale) == 85 / 100
+class series1 { accent: teal, fill: teal, opacity: 0.22 }
+class key1_style { accent: teal }
+point p1_0 = lerp(O, axis0, 70 / 100) [hidden] { mark: none }
+point p1_1 = lerp(O, axis1, 75 / 100) [hidden] { mark: none }
+point p1_2 = lerp(O, axis2, 85 / 100) [hidden] { mark: none }
+point p1_3 = lerp(O, axis3, 80 / 100) [hidden] { mark: none }
+point p1_4 = lerp(O, axis4, 90 / 100) [hidden] { mark: none }
+point p1_5 = lerp(O, axis5, 85 / 100) [hidden] { mark: none }
+polygon scores1(p1_0, p1_1, p1_2, p1_3, p1_4, p1_5) [series1]
+label key1("Bob: 70, 75, 85, 80, 90, 85") [key1_style]
+assert dist(O, p1_0) / radius(scale) == 70 / 100
+rel column(key0, key1)
+group legend(key0, key1)
+rel gap_y(name3, legend)
+rel align_center_x(scale, legend)

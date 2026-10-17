@@ -1,0 +1,36 @@
+locus 0 beta 6
+
+meta title = "Gantt: a Gantt diagram"
+meta note = "The documented four tasks and two sections, with Jan 1/Jan 12 starts, 30/20/12/24 day durations, and the after dependency."
+
+style textbook
+
+// Mermaid reference: https://mermaid.js.org/syntax/gantt.html
+// Reference example: A Gantt Diagram
+
+class hidden { opacity: 0 }
+class blue_style { accent: blue, fill: tint }
+
+
+num day = 0.3
+point epoch() [hidden] { mark: none }
+fn task(text, start, duration) {
+    rect shape(duration * day, 0.6) [blue_style]
+    rel hdist(epoch, shape.w) == start * day
+    label caption(shape.w, text) { dir: W }
+    assert shape.width / day == duration
+}
+label first_section("Section")
+task first("A task", 0, 30)
+task second("Another task", 30, 20)
+label second_section("Another")
+task third("Task in Another", 11, 12)
+task fourth("another task", 23, 24)
+rel align_left(first_section, second_section, first.shape)
+arrow dependency(first.shape.e, second.shape.w)
+label origin("2014-01-01")
+rel align_left(origin, first.shape)
+label end(second.shape.ne, "2014-02-20") { dir: N }
+assert hdist(epoch, second.shape.e) / day == 50
+
+rel gap_y(first_section, origin, first.shape, second.shape, second_section, third.shape, fourth.shape)

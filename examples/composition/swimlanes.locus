@@ -1,0 +1,54 @@
+locus 0 beta 6
+
+meta title = "Swimlanes: support and engineering handoff"
+meta note = "The documented three responsibility lanes, six activities, Known issue branch, and Needs code change handoff."
+
+style textbook
+
+// Mermaid reference: https://mermaid.js.org/syntax/swimlanes.html
+// Reference example: Basic example · request/triage/engineering
+
+class boundary { accent: gray, fill: none }
+
+fn node(text) {
+    rounded_rect shape()
+    label caption(text)
+    rel center(caption, shape)
+    rel contain(shape, caption)
+}
+fn frame(text, contents) {
+    rect shape() [boundary]
+    label caption(text)
+    rel gap_y(caption, contents)
+    rel align_left(caption, contents)
+    rel contain(shape, caption, contents)
+}
+fn hlink(source, target, text) {
+    arrow path(source.e, target.w)
+    label caption(path, text) { side: above }
+    rel gap_x(source, caption, target)
+}
+
+node request("Request service")
+node receive("Receive update")
+rel row(request.shape, receive.shape)
+group customer_steps(request, receive)
+frame customer("Customer", customer_steps)
+node triage("Triage request")
+node answer("Send answer")
+rel row(triage.shape, answer.shape)
+group support_steps(triage, answer)
+frame support("Support", support_steps)
+node investigate("Investigate issue")
+node fix("Prepare fix")
+rel row(investigate.shape, fix.shape)
+group engineering_steps(investigate, fix)
+frame engineering("Engineering", engineering_steps)
+rel column(customer.shape, support.shape, engineering.shape)
+arrow opened(request.shape.w, triage.shape.w) { route: orthogonal, side: left }
+hlink known(triage.shape, answer.shape, "Known issue")
+arrow escalate(triage.shape.w, investigate.shape.w) { route: orthogonal, side: left }
+label change(escalate, "Needs code change") { side: left }
+arrow repaired(investigate.shape.e, fix.shape.w)
+arrow resolution(fix.shape.e, answer.shape.e) { route: orthogonal, side: right }
+arrow returned(answer.shape.e, receive.shape.e) { route: orthogonal, side: right }

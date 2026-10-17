@@ -1,0 +1,60 @@
+locus 0 beta 6
+
+meta title = "Class: animal example"
+meta note = "The documented Animal superclass, Duck/Fish/Zebra subclasses, attributes, methods, inheritance, and notes."
+
+style textbook
+
+// Mermaid reference: https://mermaid.js.org/syntax/classDiagram.html
+// Reference example: Animal example
+
+class hidden { opacity: 0 }
+
+fn uml_class(name, fields, methods) {
+    label heading(name)
+    label attributes(fields)
+    label operations(methods)
+    rel column(heading, attributes, operations)
+    rect shape()
+    rel contain(shape, heading, attributes, operations)
+    point a() { mark: none }
+    point b() { mark: none }
+    rel on(a, edge(shape, W))
+    rel on(b, edge(shape, E))
+    rel align_center_y(a, b)
+    segment divider(a, b)
+    rel gap_y(heading, divider, attributes)
+    point c() { mark: none }
+    point d() { mark: none }
+    rel on(c, edge(shape, W))
+    rel on(d, edge(shape, E))
+    rel align_center_y(c, d)
+    segment lower(c, d)
+    rel gap_y(attributes, lower, operations)
+}
+
+uml_class animal("Animal", "+age: int\n+gender: String", "+isMammal()\n+mate()")
+uml_class duck("Duck", "+beakColor: String", "+swim()\n+quack()")
+uml_class fish("Fish", "-sizeInFeet: int", "-canEat()")
+uml_class zebra("Zebra", "+is_wild: bool", "+run()")
+rel row(duck.shape, fish.shape, zebra.shape)
+group subclasses(duck, fish, zebra)
+rel gap_y(animal.shape, subclasses)
+rel align_center_x(animal.shape, subclasses)
+circle head_guide(animal.shape.s, 0.3) [hidden]
+point head_left = head_guide.at(240deg) [hidden] { mark: none }
+point head_right = head_guide.at(300deg) [hidden] { mark: none }
+point head_base = midpoint(head_left, head_right) [hidden] { mark: none }
+segment inherits_duck(duck.shape.n, head_base)
+segment inherits_fish(fish.shape.n, head_base)
+segment inherits_zebra(zebra.shape.n, head_base)
+class triangle_style { accent: ink, fill: #FFFFFF }
+polygon inheritance_head(animal.shape.s, head_left, head_right) [triangle_style]
+label note("From Duck till Zebra")
+rel gap_y(note, animal.shape)
+rel align_center_x(note, animal.shape)
+label duck_note("Duck: fly · swim · dive · help debug")
+rel gap_y(subclasses, duck_note)
+rel align_left(duck_note, subclasses)
+
+rel gap_y(head_base, subclasses)
