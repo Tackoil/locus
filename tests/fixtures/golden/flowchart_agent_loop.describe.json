@@ -3,414 +3,277 @@
   "path": "examples/demonstrations/flowchart_agent_loop.locus",
   "objects": [
     {
-      "id": "bw",
-      "kind": "num",
-      "span": {
-        "line": 9,
-        "col": 1,
-        "byte_start": 250,
-        "byte_end": 265
-      },
-      "definition": "3.4",
-      "resolved": {
-        "kind": "number",
-        "value": 3.4,
-        "dimension": "length"
-      }
-    },
-    {
-      "id": "bh",
-      "kind": "num",
-      "span": {
-        "line": 10,
-        "col": 1,
-        "byte_start": 286,
-        "byte_end": 301
-      },
-      "definition": "1.1",
-      "resolved": {
-        "kind": "number",
-        "value": 1.1,
-        "dimension": "length"
-      }
-    },
-    {
-      "id": "n1",
+      "id": "init.shape",
       "kind": "rect",
       "span": {
-        "line": 13,
-        "col": 1,
-        "byte_start": 389,
-        "byte_end": 404
+        "line": 56,
+        "col": 5,
+        "byte_start": 3660,
+        "byte_end": 3672
       },
-      "definition": "rect n1(bw, bh)",
+      "definition": "rect shape()",
+      "origin": {
+        "span": {
+          "line": 56,
+          "col": 5,
+          "byte_start": 3660,
+          "byte_end": 3672
+        },
+        "invocations": [
+          {
+            "function": "labeled_rect",
+            "instance": "init",
+            "span": {
+              "line": 87,
+              "col": 1,
+              "byte_start": 5034,
+              "byte_end": 5065
+            }
+          }
+        ]
+      },
       "resolved": {
         "kind": "rect",
-        "area": 3.739999999999999,
-        "perimeter": 9.0
+        "area": 3.412280000000001,
+        "perimeter": 8.824560000000002
       }
     },
     {
-      "id": "t1",
+      "id": "init.caption",
       "kind": "label",
       "span": {
-        "line": 14,
-        "col": 1,
-        "byte_start": 405,
-        "byte_end": 455
+        "line": 58,
+        "col": 5,
+        "byte_start": 3754,
+        "byte_end": 3773
       },
-      "definition": "label t1(n1.center, \"locus init\")",
+      "definition": "label caption(text)",
+      "origin": {
+        "span": {
+          "line": 58,
+          "col": 5,
+          "byte_start": 3754,
+          "byte_end": 3773
+        },
+        "invocations": [
+          {
+            "function": "labeled_rect",
+            "instance": "init",
+            "span": {
+              "line": 87,
+              "col": 1,
+              "byte_start": 5034,
+              "byte_end": 5065
+            }
+          }
+        ]
+      },
       "resolved": {
         "kind": "annotation"
       }
     },
     {
-      "id": "n2",
+      "id": "add.shape",
       "kind": "rect",
       "span": {
-        "line": 16,
-        "col": 1,
-        "byte_start": 457,
-        "byte_end": 472
+        "line": 56,
+        "col": 5,
+        "byte_start": 3660,
+        "byte_end": 3672
       },
-      "definition": "rect n2(bw, bh)",
+      "definition": "rect shape()",
+      "origin": {
+        "span": {
+          "line": 56,
+          "col": 5,
+          "byte_start": 3660,
+          "byte_end": 3672
+        },
+        "invocations": [
+          {
+            "function": "labeled_rect",
+            "instance": "add",
+            "span": {
+              "line": 88,
+              "col": 1,
+              "byte_start": 5066,
+              "byte_end": 5107
+            }
+          }
+        ]
+      },
       "resolved": {
         "kind": "rect",
-        "area": 3.7400000000000015,
-        "perimeter": 9.0
+        "area": 3.4122799999999986,
+        "perimeter": 8.824559999999998
       }
     },
     {
-      "id": "t2",
+      "id": "add.caption",
       "kind": "label",
       "span": {
-        "line": 17,
-        "col": 1,
-        "byte_start": 473,
-        "byte_end": 534
+        "line": 58,
+        "col": 5,
+        "byte_start": 3754,
+        "byte_end": 3773
       },
-      "definition": "label t2(n2.center, \"locus add < ops.locus\")",
+      "definition": "label caption(text)",
+      "origin": {
+        "span": {
+          "line": 58,
+          "col": 5,
+          "byte_start": 3754,
+          "byte_end": 3773
+        },
+        "invocations": [
+          {
+            "function": "labeled_rect",
+            "instance": "add",
+            "span": {
+              "line": 88,
+              "col": 1,
+              "byte_start": 5066,
+              "byte_end": 5107
+            }
+          }
+        ]
+      },
       "resolved": {
         "kind": "annotation"
       }
     },
     {
-      "id": "n3",
+      "id": "check.shape",
       "kind": "rect",
       "span": {
-        "line": 19,
-        "col": 1,
-        "byte_start": 536,
-        "byte_end": 551
+        "line": 56,
+        "col": 5,
+        "byte_start": 3660,
+        "byte_end": 3672
       },
-      "definition": "rect n3(bw, bh)",
+      "definition": "rect shape()",
+      "origin": {
+        "span": {
+          "line": 56,
+          "col": 5,
+          "byte_start": 3660,
+          "byte_end": 3672
+        },
+        "invocations": [
+          {
+            "function": "labeled_rect",
+            "instance": "check",
+            "span": {
+              "line": 89,
+              "col": 1,
+              "byte_start": 5108,
+              "byte_end": 5141
+            }
+          }
+        ]
+      },
       "resolved": {
         "kind": "rect",
-        "area": 3.7399999999999993,
-        "perimeter": 9.0
+        "area": 3.412280000000001,
+        "perimeter": 8.82456
       }
     },
     {
-      "id": "t3",
+      "id": "check.caption",
       "kind": "label",
       "span": {
-        "line": 20,
-        "col": 1,
-        "byte_start": 552,
-        "byte_end": 603
+        "line": 58,
+        "col": 5,
+        "byte_start": 3754,
+        "byte_end": 3773
       },
-      "definition": "label t3(n3.center, \"locus check\")",
+      "definition": "label caption(text)",
+      "origin": {
+        "span": {
+          "line": 58,
+          "col": 5,
+          "byte_start": 3754,
+          "byte_end": 3773
+        },
+        "invocations": [
+          {
+            "function": "labeled_rect",
+            "instance": "check",
+            "span": {
+              "line": 89,
+              "col": 1,
+              "byte_start": 5108,
+              "byte_end": 5141
+            }
+          }
+        ]
+      },
       "resolved": {
         "kind": "annotation"
       }
     },
     {
-      "id": "n4",
+      "id": "decision.shape",
       "kind": "diamond",
       "span": {
-        "line": 22,
-        "col": 1,
-        "byte_start": 605,
-        "byte_end": 625
+        "line": 76,
+        "col": 5,
+        "byte_start": 4603,
+        "byte_end": 4618
       },
-      "definition": "diamond n4(3.2, 1.5)",
+      "definition": "diamond shape()",
+      "origin": {
+        "span": {
+          "line": 76,
+          "col": 5,
+          "byte_start": 4603,
+          "byte_end": 4618
+        },
+        "invocations": [
+          {
+            "function": "labeled_diamond",
+            "instance": "decision",
+            "span": {
+              "line": 90,
+              "col": 1,
+              "byte_start": 5142,
+              "byte_end": 5177
+            }
+          }
+        ]
+      },
       "resolved": {
         "kind": "diamond",
-        "area": 2.4000000000000004,
-        "perimeter": 7.068238818828918
+        "area": 1.7667698743474929,
+        "perimeter": 5.54633036099061
       }
     },
     {
-      "id": "t4",
+      "id": "decision.caption",
       "kind": "label",
       "span": {
-        "line": 23,
-        "col": 1,
-        "byte_start": 626,
-        "byte_end": 673
-      },
-      "definition": "label t4(n4.center, \"exit 0?\")",
-      "resolved": {
-        "kind": "annotation"
-      }
-    },
-    {
-      "id": "n5",
-      "kind": "rect",
-      "span": {
-        "line": 25,
-        "col": 1,
-        "byte_start": 675,
-        "byte_end": 704
-      },
-      "definition": "rect n5(bw, bh)",
-      "resolved": {
-        "kind": "rect",
-        "area": 3.74,
-        "perimeter": 9.0
-      }
-    },
-    {
-      "id": "t5",
-      "kind": "label",
-      "span": {
-        "line": 26,
-        "col": 1,
-        "byte_start": 705,
-        "byte_end": 768
-      },
-      "definition": "label t5(n5.center, \"locus render -o fig.svg\")",
-      "resolved": {
-        "kind": "annotation"
-      }
-    },
-    {
-      "id": "nf",
-      "kind": "rect",
-      "span": {
-        "line": 29,
-        "col": 1,
-        "byte_start": 836,
-        "byte_end": 851
-      },
-      "definition": "rect nf(bw, bh)",
-      "resolved": {
-        "kind": "rect",
-        "area": 3.7400000000000007,
-        "perimeter": 9.0
-      }
-    },
-    {
-      "id": "tf",
-      "kind": "label",
-      "span": {
-        "line": 30,
-        "col": 1,
-        "byte_start": 852,
-        "byte_end": 915
-      },
-      "definition": "label tf(nf.center, \"fix ops (update / edit)\")",
-      "resolved": {
-        "kind": "annotation"
-      }
-    },
-    {
-      "id": "a1",
-      "kind": "arrow",
-      "span": {
-        "line": 36,
-        "col": 1,
-        "byte_start": 1032,
-        "byte_end": 1066
-      },
-      "definition": "arrow a1(n1.s, n2.n)",
-      "resolved": {
-        "kind": "annotation"
-      }
-    },
-    {
-      "id": "a2",
-      "kind": "arrow",
-      "span": {
-        "line": 37,
-        "col": 1,
-        "byte_start": 1067,
-        "byte_end": 1101
-      },
-      "definition": "arrow a2(n2.s, n3.n)",
-      "resolved": {
-        "kind": "annotation"
-      }
-    },
-    {
-      "id": "a3",
-      "kind": "arrow",
-      "span": {
-        "line": 38,
-        "col": 1,
-        "byte_start": 1102,
-        "byte_end": 1136
-      },
-      "definition": "arrow a3(n3.s, n4.n)",
-      "resolved": {
-        "kind": "annotation"
-      }
-    },
-    {
-      "id": "a4",
-      "kind": "arrow",
-      "span": {
-        "line": 39,
-        "col": 1,
-        "byte_start": 1137,
-        "byte_end": 1171
-      },
-      "definition": "arrow a4(n4.s, n5.n)",
-      "resolved": {
-        "kind": "annotation"
-      }
-    },
-    {
-      "id": "ly",
-      "kind": "label",
-      "span": {
-        "line": 40,
-        "col": 1,
-        "byte_start": 1172,
-        "byte_end": 1217
-      },
-      "definition": "label ly(n4.s, \"yes\")",
-      "resolved": {
-        "kind": "annotation"
-      }
-    },
-    {
-      "id": "a5",
-      "kind": "arrow",
-      "span": {
-        "line": 41,
-        "col": 1,
-        "byte_start": 1218,
-        "byte_end": 1252
-      },
-      "definition": "arrow a5(n4.e, nf.w)",
-      "resolved": {
-        "kind": "annotation"
-      }
-    },
-    {
-      "id": "ln",
-      "kind": "label",
-      "span": {
-        "line": 42,
-        "col": 1,
-        "byte_start": 1253,
-        "byte_end": 1298
-      },
-      "definition": "label ln(n4.e, \"no\")",
-      "resolved": {
-        "kind": "annotation"
-      }
-    },
-    {
-      "id": "a6",
-      "kind": "arrow",
-      "span": {
-        "line": 43,
-        "col": 1,
-        "byte_start": 1299,
-        "byte_end": 1346
-      },
-      "definition": "arrow a6(nf.n, n2.e)",
-      "resolved": {
-        "kind": "annotation"
-      }
-    },
-    {
-      "id": "measured_panel.first.shape",
-      "kind": "rounded_rect",
-      "span": {
-        "line": 54,
+        "line": 77,
         "col": 5,
-        "byte_start": 1939,
-        "byte_end": 1972
-      },
-      "definition": "rounded_rect shape()",
-      "origin": {
-        "span": {
-          "line": 54,
-          "col": 5,
-          "byte_start": 1939,
-          "byte_end": 1972
-        },
-        "invocations": [
-          {
-            "function": "beta6_pair",
-            "instance": "measured_panel",
-            "span": {
-              "line": 86,
-              "col": 1,
-              "byte_start": 3305,
-              "byte_end": 3419
-            }
-          },
-          {
-            "function": "beta6_step",
-            "instance": "measured_panel.first",
-            "span": {
-              "line": 61,
-              "col": 5,
-              "byte_start": 2115,
-              "byte_end": 2149
-            }
-          }
-        ]
-      },
-      "resolved": {
-        "kind": "rounded_rect",
-        "width": 6.595040000000001,
-        "height": 0.9999999999999959,
-        "corner_radius": 0.14999999999999938,
-        "area": 6.575725834705744,
-        "perimeter": 14.932557796076932
-      }
-    },
-    {
-      "id": "measured_panel.first.caption",
-      "kind": "label",
-      "span": {
-        "line": 55,
-        "col": 5,
-        "byte_start": 1977,
-        "byte_end": 2003
+        "byte_start": 4623,
+        "byte_end": 4642
       },
       "definition": "label caption(text)",
       "origin": {
         "span": {
-          "line": 55,
+          "line": 77,
           "col": 5,
-          "byte_start": 1977,
-          "byte_end": 2003
+          "byte_start": 4623,
+          "byte_end": 4642
         },
         "invocations": [
           {
-            "function": "beta6_pair",
-            "instance": "measured_panel",
+            "function": "labeled_diamond",
+            "instance": "decision",
             "span": {
-              "line": 86,
+              "line": 90,
               "col": 1,
-              "byte_start": 3305,
-              "byte_end": 3419
-            }
-          },
-          {
-            "function": "beta6_step",
-            "instance": "measured_panel.first",
-            "span": {
-              "line": 61,
-              "col": 5,
-              "byte_start": 2115,
-              "byte_end": 2149
+              "byte_start": 5142,
+              "byte_end": 5177
             }
           }
         ]
@@ -420,90 +283,67 @@
       }
     },
     {
-      "id": "measured_panel.second.shape",
-      "kind": "rounded_rect",
+      "id": "render.shape",
+      "kind": "rect",
       "span": {
-        "line": 54,
+        "line": 56,
         "col": 5,
-        "byte_start": 1939,
-        "byte_end": 1972
+        "byte_start": 3660,
+        "byte_end": 3672
       },
-      "definition": "rounded_rect shape()",
+      "definition": "rect shape()",
       "origin": {
         "span": {
-          "line": 54,
+          "line": 56,
           "col": 5,
-          "byte_start": 1939,
-          "byte_end": 1972
+          "byte_start": 3660,
+          "byte_end": 3672
         },
         "invocations": [
           {
-            "function": "beta6_pair",
-            "instance": "measured_panel",
+            "function": "labeled_rect",
+            "instance": "render",
             "span": {
-              "line": 86,
+              "line": 91,
               "col": 1,
-              "byte_start": 3305,
-              "byte_end": 3419
-            }
-          },
-          {
-            "function": "beta6_step",
-            "instance": "measured_panel.second",
-            "span": {
-              "line": 62,
-              "col": 5,
-              "byte_start": 2154,
-              "byte_end": 2195
+              "byte_start": 5178,
+              "byte_end": 5236
             }
           }
         ]
       },
       "resolved": {
-        "kind": "rounded_rect",
-        "width": 6.595040000000001,
-        "height": 1.000000000000004,
-        "corner_radius": 0.1500000000000006,
-        "area": 6.575725834705798,
-        "perimeter": 14.932557796076946
+        "kind": "rect",
+        "area": 3.41228,
+        "perimeter": 8.82456
       }
     },
     {
-      "id": "measured_panel.second.caption",
+      "id": "render.caption",
       "kind": "label",
       "span": {
-        "line": 55,
+        "line": 58,
         "col": 5,
-        "byte_start": 1977,
-        "byte_end": 2003
+        "byte_start": 3754,
+        "byte_end": 3773
       },
       "definition": "label caption(text)",
       "origin": {
         "span": {
-          "line": 55,
+          "line": 58,
           "col": 5,
-          "byte_start": 1977,
-          "byte_end": 2003
+          "byte_start": 3754,
+          "byte_end": 3773
         },
         "invocations": [
           {
-            "function": "beta6_pair",
-            "instance": "measured_panel",
+            "function": "labeled_rect",
+            "instance": "render",
             "span": {
-              "line": 86,
+              "line": 91,
               "col": 1,
-              "byte_start": 3305,
-              "byte_end": 3419
-            }
-          },
-          {
-            "function": "beta6_step",
-            "instance": "measured_panel.second",
-            "span": {
-              "line": 62,
-              "col": 5,
-              "byte_start": 2154,
-              "byte_end": 2195
+              "byte_start": 5178,
+              "byte_end": 5236
             }
           }
         ]
@@ -513,364 +353,388 @@
       }
     },
     {
-      "id": "measured_panel.forward",
-      "kind": "arrow",
-      "span": {
-        "line": 70,
-        "col": 5,
-        "byte_start": 2476,
-        "byte_end": 2530
-      },
-      "definition": "arrow forward(first.shape.center, second.shape.center)",
-      "origin": {
-        "span": {
-          "line": 70,
-          "col": 5,
-          "byte_start": 2476,
-          "byte_end": 2530
-        },
-        "invocations": [
-          {
-            "function": "beta6_pair",
-            "instance": "measured_panel",
-            "span": {
-              "line": 86,
-              "col": 1,
-              "byte_start": 3305,
-              "byte_end": 3419
-            }
-          }
-        ]
-      },
-      "resolved": {
-        "kind": "annotation"
-      }
-    },
-    {
-      "id": "measured_panel.next",
-      "kind": "label",
-      "span": {
-        "line": 71,
-        "col": 5,
-        "byte_start": 2535,
-        "byte_end": 2594
-      },
-      "definition": "label next(forward, \"advance\")",
-      "origin": {
-        "span": {
-          "line": 71,
-          "col": 5,
-          "byte_start": 2535,
-          "byte_end": 2594
-        },
-        "invocations": [
-          {
-            "function": "beta6_pair",
-            "instance": "measured_panel",
-            "span": {
-              "line": 86,
-              "col": 1,
-              "byte_start": 3305,
-              "byte_end": 3419
-            }
-          }
-        ]
-      },
-      "resolved": {
-        "kind": "annotation"
-      }
-    },
-    {
-      "id": "measured_panel.back",
-      "kind": "arrow",
-      "span": {
-        "line": 74,
-        "col": 5,
-        "byte_start": 2690,
-        "byte_end": 2766
-      },
-      "definition": "arrow back(second.shape.e, first.shape.e)",
-      "origin": {
-        "span": {
-          "line": 74,
-          "col": 5,
-          "byte_start": 2690,
-          "byte_end": 2766
-        },
-        "invocations": [
-          {
-            "function": "beta6_pair",
-            "instance": "measured_panel",
-            "span": {
-              "line": 86,
-              "col": 1,
-              "byte_start": 3305,
-              "byte_end": 3419
-            }
-          }
-        ]
-      },
-      "resolved": {
-        "kind": "annotation"
-      }
-    },
-    {
-      "id": "measured_panel.retry",
-      "kind": "label",
-      "span": {
-        "line": 75,
-        "col": 5,
-        "byte_start": 2771,
-        "byte_end": 2827
-      },
-      "definition": "label retry(back, \"retry\")",
-      "origin": {
-        "span": {
-          "line": 75,
-          "col": 5,
-          "byte_start": 2771,
-          "byte_end": 2827
-        },
-        "invocations": [
-          {
-            "function": "beta6_pair",
-            "instance": "measured_panel",
-            "span": {
-              "line": 86,
-              "col": 1,
-              "byte_start": 3305,
-              "byte_end": 3419
-            }
-          }
-        ]
-      },
-      "resolved": {
-        "kind": "annotation"
-      }
-    },
-    {
-      "id": "measured_banner",
+      "id": "repair.shape",
       "kind": "rect",
       "span": {
-        "line": 89,
-        "col": 1,
-        "byte_start": 3484,
-        "byte_end": 3506
+        "line": 56,
+        "col": 5,
+        "byte_start": 3660,
+        "byte_end": 3672
       },
-      "definition": "rect measured_banner()",
+      "definition": "rect shape()",
+      "origin": {
+        "span": {
+          "line": 56,
+          "col": 5,
+          "byte_start": 3660,
+          "byte_end": 3672
+        },
+        "invocations": [
+          {
+            "function": "labeled_rect",
+            "instance": "repair",
+            "span": {
+              "line": 92,
+              "col": 1,
+              "byte_start": 5237,
+              "byte_end": 5283
+            }
+          }
+        ]
+      },
       "resolved": {
         "kind": "rect",
-        "area": 8.13943095198334,
-        "perimeter": 17.812849999999834
+        "area": 3.412280000000002,
+        "perimeter": 8.82456
       }
     },
     {
-      "id": "measured_heading",
+      "id": "repair.caption",
       "kind": "label",
       "span": {
-        "line": 90,
-        "col": 1,
-        "byte_start": 3507,
-        "byte_end": 3584
+        "line": 58,
+        "col": 5,
+        "byte_start": 3754,
+        "byte_end": 3773
       },
-      "definition": "label measured_heading(\"Measured layout and routed feedback\")",
+      "definition": "label caption(text)",
+      "origin": {
+        "span": {
+          "line": 58,
+          "col": 5,
+          "byte_start": 3754,
+          "byte_end": 3773
+        },
+        "invocations": [
+          {
+            "function": "labeled_rect",
+            "instance": "repair",
+            "span": {
+              "line": 92,
+              "col": 1,
+              "byte_start": 5237,
+              "byte_end": 5283
+            }
+          }
+        ]
+      },
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "initialize",
+      "kind": "arrow",
+      "span": {
+        "line": 120,
+        "col": 1,
+        "byte_start": 6856,
+        "byte_end": 6899
+      },
+      "definition": "arrow initialize(init.shape.s, add.shape.n)",
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "validate",
+      "kind": "arrow",
+      "span": {
+        "line": 121,
+        "col": 1,
+        "byte_start": 6900,
+        "byte_end": 6942
+      },
+      "definition": "arrow validate(add.shape.s, check.shape.n)",
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "decide",
+      "kind": "arrow",
+      "span": {
+        "line": 122,
+        "col": 1,
+        "byte_start": 6943,
+        "byte_end": 6988
+      },
+      "definition": "arrow decide(check.shape.s, decision.shape.n)",
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "success",
+      "kind": "arrow",
+      "span": {
+        "line": 128,
+        "col": 1,
+        "byte_start": 7288,
+        "byte_end": 7335
+      },
+      "definition": "arrow success(decision.shape.s, render.shape.n)",
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "yes",
+      "kind": "label",
+      "span": {
+        "line": 129,
+        "col": 1,
+        "byte_start": 7336,
+        "byte_end": 7389
+      },
+      "definition": "label yes(success, \"yes\")",
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "failure",
+      "kind": "arrow",
+      "span": {
+        "line": 131,
+        "col": 1,
+        "byte_start": 7391,
+        "byte_end": 7438
+      },
+      "definition": "arrow failure(decision.shape.e, repair.shape.w)",
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "no",
+      "kind": "label",
+      "span": {
+        "line": 134,
+        "col": 1,
+        "byte_start": 7587,
+        "byte_end": 7639
+      },
+      "definition": "label no(failure, \"no\")",
+      "resolved": {
+        "kind": "annotation"
+      }
+    },
+    {
+      "id": "retry",
+      "kind": "arrow",
+      "span": {
+        "line": 140,
+        "col": 1,
+        "byte_start": 7926,
+        "byte_end": 7984
+      },
+      "definition": "arrow retry(repair.shape.n, add.shape.e)",
       "resolved": {
         "kind": "annotation"
       }
     }
   ],
   "collections": {
-    "measured_panel": {
-      "id": "measured_panel",
+    "add": {
+      "id": "add",
       "kind": "instance",
       "members": [
-        "measured_panel.first.shape",
-        "measured_panel.first.caption",
-        "measured_panel.second.shape",
-        "measured_panel.second.caption",
-        "measured_panel.forward",
-        "measured_panel.next",
-        "measured_panel.back",
-        "measured_panel.retry"
+        "add.shape",
+        "add.caption"
       ],
       "span": {
-        "line": 86,
+        "line": 88,
         "col": 1,
-        "byte_start": 3305,
-        "byte_end": 3419
+        "byte_start": 5066,
+        "byte_end": 5107
       },
       "origin": {
         "span": {
-          "line": 86,
+          "line": 88,
           "col": 1,
-          "byte_start": 3305,
-          "byte_end": 3419
+          "byte_start": 5066,
+          "byte_end": 5107
         },
         "invocations": [
           {
-            "function": "beta6_pair",
-            "instance": "measured_panel",
+            "function": "labeled_rect",
+            "instance": "add",
             "span": {
-              "line": 86,
+              "line": 88,
               "col": 1,
-              "byte_start": 3305,
-              "byte_end": 3419
+              "byte_start": 5066,
+              "byte_end": 5107
             }
           }
         ]
       }
     },
-    "measured_panel.first": {
-      "id": "measured_panel.first",
+    "check": {
+      "id": "check",
       "kind": "instance",
       "members": [
-        "measured_panel.first.shape",
-        "measured_panel.first.caption"
+        "check.shape",
+        "check.caption"
       ],
       "span": {
-        "line": 61,
-        "col": 5,
-        "byte_start": 2115,
-        "byte_end": 2149
+        "line": 89,
+        "col": 1,
+        "byte_start": 5108,
+        "byte_end": 5141
       },
       "origin": {
         "span": {
-          "line": 61,
-          "col": 5,
-          "byte_start": 2115,
-          "byte_end": 2149
+          "line": 89,
+          "col": 1,
+          "byte_start": 5108,
+          "byte_end": 5141
         },
         "invocations": [
           {
-            "function": "beta6_pair",
-            "instance": "measured_panel",
+            "function": "labeled_rect",
+            "instance": "check",
             "span": {
-              "line": 86,
+              "line": 89,
               "col": 1,
-              "byte_start": 3305,
-              "byte_end": 3419
-            }
-          },
-          {
-            "function": "beta6_step",
-            "instance": "measured_panel.first",
-            "span": {
-              "line": 61,
-              "col": 5,
-              "byte_start": 2115,
-              "byte_end": 2149
+              "byte_start": 5108,
+              "byte_end": 5141
             }
           }
         ]
       }
     },
-    "measured_panel.repeated": {
-      "id": "measured_panel.repeated",
-      "kind": "group",
-      "members": [
-        "measured_panel.first",
-        "measured_panel.second"
-      ],
-      "span": {
-        "line": 64,
-        "col": 5,
-        "byte_start": 2232,
-        "byte_end": 2269
-      },
-      "origin": {
-        "span": {
-          "line": 64,
-          "col": 5,
-          "byte_start": 2232,
-          "byte_end": 2269
-        },
-        "invocations": [
-          {
-            "function": "beta6_pair",
-            "instance": "measured_panel",
-            "span": {
-              "line": 86,
-              "col": 1,
-              "byte_start": 3305,
-              "byte_end": 3419
-            }
-          }
-        ]
-      }
-    },
-    "measured_panel.second": {
-      "id": "measured_panel.second",
+    "decision": {
+      "id": "decision",
       "kind": "instance",
       "members": [
-        "measured_panel.second.shape",
-        "measured_panel.second.caption"
+        "decision.shape",
+        "decision.caption"
       ],
       "span": {
-        "line": 62,
-        "col": 5,
-        "byte_start": 2154,
-        "byte_end": 2195
+        "line": 90,
+        "col": 1,
+        "byte_start": 5142,
+        "byte_end": 5177
       },
       "origin": {
         "span": {
-          "line": 62,
-          "col": 5,
-          "byte_start": 2154,
-          "byte_end": 2195
+          "line": 90,
+          "col": 1,
+          "byte_start": 5142,
+          "byte_end": 5177
         },
         "invocations": [
           {
-            "function": "beta6_pair",
-            "instance": "measured_panel",
+            "function": "labeled_diamond",
+            "instance": "decision",
             "span": {
-              "line": 86,
+              "line": 90,
               "col": 1,
-              "byte_start": 3305,
-              "byte_end": 3419
-            }
-          },
-          {
-            "function": "beta6_step",
-            "instance": "measured_panel.second",
-            "span": {
-              "line": 62,
-              "col": 5,
-              "byte_start": 2154,
-              "byte_end": 2195
+              "byte_start": 5142,
+              "byte_end": 5177
             }
           }
         ]
       }
     },
-    "measured_panel.stages": {
-      "id": "measured_panel.stages",
-      "kind": "group",
+    "init": {
+      "id": "init",
+      "kind": "instance",
       "members": [
-        "measured_panel.first",
-        "measured_panel.second"
+        "init.shape",
+        "init.caption"
       ],
       "span": {
-        "line": 63,
-        "col": 5,
-        "byte_start": 2200,
-        "byte_end": 2227
+        "line": 87,
+        "col": 1,
+        "byte_start": 5034,
+        "byte_end": 5065
       },
       "origin": {
         "span": {
-          "line": 63,
-          "col": 5,
-          "byte_start": 2200,
-          "byte_end": 2227
+          "line": 87,
+          "col": 1,
+          "byte_start": 5034,
+          "byte_end": 5065
         },
         "invocations": [
           {
-            "function": "beta6_pair",
-            "instance": "measured_panel",
+            "function": "labeled_rect",
+            "instance": "init",
             "span": {
-              "line": 86,
+              "line": 87,
               "col": 1,
-              "byte_start": 3305,
-              "byte_end": 3419
+              "byte_start": 5034,
+              "byte_end": 5065
+            }
+          }
+        ]
+      }
+    },
+    "render": {
+      "id": "render",
+      "kind": "instance",
+      "members": [
+        "render.shape",
+        "render.caption"
+      ],
+      "span": {
+        "line": 91,
+        "col": 1,
+        "byte_start": 5178,
+        "byte_end": 5236
+      },
+      "origin": {
+        "span": {
+          "line": 91,
+          "col": 1,
+          "byte_start": 5178,
+          "byte_end": 5236
+        },
+        "invocations": [
+          {
+            "function": "labeled_rect",
+            "instance": "render",
+            "span": {
+              "line": 91,
+              "col": 1,
+              "byte_start": 5178,
+              "byte_end": 5236
+            }
+          }
+        ]
+      }
+    },
+    "repair": {
+      "id": "repair",
+      "kind": "instance",
+      "members": [
+        "repair.shape",
+        "repair.caption"
+      ],
+      "span": {
+        "line": 92,
+        "col": 1,
+        "byte_start": 5237,
+        "byte_end": 5283
+      },
+      "origin": {
+        "span": {
+          "line": 92,
+          "col": 1,
+          "byte_start": 5237,
+          "byte_end": 5283
+        },
+        "invocations": [
+          {
+            "function": "labeled_rect",
+            "instance": "repair",
+            "span": {
+              "line": 92,
+              "col": 1,
+              "byte_start": 5237,
+              "byte_end": 5283
             }
           }
         ]
@@ -892,7 +756,7 @@
         "line": 4,
         "col": 1,
         "byte_start": 79,
-        "byte_end": 168
+        "byte_end": 331
       },
       "invocations": []
     },
@@ -900,579 +764,67 @@
       "span": {
         "line": 6,
         "col": 1,
-        "byte_start": 170,
-        "byte_end": 184
+        "byte_start": 333,
+        "byte_end": 347
       },
       "invocations": []
-    },
-    {
-      "span": {
-        "line": 9,
-        "col": 1,
-        "byte_start": 250,
-        "byte_end": 265
-      },
-      "invocations": []
-    },
-    {
-      "span": {
-        "line": 10,
-        "col": 1,
-        "byte_start": 286,
-        "byte_end": 301
-      },
-      "invocations": []
-    },
-    {
-      "span": {
-        "line": 13,
-        "col": 1,
-        "byte_start": 389,
-        "byte_end": 404
-      },
-      "invocations": []
-    },
-    {
-      "span": {
-        "line": 14,
-        "col": 1,
-        "byte_start": 405,
-        "byte_end": 455
-      },
-      "invocations": []
-    },
-    {
-      "span": {
-        "line": 16,
-        "col": 1,
-        "byte_start": 457,
-        "byte_end": 472
-      },
-      "invocations": []
-    },
-    {
-      "span": {
-        "line": 17,
-        "col": 1,
-        "byte_start": 473,
-        "byte_end": 534
-      },
-      "invocations": []
-    },
-    {
-      "span": {
-        "line": 19,
-        "col": 1,
-        "byte_start": 536,
-        "byte_end": 551
-      },
-      "invocations": []
-    },
-    {
-      "span": {
-        "line": 20,
-        "col": 1,
-        "byte_start": 552,
-        "byte_end": 603
-      },
-      "invocations": []
-    },
-    {
-      "span": {
-        "line": 22,
-        "col": 1,
-        "byte_start": 605,
-        "byte_end": 625
-      },
-      "invocations": []
-    },
-    {
-      "span": {
-        "line": 23,
-        "col": 1,
-        "byte_start": 626,
-        "byte_end": 673
-      },
-      "invocations": []
-    },
-    {
-      "span": {
-        "line": 25,
-        "col": 1,
-        "byte_start": 675,
-        "byte_end": 704
-      },
-      "invocations": []
-    },
-    {
-      "span": {
-        "line": 26,
-        "col": 1,
-        "byte_start": 705,
-        "byte_end": 768
-      },
-      "invocations": []
-    },
-    {
-      "span": {
-        "line": 29,
-        "col": 1,
-        "byte_start": 836,
-        "byte_end": 851
-      },
-      "invocations": []
-    },
-    {
-      "span": {
-        "line": 30,
-        "col": 1,
-        "byte_start": 852,
-        "byte_end": 915
-      },
-      "invocations": []
-    },
-    {
-      "span": {
-        "line": 32,
-        "col": 1,
-        "byte_start": 917,
-        "byte_end": 947
-      },
-      "invocations": []
-    },
-    {
-      "span": {
-        "line": 33,
-        "col": 1,
-        "byte_start": 948,
-        "byte_end": 963
-      },
-      "invocations": []
-    },
-    {
-      "span": {
-        "line": 36,
-        "col": 1,
-        "byte_start": 1032,
-        "byte_end": 1066
-      },
-      "invocations": []
-    },
-    {
-      "span": {
-        "line": 37,
-        "col": 1,
-        "byte_start": 1067,
-        "byte_end": 1101
-      },
-      "invocations": []
-    },
-    {
-      "span": {
-        "line": 38,
-        "col": 1,
-        "byte_start": 1102,
-        "byte_end": 1136
-      },
-      "invocations": []
-    },
-    {
-      "span": {
-        "line": 39,
-        "col": 1,
-        "byte_start": 1137,
-        "byte_end": 1171
-      },
-      "invocations": []
-    },
-    {
-      "span": {
-        "line": 40,
-        "col": 1,
-        "byte_start": 1172,
-        "byte_end": 1217
-      },
-      "invocations": []
-    },
-    {
-      "span": {
-        "line": 41,
-        "col": 1,
-        "byte_start": 1218,
-        "byte_end": 1252
-      },
-      "invocations": []
-    },
-    {
-      "span": {
-        "line": 42,
-        "col": 1,
-        "byte_start": 1253,
-        "byte_end": 1298
-      },
-      "invocations": []
-    },
-    {
-      "span": {
-        "line": 43,
-        "col": 1,
-        "byte_start": 1299,
-        "byte_end": 1346
-      },
-      "invocations": []
-    },
-    {
-      "span": {
-        "line": 46,
-        "col": 1,
-        "byte_start": 1417,
-        "byte_end": 1488
-      },
-      "invocations": []
-    },
-    {
-      "span": {
-        "line": 47,
-        "col": 1,
-        "byte_start": 1498,
-        "byte_end": 1563
-      },
-      "invocations": []
-    },
-    {
-      "span": {
-        "line": 48,
-        "col": 1,
-        "byte_start": 1585,
-        "byte_end": 1612
-      },
-      "invocations": []
-    },
-    {
-      "span": {
-        "line": 49,
-        "col": 1,
-        "byte_start": 1652,
-        "byte_end": 1695
-      },
-      "invocations": []
-    },
-    {
-      "span": {
-        "line": 54,
-        "col": 5,
-        "byte_start": 1939,
-        "byte_end": 1972
-      },
-      "invocations": [
-        {
-          "function": "beta6_pair",
-          "instance": "measured_panel",
-          "span": {
-            "line": 86,
-            "col": 1,
-            "byte_start": 3305,
-            "byte_end": 3419
-          }
-        },
-        {
-          "function": "beta6_step",
-          "instance": "measured_panel.first",
-          "span": {
-            "line": 61,
-            "col": 5,
-            "byte_start": 2115,
-            "byte_end": 2149
-          }
-        }
-      ]
-    },
-    {
-      "span": {
-        "line": 55,
-        "col": 5,
-        "byte_start": 1977,
-        "byte_end": 2003
-      },
-      "invocations": [
-        {
-          "function": "beta6_pair",
-          "instance": "measured_panel",
-          "span": {
-            "line": 86,
-            "col": 1,
-            "byte_start": 3305,
-            "byte_end": 3419
-          }
-        },
-        {
-          "function": "beta6_step",
-          "instance": "measured_panel.first",
-          "span": {
-            "line": 61,
-            "col": 5,
-            "byte_start": 2115,
-            "byte_end": 2149
-          }
-        }
-      ]
     },
     {
       "span": {
         "line": 56,
         "col": 5,
-        "byte_start": 2008,
-        "byte_end": 2034
+        "byte_start": 3660,
+        "byte_end": 3672
       },
       "invocations": [
         {
-          "function": "beta6_pair",
-          "instance": "measured_panel",
+          "function": "labeled_rect",
+          "instance": "init",
           "span": {
-            "line": 86,
+            "line": 87,
             "col": 1,
-            "byte_start": 3305,
-            "byte_end": 3419
-          }
-        },
-        {
-          "function": "beta6_step",
-          "instance": "measured_panel.first",
-          "span": {
-            "line": 61,
-            "col": 5,
-            "byte_start": 2115,
-            "byte_end": 2149
+            "byte_start": 5034,
+            "byte_end": 5065
           }
         }
       ]
     },
     {
       "span": {
-        "line": 57,
+        "line": 58,
         "col": 5,
-        "byte_start": 2039,
-        "byte_end": 2066
+        "byte_start": 3754,
+        "byte_end": 3773
       },
       "invocations": [
         {
-          "function": "beta6_pair",
-          "instance": "measured_panel",
+          "function": "labeled_rect",
+          "instance": "init",
           "span": {
-            "line": 86,
+            "line": 87,
             "col": 1,
-            "byte_start": 3305,
-            "byte_end": 3419
-          }
-        },
-        {
-          "function": "beta6_step",
-          "instance": "measured_panel.first",
-          "span": {
-            "line": 61,
-            "col": 5,
-            "byte_start": 2115,
-            "byte_end": 2149
+            "byte_start": 5034,
+            "byte_end": 5065
           }
         }
       ]
     },
     {
       "span": {
-        "line": 54,
+        "line": 63,
         "col": 5,
-        "byte_start": 1939,
-        "byte_end": 1972
+        "byte_start": 3993,
+        "byte_end": 4019
       },
       "invocations": [
         {
-          "function": "beta6_pair",
-          "instance": "measured_panel",
+          "function": "labeled_rect",
+          "instance": "init",
           "span": {
-            "line": 86,
+            "line": 87,
             "col": 1,
-            "byte_start": 3305,
-            "byte_end": 3419
-          }
-        },
-        {
-          "function": "beta6_step",
-          "instance": "measured_panel.second",
-          "span": {
-            "line": 62,
-            "col": 5,
-            "byte_start": 2154,
-            "byte_end": 2195
-          }
-        }
-      ]
-    },
-    {
-      "span": {
-        "line": 55,
-        "col": 5,
-        "byte_start": 1977,
-        "byte_end": 2003
-      },
-      "invocations": [
-        {
-          "function": "beta6_pair",
-          "instance": "measured_panel",
-          "span": {
-            "line": 86,
-            "col": 1,
-            "byte_start": 3305,
-            "byte_end": 3419
-          }
-        },
-        {
-          "function": "beta6_step",
-          "instance": "measured_panel.second",
-          "span": {
-            "line": 62,
-            "col": 5,
-            "byte_start": 2154,
-            "byte_end": 2195
-          }
-        }
-      ]
-    },
-    {
-      "span": {
-        "line": 56,
-        "col": 5,
-        "byte_start": 2008,
-        "byte_end": 2034
-      },
-      "invocations": [
-        {
-          "function": "beta6_pair",
-          "instance": "measured_panel",
-          "span": {
-            "line": 86,
-            "col": 1,
-            "byte_start": 3305,
-            "byte_end": 3419
-          }
-        },
-        {
-          "function": "beta6_step",
-          "instance": "measured_panel.second",
-          "span": {
-            "line": 62,
-            "col": 5,
-            "byte_start": 2154,
-            "byte_end": 2195
-          }
-        }
-      ]
-    },
-    {
-      "span": {
-        "line": 57,
-        "col": 5,
-        "byte_start": 2039,
-        "byte_end": 2066
-      },
-      "invocations": [
-        {
-          "function": "beta6_pair",
-          "instance": "measured_panel",
-          "span": {
-            "line": 86,
-            "col": 1,
-            "byte_start": 3305,
-            "byte_end": 3419
-          }
-        },
-        {
-          "function": "beta6_step",
-          "instance": "measured_panel.second",
-          "span": {
-            "line": 62,
-            "col": 5,
-            "byte_start": 2154,
-            "byte_end": 2195
-          }
-        }
-      ]
-    },
-    {
-      "span": {
-        "line": 65,
-        "col": 5,
-        "byte_start": 2274,
-        "byte_end": 2292
-      },
-      "invocations": [
-        {
-          "function": "beta6_pair",
-          "instance": "measured_panel",
-          "span": {
-            "line": 86,
-            "col": 1,
-            "byte_start": 3305,
-            "byte_end": 3419
-          }
-        }
-      ]
-    },
-    {
-      "span": {
-        "line": 66,
-        "col": 5,
-        "byte_start": 2297,
-        "byte_end": 2340
-      },
-      "invocations": [
-        {
-          "function": "beta6_pair",
-          "instance": "measured_panel",
-          "span": {
-            "line": 86,
-            "col": 1,
-            "byte_start": 3305,
-            "byte_end": 3419
-          }
-        }
-      ]
-    },
-    {
-      "span": {
-        "line": 67,
-        "col": 5,
-        "byte_start": 2345,
-        "byte_end": 2390
-      },
-      "invocations": [
-        {
-          "function": "beta6_pair",
-          "instance": "measured_panel",
-          "span": {
-            "line": 86,
-            "col": 1,
-            "byte_start": 3305,
-            "byte_end": 3419
-          }
-        }
-      ]
-    },
-    {
-      "span": {
-        "line": 70,
-        "col": 5,
-        "byte_start": 2476,
-        "byte_end": 2530
-      },
-      "invocations": [
-        {
-          "function": "beta6_pair",
-          "instance": "measured_panel",
-          "span": {
-            "line": 86,
-            "col": 1,
-            "byte_start": 3305,
-            "byte_end": 3419
+            "byte_start": 5034,
+            "byte_end": 5065
           }
         }
       ]
@@ -1481,98 +833,178 @@
       "span": {
         "line": 71,
         "col": 5,
-        "byte_start": 2535,
-        "byte_end": 2594
+        "byte_start": 4467,
+        "byte_end": 4494
       },
       "invocations": [
         {
-          "function": "beta6_pair",
-          "instance": "measured_panel",
+          "function": "labeled_rect",
+          "instance": "init",
           "span": {
-            "line": 86,
+            "line": 87,
             "col": 1,
-            "byte_start": 3305,
-            "byte_end": 3419
+            "byte_start": 5034,
+            "byte_end": 5065
           }
         }
       ]
     },
     {
       "span": {
-        "line": 72,
+        "line": 56,
         "col": 5,
-        "byte_start": 2599,
-        "byte_end": 2639
+        "byte_start": 3660,
+        "byte_end": 3672
       },
       "invocations": [
         {
-          "function": "beta6_pair",
-          "instance": "measured_panel",
+          "function": "labeled_rect",
+          "instance": "add",
           "span": {
-            "line": 86,
+            "line": 88,
             "col": 1,
-            "byte_start": 3305,
-            "byte_end": 3419
+            "byte_start": 5066,
+            "byte_end": 5107
           }
         }
       ]
     },
     {
       "span": {
-        "line": 73,
+        "line": 58,
         "col": 5,
-        "byte_start": 2644,
-        "byte_end": 2685
+        "byte_start": 3754,
+        "byte_end": 3773
       },
       "invocations": [
         {
-          "function": "beta6_pair",
-          "instance": "measured_panel",
+          "function": "labeled_rect",
+          "instance": "add",
           "span": {
-            "line": 86,
+            "line": 88,
             "col": 1,
-            "byte_start": 3305,
-            "byte_end": 3419
+            "byte_start": 5066,
+            "byte_end": 5107
           }
         }
       ]
     },
     {
       "span": {
-        "line": 74,
+        "line": 63,
         "col": 5,
-        "byte_start": 2690,
-        "byte_end": 2766
+        "byte_start": 3993,
+        "byte_end": 4019
       },
       "invocations": [
         {
-          "function": "beta6_pair",
-          "instance": "measured_panel",
+          "function": "labeled_rect",
+          "instance": "add",
           "span": {
-            "line": 86,
+            "line": 88,
             "col": 1,
-            "byte_start": 3305,
-            "byte_end": 3419
+            "byte_start": 5066,
+            "byte_end": 5107
           }
         }
       ]
     },
     {
       "span": {
-        "line": 75,
+        "line": 71,
         "col": 5,
-        "byte_start": 2771,
-        "byte_end": 2827
+        "byte_start": 4467,
+        "byte_end": 4494
       },
       "invocations": [
         {
-          "function": "beta6_pair",
-          "instance": "measured_panel",
+          "function": "labeled_rect",
+          "instance": "add",
           "span": {
-            "line": 86,
+            "line": 88,
             "col": 1,
-            "byte_start": 3305,
-            "byte_end": 3419
+            "byte_start": 5066,
+            "byte_end": 5107
+          }
+        }
+      ]
+    },
+    {
+      "span": {
+        "line": 56,
+        "col": 5,
+        "byte_start": 3660,
+        "byte_end": 3672
+      },
+      "invocations": [
+        {
+          "function": "labeled_rect",
+          "instance": "check",
+          "span": {
+            "line": 89,
+            "col": 1,
+            "byte_start": 5108,
+            "byte_end": 5141
+          }
+        }
+      ]
+    },
+    {
+      "span": {
+        "line": 58,
+        "col": 5,
+        "byte_start": 3754,
+        "byte_end": 3773
+      },
+      "invocations": [
+        {
+          "function": "labeled_rect",
+          "instance": "check",
+          "span": {
+            "line": 89,
+            "col": 1,
+            "byte_start": 5108,
+            "byte_end": 5141
+          }
+        }
+      ]
+    },
+    {
+      "span": {
+        "line": 63,
+        "col": 5,
+        "byte_start": 3993,
+        "byte_end": 4019
+      },
+      "invocations": [
+        {
+          "function": "labeled_rect",
+          "instance": "check",
+          "span": {
+            "line": 89,
+            "col": 1,
+            "byte_start": 5108,
+            "byte_end": 5141
+          }
+        }
+      ]
+    },
+    {
+      "span": {
+        "line": 71,
+        "col": 5,
+        "byte_start": 4467,
+        "byte_end": 4494
+      },
+      "invocations": [
+        {
+          "function": "labeled_rect",
+          "instance": "check",
+          "span": {
+            "line": 89,
+            "col": 1,
+            "byte_start": 5108,
+            "byte_end": 5141
           }
         }
       ]
@@ -1581,18 +1013,38 @@
       "span": {
         "line": 76,
         "col": 5,
-        "byte_start": 2832,
-        "byte_end": 2883
+        "byte_start": 4603,
+        "byte_end": 4618
       },
       "invocations": [
         {
-          "function": "beta6_pair",
-          "instance": "measured_panel",
+          "function": "labeled_diamond",
+          "instance": "decision",
           "span": {
-            "line": 86,
+            "line": 90,
             "col": 1,
-            "byte_start": 3305,
-            "byte_end": 3419
+            "byte_start": 5142,
+            "byte_end": 5177
+          }
+        }
+      ]
+    },
+    {
+      "span": {
+        "line": 77,
+        "col": 5,
+        "byte_start": 4623,
+        "byte_end": 4642
+      },
+      "invocations": [
+        {
+          "function": "labeled_diamond",
+          "instance": "decision",
+          "span": {
+            "line": 90,
+            "col": 1,
+            "byte_start": 5142,
+            "byte_end": 5177
           }
         }
       ]
@@ -1601,38 +1053,18 @@
       "span": {
         "line": 78,
         "col": 5,
-        "byte_start": 2889,
-        "byte_end": 2920
+        "byte_start": 4647,
+        "byte_end": 4673
       },
       "invocations": [
         {
-          "function": "beta6_pair",
-          "instance": "measured_panel",
+          "function": "labeled_diamond",
+          "instance": "decision",
           "span": {
-            "line": 86,
+            "line": 90,
             "col": 1,
-            "byte_start": 3305,
-            "byte_end": 3419
-          }
-        }
-      ]
-    },
-    {
-      "span": {
-        "line": 79,
-        "col": 5,
-        "byte_start": 2925,
-        "byte_end": 3009
-      },
-      "invocations": [
-        {
-          "function": "beta6_pair",
-          "instance": "measured_panel",
-          "span": {
-            "line": 86,
-            "col": 1,
-            "byte_start": 3305,
-            "byte_end": 3419
+            "byte_start": 5142,
+            "byte_end": 5177
           }
         }
       ]
@@ -1641,160 +1073,323 @@
       "span": {
         "line": 80,
         "col": 5,
-        "byte_start": 3014,
-        "byte_end": 3050
+        "byte_start": 4760,
+        "byte_end": 4787
       },
       "invocations": [
         {
-          "function": "beta6_pair",
-          "instance": "measured_panel",
+          "function": "labeled_diamond",
+          "instance": "decision",
           "span": {
-            "line": 86,
+            "line": 90,
             "col": 1,
-            "byte_start": 3305,
-            "byte_end": 3419
+            "byte_start": 5142,
+            "byte_end": 5177
           }
         }
       ]
     },
     {
       "span": {
-        "line": 81,
+        "line": 56,
         "col": 5,
-        "byte_start": 3055,
-        "byte_end": 3147
+        "byte_start": 3660,
+        "byte_end": 3672
       },
       "invocations": [
         {
-          "function": "beta6_pair",
-          "instance": "measured_panel",
+          "function": "labeled_rect",
+          "instance": "render",
           "span": {
-            "line": 86,
+            "line": 91,
             "col": 1,
-            "byte_start": 3305,
-            "byte_end": 3419
+            "byte_start": 5178,
+            "byte_end": 5236
           }
         }
       ]
     },
     {
       "span": {
-        "line": 82,
+        "line": 58,
         "col": 5,
-        "byte_start": 3152,
-        "byte_end": 3222
+        "byte_start": 3754,
+        "byte_end": 3773
       },
       "invocations": [
         {
-          "function": "beta6_pair",
-          "instance": "measured_panel",
+          "function": "labeled_rect",
+          "instance": "render",
           "span": {
-            "line": 86,
+            "line": 91,
             "col": 1,
-            "byte_start": 3305,
-            "byte_end": 3419
+            "byte_start": 5178,
+            "byte_end": 5236
           }
         }
       ]
     },
     {
       "span": {
-        "line": 83,
+        "line": 63,
         "col": 5,
-        "byte_start": 3227,
-        "byte_end": 3301
+        "byte_start": 3993,
+        "byte_end": 4019
       },
       "invocations": [
         {
-          "function": "beta6_pair",
-          "instance": "measured_panel",
+          "function": "labeled_rect",
+          "instance": "render",
           "span": {
-            "line": 86,
+            "line": 91,
             "col": 1,
-            "byte_start": 3305,
-            "byte_end": 3419
+            "byte_start": 5178,
+            "byte_end": 5236
           }
         }
       ]
     },
     {
       "span": {
-        "line": 87,
+        "line": 71,
+        "col": 5,
+        "byte_start": 4467,
+        "byte_end": 4494
+      },
+      "invocations": [
+        {
+          "function": "labeled_rect",
+          "instance": "render",
+          "span": {
+            "line": 91,
+            "col": 1,
+            "byte_start": 5178,
+            "byte_end": 5236
+          }
+        }
+      ]
+    },
+    {
+      "span": {
+        "line": 56,
+        "col": 5,
+        "byte_start": 3660,
+        "byte_end": 3672
+      },
+      "invocations": [
+        {
+          "function": "labeled_rect",
+          "instance": "repair",
+          "span": {
+            "line": 92,
+            "col": 1,
+            "byte_start": 5237,
+            "byte_end": 5283
+          }
+        }
+      ]
+    },
+    {
+      "span": {
+        "line": 58,
+        "col": 5,
+        "byte_start": 3754,
+        "byte_end": 3773
+      },
+      "invocations": [
+        {
+          "function": "labeled_rect",
+          "instance": "repair",
+          "span": {
+            "line": 92,
+            "col": 1,
+            "byte_start": 5237,
+            "byte_end": 5283
+          }
+        }
+      ]
+    },
+    {
+      "span": {
+        "line": 63,
+        "col": 5,
+        "byte_start": 3993,
+        "byte_end": 4019
+      },
+      "invocations": [
+        {
+          "function": "labeled_rect",
+          "instance": "repair",
+          "span": {
+            "line": 92,
+            "col": 1,
+            "byte_start": 5237,
+            "byte_end": 5283
+          }
+        }
+      ]
+    },
+    {
+      "span": {
+        "line": 71,
+        "col": 5,
+        "byte_start": 4467,
+        "byte_end": 4494
+      },
+      "invocations": [
+        {
+          "function": "labeled_rect",
+          "instance": "repair",
+          "span": {
+            "line": 92,
+            "col": 1,
+            "byte_start": 5237,
+            "byte_end": 5283
+          }
+        }
+      ]
+    },
+    {
+      "span": {
+        "line": 99,
         "col": 1,
-        "byte_start": 3420,
-        "byte_end": 3449
+        "byte_start": 5635,
+        "byte_end": 5711
       },
       "invocations": []
     },
     {
       "span": {
-        "line": 88,
+        "line": 104,
         "col": 1,
-        "byte_start": 3450,
-        "byte_end": 3483
+        "byte_start": 5940,
+        "byte_end": 6021
       },
       "invocations": []
     },
     {
       "span": {
-        "line": 89,
+        "line": 105,
         "col": 1,
-        "byte_start": 3484,
-        "byte_end": 3506
+        "byte_start": 6022,
+        "byte_end": 6107
       },
       "invocations": []
     },
     {
       "span": {
-        "line": 90,
+        "line": 106,
         "col": 1,
-        "byte_start": 3507,
-        "byte_end": 3584
+        "byte_start": 6108,
+        "byte_end": 6195
       },
       "invocations": []
     },
     {
       "span": {
-        "line": 91,
+        "line": 107,
         "col": 1,
-        "byte_start": 3585,
-        "byte_end": 3630
+        "byte_start": 6196,
+        "byte_end": 6283
       },
       "invocations": []
     },
     {
       "span": {
-        "line": 92,
+        "line": 112,
         "col": 1,
-        "byte_start": 3631,
-        "byte_end": 3677
+        "byte_start": 6504,
+        "byte_end": 6543
       },
       "invocations": []
     },
     {
       "span": {
-        "line": 93,
+        "line": 117,
         "col": 1,
-        "byte_start": 3678,
-        "byte_end": 3722
+        "byte_start": 6741,
+        "byte_end": 6789
       },
       "invocations": []
     },
     {
       "span": {
-        "line": 94,
+        "line": 120,
         "col": 1,
-        "byte_start": 3723,
-        "byte_end": 3765
+        "byte_start": 6856,
+        "byte_end": 6899
       },
       "invocations": []
     },
     {
       "span": {
-        "line": 95,
+        "line": 121,
         "col": 1,
-        "byte_start": 3766,
-        "byte_end": 3815
+        "byte_start": 6900,
+        "byte_end": 6942
+      },
+      "invocations": []
+    },
+    {
+      "span": {
+        "line": 122,
+        "col": 1,
+        "byte_start": 6943,
+        "byte_end": 6988
+      },
+      "invocations": []
+    },
+    {
+      "span": {
+        "line": 128,
+        "col": 1,
+        "byte_start": 7288,
+        "byte_end": 7335
+      },
+      "invocations": []
+    },
+    {
+      "span": {
+        "line": 129,
+        "col": 1,
+        "byte_start": 7336,
+        "byte_end": 7389
+      },
+      "invocations": []
+    },
+    {
+      "span": {
+        "line": 131,
+        "col": 1,
+        "byte_start": 7391,
+        "byte_end": 7438
+      },
+      "invocations": []
+    },
+    {
+      "span": {
+        "line": 134,
+        "col": 1,
+        "byte_start": 7587,
+        "byte_end": 7639
+      },
+      "invocations": []
+    },
+    {
+      "span": {
+        "line": 140,
+        "col": 1,
+        "byte_start": 7926,
+        "byte_end": 7984
+      },
+      "invocations": []
+    },
+    {
+      "span": {
+        "line": 148,
+        "col": 1,
+        "byte_start": 8425,
+        "byte_end": 8505
       },
       "invocations": []
     }
@@ -1802,30 +1397,19 @@
   "diagram": [
     {
       "accepted": {
-        "automatic_dimensions": false,
-        "height": 1.0999999999999996,
-        "width": 3.4
+        "automatic_dimensions": true,
+        "height": 1.0,
+        "width": 3.412280000000001
       },
       "definition": {
-        "source": "rect(bw, bh)",
+        "source": "rect()",
         "tree": {
-          "args": [
-            {
-              "dimension": "length",
-              "id": "bw",
-              "kind": "ref"
-            },
-            {
-              "dimension": "length",
-              "id": "bh",
-              "kind": "ref"
-            }
-          ],
+          "args": [],
           "kind": "call",
           "name": "rect"
         }
       },
-      "id": "n1",
+      "id": "init.shape",
       "properties": []
     },
     {
@@ -1835,18 +1419,9 @@
         "width": 1.1746
       },
       "definition": {
-        "source": "label(n1.center, \"locus init\")",
+        "source": "label(\"locus init\")",
         "tree": {
           "args": [
-            {
-              "args": [],
-              "base": {
-                "id": "n1",
-                "kind": "ref"
-              },
-              "kind": "property",
-              "name": "center"
-            },
             {
               "kind": "text",
               "segments": [
@@ -1861,46 +1436,24 @@
           "name": "label"
         }
       },
-      "id": "t1",
-      "properties": [
-        {
-          "name": "dir",
-          "value": {
-            "expr": {
-              "id": "center",
-              "kind": "ref"
-            },
-            "kind": "expr"
-          }
-        }
-      ]
+      "id": "init.caption",
+      "properties": []
     },
     {
       "accepted": {
-        "automatic_dimensions": false,
-        "height": 1.1000000000000005,
-        "width": 3.4
+        "automatic_dimensions": true,
+        "height": 0.9999999999999996,
+        "width": 3.41228
       },
       "definition": {
-        "source": "rect(bw, bh)",
+        "source": "rect()",
         "tree": {
-          "args": [
-            {
-              "dimension": "length",
-              "id": "bw",
-              "kind": "ref"
-            },
-            {
-              "dimension": "length",
-              "id": "bh",
-              "kind": "ref"
-            }
-          ],
+          "args": [],
           "kind": "call",
           "name": "rect"
         }
       },
-      "id": "n2",
+      "id": "add.shape",
       "properties": []
     },
     {
@@ -1910,18 +1463,9 @@
         "width": 2.7972
       },
       "definition": {
-        "source": "label(n2.center, \"locus add < ops.locus\")",
+        "source": "label(\"locus add < ops.locus\")",
         "tree": {
           "args": [
-            {
-              "args": [],
-              "base": {
-                "id": "n2",
-                "kind": "ref"
-              },
-              "kind": "property",
-              "name": "center"
-            },
             {
               "kind": "text",
               "segments": [
@@ -1936,46 +1480,24 @@
           "name": "label"
         }
       },
-      "id": "t2",
-      "properties": [
-        {
-          "name": "dir",
-          "value": {
-            "expr": {
-              "id": "center",
-              "kind": "ref"
-            },
-            "kind": "expr"
-          }
-        }
-      ]
+      "id": "add.caption",
+      "properties": []
     },
     {
       "accepted": {
-        "automatic_dimensions": false,
-        "height": 1.0999999999999999,
-        "width": 3.4
+        "automatic_dimensions": true,
+        "height": 1.0000000000000002,
+        "width": 3.41228
       },
       "definition": {
-        "source": "rect(bw, bh)",
+        "source": "rect()",
         "tree": {
-          "args": [
-            {
-              "dimension": "length",
-              "id": "bw",
-              "kind": "ref"
-            },
-            {
-              "dimension": "length",
-              "id": "bh",
-              "kind": "ref"
-            }
-          ],
+          "args": [],
           "kind": "call",
           "name": "rect"
         }
       },
-      "id": "n3",
+      "id": "check.shape",
       "properties": []
     },
     {
@@ -1985,18 +1507,9 @@
         "width": 1.5052800000000002
       },
       "definition": {
-        "source": "label(n3.center, \"locus check\")",
+        "source": "label(\"locus check\")",
         "tree": {
           "args": [
-            {
-              "args": [],
-              "base": {
-                "id": "n3",
-                "kind": "ref"
-              },
-              "kind": "property",
-              "name": "center"
-            },
             {
               "kind": "text",
               "segments": [
@@ -2011,48 +1524,24 @@
           "name": "label"
         }
       },
-      "id": "t3",
-      "properties": [
-        {
-          "name": "dir",
-          "value": {
-            "expr": {
-              "id": "center",
-              "kind": "ref"
-            },
-            "kind": "expr"
-          }
-        }
-      ]
+      "id": "check.caption",
+      "properties": []
     },
     {
       "accepted": {
-        "automatic_dimensions": false,
-        "height": 1.5,
-        "width": 3.2
+        "automatic_dimensions": true,
+        "height": 1.5260086521251672,
+        "width": 2.315543718427853
       },
       "definition": {
-        "source": "diamond(3.2, 1.5)",
+        "source": "diamond()",
         "tree": {
-          "args": [
-            {
-              "dimension": "length",
-              "kind": "number",
-              "source": "3.2",
-              "value": 3.2
-            },
-            {
-              "dimension": "length",
-              "kind": "number",
-              "source": "1.5",
-              "value": 1.5
-            }
-          ],
+          "args": [],
           "kind": "call",
           "name": "diamond"
         }
       },
-      "id": "n4",
+      "id": "decision.shape",
       "properties": []
     },
     {
@@ -2062,18 +1551,9 @@
         "width": 0.8282400000000001
       },
       "definition": {
-        "source": "label(n4.center, \"exit 0?\")",
+        "source": "label(\"exit 0?\")",
         "tree": {
           "args": [
-            {
-              "args": [],
-              "base": {
-                "id": "n4",
-                "kind": "ref"
-              },
-              "kind": "property",
-              "name": "center"
-            },
             {
               "kind": "text",
               "segments": [
@@ -2088,46 +1568,24 @@
           "name": "label"
         }
       },
-      "id": "t4",
-      "properties": [
-        {
-          "name": "dir",
-          "value": {
-            "expr": {
-              "id": "center",
-              "kind": "ref"
-            },
-            "kind": "expr"
-          }
-        }
-      ]
+      "id": "decision.caption",
+      "properties": []
     },
     {
       "accepted": {
-        "automatic_dimensions": false,
-        "height": 1.1,
-        "width": 3.4
+        "automatic_dimensions": true,
+        "height": 1.0,
+        "width": 3.41228
       },
       "definition": {
-        "source": "rect(bw, bh)",
+        "source": "rect()",
         "tree": {
-          "args": [
-            {
-              "dimension": "length",
-              "id": "bw",
-              "kind": "ref"
-            },
-            {
-              "dimension": "length",
-              "id": "bh",
-              "kind": "ref"
-            }
-          ],
+          "args": [],
           "kind": "call",
           "name": "rect"
         }
       },
-      "id": "n5",
+      "id": "render.shape",
       "properties": []
     },
     {
@@ -2137,18 +1595,9 @@
         "width": 2.9122800000000004
       },
       "definition": {
-        "source": "label(n5.center, \"locus render -o fig.svg\")",
+        "source": "label(\"locus render -o fig.svg\")",
         "tree": {
           "args": [
-            {
-              "args": [],
-              "base": {
-                "id": "n5",
-                "kind": "ref"
-              },
-              "kind": "property",
-              "name": "center"
-            },
             {
               "kind": "text",
               "segments": [
@@ -2163,46 +1612,24 @@
           "name": "label"
         }
       },
-      "id": "t5",
-      "properties": [
-        {
-          "name": "dir",
-          "value": {
-            "expr": {
-              "id": "center",
-              "kind": "ref"
-            },
-            "kind": "expr"
-          }
-        }
-      ]
+      "id": "render.caption",
+      "properties": []
     },
     {
       "accepted": {
-        "automatic_dimensions": false,
-        "height": 1.1,
-        "width": 3.4000000000000004
+        "automatic_dimensions": true,
+        "height": 1.0000000000000009,
+        "width": 3.412279999999999
       },
       "definition": {
-        "source": "rect(bw, bh)",
+        "source": "rect()",
         "tree": {
-          "args": [
-            {
-              "dimension": "length",
-              "id": "bw",
-              "kind": "ref"
-            },
-            {
-              "dimension": "length",
-              "id": "bh",
-              "kind": "ref"
-            }
-          ],
+          "args": [],
           "kind": "call",
           "name": "rect"
         }
       },
-      "id": "nf",
+      "id": "repair.shape",
       "properties": []
     },
     {
@@ -2212,18 +1639,9 @@
         "width": 2.7927200000000005
       },
       "definition": {
-        "source": "label(nf.center, \"fix ops (update / edit)\")",
+        "source": "label(\"fix ops (update / edit)\")",
         "tree": {
           "args": [
-            {
-              "args": [],
-              "base": {
-                "id": "nf",
-                "kind": "ref"
-              },
-              "kind": "property",
-              "name": "center"
-            },
             {
               "kind": "text",
               "segments": [
@@ -2238,34 +1656,23 @@
           "name": "label"
         }
       },
-      "id": "tf",
-      "properties": [
-        {
-          "name": "dir",
-          "value": {
-            "expr": {
-              "id": "center",
-              "kind": "ref"
-            },
-            "kind": "expr"
-          }
-        }
-      ]
+      "id": "repair.caption",
+      "properties": []
     },
     {
       "accepted": {
         "clipped": false,
-        "logical_length": 0.2499999999999991,
+        "logical_length": 0.2500000000000003,
         "route": "direct"
       },
       "definition": {
-        "source": "arrow(n1.s, n2.n)",
+        "source": "arrow(init.shape.s, add.shape.n)",
         "tree": {
           "args": [
             {
               "args": [],
               "base": {
-                "id": "n1",
+                "id": "init.shape",
                 "kind": "ref"
               },
               "kind": "property",
@@ -2274,7 +1681,7 @@
             {
               "args": [],
               "base": {
-                "id": "n2",
+                "id": "add.shape",
                 "kind": "ref"
               },
               "kind": "property",
@@ -2285,16 +1692,44 @@
           "name": "arrow"
         }
       },
-      "id": "a1",
-      "properties": [
-        {
-          "name": "head",
-          "value": {
-            "kind": "head",
-            "value": "forward"
-          }
+      "id": "initialize",
+      "properties": []
+    },
+    {
+      "accepted": {
+        "clipped": false,
+        "logical_length": 0.2499999999999989,
+        "route": "direct"
+      },
+      "definition": {
+        "source": "arrow(add.shape.s, check.shape.n)",
+        "tree": {
+          "args": [
+            {
+              "args": [],
+              "base": {
+                "id": "add.shape",
+                "kind": "ref"
+              },
+              "kind": "property",
+              "name": "s"
+            },
+            {
+              "args": [],
+              "base": {
+                "id": "check.shape",
+                "kind": "ref"
+              },
+              "kind": "property",
+              "name": "n"
+            }
+          ],
+          "kind": "call",
+          "name": "arrow"
         }
-      ]
+      },
+      "id": "validate",
+      "properties": []
     },
     {
       "accepted": {
@@ -2303,13 +1738,13 @@
         "route": "direct"
       },
       "definition": {
-        "source": "arrow(n2.s, n3.n)",
+        "source": "arrow(check.shape.s, decision.shape.n)",
         "tree": {
           "args": [
             {
               "args": [],
               "base": {
-                "id": "n2",
+                "id": "check.shape",
                 "kind": "ref"
               },
               "kind": "property",
@@ -2318,7 +1753,7 @@
             {
               "args": [],
               "base": {
-                "id": "n3",
+                "id": "decision.shape",
                 "kind": "ref"
               },
               "kind": "property",
@@ -2329,31 +1764,23 @@
           "name": "arrow"
         }
       },
-      "id": "a2",
-      "properties": [
-        {
-          "name": "head",
-          "value": {
-            "kind": "head",
-            "value": "forward"
-          }
-        }
-      ]
+      "id": "decide",
+      "properties": []
     },
     {
       "accepted": {
         "clipped": false,
-        "logical_length": 0.2500000000000001,
+        "logical_length": 0.2500000000000009,
         "route": "direct"
       },
       "definition": {
-        "source": "arrow(n3.s, n4.n)",
+        "source": "arrow(decision.shape.s, render.shape.n)",
         "tree": {
           "args": [
             {
               "args": [],
               "base": {
-                "id": "n3",
+                "id": "decision.shape",
                 "kind": "ref"
               },
               "kind": "property",
@@ -2362,7 +1789,7 @@
             {
               "args": [],
               "base": {
-                "id": "n4",
+                "id": "render.shape",
                 "kind": "ref"
               },
               "kind": "property",
@@ -2373,79 +1800,30 @@
           "name": "arrow"
         }
       },
-      "id": "a3",
-      "properties": [
-        {
-          "name": "head",
-          "value": {
-            "kind": "head",
-            "value": "forward"
-          }
-        }
-      ]
+      "id": "success",
+      "properties": []
     },
     {
       "accepted": {
-        "clipped": false,
-        "logical_length": 0.2500000000000001,
-        "route": "direct"
-      },
-      "definition": {
-        "source": "arrow(n4.s, n5.n)",
-        "tree": {
-          "args": [
-            {
-              "args": [],
-              "base": {
-                "id": "n4",
-                "kind": "ref"
-              },
-              "kind": "property",
-              "name": "s"
-            },
-            {
-              "args": [],
-              "base": {
-                "id": "n5",
-                "kind": "ref"
-              },
-              "kind": "property",
-              "name": "n"
-            }
+        "attachment": {
+          "path": "success",
+          "region": [
+            0.1,
+            0.3
           ],
-          "kind": "call",
-          "name": "arrow"
-        }
-      },
-      "id": "a4",
-      "properties": [
-        {
-          "name": "head",
-          "value": {
-            "kind": "head",
-            "value": "forward"
-          }
-        }
-      ]
-    },
-    {
-      "accepted": {
+          "side": "left"
+        },
         "height": 0.38136,
         "role": "normal",
         "width": 0.43484
       },
       "definition": {
-        "source": "label(n4.s, \"yes\")",
+        "source": "label(success, \"yes\")",
         "tree": {
           "args": [
             {
-              "args": [],
-              "base": {
-                "id": "n4",
-                "kind": "ref"
-              },
-              "kind": "property",
-              "name": "s"
+              "id": "success",
+              "kind": "ref"
             },
             {
               "kind": "text",
@@ -2461,358 +1839,13 @@
           "name": "label"
         }
       },
-      "id": "ly",
-      "properties": [
-        {
-          "name": "dir",
-          "value": {
-            "expr": {
-              "id": "SW",
-              "kind": "ref"
-            },
-            "kind": "expr"
-          }
-        },
-        {
-          "name": "gap",
-          "value": {
-            "expr": {
-              "dimension": "length",
-              "kind": "number",
-              "source": "0.15",
-              "value": 0.15
-            },
-            "kind": "expr"
-          }
-        }
-      ]
-    },
-    {
-      "accepted": {
-        "clipped": false,
-        "logical_length": 0.24999999999999933,
-        "route": "direct"
-      },
-      "definition": {
-        "source": "arrow(n4.e, nf.w)",
-        "tree": {
-          "args": [
-            {
-              "args": [],
-              "base": {
-                "id": "n4",
-                "kind": "ref"
-              },
-              "kind": "property",
-              "name": "e"
-            },
-            {
-              "args": [],
-              "base": {
-                "id": "nf",
-                "kind": "ref"
-              },
-              "kind": "property",
-              "name": "w"
-            }
-          ],
-          "kind": "call",
-          "name": "arrow"
-        }
-      },
-      "id": "a5",
-      "properties": [
-        {
-          "name": "head",
-          "value": {
-            "kind": "head",
-            "value": "forward"
-          }
-        }
-      ]
-    },
-    {
-      "accepted": {
-        "height": 0.38136,
-        "role": "normal",
-        "width": 0.3424400000000001
-      },
-      "definition": {
-        "source": "label(n4.e, \"no\")",
-        "tree": {
-          "args": [
-            {
-              "args": [],
-              "base": {
-                "id": "n4",
-                "kind": "ref"
-              },
-              "kind": "property",
-              "name": "e"
-            },
-            {
-              "kind": "text",
-              "segments": [
-                {
-                  "kind": "plain",
-                  "source": "no"
-                }
-              ]
-            }
-          ],
-          "kind": "call",
-          "name": "label"
-        }
-      },
-      "id": "ln",
-      "properties": [
-        {
-          "name": "dir",
-          "value": {
-            "expr": {
-              "id": "NE",
-              "kind": "ref"
-            },
-            "kind": "expr"
-          }
-        },
-        {
-          "name": "gap",
-          "value": {
-            "expr": {
-              "dimension": "length",
-              "kind": "number",
-              "source": "0.15",
-              "value": 0.15
-            },
-            "kind": "expr"
-          }
-        }
-      ]
-    },
-    {
-      "accepted": {
-        "clipped": false,
-        "logical_length": 3.311745572196099,
-        "route": "direct"
-      },
-      "definition": {
-        "source": "arrow(nf.n, n2.e)",
-        "tree": {
-          "args": [
-            {
-              "args": [],
-              "base": {
-                "id": "nf",
-                "kind": "ref"
-              },
-              "kind": "property",
-              "name": "n"
-            },
-            {
-              "args": [],
-              "base": {
-                "id": "n2",
-                "kind": "ref"
-              },
-              "kind": "property",
-              "name": "e"
-            }
-          ],
-          "kind": "call",
-          "name": "arrow"
-        }
-      },
-      "id": "a6",
-      "properties": [
-        {
-          "name": "head",
-          "value": {
-            "kind": "head",
-            "value": "forward"
-          }
-        },
-        {
-          "name": "bend",
-          "value": {
-            "expr": {
-              "dimension": "angle",
-              "kind": "number",
-              "source": "40deg",
-              "value": 40.0
-            },
-            "kind": "expr"
-          }
-        }
-      ]
-    },
-    {
-      "accepted": {
-        "automatic_dimensions": true,
-        "height": 0.9999999999999959,
-        "width": 6.595040000000001
-      },
-      "definition": {
-        "source": "rounded_rect()",
-        "tree": {
-          "args": [],
-          "kind": "call",
-          "name": "rounded_rect"
-        }
-      },
-      "id": "measured_panel.first.shape",
-      "properties": []
-    },
-    {
-      "accepted": {
-        "height": 0.38136,
-        "role": "normal",
-        "width": 2.7342000000000004
-      },
-      "definition": {
-        "source": "label(\"Automatic box sizing\")",
-        "tree": {
-          "args": [
-            {
-              "kind": "text",
-              "segments": [
-                {
-                  "kind": "plain",
-                  "source": "Automatic box sizing"
-                }
-              ]
-            }
-          ],
-          "kind": "call",
-          "name": "label"
-        }
-      },
-      "id": "measured_panel.first.caption",
-      "properties": []
-    },
-    {
-      "accepted": {
-        "automatic_dimensions": true,
-        "height": 1.000000000000004,
-        "width": 6.595040000000001
-      },
-      "definition": {
-        "source": "rounded_rect()",
-        "tree": {
-          "args": [],
-          "kind": "call",
-          "name": "rounded_rect"
-        }
-      },
-      "id": "measured_panel.second.shape",
-      "properties": []
-    },
-    {
-      "accepted": {
-        "height": 0.38136,
-        "role": "normal",
-        "width": 6.095040000000001
-      },
-      "definition": {
-        "source": "label(\"A longer measured caption stays inside its box\")",
-        "tree": {
-          "args": [
-            {
-              "kind": "text",
-              "segments": [
-                {
-                  "kind": "plain",
-                  "source": "A longer measured caption stays inside its box"
-                }
-              ]
-            }
-          ],
-          "kind": "call",
-          "name": "label"
-        }
-      },
-      "id": "measured_panel.second.caption",
-      "properties": []
-    },
-    {
-      "accepted": {
-        "clipped": false,
-        "logical_length": 1.2499999999999662,
-        "route": "direct"
-      },
-      "definition": {
-        "source": "arrow(measured_panel.first.shape.center, measured_panel.second.shape.center)",
-        "tree": {
-          "args": [
-            {
-              "args": [],
-              "base": {
-                "id": "measured_panel.first.shape",
-                "kind": "ref"
-              },
-              "kind": "property",
-              "name": "center"
-            },
-            {
-              "args": [],
-              "base": {
-                "id": "measured_panel.second.shape",
-                "kind": "ref"
-              },
-              "kind": "property",
-              "name": "center"
-            }
-          ],
-          "kind": "call",
-          "name": "arrow"
-        }
-      },
-      "id": "measured_panel.forward",
-      "properties": []
-    },
-    {
-      "accepted": {
-        "attachment": {
-          "path": "measured_panel.forward",
-          "region": [
-            0.4,
-            0.6
-          ],
-          "side": "left"
-        },
-        "height": 0.38136,
-        "role": "normal",
-        "width": 1.09396
-      },
-      "definition": {
-        "source": "label(measured_panel.forward, \"advance\")",
-        "tree": {
-          "args": [
-            {
-              "id": "measured_panel.forward",
-              "kind": "ref"
-            },
-            {
-              "kind": "text",
-              "segments": [
-                {
-                  "kind": "plain",
-                  "source": "advance"
-                }
-              ]
-            }
-          ],
-          "kind": "call",
-          "name": "label"
-        }
-      },
-      "id": "measured_panel.next",
+      "id": "yes",
       "properties": [
         {
           "name": "near",
           "value": {
             "expr": {
-              "id": "middle",
+              "id": "start",
               "kind": "ref"
             },
             "kind": "expr"
@@ -2833,18 +1866,17 @@
     {
       "accepted": {
         "clipped": false,
-        "logical_length": 1.2500019999999648,
-        "route": "orthogonal",
-        "side": "right"
+        "logical_length": 0.2500000000000002,
+        "route": "direct"
       },
       "definition": {
-        "source": "arrow(measured_panel.second.shape.e, measured_panel.first.shape.e)",
+        "source": "arrow(decision.shape.e, repair.shape.w)",
         "tree": {
           "args": [
             {
               "args": [],
               "base": {
-                "id": "measured_panel.second.shape",
+                "id": "decision.shape",
                 "kind": "ref"
               },
               "kind": "property",
@@ -2853,7 +1885,104 @@
             {
               "args": [],
               "base": {
-                "id": "measured_panel.first.shape",
+                "id": "repair.shape",
+                "kind": "ref"
+              },
+              "kind": "property",
+              "name": "w"
+            }
+          ],
+          "kind": "call",
+          "name": "arrow"
+        }
+      },
+      "id": "failure",
+      "properties": []
+    },
+    {
+      "accepted": {
+        "attachment": {
+          "path": "failure",
+          "region": [
+            0.1,
+            0.3
+          ],
+          "side": "above"
+        },
+        "height": 0.38136,
+        "role": "normal",
+        "width": 0.3424400000000001
+      },
+      "definition": {
+        "source": "label(failure, \"no\")",
+        "tree": {
+          "args": [
+            {
+              "id": "failure",
+              "kind": "ref"
+            },
+            {
+              "kind": "text",
+              "segments": [
+                {
+                  "kind": "plain",
+                  "source": "no"
+                }
+              ]
+            }
+          ],
+          "kind": "call",
+          "name": "label"
+        }
+      },
+      "id": "no",
+      "properties": [
+        {
+          "name": "near",
+          "value": {
+            "expr": {
+              "id": "start",
+              "kind": "ref"
+            },
+            "kind": "expr"
+          }
+        },
+        {
+          "name": "side",
+          "value": {
+            "expr": {
+              "id": "above",
+              "kind": "ref"
+            },
+            "kind": "expr"
+          }
+        }
+      ]
+    },
+    {
+      "accepted": {
+        "clipped": false,
+        "logical_length": 2.726424518858323,
+        "route": "curved",
+        "side": "right"
+      },
+      "definition": {
+        "source": "arrow(repair.shape.n, add.shape.e)",
+        "tree": {
+          "args": [
+            {
+              "args": [],
+              "base": {
+                "id": "repair.shape",
+                "kind": "ref"
+              },
+              "kind": "property",
+              "name": "n"
+            },
+            {
+              "args": [],
+              "base": {
+                "id": "add.shape",
                 "kind": "ref"
               },
               "kind": "property",
@@ -2864,138 +1993,13 @@
           "name": "arrow"
         }
       },
-      "id": "measured_panel.back",
+      "id": "retry",
       "properties": [
         {
           "name": "route",
           "value": {
             "expr": {
-              "id": "orthogonal",
-              "kind": "ref"
-            },
-            "kind": "expr"
-          }
-        },
-        {
-          "name": "side",
-          "value": {
-            "expr": {
-              "id": "right",
-              "kind": "ref"
-            },
-            "kind": "expr"
-          }
-        }
-      ]
-    },
-    {
-      "accepted": {
-        "attachment": {
-          "path": "measured_panel.back",
-          "region": [
-            0.4,
-            0.6
-          ],
-          "side": "right"
-        },
-        "height": 0.38136,
-        "role": "normal",
-        "width": 0.62748
-      },
-      "definition": {
-        "source": "label(measured_panel.back, \"retry\")",
-        "tree": {
-          "args": [
-            {
-              "id": "measured_panel.back",
-              "kind": "ref"
-            },
-            {
-              "kind": "text",
-              "segments": [
-                {
-                  "kind": "plain",
-                  "source": "retry"
-                }
-              ]
-            }
-          ],
-          "kind": "call",
-          "name": "label"
-        }
-      },
-      "id": "measured_panel.retry",
-      "properties": [
-        {
-          "name": "near",
-          "value": {
-            "expr": {
-              "id": "middle",
-              "kind": "ref"
-            },
-            "kind": "expr"
-          }
-        },
-        {
-          "name": "side",
-          "value": {
-            "expr": {
-              "id": "right",
-              "kind": "ref"
-            },
-            "kind": "expr"
-          }
-        }
-      ]
-    },
-    {
-      "accepted": {
-        "automatic_dimensions": true,
-        "height": 1.0339039999999158,
-        "width": 7.872521000000002
-      },
-      "definition": {
-        "source": "rect()",
-        "tree": {
-          "args": [],
-          "kind": "call",
-          "name": "rect"
-        }
-      },
-      "id": "measured_banner",
-      "properties": []
-    },
-    {
-      "accepted": {
-        "height": 0.533904,
-        "role": "title",
-        "width": 7.009352000000001
-      },
-      "definition": {
-        "source": "label(\"Measured layout and routed feedback\")",
-        "tree": {
-          "args": [
-            {
-              "kind": "text",
-              "segments": [
-                {
-                  "kind": "plain",
-                  "source": "Measured layout and routed feedback"
-                }
-              ]
-            }
-          ],
-          "kind": "call",
-          "name": "label"
-        }
-      },
-      "id": "measured_heading",
-      "properties": [
-        {
-          "name": "role",
-          "value": {
-            "expr": {
-              "id": "title",
+              "id": "curved",
               "kind": "ref"
             },
             "kind": "expr"
@@ -3007,55 +2011,15 @@
   "relations": [
     {
       "kind": "call",
-      "name": "column",
-      "args": [
-        {
-          "kind": "ref",
-          "id": "n1"
-        },
-        {
-          "kind": "ref",
-          "id": "n2"
-        },
-        {
-          "kind": "ref",
-          "id": "n3"
-        },
-        {
-          "kind": "ref",
-          "id": "n4"
-        },
-        {
-          "kind": "ref",
-          "id": "n5"
-        }
-      ]
-    },
-    {
-      "kind": "call",
-      "name": "row",
-      "args": [
-        {
-          "kind": "ref",
-          "id": "n4"
-        },
-        {
-          "kind": "ref",
-          "id": "nf"
-        }
-      ]
-    },
-    {
-      "kind": "call",
       "name": "center",
       "args": [
         {
           "kind": "ref",
-          "id": "measured_panel.first.caption"
+          "id": "init.caption"
         },
         {
           "kind": "ref",
-          "id": "measured_panel.first.shape"
+          "id": "init.shape"
         }
       ]
     },
@@ -3065,11 +2029,11 @@
       "args": [
         {
           "kind": "ref",
-          "id": "measured_panel.first.shape"
+          "id": "init.shape"
         },
         {
           "kind": "ref",
-          "id": "measured_panel.first.caption"
+          "id": "init.caption"
         }
       ]
     },
@@ -3079,11 +2043,11 @@
       "args": [
         {
           "kind": "ref",
-          "id": "measured_panel.second.caption"
+          "id": "add.caption"
         },
         {
           "kind": "ref",
-          "id": "measured_panel.second.shape"
+          "id": "add.shape"
         }
       ]
     },
@@ -3093,11 +2057,123 @@
       "args": [
         {
           "kind": "ref",
-          "id": "measured_panel.second.shape"
+          "id": "add.shape"
         },
         {
           "kind": "ref",
-          "id": "measured_panel.second.caption"
+          "id": "add.caption"
+        }
+      ]
+    },
+    {
+      "kind": "call",
+      "name": "center",
+      "args": [
+        {
+          "kind": "ref",
+          "id": "check.caption"
+        },
+        {
+          "kind": "ref",
+          "id": "check.shape"
+        }
+      ]
+    },
+    {
+      "kind": "call",
+      "name": "contain",
+      "args": [
+        {
+          "kind": "ref",
+          "id": "check.shape"
+        },
+        {
+          "kind": "ref",
+          "id": "check.caption"
+        }
+      ]
+    },
+    {
+      "kind": "call",
+      "name": "center",
+      "args": [
+        {
+          "kind": "ref",
+          "id": "decision.caption"
+        },
+        {
+          "kind": "ref",
+          "id": "decision.shape"
+        }
+      ]
+    },
+    {
+      "kind": "call",
+      "name": "contain",
+      "args": [
+        {
+          "kind": "ref",
+          "id": "decision.shape"
+        },
+        {
+          "kind": "ref",
+          "id": "decision.caption"
+        }
+      ]
+    },
+    {
+      "kind": "call",
+      "name": "center",
+      "args": [
+        {
+          "kind": "ref",
+          "id": "render.caption"
+        },
+        {
+          "kind": "ref",
+          "id": "render.shape"
+        }
+      ]
+    },
+    {
+      "kind": "call",
+      "name": "contain",
+      "args": [
+        {
+          "kind": "ref",
+          "id": "render.shape"
+        },
+        {
+          "kind": "ref",
+          "id": "render.caption"
+        }
+      ]
+    },
+    {
+      "kind": "call",
+      "name": "center",
+      "args": [
+        {
+          "kind": "ref",
+          "id": "repair.caption"
+        },
+        {
+          "kind": "ref",
+          "id": "repair.shape"
+        }
+      ]
+    },
+    {
+      "kind": "call",
+      "name": "contain",
+      "args": [
+        {
+          "kind": "ref",
+          "id": "repair.shape"
+        },
+        {
+          "kind": "ref",
+          "id": "repair.caption"
         }
       ]
     },
@@ -3107,83 +2183,259 @@
       "args": [
         {
           "kind": "ref",
-          "id": "measured_panel.stages"
+          "id": "init.shape"
+        },
+        {
+          "kind": "ref",
+          "id": "add.shape"
+        },
+        {
+          "kind": "ref",
+          "id": "check.shape"
+        },
+        {
+          "kind": "ref",
+          "id": "decision.shape"
+        },
+        {
+          "kind": "ref",
+          "id": "render.shape"
         }
       ]
     },
     {
       "kind": "binary",
-      "op": "eq",
+      "op": "and",
       "lhs": {
-        "kind": "property",
-        "base": {
-          "kind": "ref",
-          "id": "measured_panel.second.shape"
+        "kind": "binary",
+        "op": "eq",
+        "lhs": {
+          "kind": "property",
+          "base": {
+            "kind": "ref",
+            "id": "add.shape"
+          },
+          "name": "width",
+          "args": [],
+          "dimension": "length"
         },
-        "name": "width",
-        "args": [],
-        "dimension": "length"
+        "rhs": {
+          "kind": "property",
+          "base": {
+            "kind": "ref",
+            "id": "init.shape"
+          },
+          "name": "width",
+          "args": [],
+          "dimension": "length"
+        }
       },
       "rhs": {
-        "kind": "property",
-        "base": {
-          "kind": "ref",
-          "id": "measured_panel.first.shape"
+        "kind": "binary",
+        "op": "eq",
+        "lhs": {
+          "kind": "property",
+          "base": {
+            "kind": "ref",
+            "id": "add.shape"
+          },
+          "name": "height",
+          "args": [],
+          "dimension": "length"
         },
-        "name": "width",
-        "args": [],
-        "dimension": "length"
+        "rhs": {
+          "kind": "property",
+          "base": {
+            "kind": "ref",
+            "id": "init.shape"
+          },
+          "name": "height",
+          "args": [],
+          "dimension": "length"
+        }
       }
     },
     {
       "kind": "binary",
-      "op": "eq",
+      "op": "and",
       "lhs": {
-        "kind": "property",
-        "base": {
-          "kind": "ref",
-          "id": "measured_panel.second.shape"
+        "kind": "binary",
+        "op": "eq",
+        "lhs": {
+          "kind": "property",
+          "base": {
+            "kind": "ref",
+            "id": "check.shape"
+          },
+          "name": "width",
+          "args": [],
+          "dimension": "length"
         },
-        "name": "height",
-        "args": [],
-        "dimension": "length"
+        "rhs": {
+          "kind": "property",
+          "base": {
+            "kind": "ref",
+            "id": "init.shape"
+          },
+          "name": "width",
+          "args": [],
+          "dimension": "length"
+        }
       },
       "rhs": {
-        "kind": "property",
-        "base": {
-          "kind": "ref",
-          "id": "measured_panel.first.shape"
+        "kind": "binary",
+        "op": "eq",
+        "lhs": {
+          "kind": "property",
+          "base": {
+            "kind": "ref",
+            "id": "check.shape"
+          },
+          "name": "height",
+          "args": [],
+          "dimension": "length"
         },
-        "name": "height",
-        "args": [],
-        "dimension": "length"
+        "rhs": {
+          "kind": "property",
+          "base": {
+            "kind": "ref",
+            "id": "init.shape"
+          },
+          "name": "height",
+          "args": [],
+          "dimension": "length"
+        }
+      }
+    },
+    {
+      "kind": "binary",
+      "op": "and",
+      "lhs": {
+        "kind": "binary",
+        "op": "eq",
+        "lhs": {
+          "kind": "property",
+          "base": {
+            "kind": "ref",
+            "id": "render.shape"
+          },
+          "name": "width",
+          "args": [],
+          "dimension": "length"
+        },
+        "rhs": {
+          "kind": "property",
+          "base": {
+            "kind": "ref",
+            "id": "init.shape"
+          },
+          "name": "width",
+          "args": [],
+          "dimension": "length"
+        }
+      },
+      "rhs": {
+        "kind": "binary",
+        "op": "eq",
+        "lhs": {
+          "kind": "property",
+          "base": {
+            "kind": "ref",
+            "id": "render.shape"
+          },
+          "name": "height",
+          "args": [],
+          "dimension": "length"
+        },
+        "rhs": {
+          "kind": "property",
+          "base": {
+            "kind": "ref",
+            "id": "init.shape"
+          },
+          "name": "height",
+          "args": [],
+          "dimension": "length"
+        }
+      }
+    },
+    {
+      "kind": "binary",
+      "op": "and",
+      "lhs": {
+        "kind": "binary",
+        "op": "eq",
+        "lhs": {
+          "kind": "property",
+          "base": {
+            "kind": "ref",
+            "id": "repair.shape"
+          },
+          "name": "width",
+          "args": [],
+          "dimension": "length"
+        },
+        "rhs": {
+          "kind": "property",
+          "base": {
+            "kind": "ref",
+            "id": "init.shape"
+          },
+          "name": "width",
+          "args": [],
+          "dimension": "length"
+        }
+      },
+      "rhs": {
+        "kind": "binary",
+        "op": "eq",
+        "lhs": {
+          "kind": "property",
+          "base": {
+            "kind": "ref",
+            "id": "repair.shape"
+          },
+          "name": "height",
+          "args": [],
+          "dimension": "length"
+        },
+        "rhs": {
+          "kind": "property",
+          "base": {
+            "kind": "ref",
+            "id": "init.shape"
+          },
+          "name": "height",
+          "args": [],
+          "dimension": "length"
+        }
       }
     },
     {
       "kind": "call",
-      "name": "trim_endpoints",
+      "name": "gap_x",
       "args": [
         {
           "kind": "ref",
-          "id": "measured_panel.forward"
+          "id": "decision.shape"
         },
         {
           "kind": "ref",
-          "id": "measured_panel.first.shape"
+          "id": "repair.shape"
         }
       ]
     },
     {
       "kind": "call",
-      "name": "trim_endpoints",
+      "name": "align_center_y",
       "args": [
         {
           "kind": "ref",
-          "id": "measured_panel.forward"
+          "id": "repair.shape"
         },
         {
           "kind": "ref",
-          "id": "measured_panel.second.shape"
+          "id": "decision.shape"
         }
       ]
     },
@@ -3193,446 +2445,394 @@
       "args": [
         {
           "kind": "ref",
-          "id": "measured_panel.back"
+          "id": "retry"
         },
         {
           "kind": "ref",
-          "id": "measured_panel.first.shape"
+          "id": "init.shape"
         },
         {
           "kind": "ref",
-          "id": "measured_panel.second.shape"
+          "id": "check.shape"
         },
         {
           "kind": "ref",
-          "id": "measured_panel.forward"
-        }
-      ]
-    },
-    {
-      "kind": "call",
-      "name": "gap_x",
-      "args": [
-        {
-          "kind": "ref",
-          "id": "nf"
+          "id": "decision.shape"
         },
         {
           "kind": "ref",
-          "id": "measured_panel"
-        }
-      ]
-    },
-    {
-      "kind": "call",
-      "name": "align_top",
-      "args": [
-        {
-          "kind": "ref",
-          "id": "nf"
+          "id": "render.shape"
         },
         {
           "kind": "ref",
-          "id": "measured_panel"
-        }
-      ]
-    },
-    {
-      "kind": "call",
-      "name": "center",
-      "args": [
-        {
-          "kind": "ref",
-          "id": "measured_heading"
-        },
-        {
-          "kind": "ref",
-          "id": "measured_banner"
-        }
-      ]
-    },
-    {
-      "kind": "call",
-      "name": "contain",
-      "args": [
-        {
-          "kind": "ref",
-          "id": "measured_banner"
-        },
-        {
-          "kind": "ref",
-          "id": "measured_heading"
-        }
-      ]
-    },
-    {
-      "kind": "call",
-      "name": "cover_x",
-      "args": [
-        {
-          "kind": "ref",
-          "id": "measured_banner"
-        },
-        {
-          "kind": "ref",
-          "id": "measured_panel"
-        }
-      ]
-    },
-    {
-      "kind": "call",
-      "name": "gap_y",
-      "args": [
-        {
-          "kind": "ref",
-          "id": "measured_banner"
-        },
-        {
-          "kind": "ref",
-          "id": "measured_panel"
+          "id": "failure"
         }
       ]
     }
   ],
   "solve": {
-    "unknowns": 35,
-    "equations": 99,
-    "rank": 15,
+    "unknowns": 41,
+    "equations": 61,
+    "rank": 25,
     "attempts": 0,
     "outer_search_attempts": 2,
     "measurement_passes": 2,
     "routing_attempts": 0,
     "accepted_steps": 0,
-    "max_normalized_residual": 4.408311952455597e-15,
+    "max_normalized_residual": 9.938839571391695e-13,
     "final_damping": 0.001,
     "settling": {
       "settling_complete": true,
       "exit_reason": "complete",
-      "projected_gradient": 3.417837717350961e-17,
-      "steps": 7,
-      "accepted_moves": 5,
-      "working_set_pivots": 1,
-      "model_rebuilds": 1,
-      "evaluations": 18,
-      "line_search_evaluations": 5,
-      "restoration_steps": 8,
+      "projected_gradient": 3.615419026533642e-10,
+      "steps": 2,
+      "accepted_moves": 1,
+      "working_set_pivots": 0,
+      "model_rebuilds": 0,
+      "evaluations": 2,
+      "line_search_evaluations": 1,
+      "restoration_steps": 0,
       "active_layout_requirements": [
         {
-          "line": 32,
-          "col": 5,
-          "byte_start": 921,
-          "byte_end": 947
-        },
-        {
-          "line": 33,
-          "col": 5,
-          "byte_start": 952,
-          "byte_end": 963
-        },
-        {
-          "line": 57,
+          "line": 80,
           "col": 9,
-          "byte_start": 2043,
-          "byte_end": 2066
-        },
-        {
-          "line": 65,
-          "col": 9,
-          "byte_start": 2278,
-          "byte_end": 2292
-        },
-        {
-          "line": 87,
-          "col": 5,
-          "byte_start": 3424,
-          "byte_end": 3449
-        },
-        {
-          "line": 92,
-          "col": 5,
-          "byte_start": 3635,
-          "byte_end": 3677
-        },
-        {
-          "line": 93,
-          "col": 5,
-          "byte_start": 3682,
-          "byte_end": 3722
-        },
-        {
-          "line": 93,
-          "col": 5,
-          "byte_start": 3682,
-          "byte_end": 3722
-        },
-        {
-          "line": 94,
-          "col": 5,
-          "byte_start": 3727,
-          "byte_end": 3765
+          "byte_start": 4764,
+          "byte_end": 4787
         },
         {
           "line": 71,
-          "col": 5,
-          "byte_start": 2535,
-          "byte_end": 2594
+          "col": 9,
+          "byte_start": 4471,
+          "byte_end": 4494
         },
         {
-          "line": 74,
+          "line": 99,
           "col": 5,
-          "byte_start": 2690,
-          "byte_end": 2766
+          "byte_start": 5639,
+          "byte_end": 5711
         },
         {
-          "line": 75,
+          "line": 99,
           "col": 5,
-          "byte_start": 2771,
-          "byte_end": 2827
+          "byte_start": 5639,
+          "byte_end": 5711
+        },
+        {
+          "line": 99,
+          "col": 5,
+          "byte_start": 5639,
+          "byte_end": 5711
+        },
+        {
+          "line": 99,
+          "col": 5,
+          "byte_start": 5639,
+          "byte_end": 5711
+        },
+        {
+          "line": 112,
+          "col": 5,
+          "byte_start": 6508,
+          "byte_end": 6543
+        },
+        {
+          "line": 129,
+          "col": 1,
+          "byte_start": 7336,
+          "byte_end": 7389
+        },
+        {
+          "line": 129,
+          "col": 1,
+          "byte_start": 7336,
+          "byte_end": 7389
+        },
+        {
+          "line": 134,
+          "col": 1,
+          "byte_start": 7587,
+          "byte_end": 7639
         }
       ],
-      "active_remaining": 8
+      "active_remaining": 6
     },
     "dof": {
-      "global_remaining": 20,
+      "global_remaining": 16,
       "objects": [
         {
           "class": "geometric",
-          "id": "n1",
+          "id": "init.shape",
           "span": {
-            "line": 13,
-            "col": 1,
-            "byte_start": 389,
-            "byte_end": 404
-          },
-          "hint_settled_dofs": 2,
-          "suggestion": "add a relation if unintended, e.g. on(n1, …) or vdist(…) == …"
-        },
-        {
-          "class": "geometric",
-          "id": "n2",
-          "span": {
-            "line": 16,
-            "col": 1,
-            "byte_start": 457,
-            "byte_end": 472
-          },
-          "hint_settled_dofs": 2,
-          "suggestion": "add a relation if unintended, e.g. on(n2, …) or vdist(…) == …"
-        },
-        {
-          "class": "geometric",
-          "id": "n3",
-          "span": {
-            "line": 19,
-            "col": 1,
-            "byte_start": 536,
-            "byte_end": 551
-          },
-          "hint_settled_dofs": 2,
-          "suggestion": "add a relation if unintended, e.g. on(n3, …) or vdist(…) == …"
-        },
-        {
-          "class": "geometric",
-          "id": "n4",
-          "span": {
-            "line": 22,
-            "col": 1,
-            "byte_start": 605,
-            "byte_end": 625
-          },
-          "hint_settled_dofs": 2,
-          "suggestion": "add a relation if unintended, e.g. on(n4, …) or vdist(…) == …"
-        },
-        {
-          "class": "geometric",
-          "id": "n5",
-          "span": {
-            "line": 25,
-            "col": 1,
-            "byte_start": 675,
-            "byte_end": 704
-          },
-          "hint_settled_dofs": 2,
-          "suggestion": "add a relation if unintended, e.g. on(n5, …) or vdist(…) == …"
-        },
-        {
-          "class": "geometric",
-          "id": "nf",
-          "span": {
-            "line": 29,
-            "col": 1,
-            "byte_start": 836,
-            "byte_end": 851
-          },
-          "hint_settled_dofs": 2,
-          "suggestion": "add a relation if unintended, e.g. on(nf, …) or vdist(…) == …"
-        },
-        {
-          "class": "geometric",
-          "id": "measured_panel.first.shape",
-          "span": {
-            "line": 54,
+            "line": 56,
             "col": 5,
-            "byte_start": 1939,
-            "byte_end": 1972
+            "byte_start": 3660,
+            "byte_end": 3672
           },
           "hint_settled_dofs": 2,
-          "suggestion": "add a relation if unintended, e.g. on(measured_panel.first.shape, …) or vdist(…) == …"
+          "suggestion": "add a relation if unintended, e.g. on(init.shape, …) or vdist(…) == …"
         },
         {
           "class": "automatic_dimension",
-          "id": "measured_panel.first.shape",
+          "id": "init.shape",
           "span": {
-            "line": 54,
+            "line": 56,
             "col": 5,
-            "byte_start": 1939,
-            "byte_end": 1972
+            "byte_start": 3660,
+            "byte_end": 3672
           },
           "hint_settled_dofs": 2,
           "suggestion": ""
         },
         {
           "class": "label_placement",
-          "id": "measured_panel.first.caption",
+          "id": "init.caption",
           "span": {
-            "line": 55,
+            "line": 58,
             "col": 5,
-            "byte_start": 1977,
-            "byte_end": 2003
+            "byte_start": 3754,
+            "byte_end": 3773
           },
           "hint_settled_dofs": 2,
           "suggestion": ""
         },
         {
           "class": "geometric",
-          "id": "measured_panel.second.shape",
+          "id": "add.shape",
           "span": {
-            "line": 54,
+            "line": 56,
             "col": 5,
-            "byte_start": 1939,
-            "byte_end": 1972
+            "byte_start": 3660,
+            "byte_end": 3672
           },
           "hint_settled_dofs": 2,
-          "suggestion": "add a relation if unintended, e.g. on(measured_panel.second.shape, …) or vdist(…) == …"
+          "suggestion": "add a relation if unintended, e.g. on(add.shape, …) or vdist(…) == …"
         },
         {
           "class": "automatic_dimension",
-          "id": "measured_panel.second.shape",
+          "id": "add.shape",
           "span": {
-            "line": 54,
+            "line": 56,
             "col": 5,
-            "byte_start": 1939,
-            "byte_end": 1972
+            "byte_start": 3660,
+            "byte_end": 3672
           },
           "hint_settled_dofs": 2,
           "suggestion": ""
         },
         {
           "class": "label_placement",
-          "id": "measured_panel.second.caption",
+          "id": "add.caption",
           "span": {
-            "line": 55,
+            "line": 58,
             "col": 5,
-            "byte_start": 1977,
-            "byte_end": 2003
+            "byte_start": 3754,
+            "byte_end": 3773
           },
           "hint_settled_dofs": 2,
-          "suggestion": ""
-        },
-        {
-          "class": "route_label_parameter",
-          "id": "measured_panel.next",
-          "span": {
-            "line": 71,
-            "col": 5,
-            "byte_start": 2535,
-            "byte_end": 2594
-          },
-          "hint_settled_dofs": 1,
-          "suggestion": ""
-        },
-        {
-          "class": "route_label_parameter",
-          "id": "measured_panel.next",
-          "span": {
-            "line": 71,
-            "col": 5,
-            "byte_start": 2535,
-            "byte_end": 2594
-          },
-          "hint_settled_dofs": 1,
-          "suggestion": ""
-        },
-        {
-          "class": "route_label_parameter",
-          "id": "measured_panel.back",
-          "span": {
-            "line": 74,
-            "col": 5,
-            "byte_start": 2690,
-            "byte_end": 2766
-          },
-          "hint_settled_dofs": 1,
-          "suggestion": ""
-        },
-        {
-          "class": "route_label_parameter",
-          "id": "measured_panel.retry",
-          "span": {
-            "line": 75,
-            "col": 5,
-            "byte_start": 2771,
-            "byte_end": 2827
-          },
-          "hint_settled_dofs": 1,
-          "suggestion": ""
-        },
-        {
-          "class": "route_label_parameter",
-          "id": "measured_panel.retry",
-          "span": {
-            "line": 75,
-            "col": 5,
-            "byte_start": 2771,
-            "byte_end": 2827
-          },
-          "hint_settled_dofs": 1,
           "suggestion": ""
         },
         {
           "class": "geometric",
-          "id": "measured_banner",
+          "id": "check.shape",
           "span": {
-            "line": 89,
-            "col": 1,
-            "byte_start": 3484,
-            "byte_end": 3506
+            "line": 56,
+            "col": 5,
+            "byte_start": 3660,
+            "byte_end": 3672
           },
           "hint_settled_dofs": 2,
-          "suggestion": "add a relation if unintended, e.g. on(measured_banner, …) or vdist(…) == …"
+          "suggestion": "add a relation if unintended, e.g. on(check.shape, …) or vdist(…) == …"
         },
         {
           "class": "automatic_dimension",
-          "id": "measured_banner",
+          "id": "check.shape",
           "span": {
-            "line": 89,
-            "col": 1,
-            "byte_start": 3484,
-            "byte_end": 3506
+            "line": 56,
+            "col": 5,
+            "byte_start": 3660,
+            "byte_end": 3672
           },
           "hint_settled_dofs": 2,
           "suggestion": ""
         },
         {
           "class": "label_placement",
-          "id": "measured_heading",
+          "id": "check.caption",
           "span": {
-            "line": 90,
-            "col": 1,
-            "byte_start": 3507,
-            "byte_end": 3584
+            "line": 58,
+            "col": 5,
+            "byte_start": 3754,
+            "byte_end": 3773
           },
           "hint_settled_dofs": 2,
+          "suggestion": ""
+        },
+        {
+          "class": "geometric",
+          "id": "decision.shape",
+          "span": {
+            "line": 76,
+            "col": 5,
+            "byte_start": 4603,
+            "byte_end": 4618
+          },
+          "hint_settled_dofs": 2,
+          "suggestion": "add a relation if unintended, e.g. on(decision.shape, …) or vdist(…) == …"
+        },
+        {
+          "class": "automatic_dimension",
+          "id": "decision.shape",
+          "span": {
+            "line": 76,
+            "col": 5,
+            "byte_start": 4603,
+            "byte_end": 4618
+          },
+          "hint_settled_dofs": 2,
+          "suggestion": ""
+        },
+        {
+          "class": "label_placement",
+          "id": "decision.caption",
+          "span": {
+            "line": 77,
+            "col": 5,
+            "byte_start": 4623,
+            "byte_end": 4642
+          },
+          "hint_settled_dofs": 2,
+          "suggestion": ""
+        },
+        {
+          "class": "geometric",
+          "id": "render.shape",
+          "span": {
+            "line": 56,
+            "col": 5,
+            "byte_start": 3660,
+            "byte_end": 3672
+          },
+          "hint_settled_dofs": 2,
+          "suggestion": "add a relation if unintended, e.g. on(render.shape, …) or vdist(…) == …"
+        },
+        {
+          "class": "automatic_dimension",
+          "id": "render.shape",
+          "span": {
+            "line": 56,
+            "col": 5,
+            "byte_start": 3660,
+            "byte_end": 3672
+          },
+          "hint_settled_dofs": 2,
+          "suggestion": ""
+        },
+        {
+          "class": "label_placement",
+          "id": "render.caption",
+          "span": {
+            "line": 58,
+            "col": 5,
+            "byte_start": 3754,
+            "byte_end": 3773
+          },
+          "hint_settled_dofs": 2,
+          "suggestion": ""
+        },
+        {
+          "class": "geometric",
+          "id": "repair.shape",
+          "span": {
+            "line": 56,
+            "col": 5,
+            "byte_start": 3660,
+            "byte_end": 3672
+          },
+          "hint_settled_dofs": 2,
+          "suggestion": "add a relation if unintended, e.g. on(repair.shape, …) or vdist(…) == …"
+        },
+        {
+          "class": "automatic_dimension",
+          "id": "repair.shape",
+          "span": {
+            "line": 56,
+            "col": 5,
+            "byte_start": 3660,
+            "byte_end": 3672
+          },
+          "hint_settled_dofs": 2,
+          "suggestion": ""
+        },
+        {
+          "class": "label_placement",
+          "id": "repair.caption",
+          "span": {
+            "line": 58,
+            "col": 5,
+            "byte_start": 3754,
+            "byte_end": 3773
+          },
+          "hint_settled_dofs": 2,
+          "suggestion": ""
+        },
+        {
+          "class": "route_label_parameter",
+          "id": "yes",
+          "span": {
+            "line": 129,
+            "col": 1,
+            "byte_start": 7336,
+            "byte_end": 7389
+          },
+          "hint_settled_dofs": 1,
+          "suggestion": ""
+        },
+        {
+          "class": "route_label_parameter",
+          "id": "yes",
+          "span": {
+            "line": 129,
+            "col": 1,
+            "byte_start": 7336,
+            "byte_end": 7389
+          },
+          "hint_settled_dofs": 1,
+          "suggestion": ""
+        },
+        {
+          "class": "route_label_parameter",
+          "id": "no",
+          "span": {
+            "line": 134,
+            "col": 1,
+            "byte_start": 7587,
+            "byte_end": 7639
+          },
+          "hint_settled_dofs": 1,
+          "suggestion": ""
+        },
+        {
+          "class": "route_label_parameter",
+          "id": "no",
+          "span": {
+            "line": 134,
+            "col": 1,
+            "byte_start": 7587,
+            "byte_end": 7639
+          },
+          "hint_settled_dofs": 1,
+          "suggestion": ""
+        },
+        {
+          "class": "route_label_parameter",
+          "id": "retry",
+          "span": {
+            "line": 140,
+            "col": 1,
+            "byte_start": 7926,
+            "byte_end": 7984
+          },
+          "hint_settled_dofs": 1,
           "suggestion": ""
         }
       ]
@@ -3640,30 +2840,30 @@
     "branch_resolutions": [
       {
         "span": {
-          "line": 74,
-          "col": 5,
-          "byte_start": 2690,
-          "byte_end": 2766
+          "line": 140,
+          "col": 1,
+          "byte_start": 7926,
+          "byte_end": 7984
         },
-        "choice": "route measured_panel.back: Right, three-span"
+        "choice": "route retry: Right, quadratic"
       },
       {
         "span": {
-          "line": 71,
-          "col": 5,
-          "byte_start": 2535,
-          "byte_end": 2594
+          "line": 129,
+          "col": 1,
+          "byte_start": 7336,
+          "byte_end": 7389
         },
-        "choice": "label measured_panel.next: Left, candidate 0"
+        "choice": "label yes: Left, candidate 1"
       },
       {
         "span": {
-          "line": 75,
-          "col": 5,
-          "byte_start": 2771,
-          "byte_end": 2827
+          "line": 134,
+          "col": 1,
+          "byte_start": 7587,
+          "byte_end": 7639
         },
-        "choice": "label measured_panel.retry: Right, candidate 0"
+        "choice": "label no: Above, candidate 0"
       }
     ],
     "hint_displacements": [],
@@ -3671,226 +2871,300 @@
     "relation_residuals": [
       {
         "span": {
-          "line": 32,
-          "col": 5,
-          "byte_start": 921,
-          "byte_end": 947
-        },
-        "max_normalized_residual": 4.568198914461758e-17,
-        "implicated_unknowns": [
-          "n1",
-          "n2",
-          "n3",
-          "n4",
-          "n5"
-        ]
-      },
-      {
-        "span": {
-          "line": 33,
-          "col": 5,
-          "byte_start": 952,
-          "byte_end": 963
-        },
-        "max_normalized_residual": 1.353328928409296e-15,
-        "implicated_unknowns": [
-          "n4",
-          "nf"
-        ]
-      },
-      {
-        "span": {
-          "line": 56,
+          "line": 63,
           "col": 9,
-          "byte_start": 2012,
-          "byte_end": 2034
+          "byte_start": 3997,
+          "byte_end": 4019
         },
-        "max_normalized_residual": 7.423323236000358e-17,
+        "max_normalized_residual": 9.471123902665084e-18,
         "implicated_unknowns": [
-          "measured_panel.first.shape",
-          "measured_panel.first.caption"
+          "init.shape",
+          "init.caption"
         ]
       },
       {
         "span": {
-          "line": 57,
+          "line": 71,
           "col": 9,
-          "byte_start": 2043,
-          "byte_end": 2066
+          "byte_start": 4471,
+          "byte_end": 4494
         },
         "max_normalized_residual": 0.0,
         "implicated_unknowns": []
       },
       {
         "span": {
-          "line": 56,
+          "line": 63,
           "col": 9,
-          "byte_start": 2012,
-          "byte_end": 2034
-        },
-        "max_normalized_residual": 1.5988696200616154e-16,
-        "implicated_unknowns": [
-          "measured_panel.second.shape",
-          "measured_panel.second.caption"
-        ]
-      },
-      {
-        "span": {
-          "line": 57,
-          "col": 9,
-          "byte_start": 2043,
-          "byte_end": 2066
-        },
-        "max_normalized_residual": 9.992935125385096e-18,
-        "implicated_unknowns": [
-          "measured_panel.second.shape",
-          "measured_panel.second.caption"
-        ]
-      },
-      {
-        "span": {
-          "line": 65,
-          "col": 9,
-          "byte_start": 2278,
-          "byte_end": 2292
-        },
-        "max_normalized_residual": 1.730205338852391e-15,
-        "implicated_unknowns": [
-          "measured_panel.first.shape",
-          "measured_panel.second.shape"
-        ]
-      },
-      {
-        "span": {
-          "line": 66,
-          "col": 9,
-          "byte_start": 2301,
-          "byte_end": 2340
+          "byte_start": 3997,
+          "byte_end": 4019
         },
         "max_normalized_residual": 0.0,
         "implicated_unknowns": [
-          "measured_panel.first.shape",
-          "measured_panel.second.shape"
+          "add.shape",
+          "add.caption"
         ]
       },
       {
         "span": {
-          "line": 67,
+          "line": 71,
           "col": 9,
-          "byte_start": 2349,
-          "byte_end": 2390
-        },
-        "max_normalized_residual": 4.1684815094463544e-16,
-        "implicated_unknowns": [
-          "measured_panel.first.shape",
-          "measured_panel.second.shape"
-        ]
-      },
-      {
-        "span": {
-          "line": 72,
-          "col": 9,
-          "byte_start": 2603,
-          "byte_end": 2639
+          "byte_start": 4471,
+          "byte_end": 4494
         },
         "max_normalized_residual": 0.0,
         "implicated_unknowns": []
       },
       {
         "span": {
-          "line": 73,
+          "line": 63,
           "col": 9,
-          "byte_start": 2648,
-          "byte_end": 2685
+          "byte_start": 3997,
+          "byte_end": 4019
         },
         "max_normalized_residual": 0.0,
-        "implicated_unknowns": []
+        "implicated_unknowns": [
+          "check.shape",
+          "check.caption"
+        ]
       },
       {
         "span": {
-          "line": 76,
+          "line": 71,
           "col": 9,
-          "byte_start": 2836,
-          "byte_end": 2883
+          "byte_start": 4471,
+          "byte_end": 4494
         },
         "max_normalized_residual": 0.0,
         "implicated_unknowns": []
       },
       {
         "span": {
-          "line": 87,
-          "col": 5,
-          "byte_start": 3424,
-          "byte_end": 3449
+          "line": 78,
+          "col": 9,
+          "byte_start": 4651,
+          "byte_end": 4673
+        },
+        "max_normalized_residual": 5.051266081421378e-17,
+        "implicated_unknowns": [
+          "decision.shape",
+          "decision.caption"
+        ]
+      },
+      {
+        "span": {
+          "line": 80,
+          "col": 9,
+          "byte_start": 4764,
+          "byte_end": 4787
+        },
+        "max_normalized_residual": 9.938839571391695e-13,
+        "implicated_unknowns": [
+          "decision.shape",
+          "decision.caption"
+        ]
+      },
+      {
+        "span": {
+          "line": 63,
+          "col": 9,
+          "byte_start": 3997,
+          "byte_end": 4019
+        },
+        "max_normalized_residual": 2.525633040710689e-17,
+        "implicated_unknowns": [
+          "render.shape",
+          "render.caption"
+        ]
+      },
+      {
+        "span": {
+          "line": 71,
+          "col": 9,
+          "byte_start": 4471,
+          "byte_end": 4494
+        },
+        "max_normalized_residual": 5.051266081421378e-17,
+        "implicated_unknowns": [
+          "render.shape",
+          "render.caption"
+        ]
+      },
+      {
+        "span": {
+          "line": 63,
+          "col": 9,
+          "byte_start": 3997,
+          "byte_end": 4019
         },
         "max_normalized_residual": 0.0,
         "implicated_unknowns": [
-          "nf",
-          "measured_panel.first.shape",
-          "measured_panel.second.shape"
+          "repair.shape",
+          "repair.caption"
         ]
       },
       {
         "span": {
-          "line": 88,
-          "col": 5,
-          "byte_start": 3454,
-          "byte_end": 3483
-        },
-        "max_normalized_residual": 2.1584739870831807e-15,
-        "implicated_unknowns": [
-          "nf",
-          "measured_panel.first.shape"
-        ]
-      },
-      {
-        "span": {
-          "line": 91,
-          "col": 5,
-          "byte_start": 3589,
-          "byte_end": 3630
-        },
-        "max_normalized_residual": 4.453993941600214e-16,
-        "implicated_unknowns": [
-          "measured_banner",
-          "measured_heading"
-        ]
-      },
-      {
-        "span": {
-          "line": 92,
-          "col": 5,
-          "byte_start": 3635,
-          "byte_end": 3677
-        },
-        "max_normalized_residual": 2.6152938785293566e-15,
-        "implicated_unknowns": [
-          "measured_banner",
-          "measured_heading"
-        ]
-      },
-      {
-        "span": {
-          "line": 93,
-          "col": 5,
-          "byte_start": 3682,
-          "byte_end": 3722
+          "line": 71,
+          "col": 9,
+          "byte_start": 4471,
+          "byte_end": 4494
         },
         "max_normalized_residual": 0.0,
         "implicated_unknowns": []
       },
       {
         "span": {
-          "line": 94,
+          "line": 99,
           "col": 5,
-          "byte_start": 3727,
-          "byte_end": 3765
+          "byte_start": 5639,
+          "byte_end": 5711
         },
-        "max_normalized_residual": 4.408311952455597e-15,
+        "max_normalized_residual": 1.2628165203553445e-16,
         "implicated_unknowns": [
-          "measured_panel.first.shape",
-          "measured_banner"
+          "init.shape",
+          "add.shape",
+          "check.shape",
+          "decision.shape",
+          "render.shape"
         ]
+      },
+      {
+        "span": {
+          "line": 104,
+          "col": 5,
+          "byte_start": 5944,
+          "byte_end": 5979
+        },
+        "max_normalized_residual": 1.0102532162842756e-16,
+        "implicated_unknowns": [
+          "init.shape",
+          "add.shape"
+        ]
+      },
+      {
+        "span": {
+          "line": 104,
+          "col": 45,
+          "byte_start": 5984,
+          "byte_end": 6021
+        },
+        "max_normalized_residual": 5.051266081421378e-17,
+        "implicated_unknowns": [
+          "init.shape",
+          "add.shape"
+        ]
+      },
+      {
+        "span": {
+          "line": 105,
+          "col": 5,
+          "byte_start": 6026,
+          "byte_end": 6063
+        },
+        "max_normalized_residual": 1.0102532162842756e-16,
+        "implicated_unknowns": [
+          "init.shape",
+          "check.shape"
+        ]
+      },
+      {
+        "span": {
+          "line": 105,
+          "col": 47,
+          "byte_start": 6068,
+          "byte_end": 6107
+        },
+        "max_normalized_residual": 2.525633040710689e-17,
+        "implicated_unknowns": [
+          "init.shape",
+          "check.shape"
+        ]
+      },
+      {
+        "span": {
+          "line": 106,
+          "col": 5,
+          "byte_start": 6112,
+          "byte_end": 6150
+        },
+        "max_normalized_residual": 1.0102532162842756e-16,
+        "implicated_unknowns": [
+          "init.shape",
+          "render.shape"
+        ]
+      },
+      {
+        "span": {
+          "line": 106,
+          "col": 48,
+          "byte_start": 6155,
+          "byte_end": 6195
+        },
+        "max_normalized_residual": 0.0,
+        "implicated_unknowns": [
+          "init.shape",
+          "render.shape"
+        ]
+      },
+      {
+        "span": {
+          "line": 107,
+          "col": 5,
+          "byte_start": 6200,
+          "byte_end": 6238
+        },
+        "max_normalized_residual": 2.0205064325685512e-16,
+        "implicated_unknowns": [
+          "init.shape",
+          "repair.shape"
+        ]
+      },
+      {
+        "span": {
+          "line": 107,
+          "col": 48,
+          "byte_start": 6243,
+          "byte_end": 6283
+        },
+        "max_normalized_residual": 1.0102532162842756e-16,
+        "implicated_unknowns": [
+          "init.shape",
+          "repair.shape"
+        ]
+      },
+      {
+        "span": {
+          "line": 112,
+          "col": 5,
+          "byte_start": 6508,
+          "byte_end": 6543
+        },
+        "max_normalized_residual": 0.0,
+        "implicated_unknowns": []
+      },
+      {
+        "span": {
+          "line": 117,
+          "col": 5,
+          "byte_start": 6745,
+          "byte_end": 6789
+        },
+        "max_normalized_residual": 5.051266081421378e-17,
+        "implicated_unknowns": [
+          "decision.shape",
+          "repair.shape"
+        ]
+      },
+      {
+        "span": {
+          "line": 148,
+          "col": 5,
+          "byte_start": 8429,
+          "byte_end": 8505
+        },
+        "max_normalized_residual": 0.0,
+        "implicated_unknowns": []
       }
     ]
   }

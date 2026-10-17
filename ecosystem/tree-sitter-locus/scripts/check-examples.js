@@ -55,7 +55,7 @@ for (const name of ["highlights", "brackets", "indents", "outline"]) {
 // Zed requires an @indent capture; a syntactically valid empty query is rejected.
 const indents = run(["query", "--captures",
   join(root, "ecosystem/zed/languages/locus/indents.scm"),
-  join(root, "examples/composition/flowchart_agent_loop.locus"),
+  join(root, "examples/demonstrations/flowchart_agent_loop.locus"),
 ]);
 for (const capture of ["indent", "start", "end"]) {
   assert.match(indents, new RegExp(`capture: \\d+ - ${capture},`));

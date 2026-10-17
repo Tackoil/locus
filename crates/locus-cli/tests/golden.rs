@@ -9,6 +9,22 @@ use assert_cmd::Command;
 
 type Result<T = ()> = std::result::Result<T, Box<dyn Error>>;
 
+// Report snapshots stay focused; every demonstration is checked for determinism below.
+const GOLDEN_DEMONSTRATIONS: &[&str] = &[
+    "aec3_filter_alignment",
+    "angle_bisector_ratio",
+    "bspline_controls",
+    "ellipse_foci",
+    "euler_nine_point",
+    "flowchart_agent_loop",
+    "inscribed_angle",
+    "pentagon_golden",
+    "point_relations",
+    "rounded_rect",
+    "sequence_check",
+    "tangent_circles",
+];
+
 fn root() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("../..")
 }
@@ -75,7 +91,8 @@ fn compare(path: &Path, extension: &str, actual: &[u8]) -> Result {
 
 #[test]
 fn demonstration_goldens() -> Result {
-    for path in fixtures()? {
+    for name in GOLDEN_DEMONSTRATIONS {
+        let path = Path::new("examples/demonstrations").join(format!("{name}.locus"));
         for command in ["describe", "inspect"] {
             let args: &[&str] = if command == "inspect" {
                 &["--json", "--measurements", "--incidences"]

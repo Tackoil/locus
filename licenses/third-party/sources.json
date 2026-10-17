@@ -124,6 +124,66 @@
       "path": "noto-cjk-name-notices.txt",
       "origin": "https://github.com/notofonts/noto-cjk/blob/523d033d6cb47f4a80c58a35753646f5c3608a78/Sans/OTF/SimplifiedChinese/NotoSansCJKsc-Regular.otf (embedded name IDs 0, 13, 14; font SHA-256 2c76254f6fc379fddfce0a7e84fb5385bb135d3e399294f6eeb6680d0365b74b)",
       "sha256": "1d02a08c56feeb0d9ee0f8a042246dd510e963099e0e0fec5771dd9f7acf8f30"
+    },
+    "equator@0.2.2-MIT": {
+      "path": "equator-MIT.txt",
+      "origin": "https://github.com/sarah-ek/equator/blob/9d4107bdd6a75598aed4a60fe46200c9e9f4e653/LICENSE",
+      "sha256": "97d3424e347e8fa236806725ce9837bb453d4dfc9ce1d4733fd6023a8038000a"
+    },
+    "equator-macro@0.2.1-MIT": {
+      "path": "equator-MIT.txt",
+      "origin": "https://github.com/sarah-ek/equator/blob/c9061f3da9a7cc53b0d388f26ab6bb95422823c3/LICENSE",
+      "sha256": "97d3424e347e8fa236806725ce9837bb453d4dfc9ce1d4733fd6023a8038000a"
+    },
+    "faer@0.22.6-MIT": {
+      "path": "faer-MIT.txt",
+      "origin": "https://github.com/sarah-quinones/faer-rs/blob/325fbbea7e5a85dd8146fd719b6b7e73dccf4996/LICENSE",
+      "sha256": "4263a9907c8e8d799f714d5cf2ec18663772f09e7eef3eeaaab074ea29ee1358"
+    },
+    "faer-macros@0.21.0-MIT": {
+      "path": "faer-MIT.txt",
+      "origin": "https://github.com/sarah-quinones/faer-rs/blob/83e30d21d61e846a330dac2eea3b04807100938c/LICENSE",
+      "sha256": "4263a9907c8e8d799f714d5cf2ec18663772f09e7eef3eeaaab074ea29ee1358"
+    },
+    "faer-traits@0.22.1-MIT": {
+      "path": "faer-MIT.txt",
+      "origin": "https://github.com/sarah-quinones/faer-rs/blob/ef237e85390cc1ea1e2ce87144278b31650e3bc1/LICENSE",
+      "sha256": "4263a9907c8e8d799f714d5cf2ec18663772f09e7eef3eeaaab074ea29ee1358"
+    },
+    "nano-gemm@0.1.3-MIT": {
+      "path": "nano-gemm-MIT.txt",
+      "origin": "https://github.com/sarah-ek/nano-gemm/blob/0beb2d01293b8a9be5f94d65fd86cc6239cc163b/LICENSE",
+      "sha256": "310b7323adcc27fc94c45d1155b6c89c17986576d790f766a04c855662428a7c"
+    },
+    "nano-gemm-c32@0.1.0-MIT": {
+      "path": "nano-gemm-MIT.txt",
+      "origin": "https://github.com/sarah-ek/nano-gemm/blob/3fd0899bcc450daccd9441c93d16213a753bccc2/LICENSE",
+      "sha256": "310b7323adcc27fc94c45d1155b6c89c17986576d790f766a04c855662428a7c"
+    },
+    "nano-gemm-c64@0.1.0-MIT": {
+      "path": "nano-gemm-MIT.txt",
+      "origin": "https://github.com/sarah-ek/nano-gemm/blob/3fd0899bcc450daccd9441c93d16213a753bccc2/LICENSE",
+      "sha256": "310b7323adcc27fc94c45d1155b6c89c17986576d790f766a04c855662428a7c"
+    },
+    "nano-gemm-codegen@0.1.0-MIT": {
+      "path": "nano-gemm-MIT.txt",
+      "origin": "https://github.com/sarah-ek/nano-gemm/blob/d891c53a839db924309765a7c91e6bb6abec0123/LICENSE",
+      "sha256": "310b7323adcc27fc94c45d1155b6c89c17986576d790f766a04c855662428a7c"
+    },
+    "nano-gemm-core@0.1.0-MIT": {
+      "path": "nano-gemm-MIT.txt",
+      "origin": "https://github.com/sarah-ek/nano-gemm/blob/94fdd65f108a9459654b113d6723ad6c64bc9e50/LICENSE",
+      "sha256": "310b7323adcc27fc94c45d1155b6c89c17986576d790f766a04c855662428a7c"
+    },
+    "nano-gemm-f32@0.1.0-MIT": {
+      "path": "nano-gemm-MIT.txt",
+      "origin": "https://github.com/sarah-ek/nano-gemm/blob/d891c53a839db924309765a7c91e6bb6abec0123/LICENSE",
+      "sha256": "310b7323adcc27fc94c45d1155b6c89c17986576d790f766a04c855662428a7c"
+    },
+    "nano-gemm-f64@0.1.0-MIT": {
+      "path": "nano-gemm-MIT.txt",
+      "origin": "https://github.com/sarah-ek/nano-gemm/blob/d891c53a839db924309765a7c91e6bb6abec0123/LICENSE",
+      "sha256": "310b7323adcc27fc94c45d1155b6c89c17986576d790f766a04c855662428a7c"
     }
   },
   "components": {
@@ -301,6 +361,66 @@
     "font:Noto Sans CJK SC": {
       "files": [
         "noto-cjk-name-notices"
+      ]
+    },
+    "equator@0.2.2": {
+      "files": [
+        "equator@0.2.2-MIT"
+      ]
+    },
+    "equator-macro@0.2.1": {
+      "files": [
+        "equator-macro@0.2.1-MIT"
+      ]
+    },
+    "faer@0.22.6": {
+      "files": [
+        "faer@0.22.6-MIT"
+      ]
+    },
+    "faer-macros@0.21.0": {
+      "files": [
+        "faer-macros@0.21.0-MIT"
+      ]
+    },
+    "faer-traits@0.22.1": {
+      "files": [
+        "faer-traits@0.22.1-MIT"
+      ]
+    },
+    "nano-gemm@0.1.3": {
+      "files": [
+        "nano-gemm@0.1.3-MIT"
+      ]
+    },
+    "nano-gemm-c32@0.1.0": {
+      "files": [
+        "nano-gemm-c32@0.1.0-MIT"
+      ]
+    },
+    "nano-gemm-c64@0.1.0": {
+      "files": [
+        "nano-gemm-c64@0.1.0-MIT"
+      ]
+    },
+    "nano-gemm-codegen@0.1.0": {
+      "files": [
+        "nano-gemm-codegen@0.1.0-MIT"
+      ]
+    },
+    "nano-gemm-core@0.1.0": {
+      "files": [
+        "nano-gemm-core@0.1.0-MIT"
+      ]
+    },
+    "nano-gemm-f32@0.1.0": {
+      "files": [
+        "nano-gemm-f32@0.1.0-MIT"
+      ]
+    },
+    "nano-gemm-f64@0.1.0": {
+      "files": [
+        "nano-gemm-f64@0.1.0-MIT"
       ]
     }
   }

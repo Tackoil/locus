@@ -42,3 +42,17 @@ node --test crates/locus-cli/tests/visualizer.test.cjs
 
 The viewer logic tests use only Node's built-in test runner; the generated HTML
 requires no Node installation or external assets.
+
+Measure full release exports of all 42 demonstrations with:
+
+```sh
+cargo build --release --locked -p locus-cli --features png
+python3 scripts/benchmark_render.py --formats svg png tikz --runs 3 --limit 1
+```
+
+The benchmark launches a fresh CLI process for every export, disables diagnostic
+solver dumps, and verifies each output file. It warms the executable once to exclude
+new-binary OS verification. The JSON report records every elapsed time, platform,
+and executable hash; any failed export or run over the limit fails the command.
+Run it without concurrent builds or tests. The one-second target applies to this
+release export workload on the measured machine, rather than arbitrary input sizes.

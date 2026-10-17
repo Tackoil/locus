@@ -318,7 +318,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--json", action="store_true", help="print expanded structural counts")
     options = parser.parse_args()
-    paths = sorted((ROOT / "examples/demonstrations").rglob("*.locus")) + sorted((ROOT / "examples/stress").rglob("*.locus")) + sorted((ROOT / "examples/composition").rglob("*.locus"))
+    paths = sorted((ROOT / "examples/demonstrations").rglob("*.locus")) + sorted((ROOT / "examples/stress").rglob("*.locus"))
     paths.append(ROOT / "tests/fixtures/solver/closed_segment_bisectors.locus")
     records = []
     errors = []

@@ -1,17 +1,33 @@
-# Composition examples compared with Mermaid
+# Demonstrations
 
-One `.locus` file contains one complete figure for each of the **31 diagram types**
-listed in the [Mermaid documentation](https://mermaid.js.org/intro/).
-The 29 added figures adapt representative examples from those pages, following
-their subjects, data, relationships, and approximate scale. The existing
-agent-loop and checkout-sequence figures remain the specification's reusable
-composition examples. Every source is self-contained and uses `locus 0 beta 6`.
+This directory contains **42 self-contained figures** using `locus 0 beta 6`: eleven
+geometry and technical examples, and one example for each of 31 diagram types.
+The agent-loop and checkout figures are the specification's reusable composition
+examples. Each figure has one canonical source in this directory.
 
-Use the **Mermaid reference example** column to find the corresponding example
-on the linked documentation page. The figures use Locus geometry, measured
-labels, local functions, and layout relations. Colors, routing, and spacing can
-differ between the renderers. Long filler text and descriptions are shortened
-where the table says so.
+## Geometry and technical examples
+
+| File | Demonstrates |
+| --- | --- |
+| [aec3_filter_alignment.locus](aec3_filter_alignment.locus) | Filter-bank alignment and delay annotations |
+| [angle_bisector_ratio.locus](angle_bisector_ratio.locus) | Triangle on a placed circumcircle, derived intersection, and the angle-bisector theorem |
+| [bspline_controls.locus](bspline_controls.locus) | Five derived controls, two cubic spans, clamped endpoints, and an interior-knot sample |
+| [ellipse_foci.locus](ellipse_foci.locus) | Rotated semiaxes, foci, containment, and area scaling |
+| [euler_nine_point.locus](euler_nine_point.locus) | Euler line and nine-point circle constructions |
+| [inscribed_angle.locus](inscribed_angle.locus) | Inscribed-angle geometry and arc marks |
+| [pentagon_golden.locus](pentagon_golden.locus) | Regular pentagon and golden-ratio relationships |
+| [point_relations.locus](point_relations.locus) | Parameterless points, relative placement, a 3-4-5 triangle, and a derived circumcircle |
+| [rounded_rect.locus](rounded_rect.locus) | Explicit rounded boxes/capsules plus an automatically sized diamond, measured caption, and curved connector |
+| [sequence_check.locus](sequence_check.locus) | Explicit message geometry plus generic function instances, frame/tab layout, finite edges, preset dimensions, and clipped paths |
+| [tangent_circles.locus](tangent_circles.locus) | Solved tangent circles and common tangents |
+
+## Diagram examples
+
+The table records the Mermaid documentation examples that inspired the figures,
+preserving their subjects, data, relationships, and approximate scale. These are
+source references; running the Locus examples requires no Mermaid or D2 executable.
+The figures use Locus geometry, measured labels, local functions, and layout
+relations. Colors, routing, and spacing may differ from the reference examples.
 
 | Type / Mermaid documentation | Mermaid reference example | Locus figure | Scope |
 | --- | --- | --- | --- |
@@ -73,25 +89,25 @@ From the repository root:
 
 ```sh
 python3 scripts/check_examples.py
-cargo run --release -p locus-cli -- check examples/composition/*.locus
-cargo run --release -p locus-cli -- render examples/composition/class_diagram.locus \
+cargo run --release -p locus-cli -- check examples/demonstrations/*.locus
+cargo run --release -p locus-cli -- render examples/demonstrations/class_diagram.locus \
   -o target/class_diagram.svg
 cargo test --release -p locus-render --test corpus_acceptance --all-features \
-  composition_examples_render_with_shared_measurements
+  all_demonstrations_render_with_shared_measurements
 ```
 
 The source audit checks declarations and references. Native checks solve the
-relations and execute assertions. Corpus acceptance checks every composition
-figure with shared bundled-font measurements and SVG/TikZ/PNG backend parity.
+relations and execute assertions. Corpus acceptance checks all 42 demonstration
+figures with shared bundled-font measurements and SVG/TikZ/PNG backend parity.
 Normal checks may report incomplete layout-preference settling, so visual review
 remains part of authoring.
 
 To export all previews while running acceptance:
 
 ```sh
-LOCUS_CORPUS_OUTPUT_DIR="$PWD/target/composition-mermaid-preview" \
+LOCUS_CORPUS_OUTPUT_DIR="$PWD/target/demonstration-preview" \
   cargo test --release -p locus-render --test corpus_acceptance --all-features \
-  composition_examples_render_with_shared_measurements
+  all_demonstrations_render_with_shared_measurements
 ```
 
-Outputs appear under `target/composition-mermaid-preview/composition/`.
+Outputs appear under `target/demonstration-preview/demonstrations/`.

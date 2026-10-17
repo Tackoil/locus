@@ -77,6 +77,7 @@ fn optimize_counted(
     let mut consecutive_pivots = 0;
     let mut rebuilt = false;
     let mut radius = crate::preset::SETTLING_TRUST_RADIUS;
+    let mut tangent_cache = linear::TangentCache::default();
     for _ in 0..SETTLING_WORK_CAP {
         if consecutive_pivots == SETTLING_PIVOT_CAP {
             break;
@@ -94,12 +95,16 @@ fn optimize_counted(
                 None,
             )
         });
-        let Some(independent) = independent_boundaries(&state, &active, initial.len()) else {
+        let Some(independent) =
+            independent_boundaries(&state, &active, initial.len(), &mut tangent_cache)
+        else {
             result.report.reason = "stalled";
             break;
         };
         active = independent;
-        let Some(direction) = direction_with_radius(&state, &active, initial.len(), radius) else {
+        let Some(direction) =
+            direction_with_radius(&state, &active, initial.len(), radius, &mut tangent_cache)
+        else {
             result.report.reason = "stalled";
             break;
         };
@@ -236,11 +241,12 @@ fn independent_boundaries(
     state: &ConstraintState,
     active: &[usize],
     columns: usize,
+    cache: &mut linear::TangentCache,
 ) -> Option<Vec<usize>> {
     let null = if state.equalities.jacobian.is_empty() {
         linear::unconstrained(columns).null
     } else {
-        linear::tangent_projector(&state.equalities.jacobian).ok()?
+        cache.projector(&state.equalities.jacobian).ok()?
     };
     let mut basis: Vec<Vec<f64>> = Vec::new();
     let mut result = Vec::new();
@@ -275,7 +281,13 @@ fn orthogonalize(row: &mut [f64], basis: &[Vec<f64>]) {
 }
 
 fn direction(state: &ConstraintState, active: &[usize], columns: usize) -> Option<Direction> {
-    direction_with_radius(state, active, columns, crate::preset::SETTLING_TRUST_RADIUS)
+    direction_with_radius(
+        state,
+        active,
+        columns,
+        crate::preset::SETTLING_TRUST_RADIUS,
+        &mut linear::TangentCache::default(),
+    )
 }
 
 fn direction_with_radius(
@@ -283,22 +295,24 @@ fn direction_with_radius(
     active: &[usize],
     columns: usize,
     radius: f64,
+    cache: &mut linear::TangentCache,
 ) -> Option<Direction> {
     let working = working_jacobian(state, active);
-    let null = if working.is_empty() {
-        linear::unconstrained(columns).null
+    let (null, basis) = if working.is_empty() {
+        let null = linear::unconstrained(columns).null;
+        (null.clone(), null)
     } else {
-        linear::tangent_projector(&working).ok()?
+        linear::working_tangent(&state.equalities.jacobian, &working, columns, cache).ok()?
     };
-    let projected = project_rows(&state.preferences.jacobian, &null);
-    let delta = preference_step(&projected, &state.preferences.values, &null, radius)?;
+    let projected = project_rows(&state.preferences.jacobian, &basis);
+    let delta = preference_step(&projected, &state.preferences.values, &basis, radius)?;
     let gradient = gradient(&state.preferences, columns);
     let tangent_gradient = linear::multiply(&null, &gradient);
     let projected_gradient = infinity_norm(&tangent_gradient);
     let slope = dot(&tangent_gradient, &delta);
     let stationary = projected_gradient
         <= SETTLING_TOLERANCE * infinity_norm(&state.preferences.values).max(1.0);
-    let release = releasing_row(state, active, &working, &delta, columns, stationary).ok()?;
+    let release = releasing_row(state, active, &basis, &delta, stationary, cache).ok()?;
     Some(Direction {
         delta,
         slope,
@@ -339,10 +353,10 @@ fn gradient(rows: &Rows, columns: usize) -> Vec<f64> {
 fn releasing_row(
     state: &ConstraintState,
     active: &[usize],
-    working: &[Vec<f64>],
+    basis: &[Vec<f64>],
     delta: &[f64],
-    columns: usize,
     stationary: bool,
+    cache: &mut linear::TangentCache,
 ) -> Result<Option<usize>, ()> {
     if active.is_empty() {
         return Ok(None);
@@ -354,15 +368,44 @@ fn releasing_row(
             *value += change;
         }
     }
-    let rhs = gradient(&model, columns)
+    let rhs = gradient(&model, delta.len())
         .iter()
         .map(|value| -value)
         .collect::<Vec<_>>();
-    let multipliers = linear::least_squares(&linear::transpose(working), &rhs)?;
-    let offset = state.equalities.values.len();
+    let multipliers = boundary_multipliers(state, active, basis, &rhs, cache)?;
     Ok(active.iter().enumerate().find_map(|(position, index)| {
-        (multipliers[offset + position] > SETTLING_TOLERANCE).then_some(*index)
+        (multipliers[position] > SETTLING_TOLERANCE).then_some(*index)
     }))
+}
+
+fn boundary_multipliers(
+    state: &ConstraintState,
+    active: &[usize],
+    working_basis: &[Vec<f64>],
+    rhs: &[f64],
+    cache: &mut linear::TangentCache,
+) -> Result<Vec<f64>, ()> {
+    let equality_basis = if state.equalities.jacobian.is_empty() {
+        linear::unconstrained(rhs.len()).null
+    } else {
+        cache.space(&state.equalities.jacobian)?.1
+    };
+    let equality_remaining = equality_basis.first().map_or(0, Vec::len);
+    let working_remaining = working_basis.first().map_or(0, Vec::len);
+    if equality_remaining == working_remaining + active.len() {
+        let transpose = linear::transpose(&equality_basis);
+        let projected: Vec<_> = active
+            .iter()
+            .map(|index| linear::multiply(&transpose, &state.inequalities.jacobian[*index]))
+            .collect();
+        return linear::least_squares(
+            &linear::transpose(&projected),
+            &linear::multiply(&transpose, rhs),
+        );
+    }
+    let working = working_jacobian(state, active);
+    let multipliers = linear::least_squares(&linear::transpose(&working), rhs)?;
+    Ok(multipliers[state.equalities.values.len()..].to_vec())
 }
 
 fn release(active: &mut Vec<usize>, row: Option<usize>) -> bool {
@@ -492,7 +535,7 @@ fn restore(
             )
         });
         let rows = restoration_rows(&state, active);
-        let step = linear::lm_primary_step(&rows.jacobian, &rows.values, damping)?;
+        let step = linear::restoration_step(&rows.jacobian, &rows.values, damping)?;
         let accepted = restoration_search(&z, &step, active, merit(&rows.values), evaluate);
         if let Some((trial, trial_state)) = accepted {
             z = trial;

@@ -30,6 +30,13 @@ pub(crate) fn norm<S: RouteScalar>(p: &RoutePoint<S>) -> S {
         square.sqrt()
     }
 }
+
+pub(crate) fn primal<S: RouteScalar>(point: &RoutePoint<S>) -> RoutePoint<f64> {
+    RoutePoint {
+        x: point.x.value(),
+        y: point.y.value(),
+    }
+}
 pub(crate) fn minimum<S: RouteScalar>(a: S, b: S) -> S {
     if a.value() <= b.value() { a } else { b }
 }
@@ -72,15 +79,20 @@ pub fn segment_distance<S: RouteScalar>(
 /// Exact signed distance to a simple polygon outline; negative inside.
 #[must_use]
 pub fn polygon_distance<S: RouteScalar>(vertices: &[RoutePoint<S>], p: &RoutePoint<S>) -> S {
-    let mut distance = p.x.constant(f64::INFINITY);
+    let mut distance = f64::INFINITY;
     let mut selected = (&vertices[0], &vertices[1]);
     for (a, b) in edges(vertices) {
-        let candidate = segment_distance(p, a, b);
-        if candidate.value() < distance.value() {
+        let candidate = segment_distance(&primal(p), &primal(a), &primal(b));
+        if candidate < distance {
             distance = candidate;
             selected = (a, b);
         }
     }
+    let distance = if distance.is_finite() {
+        segment_distance(p, selected.0, selected.1)
+    } else {
+        p.x.constant(distance)
+    };
     if distance.value() == 0.0 {
         return boundary_distance(vertices, p, selected);
     }

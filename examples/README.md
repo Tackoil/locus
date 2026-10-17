@@ -2,11 +2,9 @@
 
 The positive `.locus` corpus is split by purpose:
 
-- [`demonstrations/`](demonstrations) contains twelve readable examples of the
-  [`0 beta 6` specification](../spec/specification.md): canonical constructor declarations,
-  derived geometry, measured content, and relational diagram layout.
-- [`composition/`](composition/README.md) contains one figure for each of 31 Mermaid diagram types,
-  including reusable agent-loop and checkout sequence examples.
+- [`demonstrations/`](demonstrations/README.md) contains 42 readable examples of the
+  [`0 beta 6` specification](../spec/specification.md): geometry, measured content,
+  reusable functions, and relational layouts spanning 31 diagram types.
 - [`stress/`](stress) contains 14 expanded workloads. These exercise large construction
   graphs, dense annotations, shared constraints, assertions, deterministic layout, and every
   rendering backend.
@@ -14,8 +12,8 @@ The positive `.locus` corpus is split by purpose:
 Invalid-input fixtures remain in [`tests/fixtures/errors/`](../tests/fixtures/errors) so they are not
 mistaken for runnable examples.
 
-All 57 runnable examples use `0 beta 6`. The source audit also covers the historical solver-limit fixture in `tests/fixtures/solver/`.
-The 26 demonstration/stress sources and 31 composition examples participate in the beta 6 measured-solver, assertion, and SVG/TikZ/PNG parity checks with bundled fonts. The historical solver-limit fixture remains a negative acceptance contract. Feasible preference settling may remain incomplete and produces a strict-check warning.
+All 56 runnable examples use `0 beta 6`. The source audit also covers the historical solver-limit fixture in `tests/fixtures/solver/`.
+All 42 demonstrations and 14 stress examples participate in the beta 6 measured-solver, assertion, and SVG/TikZ/PNG parity checks with bundled fonts. The historical solver-limit fixture remains a negative acceptance contract. Feasible preference settling may remain incomplete and produces a strict-check warning.
 
 Run the available source audit from the repository root:
 
@@ -37,35 +35,23 @@ Run numerical and rendering acceptance with:
 ```sh
 cargo run -p locus-cli -- check examples/demonstrations/*.locus
 cargo run -p locus-cli -- check examples/stress/*.locus
-cargo run -p locus-cli -- check examples/composition/*.locus
 cargo test -p locus-cli -p locus-render --test stress_examples --all-features
 cargo test -p locus-render --test corpus_acceptance --all-features
 ```
 
 ## Demonstrations
 
-| File | Demonstrates |
-| --- | --- |
-| [aec3_filter_alignment.locus](demonstrations/aec3_filter_alignment.locus) | Filter-bank alignment and delay annotations |
-| [angle_bisector_ratio.locus](demonstrations/angle_bisector_ratio.locus) | Triangle on a placed circumcircle, derived intersection, and the angle-bisector theorem |
-| [bspline_controls.locus](demonstrations/bspline_controls.locus) | Five derived controls, two cubic spans, clamped endpoints, and an interior-knot sample |
-| [ellipse_foci.locus](demonstrations/ellipse_foci.locus) | Rotated semiaxes, foci, containment, and area scaling |
-| [euler_nine_point.locus](demonstrations/euler_nine_point.locus) | Euler line and nine-point circle constructions |
-| [flowchart_agent_loop.locus](demonstrations/flowchart_agent_loop.locus) | Explicit flowchart geometry plus nested measured nodes, duplicate groups, title typography, orthogonal returns, and clipping |
-| [inscribed_angle.locus](demonstrations/inscribed_angle.locus) | Inscribed-angle geometry and arc marks |
-| [pentagon_golden.locus](demonstrations/pentagon_golden.locus) | Regular pentagon and golden-ratio relationships |
-| [point_relations.locus](demonstrations/point_relations.locus) | Parameterless points, relative placement, a 3-4-5 triangle, and a derived circumcircle |
-| [rounded_rect.locus](demonstrations/rounded_rect.locus) | Explicit rounded boxes/capsules plus an automatically sized diamond, measured caption, and curved connector |
-| [sequence_check.locus](demonstrations/sequence_check.locus) | Explicit message geometry plus generic function instances, frame/tab layout, finite edges, preset dimensions, and clipped paths |
-| [tangent_circles.locus](demonstrations/tangent_circles.locus) | Solved tangent circles and common tangents |
+The [demonstration catalog](demonstrations/README.md) lists all 42 figures: eleven
+geometry and technical examples plus 31 diagram types, including the canonical
+reusable agent-loop and checkout examples.
 
 ### `0 beta 6` coverage
 
-The twelve demonstrations exercise parameterless points; dimension-only circles, ellipses,
+The demonstrations exercise parameterless points; dimension-only circles, ellipses,
 rectangles, rounded rectangles, and diamonds; derived object aliases; explicit external and internal tangency;
-and cubic, open, non-rational, clamped B-splines. The original 69 demonstration assertion
-statements are retained. Function expansion and added layout cases bring the intended
-demonstration total to 93 assertions and 365 declared objects, as counted by the source audit.
+and cubic, open, non-rational, clamped B-splines. The unified demonstration corpus
+contains 153 assertion statements and 1,289 declared objects after expansion,
+as counted by the source audit.
 
 Same-kind constructors use `kind id(args)`; aliases and differently named constructions
 retain `= rhs`, such as `point M = midpoint(A, B)` and `arc m = angle_arc(...)`.
@@ -80,7 +66,7 @@ nested-group flattening/deduplication, automatic rectangle/diamond/rounded-box s
 standalone and path-attached labels, typography roles, page-relative label preferences,
 orthogonal and curved routes, logical length after clipping, `cover_x`/`cover_y`, symbolic
 flush insets, rectangle `edge` values, `short_length`/`narrow_width`, and member-wise avoidance.
-The larger flowchart creates sixteen measured node pairs, so template reuse is exercised
+The stress flowchart creates sixteen measured node pairs, so template reuse is exercised
 as an expanded workload rather than counted as only one template body.
 
 Public reports describe resolved relationships and measurements.
@@ -119,10 +105,10 @@ legitimately take zero solver iterations.
 equation, and numerical-attempt counts for the original workloads. The source audit checks
 discovery and expanded object/assertion minima; equation/attempt counts require the native
 runtime and are not inferred by the audit. No original assertion was removed or workload
-threshold lowered. Across both directories, all 1,335 original assertion statements remain;
-the additional expanded cases bring the total to 1,467, including the three historical-limit
-assertions. Existing relative placement, nonlinear branch magnitudes, and free numeric
-seeds retain their original values.
+threshold lowered. The 42 demonstrations and 14 stress sources contain 1,113
+assertion statements after expansion; the audit also checks three assertions in
+the historical solver fixture. Existing stress placement, nonlinear branch magnitudes,
+and free numeric seeds retain their original values.
 
 The native stress runners already verify manifest discovery, solve reports, and rendering.
 These checks run against the current parser, evaluator, and measured-layout runtime.
@@ -151,10 +137,6 @@ cargo bench -p locus-render --bench pipeline
 
 Criterion writes detailed reports under `target/criterion/`. The benchmark is intentionally
 separate from the correctness suite so ordinary tests retain no machine-speed threshold.
-
-An opt-in [competitor benchmark](../benchmarks/competitors/README.md) measures complete
-source-to-SVG CLI latency for Locus, Mermaid, and D2 on equivalent agent-flowchart and
-software-architecture workloads.
 
 ## Specification pressure points
 

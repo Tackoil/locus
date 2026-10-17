@@ -61,6 +61,10 @@ pub struct EvaluationInputs {
     pub metrics: LayoutMetrics,
     /// Discrete route and retained-label choices supplied by layout feedback.
     pub choices: EvaluationChoices,
+    /// Previous accepted geometry for measured-layout feedback. Reused only when
+    /// its unknown registry and all current hard requirements remain valid.
+    /// Authored hints and preference targets are independent of this iterate.
+    pub warm_start: Option<std::sync::Arc<crate::ResolvedScene>>,
 }
 
 impl EvaluationInputs {

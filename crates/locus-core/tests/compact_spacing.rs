@@ -92,12 +92,12 @@ fn rows_adapt_to_changed_dimensions_without_manual_positions() {
 
 #[test]
 fn checkout_legend_and_headers_compact_without_inset_workarounds() {
-    let source = include_str!("../../../examples/composition/checkout_sequence.locus");
+    let source = include_str!("../../../examples/demonstrations/checkout_sequence.locus");
     let fixture: serde_json::Value = serde_json::from_str(include_str!(
         "../../../tests/fixtures/text_measurements.json"
     ))
     .expect("bundled measurements");
-    let measurements = fixture["measurements"]["examples/composition/checkout_sequence.locus"]
+    let measurements = fixture["measurements"]["examples/demonstrations/checkout_sequence.locus"]
         .as_object()
         .expect("checkout measurements");
     let mut inputs = EvaluationInputs::default();

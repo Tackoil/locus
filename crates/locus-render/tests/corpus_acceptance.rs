@@ -18,11 +18,7 @@ fn root() -> PathBuf {
 
 fn sources() -> Result<Vec<PathBuf>, Box<dyn Error>> {
     let mut paths = Vec::new();
-    for group in [
-        "examples/demonstrations",
-        "examples/stress",
-        "examples/composition",
-    ] {
+    for group in ["examples/demonstrations", "examples/stress"] {
         for entry in fs::read_dir(root().join(group))? {
             let path = entry?.path();
             if path
@@ -142,10 +138,8 @@ fn output_file(source: &Path, extension: &str) -> Result<Option<PathBuf>, Box<dy
     let relative = source.strip_prefix(root())?;
     let category = if relative.starts_with("examples/demonstrations") {
         "demonstrations"
-    } else if relative.starts_with("examples/stress") {
-        "stress"
     } else {
-        "composition"
+        "stress"
     };
     let directory = Path::new(&output).join(category);
     fs::create_dir_all(&directory)?;
@@ -392,15 +386,10 @@ fn render_group(group: &str, expected: usize) -> Result<(), Box<dyn Error>> {
 
 #[test]
 fn all_demonstrations_render_with_shared_measurements() -> Result<(), Box<dyn Error>> {
-    render_group("examples/demonstrations", 12)
+    render_group("examples/demonstrations", 42)
 }
 
 #[test]
 fn all_stress_sources_render_with_shared_measurements() -> Result<(), Box<dyn Error>> {
     render_group("examples/stress", 14)
-}
-
-#[test]
-fn composition_examples_render_with_shared_measurements() -> Result<(), Box<dyn Error>> {
-    render_group("examples/composition", 31)
 }

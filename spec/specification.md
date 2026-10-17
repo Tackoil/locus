@@ -4,7 +4,7 @@
 
 This document is self-contained and normative. The project is under development and supports this draft.
 
-This revision incorporates the beta 6 proposal into the normative language and toolchain contract. The [relation diagram](reference/relations.svg), its [Locus source](reference/relations.locus), and both [composition examples](../examples/composition) are formal reference material. It adds reusable functions, constructor declarations, ordered groups, automatic box sizing, standalone and path-attached labels, automatic connector routing, preset measurements, and rectangular boundary edges. The draft remains unfrozen pending the numerical and implementation contracts listed in Part 12. The measured runtime and 28-source acceptance now implement the contracts pinned in §7.7, §8.7 and §9. Remaining freeze questions stay listed in Part 12.
+This revision incorporates the beta 6 proposal into the normative language and toolchain contract. The [relation diagram](reference/relations.svg), its [Locus source](reference/relations.locus), and the [agent-loop](../examples/demonstrations/flowchart_agent_loop.locus) and [checkout](../examples/demonstrations/checkout_sequence.locus) demonstrations are formal reference material. It adds reusable functions, constructor declarations, ordered groups, automatic box sizing, standalone and path-attached labels, automatic connector routing, preset measurements, and rectangular boundary edges. The draft remains unfrozen pending the numerical and implementation contracts listed in Part 12. The measured runtime and 56-source acceptance now implement the contracts pinned in §7.7, §8.7 and §9. Remaining freeze questions stay listed in Part 12.
 
 ---
 
@@ -27,7 +27,7 @@ This is the geometric-constraint paradigm proven by CAD sketchers (SolveSpace, F
 
 ### 0.2 Diagram-authoring additions (informative)
 
-The [agent-loop example](../examples/composition/flowchart_agent_loop.locus) and [checkout example](../examples/composition/checkout_sequence.locus) use generic drawing objects and composition. Business meaning comes from text and local functions.
+The [agent-loop example](../examples/demonstrations/flowchart_agent_loop.locus) and [checkout example](../examples/demonstrations/checkout_sequence.locus) use generic drawing objects and composition. Business meaning comes from text and local functions.
 
 | Addition | Required behavior | Defined in |
 |---|---|---|
@@ -180,7 +180,7 @@ Note the `postfix` production: property access applies to any expression, so `se
 
 ### 1.5 Reusable statement functions
 
-Functions follow the composition model in [the agent-loop example](../examples/composition/flowchart_agent_loop.locus) and [the checkout example](../examples/composition/checkout_sequence.locus). A function is a file-local reusable statement block, expanded before solving. It has no return type or return value, and its definition creates no objects until invoked. A call is a named statement, not an expression-valued `funcall` from §1.3. Function bodies use the same two declaration forms as the top level (§1.4); `rect shape()` and `label caption(text)` inside a body are ordinary constructor declarations with automatic dimensions (§5.5) and standalone measured text (§5.6).
+Functions follow the composition model in [the agent-loop example](../examples/demonstrations/flowchart_agent_loop.locus) and [the checkout example](../examples/demonstrations/checkout_sequence.locus). A function is a file-local reusable statement block, expanded before solving. It has no return type or return value, and its definition creates no objects until invoked. A call is a named statement, not an expression-valued `funcall` from §1.3. Function bodies use the same two declaration forms as the top level (§1.4); `rect shape()` and `label caption(text)` inside a body are ordinary constructor declarations with automatic dimensions (§5.5) and standalone measured text (§5.6).
 
 **Definition and invocation.** Define a function before invoking it. Parameters are positional, named without type annotations, and substituted as structured arguments at expansion time. Their uses determine the required kinds and numeric dimensions. A call must supply exactly the declared number of arguments, including zero arguments for a parameterless function. Object and anchor arguments refer to existing values; passing an object does not copy it or allocate another placement. Text arguments preserve their plain/TeX segments. A parameter used in `[appearance]` must receive a built-in or previously declared style-class name.
 
@@ -234,7 +234,7 @@ Expansion diagnostics retain the function-body source location and the invocatio
 
 ### 1.6 Ordered groups
 
-Groups follow the ordered collection model described in [the agent-loop example](../examples/composition/flowchart_agent_loop.locus) and used in [the checkout example](../examples/composition/checkout_sequence.locus). `group name(member, ...)` aliases existing objects. It draws nothing, creates no objects or placement unknowns, and imposes no layout relation. Members retain their identities, styles, and geometric relationships; an object can belong to several groups without being copied or rendered again.
+Groups follow the ordered collection model described in [the agent-loop example](../examples/demonstrations/flowchart_agent_loop.locus) and used in [the checkout example](../examples/demonstrations/checkout_sequence.locus). `group name(member, ...)` aliases existing objects. It draws nothing, creates no objects or placement unknowns, and imposes no layout relation. Members retain their identities, styles, and geometric relationships; an object can belong to several groups without being copied or rendered again.
 
 **Members and order.** A group requires at least one member reference. Each reference must resolve to an already declared drawable object or point, group, or function instance. Qualified references such as `customer.shape` and `approved.payment.path` are accepted. Numeric values, text literals, style classes, function definitions, and constructor calls are not group members. Groups have no style class, properties, `where` clause, geometric anchors, or intrinsic dimensions; relations supply their layout behavior.
 
@@ -842,7 +842,7 @@ The unified vocabulary and mode restrictions are in §3.1–§3.5. Equality-base
 
 ### 7.1 The solve
 
-The geometric equality solve contract is defined below. Measured layout adds the registry, initializer, hard inequalities, working-set preferences, and bounded feedback rules in §7.7 and §8.7. Implementations may optimize the frozen solver only if they produce the same resolved `f64` values and reports for every valid input; changing any frozen constant or acceptance rule requires a new format version. The beta 6 layout correction in §7.7 explicitly supersedes the earlier ordering-before-alignment seed schedule and full-step-only feasibility restoration. This correction may change measured-layout coordinates and iteration reports; it preserves geometric constraints, exact containment, and the pure-geometry solve contract. The corrected schedule is frozen below.
+The geometric equality solve contract is defined below. Measured layout adds the registry, initializer, hard inequalities, working-set preferences, and bounded feedback rules in §7.7 and §8.7. Implementations may optimize the frozen solver only if they produce the same resolved `f64` values and reports for every valid input; changing any frozen constant or acceptance rule requires a new format version. The beta 6 layout correction in §7.7 explicitly supersedes the earlier ordering-before-alignment seed schedule and full-step-only feasibility restoration. This correction may change measured-layout coordinates and iteration reports; it preserves geometric constraints, exact containment, and the pure-geometry solve contract. The corrected schedule is frozen below. The measured-layout performance provisions in §7.7 permit equivalent orthogonal factorizations, reduced coordinates, and feedback warm starts; their floating-point rounding and iteration reports may differ. Pure-geometric Jacobi arithmetic remains unchanged.
 
 1. **Unknown vector and initialization.** Concatenate each `point()` declaration's internal `(x, y)`, each placed shape's internal center `(x, y)`, and each free numeric value in declaration order (§2.2). Build the initial vector `h` from engine-generated point and center placements and authored numeric hints. Initialization must account for shape dimensions and relation dependencies, avoid coincident-point or coincident-center degeneracy where a direction is needed, and use a bounded deterministic retry schedule when an initial arrangement is invalid. It must accept a standalone `point()` or `circle(2)` declaration without any additional input. The initializer may not read asserts to choose a solution or change explicit branch semantics. Normalize unknown coordinates before linear algebra: point/center coordinates and length-valued nums by `D`, area-valued nums by `D²`, angle-valued nums by `1 rad`, and scalar nums by `max(1, abs(hᵢ))`, where `D` is the solve-time characteristic length from §7.4. The normalized vector is `z`; its normalized initial vector is `zₕ`. All point/center components and placement seeds remain internal.
 2. **Residual vector.** Desugar `where` clauses in source order, flatten allowed `and` conjunctions left-to-right, and expand each geometric equality relation into the component residuals specified in §3.3. Evaluate these residuals in that order and normalize each by §7.4. Layout constraint expansion follows §7.7; endpoint clipping contributes no residuals. Tangency type and explicit constructor branch indices come from the source and remain unchanged throughout the solve.
@@ -943,16 +943,41 @@ For layout, first seed automatic dimensions at the maximum of preset size and me
 Hard residuals are geometric/layout equalities and `min(g,0)/S` for each `g >= 0` requirement. At `g = 0` the hinge retains its gradient; a strictly positive row has zero gradient. Reject nonfinite normalized rows before selecting hinge pieces. Secondary preferences use unit weight per normalized row: authored numeric parameters toward their hints, automatic dimensions toward preset dimensions, label/route parameters toward seeded defaults, and layout margins/separations toward their preset minimum. In measured layout systems, engine-generated point, shape-center and standalone-label placement seeds only initialize the solve; they do not contribute competing positional preferences. Pure geometry retains its initialized-default settling semantics. Hard authored dimensions, branches and relations take priority; a required larger gap remains valid. Phase 1 keeps the §7.1 LM schedule and the aggregate gap, cover and signed-distance containment rows of §8.7, preserving their residual weights. Phase 2 uses the equivalent individual hard faces specified there. Splitting hard faces never duplicates compact-gap preferences or alignment equalities.
 
 
+If a Phase-1 LM trial is rejected and crosses an explicit internal route or attached-label
+parameter bound, retry once with only those parameters projected to their bounds. Re-evaluate
+all hard rows and apply the same strict residual/objective acceptance test. This retry shares
+the LM attempt and damping schedule; it does not project authored numeric constructor domains
+or change hints. Record both numerical trials when collecting a diagnostic dump.
+
 A primal active-set iteration over the feasible set `{r_eq = 0, g ≥ 0}` that minimizes the
 merit function `Φ(z) = 0.5 Σ qᵢ²` and never leaves the last accepted feasible iterate without
 improving it. Notation: `z` is the normalized unknown vector of §7.1 step 1; each `qᵢ` is
 normalized by the same scale `S` as a residual of its dimension, so `Φ` is dimensionless;
 `Q = ∂q/∂z` (forward-mode AD like `J`); `N_W = I − J_W⁺J_W` is the null-space projector of
-the working set, computed with the §7.1 Jacobi SVD and rank threshold; `∇Φ = Qᵀq`.
+the working set, using the §7.1 rank threshold; `∇Φ = Qᵀq`.
 For layout settling, form this projector directly as the sum of outer products of the
 discarded right singular vectors, in descending singular-value order with the same index
 tie-breaks. This avoids cancellation in the inverse-product formula near dependent active
 constraints. The legacy geometric projection keeps its established arithmetic order.
+
+Measured layout may use single-threaded SIMD QR kernels when the selected rank is
+certified against that threshold. For a column-pivoted QR of `Jᵀ`, let `R11` be the
+selected triangular block and `R22` the discarded block. Require
+`‖R22‖F ≤ 1e-10` and `1/‖R11⁻¹‖F > 1e-10 × max(‖J‖F, 1) + ‖R22‖F`;
+otherwise use the Jacobi SVD. These bounds certify the same retained rank. Form an
+orthonormal tangent basis `B` and `N = BBᵀ`; solve preferences using `QB` and map
+steps back with `B`. A certified orthonormal row basis similarly reduces minimum-norm
+least-squares corrections and multiplier solves without forming a dense pseudoinverse.
+Working bases can reuse the equality tangent when the combined retained-rank bound
+also passes. A solve-local cached basis may be reused only when a singular-value
+perturbation bound excludes rank loss and `‖J_new B‖F ≤ 1e-13`; other states rebuild it.
+All hard feasibility, blocking, trust-radius and completion tests remain mandatory.
+
+A measured-feedback pass may reuse the previous accepted scene after checking the
+unknown registry and current hard rows. Permit at most 32 improving corrections,
+trying factors `1, 1/2, 1/4`, to regain `max|r| < 1e-12`; otherwise use the normal
+initializer. This iterate never replaces authored hints, preset preference targets,
+branch choices or normalization. Pure-geometric solves do not use this warm start.
 
 1. Initially nominate inequalities with `g ≤ τ_active` (`1e-7`). Before every direction,
    retain only genuinely binding nominations (`g < 1e-12`): a positive slack between
@@ -1013,7 +1038,7 @@ constraints. The legacy geometric projection keeps its established arithmetic or
    Every trial still checks all hard inequalities and restores any actual violation.
    Positive scaling preserves descent.
 6. **Line search**: for `α ∈ {1, ½, ¼, …}` down to `α_min = 1/1024`, form the trial
-   `z + αρδ`, run **feasibility restoration** (at most `k_restore = 8` damped LM corrections with `W`
+   `z + αρδ`, run **feasibility restoration** (at most `k_restore = 8` linear corrections with `W`
    fixed), and accept the first trial that is feasible (`max|r| < 1e-12`) and satisfies the
    Armijo condition on the directional derivative
    `Φ(trial) ≤ Φ(z) + c·α·∇Φ(z)·(ρδ)` with `c ∈ (0, ½)` preset (`1e-4`).
@@ -1028,7 +1053,10 @@ constraints. The legacy geometric projection keeps its established arithmetic or
    do not become equality penalties. Every restoration trial still checks every
    hard row; a newly violated inactive face enters the next correction. This avoids
    both spurious pinning and quadratic zero-row weighting after bound expansion.
-   Each LM correction uses its own bounded backtracking search: try factors
+   Each correction first attempts a rank-certified minimum-norm least-squares solve,
+   with the Jacobi fallback above; failed numerical solves or damping above the initial
+   `1e-12` use the damped LM system. This preserves damping recovery after rejected corrections.
+   Each correction uses its own bounded backtracking search: try factors
    `β ∈ {1, ½, ¼}` in that order. Re-evaluate every hard row at each trial,
    including previously feasible inactive inequalities. Accept the first finite trial
    that is working-feasible or strictly decreases `0.5 Σ r_restore²`, rebuilding that

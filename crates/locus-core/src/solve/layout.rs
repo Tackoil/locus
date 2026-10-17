@@ -36,7 +36,13 @@ pub(super) fn lower_settling(
     diameter: f64,
     forced_axes: &std::collections::BTreeMap<usize, usize>,
 ) -> Result<LayoutRows, EvalError> {
-    let aggregate = lower(d, sources, diameter, forced_axes)?;
+    // The aggregate pass only maps forced avoidance row indices. Settling
+    // normally uses live separation with no forced axes, so no map is needed.
+    let aggregate = if forced_axes.is_empty() {
+        LayoutRows::default()
+    } else {
+        lower(d, sources, diameter, forced_axes)?
+    };
     lower_with(d, sources, diameter, forced_axes, Some(&aggregate))
 }
 
@@ -140,9 +146,7 @@ impl Sink<'_> {
 fn normalize(mut value: Jet, scale: f64) -> Jet {
     value.value /= scale;
     value.seed_value /= scale;
-    for gradient in &mut value.gradient {
-        *gradient /= scale;
-    }
+    value.gradient = value.gradient.map(|gradient| gradient / scale);
     value
 }
 

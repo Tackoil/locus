@@ -80,8 +80,8 @@ expression: stdout
       "definition": "rect boxB(bw, bh)",
       "resolved": {
         "kind": "rect",
-        "area": 2.34,
-        "perimeter": 7.0
+        "area": 2.340000000000001,
+        "perimeter": 7.000000000000001
       }
     },
     {
@@ -185,7 +185,7 @@ expression: stdout
       "definition": "segment lifeB(boxB.s, endB)",
       "resolved": {
         "kind": "segment",
-        "length": 4.93816
+        "length": 4.938159999999999
       }
     },
     {
@@ -215,7 +215,7 @@ expression: stdout
       "definition": "segment lifeC(boxC.s, endC)",
       "resolved": {
         "kind": "segment",
-        "length": 4.93816
+        "length": 4.938159999999999
       }
     },
     {
@@ -658,8 +658,8 @@ expression: stdout
       },
       "resolved": {
         "kind": "rect",
-        "area": 4.067479999999987,
-        "perimeter": 10.134959999999989
+        "area": 4.067479999999996,
+        "perimeter": 10.13496
       }
     },
     {
@@ -728,8 +728,8 @@ expression: stdout
       },
       "resolved": {
         "kind": "rect",
-        "area": 4.06747999999999,
-        "perimeter": 10.134959999999994
+        "area": 4.067479999999996,
+        "perimeter": 10.13496
       }
     },
     {
@@ -833,7 +833,7 @@ expression: stdout
       },
       "resolved": {
         "kind": "segment",
-        "length": 3.8254400000000004
+        "length": 3.8254400000000026
       }
     },
     {
@@ -903,7 +903,7 @@ expression: stdout
       },
       "resolved": {
         "kind": "segment",
-        "length": 3.82544
+        "length": 3.8254400000000026
       }
     },
     {
@@ -1348,8 +1348,8 @@ expression: stdout
       "definition": "rect beta6_tab()",
       "resolved": {
         "kind": "rect",
-        "area": 1.9865149311999997,
-        "perimeter": 6.27056
+        "area": 1.9865149312000001,
+        "perimeter": 6.270560000000001
       }
     },
     {
@@ -1443,7 +1443,7 @@ expression: stdout
       },
       "resolved": {
         "kind": "rect",
-        "area": 0.8082240000000023,
+        "area": 0.808223999999998,
         "perimeter": 5.988160000000004
       }
     },
@@ -4137,7 +4137,7 @@ expression: stdout
     {
       "accepted": {
         "automatic_dimensions": false,
-        "height": 0.8999999999999999,
+        "height": 0.9000000000000004,
         "width": 2.6
       },
       "definition": {
@@ -4287,7 +4287,7 @@ expression: stdout
     {
       "accepted": {
         "clipped": false,
-        "logical_length": 2.9132000000000025,
+        "logical_length": 2.9132000000018663,
         "route": "direct"
       },
       "definition": {
@@ -4381,7 +4381,7 @@ expression: stdout
     {
       "accepted": {
         "clipped": false,
-        "logical_length": 4.05952,
+        "logical_length": 4.059520000000001,
         "route": "direct"
       },
       "definition": {
@@ -4475,7 +4475,7 @@ expression: stdout
     {
       "accepted": {
         "clipped": false,
-        "logical_length": 4.05952,
+        "logical_length": 4.059520000000001,
         "route": "direct"
       },
       "definition": {
@@ -4663,7 +4663,7 @@ expression: stdout
     {
       "accepted": {
         "clipped": false,
-        "logical_length": 4.05952,
+        "logical_length": 4.059520000000001,
         "route": "direct"
       },
       "definition": {
@@ -4765,7 +4765,7 @@ expression: stdout
     {
       "accepted": {
         "clipped": false,
-        "logical_length": 2.9132000000000033,
+        "logical_length": 2.9132000000018663,
         "route": "direct"
       },
       "definition": {
@@ -4859,8 +4859,8 @@ expression: stdout
     {
       "accepted": {
         "automatic_dimensions": true,
-        "height": 0.9999999999999973,
-        "width": 4.067479999999998
+        "height": 0.9999999999999991,
+        "width": 4.06748
       },
       "definition": {
         "source": "rect()",
@@ -4903,7 +4903,7 @@ expression: stdout
     {
       "accepted": {
         "automatic_dimensions": true,
-        "height": 0.9999999999999976,
+        "height": 0.9999999999999991,
         "width": 4.06748
       },
       "definition": {
@@ -5033,7 +5033,7 @@ expression: stdout
     {
       "accepted": {
         "clipped": false,
-        "logical_length": 0.28999999999999915,
+        "logical_length": 0.2900000000000009,
         "route": "orthogonal",
         "side": "right"
       },
@@ -5245,7 +5245,7 @@ expression: stdout
       "accepted": {
         "automatic_dimensions": true,
         "height": 0.8813599999999999,
-        "width": 2.25392
+        "width": 2.2539200000000004
       },
       "definition": {
         "source": "rect()",
@@ -5288,8 +5288,8 @@ expression: stdout
     {
       "accepted": {
         "automatic_dimensions": true,
-        "height": 2.6940800000000014,
-        "width": 0.3000000000000007
+        "height": 2.694080000000003,
+        "width": 0.29999999999999893
       },
       "definition": {
         "source": "rect()",
@@ -6447,19 +6447,19 @@ expression: stdout
     "measurement_passes": 2,
     "routing_attempts": 0,
     "accepted_steps": 0,
-    "max_normalized_residual": 8.63791313902362e-17,
+    "max_normalized_residual": 3.038655881437153e-14,
     "final_damping": 0.001,
     "settling": {
       "settling_complete": true,
       "exit_reason": "complete",
-      "projected_gradient": 5.665544296497089e-17,
-      "steps": 20,
-      "accepted_moves": 18,
-      "working_set_pivots": 1,
-      "model_rebuilds": 0,
-      "evaluations": 21,
-      "line_search_evaluations": 18,
-      "restoration_steps": 2,
+      "projected_gradient": 1.365031927275781e-16,
+      "steps": 9,
+      "accepted_moves": 8,
+      "working_set_pivots": 0,
+      "model_rebuilds": 1,
+      "evaluations": 16,
+      "line_search_evaluations": 8,
+      "restoration_steps": 6,
       "active_layout_requirements": [
         {
           "line": 83,
@@ -6642,12 +6642,6 @@ expression: stdout
           "byte_end": 5186
         },
         {
-          "line": 154,
-          "col": 9,
-          "byte_start": 5605,
-          "byte_end": 5625
-        },
-        {
           "line": 198,
           "col": 5,
           "byte_start": 7621,
@@ -6702,7 +6696,7 @@ expression: stdout
           "byte_end": 4468
         }
       ],
-      "active_remaining": 9
+      "active_remaining": 10
     },
     "dof": {
       "global_remaining": 49,
@@ -7628,7 +7622,7 @@ expression: stdout
           "byte_start": 985,
           "byte_end": 1011
         },
-        "max_normalized_residual": 4.7238587479035425e-18,
+        "max_normalized_residual": 2.3619293739517713e-18,
         "implicated_unknowns": [
           "boxB",
           "endB"
@@ -7641,7 +7635,7 @@ expression: stdout
           "byte_start": 1084,
           "byte_end": 1110
         },
-        "max_normalized_residual": 4.31895656951181e-17,
+        "max_normalized_residual": 0.0,
         "implicated_unknowns": [
           "boxC",
           "endC"
@@ -7696,7 +7690,7 @@ expression: stdout
           "byte_start": 1411,
           "byte_end": 1424
         },
-        "max_normalized_residual": 4.31895656951181e-17,
+        "max_normalized_residual": 0.0,
         "implicated_unknowns": [
           "boxA",
           "endA",
@@ -7724,7 +7718,7 @@ expression: stdout
           "byte_start": 1511,
           "byte_end": 1524
         },
-        "max_normalized_residual": 4.31895656951181e-17,
+        "max_normalized_residual": 0.0,
         "implicated_unknowns": [
           "boxA",
           "endA",
@@ -7738,7 +7732,7 @@ expression: stdout
           "byte_start": 1631,
           "byte_end": 1645
         },
-        "max_normalized_residual": 4.3138258975660044e-18,
+        "max_normalized_residual": 1.9882037077864475e-18,
         "implicated_unknowns": [
           "boxB",
           "endB",
@@ -7765,7 +7759,7 @@ expression: stdout
           "byte_start": 1804,
           "byte_end": 1818
         },
-        "max_normalized_residual": 3.566374565235357e-18,
+        "max_normalized_residual": 1.6144780416211238e-18,
         "implicated_unknowns": [
           "boxB",
           "endB",
@@ -7779,7 +7773,7 @@ expression: stdout
           "byte_start": 1820,
           "byte_end": 1843
         },
-        "max_normalized_residual": 2.159478284755905e-17,
+        "max_normalized_residual": 0.0,
         "implicated_unknowns": [
           "r2",
           "p2b"
@@ -7792,7 +7786,7 @@ expression: stdout
           "byte_start": 1882,
           "byte_end": 1896
         },
-        "max_normalized_residual": 1.3667681505474709e-17,
+        "max_normalized_residual": 0.0,
         "implicated_unknowns": [
           "boxC",
           "endC",
@@ -7819,7 +7813,7 @@ expression: stdout
           "byte_start": 2065,
           "byte_end": 2079
         },
-        "max_normalized_residual": 2.481504750911599e-18,
+        "max_normalized_residual": 1.2407523754557997e-18,
         "implicated_unknowns": [
           "boxB",
           "endB",
@@ -7833,7 +7827,7 @@ expression: stdout
           "byte_start": 2081,
           "byte_end": 2104
         },
-        "max_normalized_residual": 1.0797391423779526e-17,
+        "max_normalized_residual": 0.0,
         "implicated_unknowns": [
           "r3",
           "p3b"
@@ -7846,7 +7840,7 @@ expression: stdout
           "byte_start": 2143,
           "byte_end": 2157
         },
-        "max_normalized_residual": 2.050152225821206e-17,
+        "max_normalized_residual": 0.0,
         "implicated_unknowns": [
           "boxC",
           "endC",
@@ -7860,7 +7854,7 @@ expression: stdout
           "byte_start": 2159,
           "byte_end": 2182
         },
-        "max_normalized_residual": 1.0797391423779526e-17,
+        "max_normalized_residual": 0.0,
         "implicated_unknowns": [
           "r3",
           "p3c"
@@ -7873,7 +7867,7 @@ expression: stdout
           "byte_start": 2348,
           "byte_end": 2362
         },
-        "max_normalized_residual": 1.734053418580952e-18,
+        "max_normalized_residual": 8.6702670929047585e-19,
         "implicated_unknowns": [
           "boxB",
           "endB",
@@ -7887,7 +7881,7 @@ expression: stdout
           "byte_start": 2364,
           "byte_end": 2387
         },
-        "max_normalized_residual": 2.6993478559448814e-18,
+        "max_normalized_residual": 0.0,
         "implicated_unknowns": [
           "r4",
           "p4b"
@@ -7900,7 +7894,7 @@ expression: stdout
           "byte_start": 2426,
           "byte_end": 2440
         },
-        "max_normalized_residual": 1.5854202684168693e-17,
+        "max_normalized_residual": 0.0,
         "implicated_unknowns": [
           "boxC",
           "endC",
@@ -7927,7 +7921,7 @@ expression: stdout
           "byte_start": 2596,
           "byte_end": 2610
         },
-        "max_normalized_residual": 9.86602086250304e-19,
+        "max_normalized_residual": 4.9330104312515195e-19,
         "implicated_unknowns": [
           "boxB",
           "endB",
@@ -7954,7 +7948,7 @@ expression: stdout
           "byte_start": 2674,
           "byte_end": 2688
         },
-        "max_normalized_residual": 3.416920376368676e-17,
+        "max_normalized_residual": 0.0,
         "implicated_unknowns": [
           "boxC",
           "endC",
@@ -7968,7 +7962,7 @@ expression: stdout
           "byte_start": 2690,
           "byte_end": 2713
         },
-        "max_normalized_residual": 0.0,
+        "max_normalized_residual": 5.398695711889763e-18,
         "implicated_unknowns": [
           "r5",
           "p5c"
@@ -7981,7 +7975,7 @@ expression: stdout
           "byte_start": 2863,
           "byte_end": 2877
         },
-        "max_normalized_residual": 5.765692359127654e-19,
+        "max_normalized_residual": 1.1957537695982774e-19,
         "implicated_unknowns": [
           "boxB",
           "endB",
@@ -7995,7 +7989,7 @@ expression: stdout
           "byte_start": 2879,
           "byte_end": 2902
         },
-        "max_normalized_residual": 1.0797391423779526e-17,
+        "max_normalized_residual": 0.0,
         "implicated_unknowns": [
           "r6",
           "p6b"
@@ -8008,7 +8002,7 @@ expression: stdout
           "byte_start": 3427,
           "byte_end": 3448
         },
-        "max_normalized_residual": 4.31895656951181e-17,
+        "max_normalized_residual": 0.0,
         "implicated_unknowns": [
           "boxA",
           "boxB",
@@ -8036,7 +8030,7 @@ expression: stdout
           "byte_start": 3490,
           "byte_end": 3531
         },
-        "max_normalized_residual": 1.0797391423779526e-17,
+        "max_normalized_residual": 2.159478284755905e-17,
         "implicated_unknowns": [
           "boxA",
           "endA",
@@ -8067,7 +8061,7 @@ expression: stdout
           "byte_start": 3536,
           "byte_end": 3566
         },
-        "max_normalized_residual": 3.239217427133858e-17,
+        "max_normalized_residual": 0.0,
         "implicated_unknowns": [
           "r1",
           "r2",
@@ -8137,7 +8131,7 @@ expression: stdout
           "byte_start": 3794,
           "byte_end": 3817
         },
-        "max_normalized_residual": 6.748369639862204e-17,
+        "max_normalized_residual": 3.038655881437153e-14,
         "implicated_unknowns": [
           "boxA",
           "endA",
@@ -8153,7 +8147,7 @@ expression: stdout
           "byte_start": 3967,
           "byte_end": 3989
         },
-        "max_normalized_residual": 0.0,
+        "max_normalized_residual": 4.31895656951181e-17,
         "implicated_unknowns": [
           "beta6_agent.shape",
           "beta6_agent.caption"
@@ -8176,7 +8170,7 @@ expression: stdout
           "byte_start": 3967,
           "byte_end": 3989
         },
-        "max_normalized_residual": 4.31895656951181e-17,
+        "max_normalized_residual": 0.0,
         "implicated_unknowns": [
           "beta6_kernel.shape",
           "beta6_kernel.caption"
@@ -8189,7 +8183,7 @@ expression: stdout
           "byte_start": 3998,
           "byte_end": 4021
         },
-        "max_normalized_residual": 4.31895656951181e-17,
+        "max_normalized_residual": 0.0,
         "implicated_unknowns": [
           "beta6_kernel.shape",
           "beta6_kernel.caption"
@@ -8202,7 +8196,7 @@ expression: stdout
           "byte_start": 5780,
           "byte_end": 5831
         },
-        "max_normalized_residual": 8.63791313902362e-17,
+        "max_normalized_residual": 0.0,
         "implicated_unknowns": [
           "beta6_agent.shape",
           "beta6_kernel.shape"
@@ -8215,7 +8209,7 @@ expression: stdout
           "byte_start": 5836,
           "byte_end": 5889
         },
-        "max_normalized_residual": 1.0797391423779526e-17,
+        "max_normalized_residual": 0.0,
         "implicated_unknowns": [
           "beta6_agent.shape",
           "beta6_kernel.shape"
@@ -8228,7 +8222,7 @@ expression: stdout
           "byte_start": 5941,
           "byte_end": 5959
         },
-        "max_normalized_residual": 2.159478284755905e-17,
+        "max_normalized_residual": 0.0,
         "implicated_unknowns": [
           "beta6_agent.shape",
           "beta6_kernel.shape"
@@ -8241,10 +8235,11 @@ expression: stdout
           "byte_start": 5964,
           "byte_end": 5991
         },
-        "max_normalized_residual": 0.0,
+        "max_normalized_residual": 1.0797391423779526e-17,
         "implicated_unknowns": [
           "endA",
-          "beta6_agent.shape"
+          "beta6_agent.shape",
+          "beta6_kernel.shape"
         ]
       },
       {
@@ -8267,7 +8262,7 @@ expression: stdout
           "byte_start": 4091,
           "byte_end": 4120
         },
-        "max_normalized_residual": 0.0,
+        "max_normalized_residual": 4.31895656951181e-17,
         "implicated_unknowns": [
           "beta6_agent.shape",
           "beta6_source.finish"
@@ -8290,7 +8285,7 @@ expression: stdout
           "byte_start": 4091,
           "byte_end": 4120
         },
-        "max_normalized_residual": 4.31895656951181e-17,
+        "max_normalized_residual": 0.0,
         "implicated_unknowns": [
           "beta6_kernel.shape",
           "beta6_target.finish"
@@ -8313,7 +8308,7 @@ expression: stdout
           "byte_start": 4308,
           "byte_end": 4324
         },
-        "max_normalized_residual": 0.0,
+        "max_normalized_residual": 2.159478284755906e-17,
         "implicated_unknowns": [
           "beta6_agent.shape",
           "beta6_source.finish",
@@ -8327,7 +8322,7 @@ expression: stdout
           "byte_start": 4333,
           "byte_end": 4348
         },
-        "max_normalized_residual": 2.1594782847559066e-17,
+        "max_normalized_residual": 0.0,
         "implicated_unknowns": [
           "beta6_kernel.shape",
           "beta6_target.finish",
@@ -8354,10 +8349,10 @@ expression: stdout
           "byte_start": 4477,
           "byte_end": 4507
         },
-        "max_normalized_residual": 2.4294130703503932e-17,
+        "max_normalized_residual": 4.588891355106298e-17,
         "implicated_unknowns": [
-          "beta6_agent.shape",
-          "beta6_source.finish",
+          "beta6_kernel.shape",
+          "beta6_target.finish",
           "beta6_request.tail",
           "beta6_request.tip",
           "beta6_request.caption"
@@ -8370,7 +8365,7 @@ expression: stdout
           "byte_start": 4701,
           "byte_end": 4716
         },
-        "max_normalized_residual": 1.5208206164568026e-17,
+        "max_normalized_residual": 0.0,
         "implicated_unknowns": [
           "beta6_kernel.shape",
           "beta6_target.finish",
@@ -8384,7 +8379,7 @@ expression: stdout
           "byte_start": 4725,
           "byte_end": 4739
         },
-        "max_normalized_residual": 1.2385683415869963e-17,
+        "max_normalized_residual": 0.0,
         "implicated_unknowns": [
           "beta6_kernel.shape",
           "beta6_target.finish",
@@ -8411,12 +8406,11 @@ expression: stdout
           "byte_start": 4894,
           "byte_end": 4915
         },
-        "max_normalized_residual": 4.588891355106298e-17,
+        "max_normalized_residual": 2.6993478559448814e-18,
         "implicated_unknowns": [
           "beta6_kernel.shape",
           "beta6_target.finish",
           "beta6_work.tail",
-          "beta6_work.tip",
           "beta6_work.path",
           "beta6_work.caption"
         ]
@@ -8428,7 +8422,7 @@ expression: stdout
           "byte_start": 4308,
           "byte_end": 4324
         },
-        "max_normalized_residual": 2.822522748698065e-18,
+        "max_normalized_residual": 0.0,
         "implicated_unknowns": [
           "beta6_kernel.shape",
           "beta6_target.finish",
@@ -8442,7 +8436,7 @@ expression: stdout
           "byte_start": 4333,
           "byte_end": 4348
         },
-        "max_normalized_residual": 0.0,
+        "max_normalized_residual": 2.8225227486980628e-18,
         "implicated_unknowns": [
           "beta6_agent.shape",
           "beta6_source.finish",
@@ -8479,11 +8473,14 @@ expression: stdout
           "byte_start": 6488,
           "byte_end": 6522
         },
-        "max_normalized_residual": 0.0,
+        "max_normalized_residual": 4.31895656951181e-17,
         "implicated_unknowns": [
+          "beta6_request.tail",
           "beta6_work.tail",
           "beta6_work.path",
           "beta6_work.caption",
+          "beta6_reply.tail",
+          "beta6_reply.tip",
           "beta6_frame"
         ]
       },
@@ -8534,7 +8531,7 @@ expression: stdout
           "byte_start": 6697,
           "byte_end": 6731
         },
-        "max_normalized_residual": 4.31895656951181e-17,
+        "max_normalized_residual": 0.0,
         "implicated_unknowns": [
           "beta6_frame",
           "beta6_tab"
@@ -8560,13 +8557,8 @@ expression: stdout
           "byte_start": 6810,
           "byte_end": 6840
         },
-        "max_normalized_residual": 8.63791313902362e-17,
-        "implicated_unknowns": [
-          "beta6_request.tail",
-          "beta6_request.tip",
-          "beta6_request.caption",
-          "beta6_tab"
-        ]
+        "max_normalized_residual": 0.0,
+        "implicated_unknowns": []
       },
       {
         "span": {
@@ -8575,7 +8567,7 @@ expression: stdout
           "byte_start": 6931,
           "byte_end": 6975
         },
-        "max_normalized_residual": 4.31895656951181e-17,
+        "max_normalized_residual": 0.0,
         "implicated_unknowns": [
           "beta6_frame",
           "beta6_divider_left"
@@ -8588,7 +8580,7 @@ expression: stdout
           "byte_start": 6980,
           "byte_end": 7025
         },
-        "max_normalized_residual": 0.0,
+        "max_normalized_residual": 4.31895656951181e-17,
         "implicated_unknowns": [
           "beta6_frame",
           "beta6_divider_right"
@@ -8601,7 +8593,7 @@ expression: stdout
           "byte_start": 7030,
           "byte_end": 7085
         },
-        "max_normalized_residual": 4.31895656951181e-17,
+        "max_normalized_residual": 0.0,
         "implicated_unknowns": [
           "beta6_divider_left",
           "beta6_divider_right"
@@ -8614,7 +8606,7 @@ expression: stdout
           "byte_start": 7165,
           "byte_end": 7225
         },
-        "max_normalized_residual": 4.31895656951181e-17,
+        "max_normalized_residual": 0.0,
         "implicated_unknowns": [
           "beta6_request.tail",
           "beta6_request.tip",
@@ -8622,9 +8614,6 @@ expression: stdout
           "beta6_work.tip",
           "beta6_work.path",
           "beta6_work.caption",
-          "beta6_reply.tail",
-          "beta6_reply.tip",
-          "beta6_reply.caption",
           "beta6_divider_left",
           "beta6_divider_right"
         ]
@@ -8663,10 +8652,9 @@ expression: stdout
           "byte_start": 5076,
           "byte_end": 5104
         },
-        "max_normalized_residual": 4.31895656951181e-17,
+        "max_normalized_residual": 0.0,
         "implicated_unknowns": [
           "beta6_kernel.shape",
-          "beta6_target.finish",
           "beta6_band.shape"
         ]
       },
@@ -8677,7 +8665,7 @@ expression: stdout
           "byte_start": 5113,
           "byte_end": 5156
         },
-        "max_normalized_residual": 3.509152212728346e-17,
+        "max_normalized_residual": 5.1287609262952745e-17,
         "implicated_unknowns": [
           "beta6_band.shape"
         ]
@@ -8689,11 +8677,10 @@ expression: stdout
           "byte_start": 5165,
           "byte_end": 5186
         },
-        "max_normalized_residual": 8.63791313902362e-17,
+        "max_normalized_residual": 0.0,
         "implicated_unknowns": [
-          "beta6_request.tail",
-          "beta6_request.tip",
-          "beta6_request.caption",
+          "beta6_reply.tail",
+          "beta6_reply.tip",
           "beta6_band.shape"
         ]
       },
@@ -8760,7 +8747,7 @@ expression: stdout
           "byte_start": 5605,
           "byte_end": 5625
         },
-        "max_normalized_residual": 1.0797391423779526e-17,
+        "max_normalized_residual": 0.0,
         "implicated_unknowns": [
           "beta6_legend.tail",
           "beta6_legend.tip",
@@ -8774,11 +8761,8 @@ expression: stdout
           "byte_start": 7621,
           "byte_end": 7653
         },
-        "max_normalized_residual": 4.31895656951181e-17,
-        "implicated_unknowns": [
-          "beta6_frame",
-          "beta6_legend.caption"
-        ]
+        "max_normalized_residual": 0.0,
+        "implicated_unknowns": []
       },
       {
         "span": {
@@ -8787,7 +8771,7 @@ expression: stdout
           "byte_start": 7658,
           "byte_end": 7695
         },
-        "max_normalized_residual": 4.31895656951181e-17,
+        "max_normalized_residual": 0.0,
         "implicated_unknowns": [
           "beta6_frame",
           "beta6_legend.tail"

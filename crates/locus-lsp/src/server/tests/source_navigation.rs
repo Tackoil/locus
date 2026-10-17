@@ -41,7 +41,7 @@ fn position(source: &str, needle: &str) -> Value {
 
 #[test]
 fn large_diagrams_do_not_block_navigation_or_shutdown() {
-    let source = include_str!("../../../../../examples/composition/checkout_sequence.locus");
+    let source = include_str!("../../../../../examples/demonstrations/checkout_sequence.locus");
     let mut transcript = Transcript::start();
     transcript.notify(
         "textDocument/didOpen",

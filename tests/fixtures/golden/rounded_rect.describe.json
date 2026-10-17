@@ -94,8 +94,8 @@
       "definition": "diamond measured_decision()",
       "resolved": {
         "kind": "diamond",
-        "area": 12.19251237172408,
-        "perimeter": 15.31060991388787
+        "area": 12.192512371724183,
+        "perimeter": 15.310609913887873
       }
     },
     {
@@ -311,7 +311,7 @@
     {
       "accepted": {
         "clipped": false,
-        "logical_length": 1.0,
+        "logical_length": 1.0000000000000007,
         "route": "direct"
       },
       "definition": {
@@ -347,8 +347,8 @@
     {
       "accepted": {
         "automatic_dimensions": true,
-        "height": 3.613133011459186,
-        "width": 6.748997245910999
+        "height": 3.6131330114592273,
+        "width": 6.748997245910979
       },
       "definition": {
         "source": "diamond()",
@@ -391,7 +391,7 @@
     {
       "accepted": {
         "clipped": false,
-        "logical_length": 0.580847970304117,
+        "logical_length": 0.5808479703041161,
         "route": "curved",
         "side": "right"
       },
@@ -608,12 +608,12 @@
     "measurement_passes": 1,
     "routing_attempts": 0,
     "accepted_steps": 0,
-    "max_normalized_residual": 3.145186941372778e-17,
+    "max_normalized_residual": 1.258074776549111e-16,
     "final_damping": 0.001,
     "settling": {
       "settling_complete": true,
       "exit_reason": "complete",
-      "projected_gradient": 9.434369951932808e-12,
+      "projected_gradient": 9.427708613785057e-12,
       "steps": 12,
       "accepted_moves": 11,
       "working_set_pivots": 0,
@@ -774,7 +774,7 @@
           "byte_start": 178,
           "byte_end": 193
         },
-        "max_normalized_residual": 1.1794451030147915e-17,
+        "max_normalized_residual": 0.0,
         "implicated_unknowns": [
           "start",
           "end"
@@ -787,7 +787,7 @@
           "byte_start": 341,
           "byte_end": 384
         },
-        "max_normalized_residual": 0.0,
+        "max_normalized_residual": 4.717780412059166e-17,
         "implicated_unknowns": [
           "start",
           "end"
@@ -800,7 +800,7 @@
           "byte_start": 726,
           "byte_end": 770
         },
-        "max_normalized_residual": 9.82870919178993e-18,
+        "max_normalized_residual": 1.965741838357986e-18,
         "implicated_unknowns": [
           "measured_decision",
           "measured_question"
@@ -813,11 +813,8 @@
           "byte_start": 775,
           "byte_end": 820
         },
-        "max_normalized_residual": 3.145186941372778e-17,
-        "implicated_unknowns": [
-          "measured_decision",
-          "measured_question"
-        ]
+        "max_normalized_residual": 0.0,
+        "implicated_unknowns": []
       },
       {
         "span": {
@@ -826,7 +823,7 @@
           "byte_start": 825,
           "byte_end": 854
         },
-        "max_normalized_residual": 0.0,
+        "max_normalized_residual": 1.258074776549111e-16,
         "implicated_unknowns": [
           "end",
           "measured_decision"
@@ -839,7 +836,7 @@
           "byte_start": 859,
           "byte_end": 897
         },
-        "max_normalized_residual": 9.83368833524036e-18,
+        "max_normalized_residual": 7.9115919790575805e-19,
         "implicated_unknowns": [
           "end",
           "measured_decision"

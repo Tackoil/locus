@@ -39,7 +39,7 @@ impl RouteScalar for Jet {
         Self {
             value: libm::asinh(self.value),
             seed_value: libm::asinh(self.seed_value),
-            gradient: self.gradient.iter().map(|value| value * factor).collect(),
+            gradient: self.gradient.map(|value| value * factor),
         }
     }
 }
@@ -301,8 +301,8 @@ mod tests {
         );
         let (_, max) = route.bounds();
         assert!((max.x.value - 6.0).abs() < 1e-12);
-        assert_eq!(max.x.gradient, [1.0, 1.0]);
-        assert_eq!(route.length().gradient, [1.0, 2.0]);
+        assert_eq!(max.x.gradient.dense(), [1.0, 1.0]);
+        assert_eq!(route.length().gradient.dense(), [1.0, 2.0]);
     }
 
     #[test]

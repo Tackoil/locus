@@ -1,6 +1,16 @@
 //! Deterministic dense linear algebra for the normative solver.
 
-use crate::tol::{JACOBI_SKIP_FACTOR, RANK_FACTOR};
+use crate::tol::RANK_FACTOR;
+
+mod cache;
+mod components;
+pub(crate) use cache::TangentCache;
+mod fast;
+mod jacobi;
+mod tangent;
+use jacobi::decompose as jacobi;
+#[cfg(test)]
+mod jacobi_reference;
 
 #[derive(Clone, Debug)]
 pub(crate) struct Analysis {
@@ -18,6 +28,7 @@ pub(crate) fn unconstrained(columns: usize) -> Analysis {
 }
 
 pub(crate) fn analyze(jacobian: &[Vec<f64>]) -> Result<Analysis, ()> {
+    let _timing = crate::metrics::span("linear_analysis");
     let columns = jacobian.first().map_or(0, Vec::len);
     if columns == 0 {
         return Ok(Analysis {
@@ -43,14 +54,55 @@ pub(crate) fn analyze(jacobian: &[Vec<f64>]) -> Result<Analysis, ()> {
 /// Orthogonal tangent projection for layout settling, without inverse-product cancellation.
 /// The legacy geometric projector retains its established arithmetic order.
 pub(crate) fn tangent_projector(jacobian: &[Vec<f64>]) -> Result<Vec<Vec<f64>>, ()> {
+    tangent_space(jacobian).map(|(projector, _)| projector)
+}
+
+pub(crate) fn tangent_space(jacobian: &[Vec<f64>]) -> Result<cache::TangentSpace, ()> {
+    tangent_space_certified(jacobian).map(|(space, _)| space)
+}
+
+pub(crate) fn working_tangent(
+    equalities: &[Vec<f64>],
+    working: &[Vec<f64>],
+    columns: usize,
+    cache: &mut TangentCache,
+) -> Result<cache::TangentSpace, ()> {
+    let ((_, basis), minimum) = if equalities.is_empty() {
+        let identity = identity(columns);
+        ((identity.clone(), identity), f64::INFINITY)
+    } else {
+        cache.space_with_bound(equalities)?
+    };
+    let active = &working[equalities.len()..];
+    if let Some((basis, _)) = tangent::intersect(&basis, minimum, active, working) {
+        return Ok((tangent::projector(&basis), basis));
+    }
+    cache.space(working)
+}
+
+fn tangent_space_certified(jacobian: &[Vec<f64>]) -> Result<(cache::TangentSpace, f64), ()> {
+    let _timing = crate::metrics::span("tangent_projector");
     let columns = jacobian.first().map_or(0, Vec::len);
     if columns == 0 {
-        return Ok(Vec::new());
+        return Ok(((Vec::new(), Vec::new()), f64::INFINITY));
     }
+    if let Some((basis, minimum)) = fast::null_basis(jacobian) {
+        return Ok(((tangent::projector(&basis), basis), minimum));
+    }
+    let _fallback = crate::metrics::span("tangent_svd_fallback");
     let (_, vectors, singulars) = jacobi(jacobian, columns, true)?;
     let order = descending_singular_order(&singulars);
     let maximum = order.first().map_or(0.0, |index| singulars[*index]);
     let threshold = RANK_FACTOR * maximum.max(1.0);
+    let discarded: Vec<_> = order
+        .iter()
+        .copied()
+        .filter(|index| singulars[*index] <= threshold)
+        .collect();
+    let basis = vectors
+        .iter()
+        .map(|row| discarded.iter().map(|index| row[*index]).collect())
+        .collect();
     let mut result = vec![vec![0.0; columns]; columns];
     for component in order
         .into_iter()
@@ -62,13 +114,22 @@ pub(crate) fn tangent_projector(jacobian: &[Vec<f64>]) -> Result<Vec<Vec<f64>>, 
             }
         }
     }
-    Ok(result)
+    let minimum = singulars
+        .iter()
+        .copied()
+        .filter(|value| *value > threshold)
+        .fold(f64::INFINITY, f64::min);
+    Ok(((result, basis), minimum))
 }
 
 pub(crate) fn rank(matrix: &[Vec<f64>]) -> Result<usize, ()> {
+    let _timing = crate::metrics::span("linear_rank");
     let columns = matrix.first().map_or(0, Vec::len);
     if columns == 0 {
         return Ok(0);
+    }
+    if let Some(rank) = fast::rank(matrix) {
+        return Ok(rank);
     }
     let (_, _, singulars) = jacobi(matrix, columns, false)?;
     let order = descending_singular_order(&singulars);
@@ -85,14 +146,20 @@ pub(crate) fn lm_primary_step(
     residuals: &[f64],
     damping: f64,
 ) -> Option<Vec<f64>> {
+    let _timing = crate::metrics::span("lm_primary_step");
     let count = jacobian.first().map_or(0, Vec::len);
     let mut normal = vec![vec![0.0; count]; count];
     let mut rhs = vec![0.0; count];
-    for row in 0..jacobian.len() {
-        for column in 0..count {
-            rhs[column] -= jacobian[row][column] * residuals[row];
-            for other in 0..count {
-                normal[column][other] += jacobian[row][column] * jacobian[row][other];
+    for (row, residual) in jacobian.iter().zip(residuals) {
+        let nonzero: Vec<_> = row
+            .iter()
+            .enumerate()
+            .filter(|(_, value)| **value != 0.0)
+            .collect();
+        for &(column, value) in &nonzero {
+            rhs[column] -= value * residual;
+            for &(other, other_value) in &nonzero {
+                normal[column][other] += value * other_value;
             }
         }
     }
@@ -106,12 +173,32 @@ pub(crate) fn multiply(matrix: &[Vec<f64>], vector: &[f64]) -> Vec<f64> {
     matrix.iter().map(|row| ordered_dot(row, vector)).collect()
 }
 
+pub(crate) fn restoration_step(
+    matrix: &[Vec<f64>],
+    residuals: &[f64],
+    damping: f64,
+) -> Option<Vec<f64>> {
+    let _timing = crate::metrics::span("restoration_step");
+    if damping > 1e-12 {
+        return lm_primary_step(matrix, residuals, damping);
+    }
+    let rhs: Vec<_> = residuals.iter().map(|value| -value).collect();
+    least_squares(matrix, &rhs)
+        .ok()
+        .or_else(|| lm_primary_step(matrix, residuals, damping))
+}
+
 /// Minimum-norm least-squares solution using the normative rank cutoff.
 pub(crate) fn least_squares(matrix: &[Vec<f64>], rhs: &[f64]) -> Result<Vec<f64>, ()> {
+    let _timing = crate::metrics::span("least_squares");
     let columns = matrix.first().map_or(0, Vec::len);
     if columns == 0 {
         return Ok(Vec::new());
     }
+    if let Some(solution) = fast::solve(matrix, rhs) {
+        return Ok(solution);
+    }
+    let _fallback = crate::metrics::span("least_squares_svd_fallback");
     let (rotated, vectors, singulars) = jacobi(matrix, columns, true)?;
     let order = descending_singular_order(&singulars);
     let maximum = order.first().map_or(0.0, |index| singulars[*index]);
@@ -126,6 +213,7 @@ pub(crate) fn bounded_least_squares(
     rhs: &[f64],
     radius: f64,
 ) -> Result<Vec<f64>, ()> {
+    let _timing = crate::metrics::span("bounded_least_squares");
     let columns = matrix.first().map_or(0, Vec::len);
     if columns == 0 {
         return Ok(Vec::new());
@@ -196,87 +284,6 @@ pub(crate) fn transpose(matrix: &[Vec<f64>]) -> Vec<Vec<f64>> {
     let columns = matrix.first().map_or(0, Vec::len);
     (0..columns)
         .map(|column| matrix.iter().map(|row| row[column]).collect())
-        .collect()
-}
-
-fn jacobi(input: &[Vec<f64>], columns: usize, compute_vectors: bool) -> Result<JacobiResult, ()> {
-    let mut matrix = input.to_vec();
-    let mut vectors = if compute_vectors {
-        identity(columns)
-    } else {
-        Vec::new()
-    };
-    for _ in 0..64 {
-        let mut rotated = false;
-        for first in 0..columns {
-            for second in (first + 1)..columns {
-                rotated |= rotate_pair(&mut matrix, &mut vectors, first, second);
-            }
-        }
-        if !rotated {
-            let singulars = column_norms(&matrix, columns);
-            return Ok((matrix, vectors, singulars));
-        }
-    }
-    Err(())
-}
-
-fn rotate_pair(
-    matrix: &mut [Vec<f64>],
-    vectors: &mut [Vec<f64>],
-    first: usize,
-    second: usize,
-) -> bool {
-    let alpha = column_dot(matrix, first, first);
-    let beta = column_dot(matrix, second, second);
-    let gamma = column_dot(matrix, first, second);
-    if alpha == 0.0 || beta == 0.0 || gamma.abs() <= JACOBI_SKIP_FACTOR * libm::sqrt(alpha * beta) {
-        return false;
-    }
-    let zeta = (beta - alpha) / (2.0 * gamma);
-    let t = jacobi_tangent(zeta);
-    let cosine = 1.0 / libm::sqrt(1.0 + t * t);
-    let sine = cosine * t;
-    rotate_columns(matrix, first, second, cosine, sine);
-    rotate_columns(vectors, first, second, cosine, sine);
-    true
-}
-
-fn jacobi_tangent(zeta: f64) -> f64 {
-    if zeta == 0.0 {
-        return 1.0;
-    }
-    let absolute = zeta.abs();
-    let square = zeta * zeta;
-    let root = if square.is_infinite() && absolute.is_finite() {
-        let inverse = 1.0 / absolute;
-        absolute * libm::sqrt(1.0 + inverse * inverse)
-    } else {
-        libm::sqrt(1.0 + square)
-    };
-    zeta.signum() / (absolute + root)
-}
-
-fn rotate_columns(matrix: &mut [Vec<f64>], first: usize, second: usize, cosine: f64, sine: f64) {
-    for row in matrix {
-        let left = row[first];
-        let right = row[second];
-        row[first] = cosine * left - sine * right;
-        row[second] = sine * left + cosine * right;
-    }
-}
-
-fn column_dot(matrix: &[Vec<f64>], first: usize, second: usize) -> f64 {
-    let mut result = 0.0;
-    for row in matrix {
-        result += row[first] * row[second];
-    }
-    result
-}
-
-fn column_norms(matrix: &[Vec<f64>], columns: usize) -> Vec<f64> {
-    (0..columns)
-        .map(|column| libm::sqrt(column_dot(matrix, column, column)))
         .collect()
 }
 
@@ -409,6 +416,12 @@ mod tests {
     use super::*;
 
     #[test]
+    fn rejected_restoration_corrections_respect_increased_damping() {
+        let step = restoration_step(&[vec![1.0]], &[1.0], 1.0).expect("damped correction");
+        assert!((step[0] + 0.5).abs() < 1e-12);
+    }
+
+    #[test]
     fn rank_and_null_space_match_a_redundant_system() {
         let matrix = vec![vec![1.0, 0.0, 1.0], vec![2.0, 0.0, 2.0]];
         let analysis = analyze(&matrix).expect("Jacobi converges");
@@ -429,9 +442,9 @@ mod tests {
 
     #[test]
     fn jacobi_rotates_nonzero_columns_below_the_rank_threshold() {
-        let mut matrix = vec![vec![1.0, 1.0e-12], vec![0.0, 1.0e-12]];
-        let mut vectors = identity(2);
-        assert!(rotate_pair(&mut matrix, &mut vectors, 0, 1));
+        let matrix = vec![vec![1.0, 1.0e-12], vec![0.0, 1.0e-12]];
+        let (_, vectors, _) = jacobi(&matrix, 2, true).expect("Jacobi converges");
+        assert_ne!(vectors, identity(2));
     }
 
     #[test]

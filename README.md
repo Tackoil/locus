@@ -20,11 +20,11 @@ The project is under active development. The `locus 0 beta 6` frontend supports 
 | --- | --- |
 | [`crates/`](crates/) | Rust libraries, CLI, language server, and crate-local tests |
 | [`spec/`](spec/) | Normative language and toolchain specification and reference diagrams |
-| [`examples/`](examples/README.md) | Runnable demonstrations, reusable compositions, and stress workloads |
+| [`examples/`](examples/README.md) | Runnable geometry and diagram demonstrations, plus stress workloads |
 | [`tests/`](tests/README.md) | Shared fixtures, expected outputs, and stress-test support |
 | [`scripts/`](scripts/) | Repository checks, including the example source audit |
 | [`ecosystem/`](ecosystem/) | Tree-sitter grammar and Zed editor integration |
-| [`benchmarks/`](benchmarks/) | Agent drawing comparisons and crate-local performance workloads |
+| [`benchmarks/`](benchmarks/) | Agent drawing benchmark harness and fixtures |
 | [`skills/locus/`](skills/locus/SKILL.md) | Beta 6 authoring skill and portable language reference |
 | [`assets/`](assets/) | Project logo source and artwork |
 | [`licenses/`](licenses/) | Supplemental third-party license texts, provenance, and ReX licensing investigation |

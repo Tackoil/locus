@@ -826,6 +826,24 @@ pub(super) fn measured_bounds(
     differentiated: &DifferentiatedFile,
     expression: &Expr,
 ) -> Result<MeasuredBounds, EvalError> {
+    if let Expr::Ref(id) = expression {
+        if let Some(bounds) = differentiated.bounds_cache.borrow().get(&id.name) {
+            return Ok(bounds.clone());
+        }
+        let bounds = uncached_bounds(differentiated, expression)?;
+        differentiated
+            .bounds_cache
+            .borrow_mut()
+            .insert(id.name.clone(), bounds.clone());
+        return Ok(bounds);
+    }
+    uncached_bounds(differentiated, expression)
+}
+
+fn uncached_bounds(
+    differentiated: &DifferentiatedFile,
+    expression: &Expr,
+) -> Result<MeasuredBounds, EvalError> {
     if let Some(members) = collection_members(differentiated, expression) {
         return collection_bounds(differentiated, members, expression.span());
     }
@@ -1332,7 +1350,7 @@ mod tests {
             x: Jet {
                 value: 2.0,
                 seed_value: -2.0,
-                gradient: vec![1.0],
+                gradient: vec![1.0].into(),
             },
             y: Jet::constant(0.0, 1),
         };
@@ -1340,14 +1358,14 @@ mod tests {
             x: Jet {
                 value: -1.0,
                 seed_value: 1.0,
-                gradient: vec![0.0],
+                gradient: vec![0.0].into(),
             },
             y: Jet::constant(0.0, 1),
         };
         let bounds = bounds_of_points(&[first, second], Span::default()).expect("segment bounds");
         assert_eq!(bounds.minimum.x.value, -1.0);
-        assert_eq!(bounds.minimum.x.gradient, vec![0.0]);
-        assert_eq!(bounds.maximum.x.gradient, vec![1.0]);
+        assert_eq!(bounds.minimum.x.gradient.dense(), vec![0.0]);
+        assert_eq!(bounds.maximum.x.gradient.dense(), vec![1.0]);
     }
 
     #[test]
@@ -1368,7 +1386,7 @@ mod tests {
             x: Jet {
                 value: 3.0,
                 seed_value: 0.5,
-                gradient: vec![1.0],
+                gradient: vec![1.0].into(),
             },
             y: Jet::constant(1.0, 1),
         };
@@ -1378,19 +1396,19 @@ mod tests {
         let geometric =
             point_linear_residual(&point, &linear, Span::default()).expect("frozen geometry");
         assert_eq!(geometric.value, live.value);
-        assert_eq!(geometric.gradient, vec![0.0]);
+        assert_eq!(geometric.gradient.dense(), vec![0.0]);
         linear.layout_live = true;
         let point = DPoint {
             x: Jet {
                 value: 0.5,
                 seed_value: 3.0,
-                gradient: vec![1.0],
+                gradient: vec![1.0].into(),
             },
             y: Jet::constant(1.0, 1),
         };
         let interior =
             point_linear_residual(&point, &linear, Span::default()).expect("live interior");
-        assert_eq!(interior.gradient, vec![0.0]);
+        assert_eq!(interior.gradient.dense(), vec![0.0]);
         assert_eq!(interior.value, 1.0);
     }
 
@@ -1399,12 +1417,12 @@ mod tests {
             x: Jet {
                 value: x,
                 seed_value: seed_x,
-                gradient: vec![1.0, 0.0],
+                gradient: vec![1.0, 0.0].into(),
             },
             y: Jet {
                 value: y,
                 seed_value: seed_y,
-                gradient: vec![0.0, 1.0],
+                gradient: vec![0.0, 1.0].into(),
             },
         };
         let linear = DLinear {

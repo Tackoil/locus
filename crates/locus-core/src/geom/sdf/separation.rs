@@ -1,5 +1,5 @@
 //! Convex SAT classification and exact disjoint feature distances.
-use super::{dot, edges, minimum, norm, polygon_distance, segment_distance, sub};
+use super::{dot, edges, minimum, norm, polygon_distance, primal, segment_distance, sub};
 use crate::geom::route::{RoutePoint, RouteScalar};
 
 /// Minkowski core: point, segment, or polygon, expanded by a circular radius.
@@ -96,16 +96,22 @@ fn extended_distance<S: RouteScalar>(a: &[RoutePoint<S>], b: &[RoutePoint<S>]) -
     if !convex(a) || !convex(b) {
         return nonconvex_distance(a, b);
     }
-    let axes = axes(a).into_iter().chain(axes(b)).collect::<Vec<_>>();
-    let distances = axes.iter().map(|u| escape(a, b, u)).collect::<Vec<_>>();
-    if distances.iter().any(|e| e.value() < 0.0) {
+    let first: Vec<_> = a.iter().map(primal).collect();
+    let second: Vec<_> = b.iter().map(primal).collect();
+    let normals = axes(&first).into_iter().chain(axes(&second));
+    let distances: Vec<_> = normals.map(|u| escape(&first, &second, &u)).collect();
+    if distances.iter().any(|e| *e < 0.0) {
         return feature_distance(a, b);
     }
-    distances
-        .into_iter()
-        .reduce(minimum)
-        .unwrap_or_else(|| a[0].x.constant(0.0))
-        .scale(-1.0)
+    let selected = distances
+        .iter()
+        .enumerate()
+        .reduce(|a, b| if a.1 <= b.1 { a } else { b });
+    let Some((index, _)) = selected else {
+        return a[0].x.constant(0.0);
+    };
+    let normal = axes(a).into_iter().chain(axes(b)).nth(index);
+    normal.map_or_else(|| a[0].x.constant(0.0), |u| escape(a, b, &u).scale(-1.0))
 }
 fn axes<S: RouteScalar>(v: &[RoutePoint<S>]) -> Vec<RoutePoint<S>> {
     let mut result = Vec::new();
@@ -146,16 +152,25 @@ fn escape<S: RouteScalar>(a: &[RoutePoint<S>], b: &[RoutePoint<S>], u: &RoutePoi
     minimum(ahi.sub(&blo), bhi.sub(&alo))
 }
 fn feature_distance<S: RouteScalar>(a: &[RoutePoint<S>], b: &[RoutePoint<S>]) -> S {
-    let forward = a
-        .iter()
-        .flat_map(|p| edges(b).map(move |(s, t)| segment_distance(p, s, t)));
-    let backward = b
-        .iter()
-        .flat_map(|p| edges(a).map(move |(s, t)| segment_distance(p, s, t)));
-    forward
-        .chain(backward)
-        .reduce(minimum)
-        .unwrap_or_else(|| a[0].x.constant(0.0))
+    let forward = a.iter().flat_map(|p| edges(b).map(move |(s, t)| (p, s, t)));
+    let backward = b.iter().flat_map(|p| edges(a).map(move |(s, t)| (p, s, t)));
+    let mut selected = None;
+    let mut minimum = f64::INFINITY;
+    for (p, s, t) in forward.chain(backward) {
+        let distance = segment_distance(&primal(p), &primal(s), &primal(t));
+        if selected.is_none()
+            || minimum
+                .partial_cmp(&distance)
+                .is_none_or(std::cmp::Ordering::is_gt)
+        {
+            selected = Some((p, s, t));
+            minimum = distance;
+        }
+    }
+    selected.map_or_else(
+        || a[0].x.constant(0.0),
+        |(p, s, t)| segment_distance(p, s, t),
+    )
 }
 fn cross<S: RouteScalar>(a: &RoutePoint<S>, b: &RoutePoint<S>, c: &RoutePoint<S>) -> f64 {
     (b.x.value() - a.x.value()) * (c.y.value() - a.y.value())

@@ -10,6 +10,7 @@ readme.workspace = true
 publish = false
 
 [dependencies]
+faer = { version = "=0.22.6", default-features = false, features = ["std", "linalg"] }
 indexmap.workspace = true
 libm.workspace = true
 locus-syntax = { path = "../locus-syntax" }

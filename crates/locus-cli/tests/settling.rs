@@ -92,7 +92,7 @@ fn fixed_crossing_stroke_fails_as_layout_conflict_with_exit_two() -> Result {
 #[test]
 fn unchanged_checkout_completes_settling_in_repeatable_fresh_processes() -> Result {
     let source = Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("../../examples/composition/checkout_sequence.locus");
+        .join("../../examples/demonstrations/checkout_sequence.locus");
     let first = check(&source, false)?;
     assert!(
         first.status.success(),

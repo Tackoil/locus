@@ -54,7 +54,7 @@ fn assert_fixture_idempotent(path: &Path) -> Result<(), Box<dyn std::error::Erro
 #[test]
 fn formatter_is_idempotent_on_every_spec_fixture() -> Result<(), Box<dyn std::error::Error>> {
     let mut paths = Vec::new();
-    for group in ["demonstrations", "stress", "composition"] {
+    for group in ["demonstrations", "stress"] {
         let entries = fs::read_dir(corpus_dir().join(group))?;
         paths.extend(
             entries

@@ -208,7 +208,6 @@ mod tests {
             ],
             equalities: Vec::new(),
             inequalities: Vec::new(),
-            preferences: Vec::new(),
             residuals: Vec::new(),
             jacobian: Vec::new(),
             analysis: linear::unconstrained(4),

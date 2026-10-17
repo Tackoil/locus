@@ -12,7 +12,7 @@ fn inputs(width_scale: f64, padding: f64, radius_fraction: f64) -> EvaluationInp
         "../../../tests/fixtures/text_measurements.json"
     ))
     .expect("bundled font measurements");
-    let measurements = &fixture["measurements"]["examples/composition/checkout_sequence.locus"];
+    let measurements = &fixture["measurements"]["examples/demonstrations/checkout_sequence.locus"];
     let mut inputs = EvaluationInputs::default();
     inputs.metrics.padding = padding;
     inputs.metrics.rounded_radius_fraction = radius_fraction;

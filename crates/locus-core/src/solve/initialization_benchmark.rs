@@ -13,7 +13,7 @@ fn checkout_inputs() -> crate::EvaluationInputs {
         "../../../../tests/fixtures/text_measurements.json"
     ))
     .expect("measurement fixture");
-    let measurements = fixture["measurements"]["examples/composition/checkout_sequence.locus"]
+    let measurements = fixture["measurements"]["examples/demonstrations/checkout_sequence.locus"]
         .as_object()
         .expect("checkout measurements");
     let mut inputs = crate::EvaluationInputs::default();
@@ -93,7 +93,7 @@ fn measured_solve(prepared: &PreparedEvaluation<'_>) -> Value {
 #[ignore = "opt-in release benchmark; writes LOCUS_INIT_BENCH_OUT"]
 fn checkout_initialization_stages() {
     let parsed = locus_syntax::parse(include_str!(
-        "../../../../examples/composition/checkout_sequence.locus"
+        "../../../../examples/demonstrations/checkout_sequence.locus"
     ));
     let expanded = crate::program::expand_program(&parsed.file).expect("expanded checkout");
     let prepared =
@@ -132,7 +132,7 @@ fn write_report(output: &str, report: &Value) {
 #[test]
 fn checkout_initial_relations_are_feasible() {
     let parsed = locus_syntax::parse(include_str!(
-        "../../../../examples/composition/checkout_sequence.locus"
+        "../../../../examples/demonstrations/checkout_sequence.locus"
     ));
     let expanded = crate::program::expand_program(&parsed.file).expect("expanded checkout");
     let prepared =

@@ -1,8 +1,12 @@
 # Demonstration goldens
 
-Each `examples/demonstrations/*.locus` file has three committed expectations:
-`<name>.describe.json`, `<name>.inspect.json`, and `<name>.svg`. The CLI tests
-discover all demonstrations in sorted order, including newly added files.
+The twelve demonstrations named in `GOLDEN_DEMONSTRATIONS` in
+`crates/locus-cli/tests/golden.rs` have three committed expectations each:
+`<name>.describe.json`, `<name>.inspect.json`, and `<name>.svg`. This keeps the
+exhaustive measurement reports focused while retaining the existing golden coverage.
+The separate determinism test discovers all 42 demonstrations in sorted order,
+including newly added files. Renderer corpus acceptance also checks every source
+with SVG/TikZ/PNG parity and real bundled-font measurements.
 Paths in reports are repository-relative because the CLI runs from the workspace
 root; no floats, spans, geometry, or diagnostics are normalized away.
 
@@ -32,7 +36,7 @@ explicitly run in update mode.
 
 ## Visual review
 
-All 12 figures pass their in-file assertions. Tangent circles and the angle
+All twelve golden fixtures pass their in-file assertions. Tangent circles and the angle
 bisector construction look consistent with their asserted geometry. Ellipse
 foci, spline endpoints/control frame, and the 3-4-5 triangle also look consistent.
 The rounded rectangle and capsule example passes strict layout checks; both corner

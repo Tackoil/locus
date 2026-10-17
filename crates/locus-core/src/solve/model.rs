@@ -72,6 +72,30 @@ fn domain_row(
     });
 }
 
+/// Retry rejected Phase-1 steps at the explicit internal parameter bounds.
+/// Authored constraints and free numeric constructor domains are never projected.
+pub(super) fn project_parameters(
+    inequalities: &[Equation],
+    current: &[f64],
+    trial: &mut [f64],
+) -> bool {
+    let mut changed = false;
+    for row in inequalities {
+        // domain_row reserves this relation index for a single parameter.
+        let index = usize::MAX - row.relation;
+        if index >= trial.len() {
+            continue;
+        }
+        let slope = row.residual.gradient[index];
+        let slack = row.residual.value + slope * (trial[index] - current[index]);
+        if slack < 0.0 {
+            trial[index] = current[index] - row.residual.value / slope;
+            changed = true;
+        }
+    }
+    changed
+}
+
 pub(super) fn unknown_preferences(
     prepared: &PreparedEvaluation<'_>,
     system: &UnknownSystem,
@@ -129,7 +153,7 @@ pub(super) fn equality_analysis(rows: &[Equation], columns: usize) -> Result<Ana
     linear::analyze(
         &rows
             .iter()
-            .map(|row| row.residual.gradient.clone())
+            .map(|row| row.residual.gradient.dense())
             .collect::<Vec<_>>(),
     )
     .map_err(|()| EvalError::new("E403", Span::default(), "equality DOF SVD did not converge"))
@@ -139,8 +163,22 @@ fn constraint_rows(jets: impl Iterator<Item = Jet>) -> settling::Rows {
     let jets = jets.collect::<Vec<_>>();
     settling::Rows {
         values: jets.iter().map(|j| j.value).collect(),
-        jacobian: jets.into_iter().map(|j| j.gradient).collect(),
+        jacobian: jets.into_iter().map(|j| j.gradient.dense()).collect(),
     }
+}
+
+fn trace_rows(rows: &layout::LayoutRows) -> serde_json::Value {
+    let residuals: Vec<_> = rows
+        .equalities
+        .iter()
+        .map(|row| row.residual.value)
+        .chain(
+            rows.inequalities
+                .iter()
+                .map(|row| row.residual.value.min(0.0)),
+        )
+        .collect();
+    serde_json::json!({"max_residual": super::max_residual(&residuals), "residuals": residuals})
 }
 
 pub(super) fn settle(
@@ -159,9 +197,9 @@ pub(super) fn settle(
         return Ok(());
     }
     let result = settling::optimize(&outcome.normalized, |z| {
-        let evaluated = evaluate_state_for(prepared, system, sources, branches, z, true);
+        let evaluated = super::evaluate_rows(prepared, system, sources, branches, z, true);
         super::trace::iteration("settling_evaluation", prepared, system, z, || {
-            serde_json::json!({"state": evaluated.as_ref().ok().map(super::trace::state),
+            serde_json::json!({"state": evaluated.as_ref().ok().map(trace_rows),
                 "error": evaluated.as_ref().err().map(ToString::to_string)})
         });
         let state = evaluated.ok()?;
@@ -235,5 +273,29 @@ pub(super) fn validate_rows(
             span,
             "non-finite normalized layout requirement or preference",
         ))
+    }
+}
+
+#[cfg(test)]
+mod parameter_tests {
+    use super::*;
+
+    #[test]
+    fn retries_clip_internal_lower_and_upper_bounds_only() {
+        let current = [0.5, 0.5, 3.0];
+        let mut rows = Vec::new();
+        domain_row(0, 0.25, 1.0, 3, &mut rows);
+        domain_row(1, 0.25, -1.0, 3, &mut rows);
+        rows.push(Equation {
+            residual: Jet::constant(-10.0, 3),
+            relation: 0,
+        });
+        let mut trial = [-2.0, 2.0, -3.0];
+        assert!(project_parameters(&rows, &current, &mut trial));
+        assert_eq!(
+            trial.map(f64::to_bits),
+            [0.25, 0.75, -3.0].map(f64::to_bits)
+        );
+        assert!(!project_parameters(&rows, &current, &mut trial));
     }
 }

@@ -2,6 +2,8 @@
 
 use std::collections::BTreeMap;
 mod automatic;
+mod gradient;
+use gradient::Gradient;
 mod path_label;
 mod rounded_rect;
 mod route;
@@ -29,7 +31,7 @@ pub(crate) enum NumericDimension {
 pub(crate) struct Jet {
     pub(crate) value: f64,
     pub(crate) seed_value: f64,
-    pub(crate) gradient: Vec<f64>,
+    pub(crate) gradient: Gradient,
 }
 
 impl Jet {
@@ -37,7 +39,7 @@ impl Jet {
         Self {
             value,
             seed_value: value,
-            gradient: vec![0.0; count],
+            gradient: Gradient::zeros(count),
         }
     }
 
@@ -97,7 +99,7 @@ impl Jet {
         Self {
             value: self.value * factor,
             seed_value: self.seed_value * factor,
-            gradient: self.gradient.iter().map(|value| value * factor).collect(),
+            gradient: self.gradient.map(|value| value * factor),
         }
     }
 
@@ -118,11 +120,7 @@ impl Jet {
         Ok(Self {
             value,
             seed_value: libm::sqrt(self.seed_value),
-            gradient: self
-                .gradient
-                .iter()
-                .map(|derivative| derivative / (2.0 * value))
-                .collect(),
+            gradient: self.gradient.map(|derivative| derivative / (2.0 * value)),
         })
     }
 
@@ -132,9 +130,7 @@ impl Jet {
             seed_value: libm::sin(self.seed_value),
             gradient: self
                 .gradient
-                .iter()
-                .map(|derivative| derivative * libm::cos(self.value))
-                .collect(),
+                .map(|derivative| derivative * libm::cos(self.value)),
         }
     }
 
@@ -144,9 +140,7 @@ impl Jet {
             seed_value: libm::cos(self.seed_value),
             gradient: self
                 .gradient
-                .iter()
-                .map(|derivative| -derivative * libm::sin(self.value))
-                .collect(),
+                .map(|derivative| -derivative * libm::sin(self.value)),
         }
     }
 
@@ -176,11 +170,7 @@ impl Jet {
         Ok(Self {
             value: libm::acos(self.value),
             seed_value: libm::acos(self.seed_value),
-            gradient: self
-                .gradient
-                .iter()
-                .map(|derivative| -derivative / denominator)
-                .collect(),
+            gradient: self.gradient.map(|derivative| -derivative / denominator),
         })
     }
 
@@ -254,10 +244,7 @@ impl Jet {
         lhs_factor: f64,
         rhs_factor: f64,
     ) -> Self {
-        let mut gradient = Vec::with_capacity(lhs.gradient.len());
-        for index in 0..lhs.gradient.len() {
-            gradient.push(lhs.gradient[index] * lhs_factor + rhs.gradient[index] * rhs_factor);
-        }
+        let gradient = lhs.gradient.combine(&rhs.gradient, lhs_factor, rhs_factor);
         Self {
             value,
             seed_value,
@@ -442,6 +429,7 @@ enum DValue {
 }
 
 pub(crate) struct DifferentiatedFile {
+    pub(super) bounds_cache: std::cell::RefCell<BTreeMap<String, super::relations::MeasuredBounds>>,
     live_layout: bool,
     pub(crate) retained_routes: BTreeMap<String, (f64, f64)>,
     pub(crate) retained_distances: BTreeMap<String, (f64, f64)>,
@@ -497,6 +485,7 @@ impl DifferentiatedFile {
             return Err(solver_error(file.span, "unknown vector length mismatch"));
         }
         Ok(Self {
+            bounds_cache: std::cell::RefCell::default(),
             live_layout,
             retained_routes: prepared.inputs().choices.retained_routes.clone(),
             retained_distances: prepared.inputs().choices.retained_distances.clone(),
@@ -758,7 +747,7 @@ impl AdEvaluator<'_> {
 
 struct RelationEvaluator<'a> {
     live_layout: bool,
-    path_labels: BTreeMap<String, Vec<String>>,
+    path_labels: std::borrow::Cow<'a, BTreeMap<String, Vec<String>>>,
     objects: &'a BTreeMap<String, DObject>,
     count: usize,
     tolerance: Tolerance,
@@ -775,7 +764,7 @@ impl<'a> RelationEvaluator<'a> {
     ) -> Self {
         Self {
             live_layout: false,
-            path_labels: BTreeMap::new(),
+            path_labels: std::borrow::Cow::Owned(BTreeMap::new()),
             objects,
             count,
             tolerance,
@@ -789,8 +778,8 @@ impl<'a> RelationEvaluator<'a> {
         self
     }
 
-    fn with_path_labels(mut self, labels: &BTreeMap<String, Vec<String>>) -> Self {
-        self.path_labels = labels.clone();
+    fn with_path_labels(mut self, labels: &'a BTreeMap<String, Vec<String>>) -> Self {
+        self.path_labels = std::borrow::Cow::Borrowed(labels);
         self
     }
 
@@ -3443,15 +3432,18 @@ mod tests {
     fn layout_piece_gradients_switch_at_live_values_and_retain_first_ties() {
         let a = super::Jet::variable(-2.0, 3.0, 0, 1.0, 2);
         let b = super::Jet::variable(1.0, -4.0, 1, 1.0, 2);
-        assert_eq!(a.abs_live().gradient, [-1.0, 0.0]);
-        assert_eq!(a.min_live(&b).gradient, [1.0, 0.0]);
-        assert_eq!(a.max_live(&b).gradient, [0.0, 1.0]);
-        assert_eq!(a.hinge().gradient, [1.0, 0.0]);
-        assert_eq!(b.hinge().gradient, [0.0, 0.0]);
+        assert_eq!(a.abs_live().gradient.dense(), [-1.0, 0.0]);
+        assert_eq!(a.min_live(&b).gradient.dense(), [1.0, 0.0]);
+        assert_eq!(a.max_live(&b).gradient.dense(), [0.0, 1.0]);
+        assert_eq!(a.hinge().gradient.dense(), [1.0, 0.0]);
+        assert_eq!(b.hinge().gradient.dense(), [0.0, 0.0]);
         let boundary = super::Jet::variable(0.0, 7.0, 0, 1.0, 2);
-        assert_eq!(boundary.hinge().gradient, [1.0, 0.0]);
+        assert_eq!(boundary.hinge().gradient.dense(), [1.0, 0.0]);
         assert_eq!(
-            boundary.min_live(&super::Jet::constant(0.0, 2)).gradient,
+            boundary
+                .min_live(&super::Jet::constant(0.0, 2))
+                .gradient
+                .dense(),
             [1.0, 0.0]
         );
     }
@@ -3462,7 +3454,7 @@ mod tests {
         Jet {
             value,
             seed_value,
-            gradient: vec![derivative],
+            gradient: vec![derivative].into(),
         }
     }
 
@@ -3487,6 +3479,6 @@ mod tests {
         let projection = closest_point(&point, &segment, Span::default()).expect("projection");
         assert_eq!(projection.x.value, 0.0);
         assert_eq!(projection.x.seed_value, 0.5);
-        assert_eq!(projection.x.gradient, vec![1.0]);
+        assert_eq!(projection.x.gradient.dense(), vec![1.0]);
     }
 }

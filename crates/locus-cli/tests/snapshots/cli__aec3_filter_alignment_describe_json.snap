@@ -98,7 +98,7 @@ expression: stdout
       "definition": "rect f1(fw, bh)",
       "resolved": {
         "kind": "rect",
-        "area": 4.800000000000001,
+        "area": 4.799999999999999,
         "perimeter": 10.399999999999999
       }
     },
@@ -114,7 +114,7 @@ expression: stdout
       "definition": "rect f2(fw, bh)",
       "resolved": {
         "kind": "rect",
-        "area": 4.800000000000001,
+        "area": 4.8,
         "perimeter": 10.399999999999999
       }
     },
@@ -550,7 +550,7 @@ expression: stdout
       "definition": "rect s2w(lerp(f2.w, f2.e, ov / (2 * fw)), ov, bh)",
       "resolved": {
         "kind": "rect",
-        "area": 1.2000000000000002,
+        "area": 1.2,
         "perimeter": 4.4
       }
     },
@@ -566,7 +566,7 @@ expression: stdout
       "definition": "rect s2e(lerp(f2.e, f2.w, ov / (2 * fw)), ov, bh)",
       "resolved": {
         "kind": "rect",
-        "area": 1.2000000000000002,
+        "area": 1.2,
         "perimeter": 4.4
       }
     },
@@ -1298,7 +1298,7 @@ expression: stdout
       "definition": "segment cap(cap_top, cap_bot)",
       "resolved": {
         "kind": "segment",
-        "length": 5.799999999992625
+        "length": 5.799999999992624
       }
     },
     {
@@ -2361,7 +2361,7 @@ expression: stdout
       "definition": "segment o2drop(f2.sw, t192.position)",
       "resolved": {
         "kind": "segment",
-        "length": 3.1499999999932182
+        "length": 3.149999999993218
       }
     },
     {
@@ -2405,7 +2405,7 @@ expression: stdout
       "definition": "segment kline(kb, kdrop)",
       "resolved": {
         "kind": "segment",
-        "length": 3.1499999999934287
+        "length": 3.149999999993429
       }
     },
     {
@@ -2450,7 +2450,7 @@ expression: stdout
       "definition": "rect lg(0.6, 0.45)",
       "resolved": {
         "kind": "rect",
-        "area": 0.27000000000000013,
+        "area": 0.2700000000000001,
         "perimeter": 2.1000000000000005
       }
     },
@@ -5263,7 +5263,7 @@ expression: stdout
     {
       "accepted": {
         "automatic_dimensions": false,
-        "height": 1.2000000000000002,
+        "height": 1.1999999999999997,
         "width": 4.0
       },
       "definition": {
@@ -5291,7 +5291,7 @@ expression: stdout
     {
       "accepted": {
         "automatic_dimensions": false,
-        "height": 1.2000000000000002,
+        "height": 1.2,
         "width": 4.0
       },
       "definition": {
@@ -6091,7 +6091,7 @@ expression: stdout
     {
       "accepted": {
         "automatic_dimensions": false,
-        "height": 1.2000000000000002,
+        "height": 1.2,
         "width": 1.0
       },
       "definition": {
@@ -6173,7 +6173,7 @@ expression: stdout
     {
       "accepted": {
         "automatic_dimensions": false,
-        "height": 1.2000000000000002,
+        "height": 1.2,
         "width": 1.0
       },
       "definition": {
@@ -7392,7 +7392,7 @@ expression: stdout
       "accepted": {
         "automatic_dimensions": false,
         "height": 0.4500000000000002,
-        "width": 0.6000000000000001
+        "width": 0.6
       },
       "definition": {
         "source": "rect(0.6, 0.45)",
@@ -7912,12 +7912,12 @@ expression: stdout
     "measurement_passes": 1,
     "routing_attempts": 0,
     "accepted_steps": 0,
-    "max_normalized_residual": 1.9023879775800298e-13,
+    "max_normalized_residual": 1.902623421636661e-13,
     "final_damping": 0.001,
     "settling": {
       "settling_complete": true,
       "exit_reason": "complete",
-      "projected_gradient": 4.039201200784426e-17,
+      "projected_gradient": 1.25807312104729e-17,
       "steps": 3,
       "accepted_moves": 1,
       "working_set_pivots": 1,
@@ -8279,7 +8279,7 @@ expression: stdout
           "byte_start": 2133,
           "byte_end": 2157
         },
-        "max_normalized_residual": 8.951583033117913e-14,
+        "max_normalized_residual": 8.956291914250536e-14,
         "implicated_unknowns": [
           "A0",
           "A512"
@@ -8292,7 +8292,7 @@ expression: stdout
           "byte_start": 2196,
           "byte_end": 2211
         },
-        "max_normalized_residual": 1.9023879775800298e-13,
+        "max_normalized_residual": 1.902623421636661e-13,
         "implicated_unknowns": [
           "f4",
           "A0",
@@ -8400,8 +8400,11 @@ expression: stdout
           "byte_start": 4412,
           "byte_end": 4429
         },
-        "max_normalized_residual": 0.0,
-        "implicated_unknowns": []
+        "max_normalized_residual": 1.7658304247339386e-17,
+        "implicated_unknowns": [
+          "f0",
+          "lg"
+        ]
       },
       {
         "span": {
@@ -8436,7 +8439,7 @@ expression: stdout
           "byte_start": 4624,
           "byte_end": 4653
         },
-        "max_normalized_residual": 6.696028970591095e-14,
+        "max_normalized_residual": 6.691320089458472e-14,
         "implicated_unknowns": [
           "td",
           "lg1",

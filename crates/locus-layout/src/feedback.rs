@@ -102,6 +102,7 @@ pub fn solve_layout_observed(
         relations = relevant_relations(&scene.file, &changed);
         conflict_span = relations.first().copied().unwrap_or(scene.file.span);
         inputs.choices = next;
+        inputs.warm_start = scene.resolved().cloned().map(std::sync::Arc::new);
     }
     Err(LayoutError::Conflict {
         span: conflict_span,

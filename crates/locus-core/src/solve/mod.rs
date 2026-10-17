@@ -224,7 +224,6 @@ struct SolveState {
     equations: Vec<Equation>,
     equalities: Vec<Equation>,
     inequalities: Vec<Equation>,
-    preferences: Vec<ad::Jet>,
     residuals: Vec<f64>,
     jacobian: Vec<Vec<f64>>,
     analysis: Analysis,
@@ -341,8 +340,14 @@ fn run_lm(
     diagnose_failure: bool,
 ) -> Result<LmOutcome, EvalError> {
     let _solve = crate::metrics::span("levenberg_marquardt");
-    let mut normalized = system.normalized_hints.clone();
-    let mut state = evaluate_state(prepared, system, sources, branches, &normalized)?;
+    let (mut normalized, mut state) = warm_start(prepared, system, sources, branches).map_or_else(
+        || {
+            let normalized = system.normalized_hints.clone();
+            evaluate_state(prepared, system, sources, branches, &normalized)
+                .map(|state| (normalized, state))
+        },
+        Ok,
+    )?;
     let mut damping = INITIAL_DAMPING;
     let mut attempts = 0;
     let mut accepted = 0;
@@ -367,7 +372,7 @@ fn run_lm(
         } else {
             state.analysis.null.clone()
         };
-        let trial_vector = trial_step(
+        let mut trial_vector = trial_step(
             &normalized,
             &primary,
             &hint_null,
@@ -375,15 +380,24 @@ fn run_lm(
             damping,
         );
         attempts += 1;
-        let trial = evaluate_state(prepared, system, sources, branches, &trial_vector);
-        let trial_accepted = trial
-            .as_ref()
-            .is_ok_and(|trial| accepted_trial(&state, trial));
-        trace::iteration("solver_iteration", prepared, system, &trial_vector, || {
-            serde_json::json!({"iteration": attempts, "accepted": trial_accepted,
-                "damping": damping, "state": trial.as_ref().ok().map(trace::state),
-                "error": trial.as_ref().err().map(ToString::to_string)})
-        });
+        let evaluate = |name, vector: &[f64]| {
+            let trial = evaluate_state(prepared, system, sources, branches, vector);
+            let accepted = trial
+                .as_ref()
+                .is_ok_and(|trial| accepted_trial(&state, trial));
+            trace::iteration(name, prepared, system, vector, || {
+                serde_json::json!({"iteration": attempts, "accepted": accepted,
+                    "damping": damping, "state": trial.as_ref().ok().map(trace::state),
+                    "error": trial.as_ref().err().map(ToString::to_string)})
+            });
+            (trial, accepted)
+        };
+        let (mut trial, mut trial_accepted) = evaluate("solver_iteration", &trial_vector);
+        if !trial_accepted
+            && model::project_parameters(&state.inequalities, &normalized, &mut trial_vector)
+        {
+            (trial, trial_accepted) = evaluate("solver_parameter_retry", &trial_vector);
+        }
         if trial_accepted {
             normalized = trial_vector;
             state = trial.unwrap_or_else(|_| unreachable!());
@@ -425,6 +439,66 @@ fn run_lm(
     })
 }
 
+fn warm_start(
+    prepared: &PreparedEvaluation<'_>,
+    system: &UnknownSystem,
+    sources: &[SourceRelation<'_>],
+    branches: &[Option<CircleBranch>],
+) -> Option<(Vec<f64>, SolveState)> {
+    let previous = prepared.inputs().warm_start.as_ref()?;
+    if !geometric_hint_projection(system, sources) {
+        return None;
+    }
+    let _timing = crate::metrics::span("warm_start");
+    let mut objects = Vec::new();
+    let mut actual = Vec::new();
+    for op in prepared.registry() {
+        add_unknown(
+            op,
+            &previous.objects,
+            &system.dimensions,
+            &mut objects,
+            &mut actual,
+        )
+        .ok()?;
+    }
+    if actual.len() != system.hints.len() || objects.len() != system.objects.len() {
+        return None;
+    }
+    if !objects.iter().zip(&system.objects).all(|(a, b)| {
+        a.id == b.id
+            && a.class == b.class
+            && a.start == b.start
+            && a.count == b.count
+            && a.dimension == b.dimension
+    }) {
+        return None;
+    }
+    let mut normalized: Vec<_> = actual
+        .iter()
+        .zip(&system.scales)
+        .map(|(value, scale)| value / scale)
+        .collect();
+    let mut state = evaluate_state(prepared, system, sources, branches, &normalized).ok()?;
+    for _ in 0..32 {
+        if max_residual(&state.residuals) < SOLVE_EPSILON {
+            break;
+        }
+        let delta = linear::restoration_step(&state.jacobian, &state.residuals, 1e-12)?;
+        let improvement = [1.0, 0.5, 0.25].into_iter().find_map(|alpha| {
+            let trial: Vec<_> = normalized
+                .iter()
+                .zip(&delta)
+                .map(|(x, d)| x + alpha * d)
+                .collect();
+            let next = evaluate_state(prepared, system, sources, branches, &trial).ok()?;
+            accepted_trial(&state, &next).then_some((trial, next))
+        })?;
+        (normalized, state) = improvement;
+    }
+    (max_residual(&state.residuals) < SOLVE_EPSILON).then_some((normalized, state))
+}
+
 fn geometric_hint_projection(system: &UnknownSystem, sources: &[SourceRelation<'_>]) -> bool {
     sources
         .iter()
@@ -445,6 +519,62 @@ fn evaluate_state(
     evaluate_state_for(prepared, system, sources, branches, normalized, false)
 }
 
+fn evaluate_rows(
+    prepared: &PreparedEvaluation<'_>,
+    system: &UnknownSystem,
+    sources: &[SourceRelation<'_>],
+    branches: &[Option<CircleBranch>],
+    normalized: &[f64],
+    settling_faces: bool,
+) -> Result<layout::LayoutRows, EvalError> {
+    let _timing = crate::metrics::span("evaluate_solve_state");
+    let file = prepared.file();
+    let actual = denormalize(normalized, &system.scales);
+    let trial =
+        crate::metrics::measure("evaluate_primal", || prepared.evaluate_trial(Some(&actual)))?;
+    crate::metrics::measure("validate_primals", || {
+        validate_relation_primals(&trial, prepared, sources)
+    })?;
+    let differentiated = crate::metrics::measure("differentiate_scene", || {
+        DifferentiatedFile::evaluate(
+            prepared,
+            normalized,
+            &system.normalized_hints,
+            &system.scales,
+            &system.dimensions,
+            trial.tolerance(),
+        )
+    })?;
+    differentiated.validate_branch_sensitive_primal(file, trial.objects())?;
+    let mut equalities = crate::metrics::measure("differentiate_relations", || {
+        relations::evaluate(&differentiated, sources, branches, system.diameter)
+    })?;
+    let lower = if settling_faces {
+        layout::lower_settling
+    } else {
+        layout::lower
+    };
+    let rows = crate::metrics::measure("differentiate_layout", || {
+        lower(
+            &differentiated,
+            sources,
+            system.diameter,
+            &system.avoidance_axes,
+        )
+    })?;
+    equalities.extend(rows.equalities);
+    let mut inequalities = rows.inequalities;
+    append_domains(prepared, system, normalized, &mut inequalities)?;
+    let mut preferences = rows.preferences;
+    preferences.extend(unknown_preferences(prepared, system, normalized, sources));
+    model::validate_rows(&equalities, &inequalities, &preferences, file.span)?;
+    Ok(layout::LayoutRows {
+        equalities,
+        inequalities,
+        preferences,
+    })
+}
+
 fn evaluate_state_for(
     prepared: &PreparedEvaluation<'_>,
     system: &UnknownSystem,
@@ -454,36 +584,18 @@ fn evaluate_state_for(
     settling_faces: bool,
 ) -> Result<SolveState, EvalError> {
     let file = prepared.file();
-    let actual = denormalize(normalized, &system.scales);
-    let trial = prepared.evaluate_trial(Some(&actual))?;
-    validate_relation_primals(&trial, prepared, sources)?;
-    let differentiated = DifferentiatedFile::evaluate(
+    let layout::LayoutRows {
+        equalities,
+        inequalities,
+        ..
+    } = evaluate_rows(
         prepared,
-        normalized,
-        &system.normalized_hints,
-        &system.scales,
-        &system.dimensions,
-        trial.tolerance(),
-    )?;
-    differentiated.validate_branch_sensitive_primal(file, trial.objects())?;
-    let mut equalities = relations::evaluate(&differentiated, sources, branches, system.diameter)?;
-    let lower = if settling_faces {
-        layout::lower_settling
-    } else {
-        layout::lower
-    };
-    let rows = lower(
-        &differentiated,
+        system,
         sources,
-        system.diameter,
-        &system.avoidance_axes,
+        branches,
+        normalized,
+        settling_faces,
     )?;
-    equalities.extend(rows.equalities);
-    let mut inequalities = rows.inequalities;
-    append_domains(prepared, system, normalized, &mut inequalities)?;
-    let mut preferences = rows.preferences;
-    preferences.extend(unknown_preferences(prepared, system, normalized, sources));
-    model::validate_rows(&equalities, &inequalities, &preferences, file.span)?;
     let mut equations = equalities.clone();
     equations.extend(inequalities.iter().map(|row| Equation {
         residual: row.residual.hinge(),
@@ -495,7 +607,7 @@ fn evaluate_state_for(
         .collect::<Vec<_>>();
     let jacobian = equations
         .iter()
-        .map(|equation| equation.residual.gradient.clone())
+        .map(|equation| equation.residual.gradient.dense())
         .collect::<Vec<_>>();
     // Layout Phase 1 computes its geometric null space separately. Computing a
     // second full projector here is unused; equality/working-set ranks are still
@@ -515,7 +627,6 @@ fn evaluate_state_for(
         equations,
         equalities,
         inequalities,
-        preferences,
         residuals,
         jacobian,
         analysis,
@@ -949,7 +1060,7 @@ fn redundant_reports(
             .equalities
             .iter()
             .filter(|equation| equation.relation == index)
-            .map(|equation| equation.residual.gradient.clone())
+            .map(|equation| equation.residual.gradient.dense())
             .collect::<Vec<_>>();
         if additions.is_empty() {
             continue;
@@ -971,9 +1082,8 @@ fn implicated(rows: &[&Equation], objects: &[UnknownObject]) -> Vec<String> {
         .iter()
         .filter(|object| {
             rows.iter().any(|equation| {
-                equation.residual.gradient[object.start..object.start + object.count]
-                    .iter()
-                    .any(|value| *value != 0.0)
+                (object.start..object.start + object.count)
+                    .any(|index| equation.residual.gradient[index] != 0.0)
             })
         })
         .map(|object| object.id.clone())
