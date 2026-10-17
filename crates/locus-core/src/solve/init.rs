@@ -32,6 +32,9 @@ pub(super) fn initialize(
         seed_anchor(prepared, system, source, &mut boxes);
     }
     numeric::seed(prepared, system, &sources, &mut boxes)?;
+    // Measure composed rows/columns after aligning their members. Ring-seeded
+    // captions otherwise inflate collection extents before ordering and sizing.
+    seed_shared_coordinates(prepared, system, &sources, &mut boxes);
     for horizontal in [true, false] {
         seed_order_axis(prepared, system, &sources, &mut boxes, horizontal);
     }

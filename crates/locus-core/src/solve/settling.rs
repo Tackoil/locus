@@ -493,9 +493,8 @@ fn restore(
         });
         let rows = restoration_rows(&state, active);
         let step = linear::lm_primary_step(&rows.jacobian, &rows.values, damping)?;
-        let trial = add_step(&z, &step, 1.0);
-        let accepted = restoration_trial(&trial, active, merit(&rows.values), evaluate);
-        if let Some(trial_state) = accepted {
+        let accepted = restoration_search(&z, &step, active, merit(&rows.values), evaluate);
+        if let Some((trial, trial_state)) = accepted {
             z = trial;
             state = trial_state;
             damping = (damping / 10.0).max(1.0e-15);
@@ -504,6 +503,24 @@ fn restore(
         }
     }
     working_feasible(&state, active).then_some((z, state))
+}
+
+fn restoration_search(
+    z: &[f64],
+    step: &[f64],
+    active: &[usize],
+    previous: f64,
+    evaluate: &mut impl FnMut(&[f64]) -> Option<ConstraintState>,
+) -> Option<(Vec<f64>, ConstraintState)> {
+    // A full correction can cross a live geometric piece or violate a previously
+    // slack face. Shorten that same correction before rebuilding it with damping.
+    for alpha in [1.0, 0.5, 0.25] {
+        let trial = add_step(z, step, alpha);
+        if let Some(state) = restoration_trial(&trial, active, previous, alpha, evaluate) {
+            return Some((trial, state));
+        }
+    }
+    None
 }
 
 fn restoration_rows(state: &ConstraintState, active: &[usize]) -> Rows {
@@ -522,11 +539,26 @@ fn restoration_trial(
     z: &[f64],
     active: &[usize],
     previous: f64,
+    alpha: f64,
     evaluate: &mut impl FnMut(&[f64]) -> Option<ConstraintState>,
 ) -> Option<ConstraintState> {
     let state = evaluate(z)?;
-    (working_feasible(&state, active) || merit(&restoration_rows(&state, active).values) < previous)
-        .then_some(state)
+    let feasible = working_feasible(&state, active);
+    let trial_merit = merit(&restoration_rows(&state, active).values);
+    let accepted = feasible || trial_merit < previous;
+    crate::trace::record("settling_restoration_trial", || {
+        (
+            serde_json::json!({
+                "normalized": z, "alpha": alpha,
+                "previous_merit": previous, "merit": trial_merit,
+                "feasible": feasible, "accepted": accepted, "active": active,
+                "equalities": state.equalities.values,
+                "inequalities": state.inequalities.values,
+            }),
+            None,
+        )
+    });
+    accepted.then_some(state)
 }
 
 fn working_feasible(state: &ConstraintState, active: &[usize]) -> bool {
@@ -987,6 +1019,41 @@ mod tests {
         if let Some((z, state)) = restored {
             assert!((z[0] - 1.0).abs() < SOLVE_EPSILON);
             assert!(feasible(&state));
+        }
+    }
+
+    #[test]
+    fn restoration_shortens_an_overshooting_correction_before_retrying_damping() {
+        for reject_outside_domain in [false, true] {
+            let mut report = initial_result(&[0.1]).report;
+            let (restored, trace) = crate::trace::collect(|| {
+                restore(
+                    vec![0.1],
+                    &[],
+                    &mut |z| {
+                        if reject_outside_domain && z[0] > 2.0 {
+                            return None;
+                        }
+                        Some(ConstraintState {
+                            equalities: rows(&[z[0] * z[0] - 1.0], &[&[2.0 * z[0]]]),
+                            inequalities: rows(&[z[0], 2.0 - z[0]], &[&[1.0], &[-1.0]]),
+                            ..ConstraintState::default()
+                        })
+                    },
+                    &mut report,
+                )
+            });
+            let Some((z, state)) = restored else {
+                unreachable!("shortened corrections must restore the bounded positive root");
+            };
+            assert!((z[0] - 1.0).abs() < SOLVE_EPSILON);
+            assert!(feasible(&state));
+            assert!(report.restoration_steps < RESTORATION_CAP);
+            assert!(trace.iter().any(|step| {
+                step.name == "settling_restoration_trial"
+                    && step.data["accepted"] == true
+                    && step.data["alpha"] == 0.25
+            }));
         }
     }
 

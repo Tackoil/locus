@@ -1,0 +1,35 @@
+locus 0 beta 6
+style textbook
+class solid_path { stroke: solid }
+class dashed_path { stroke: dashed }
+class legend_style { fill: #F9FAFB }
+fn swatch_entry(text, appearance) {
+    point tail() { mark: none }
+    point tip() { mark: none }
+    rel align_center_y(tail, tip)
+    rel gap_x(tail, tip)
+    arrow sample(tail, tip) [appearance]
+    rel sample.length == style_metric("short_length")
+    label caption(text) [appearance]
+    rel row(sample, caption)
+}
+
+fn legend() {
+    rounded_rect frame() [legend_style]
+    swatch_entry requests("Request (solid arrow)", solid_path)
+    swatch_entry responses("Return (dashed arrow)", dashed_path)
+    rel gap_y(requests, responses)
+    rel align_left(requests, responses)
+    rel contain(frame, requests, responses)
+}
+
+
+legend key()
+
+assert contain(key.frame, key.requests, key.responses)
+assert gap_y(key.requests, key.responses)
+assert align_left(key.requests, key.responses)
+assert row(key.requests.sample, key.requests.caption)
+assert row(key.responses.sample, key.responses.caption)
+assert key.requests.sample.length == style_metric("short_length")
+assert key.responses.sample.length == style_metric("short_length")

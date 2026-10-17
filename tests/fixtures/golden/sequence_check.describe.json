@@ -46,8 +46,8 @@
       "definition": "rect boxA(bw, bh)",
       "resolved": {
         "kind": "rect",
-        "area": 2.3400000000000003,
-        "perimeter": 7.0
+        "area": 2.340000000000001,
+        "perimeter": 7.000000000000002
       }
     },
     {
@@ -76,8 +76,8 @@
       "definition": "rect boxB(bw, bh)",
       "resolved": {
         "kind": "rect",
-        "area": 2.3400000000000007,
-        "perimeter": 7.000000000000002
+        "area": 2.34,
+        "perimeter": 7.0
       }
     },
     {
@@ -106,7 +106,7 @@
       "definition": "rect boxC(bw, bh)",
       "resolved": {
         "kind": "rect",
-        "area": 2.34,
+        "area": 2.3400000000000007,
         "perimeter": 7.0
       }
     },
@@ -151,7 +151,7 @@
       "definition": "segment lifeA(boxA.s, endA)",
       "resolved": {
         "kind": "segment",
-        "length": 4.93816
+        "length": 4.938159999999999
       }
     },
     {
@@ -654,8 +654,8 @@
       },
       "resolved": {
         "kind": "rect",
-        "area": 4.067480000000014,
-        "perimeter": 10.134960000000007
+        "area": 4.067479999999987,
+        "perimeter": 10.134959999999989
       }
     },
     {
@@ -724,8 +724,8 @@
       },
       "resolved": {
         "kind": "rect",
-        "area": 4.067480000000014,
-        "perimeter": 10.134960000000007
+        "area": 4.06747999999999,
+        "perimeter": 10.134959999999994
       }
     },
     {
@@ -829,7 +829,7 @@
       },
       "resolved": {
         "kind": "segment",
-        "length": 3.825440000000004
+        "length": 3.8254400000000004
       }
     },
     {
@@ -899,7 +899,7 @@
       },
       "resolved": {
         "kind": "segment",
-        "length": 3.825440000000004
+        "length": 3.82544
       }
     },
     {
@@ -1328,7 +1328,7 @@
       "definition": "rect beta6_frame()",
       "resolved": {
         "kind": "rect",
-        "area": 36.298868003200035,
+        "area": 36.29886800320003,
         "perimeter": 27.455440000000003
       }
     },
@@ -1344,8 +1344,8 @@
       "definition": "rect beta6_tab()",
       "resolved": {
         "kind": "rect",
-        "area": 1.9865149312000017,
-        "perimeter": 6.2705600000000015
+        "area": 1.9865149311999997,
+        "perimeter": 6.27056
       }
     },
     {
@@ -1439,8 +1439,8 @@
       },
       "resolved": {
         "kind": "rect",
-        "area": 0.8082239999999999,
-        "perimeter": 5.988160000000002
+        "area": 0.8082240000000023,
+        "perimeter": 5.988160000000004
       }
     },
     {
@@ -4058,8 +4058,8 @@
     {
       "accepted": {
         "automatic_dimensions": false,
-        "height": 0.9000000000000001,
-        "width": 2.6
+        "height": 0.9000000000000004,
+        "width": 2.6000000000000005
       },
       "definition": {
         "source": "rect(bw, bh)",
@@ -4133,8 +4133,8 @@
     {
       "accepted": {
         "automatic_dimensions": false,
-        "height": 0.9000000000000001,
-        "width": 2.6000000000000005
+        "height": 0.8999999999999999,
+        "width": 2.6
       },
       "definition": {
         "source": "rect(bw, bh)",
@@ -4208,7 +4208,7 @@
     {
       "accepted": {
         "automatic_dimensions": false,
-        "height": 0.9000000000000001,
+        "height": 0.9000000000000004,
         "width": 2.5999999999999996
       },
       "definition": {
@@ -4283,7 +4283,7 @@
     {
       "accepted": {
         "clipped": false,
-        "logical_length": 2.9132000000000002,
+        "logical_length": 2.9132000000000025,
         "route": "direct"
       },
       "definition": {
@@ -4377,7 +4377,7 @@
     {
       "accepted": {
         "clipped": false,
-        "logical_length": 4.059520000000001,
+        "logical_length": 4.05952,
         "route": "direct"
       },
       "definition": {
@@ -4471,7 +4471,7 @@
     {
       "accepted": {
         "clipped": false,
-        "logical_length": 4.059520000000001,
+        "logical_length": 4.05952,
         "route": "direct"
       },
       "definition": {
@@ -4659,7 +4659,7 @@
     {
       "accepted": {
         "clipped": false,
-        "logical_length": 4.059520000000001,
+        "logical_length": 4.05952,
         "route": "direct"
       },
       "definition": {
@@ -4761,7 +4761,7 @@
     {
       "accepted": {
         "clipped": false,
-        "logical_length": 2.9132000000000002,
+        "logical_length": 2.9132000000000033,
         "route": "direct"
       },
       "definition": {
@@ -4855,8 +4855,8 @@
     {
       "accepted": {
         "automatic_dimensions": true,
-        "height": 1.0000000000000036,
-        "width": 4.06748
+        "height": 0.9999999999999973,
+        "width": 4.067479999999998
       },
       "definition": {
         "source": "rect()",
@@ -4899,7 +4899,7 @@
     {
       "accepted": {
         "automatic_dimensions": true,
-        "height": 1.0000000000000036,
+        "height": 0.9999999999999976,
         "width": 4.06748
       },
       "definition": {
@@ -4943,7 +4943,7 @@
     {
       "accepted": {
         "clipped": false,
-        "logical_length": 7.299959999999999,
+        "logical_length": 7.2999600000000004,
         "route": "direct"
       },
       "definition": {
@@ -5029,7 +5029,7 @@
     {
       "accepted": {
         "clipped": false,
-        "logical_length": 0.29000000000000004,
+        "logical_length": 0.28999999999999915,
         "route": "orthogonal",
         "side": "right"
       },
@@ -5137,7 +5137,7 @@
     {
       "accepted": {
         "clipped": false,
-        "logical_length": 7.299959999999999,
+        "logical_length": 7.2999600000000004,
         "route": "direct"
       },
       "definition": {
@@ -5223,8 +5223,8 @@
     {
       "accepted": {
         "automatic_dimensions": true,
-        "height": 3.575440000000004,
-        "width": 10.152279999999998
+        "height": 3.575440000000002,
+        "width": 10.152280000000001
       },
       "definition": {
         "source": "rect()",
@@ -5240,7 +5240,7 @@
     {
       "accepted": {
         "automatic_dimensions": true,
-        "height": 0.8813600000000008,
+        "height": 0.8813599999999999,
         "width": 2.25392
       },
       "definition": {
@@ -5285,7 +5285,7 @@
       "accepted": {
         "automatic_dimensions": true,
         "height": 2.6940800000000014,
-        "width": 0.2999999999999998
+        "width": 0.3000000000000007
       },
       "definition": {
         "source": "rect()",
@@ -6438,24 +6438,24 @@
     "unknowns": 115,
     "equations": 312,
     "rank": 66,
-    "attempts": 9,
-    "outer_search_attempts": 5,
-    "measurement_passes": 3,
+    "attempts": 0,
+    "outer_search_attempts": 2,
+    "measurement_passes": 2,
     "routing_attempts": 0,
-    "accepted_steps": 7,
-    "max_normalized_residual": 6.54016350785415e-17,
-    "final_damping": 1.0000000000000002e-8,
+    "accepted_steps": 0,
+    "max_normalized_residual": 8.63791313902362e-17,
+    "final_damping": 0.001,
     "settling": {
       "settling_complete": true,
       "exit_reason": "complete",
-      "projected_gradient": 5.645047058836696e-17,
-      "steps": 27,
-      "accepted_moves": 21,
-      "working_set_pivots": 5,
-      "model_rebuilds": 1,
-      "evaluations": 48,
-      "line_search_evaluations": 21,
-      "restoration_steps": 12,
+      "projected_gradient": 5.665544296497089e-17,
+      "steps": 20,
+      "accepted_moves": 18,
+      "working_set_pivots": 1,
+      "model_rebuilds": 0,
+      "evaluations": 21,
+      "line_search_evaluations": 18,
+      "restoration_steps": 2,
       "active_layout_requirements": [
         {
           "line": 83,
@@ -6548,6 +6548,12 @@
           "byte_end": 4507
         },
         {
+          "line": 128,
+          "col": 9,
+          "byte_start": 4748,
+          "byte_end": 4764
+        },
+        {
           "line": 131,
           "col": 9,
           "byte_start": 4894,
@@ -6638,6 +6644,12 @@
           "byte_end": 5625
         },
         {
+          "line": 198,
+          "col": 5,
+          "byte_start": 7621,
+          "byte_end": 7653
+        },
+        {
           "line": 47,
           "col": 1,
           "byte_start": 1721,
@@ -6686,7 +6698,7 @@
           "byte_end": 4468
         }
       ],
-      "active_remaining": 11
+      "active_remaining": 9
     },
     "dof": {
       "global_remaining": 49,
@@ -7577,7 +7589,7 @@
           "byte_start": 4830,
           "byte_end": 4885
         },
-        "choice": "label beta6_work.caption: Right, candidate 1"
+        "choice": "label beta6_work.caption: Right, candidate 0"
       },
       {
         "span": {
@@ -7599,7 +7611,7 @@
           "byte_start": 886,
           "byte_end": 912
         },
-        "max_normalized_residual": 1.8521947434352574e-18,
+        "max_normalized_residual": 0.0,
         "implicated_unknowns": [
           "boxA",
           "endA"
@@ -7612,7 +7624,7 @@
           "byte_start": 985,
           "byte_end": 1011
         },
-        "max_normalized_residual": 0.0,
+        "max_normalized_residual": 4.7238587479035425e-18,
         "implicated_unknowns": [
           "boxB",
           "endB"
@@ -7625,7 +7637,7 @@
           "byte_start": 1084,
           "byte_end": 1110
         },
-        "max_normalized_residual": 0.0,
+        "max_normalized_residual": 4.31895656951181e-17,
         "implicated_unknowns": [
           "boxC",
           "endC"
@@ -7638,7 +7650,7 @@
           "byte_start": 1261,
           "byte_end": 1274
         },
-        "max_normalized_residual": 1.5591238658754831e-18,
+        "max_normalized_residual": 0.0,
         "implicated_unknowns": [
           "boxA",
           "endA",
@@ -7652,7 +7664,7 @@
           "byte_start": 1311,
           "byte_end": 1324
         },
-        "max_normalized_residual": 1.3299217725720978e-18,
+        "max_normalized_residual": 0.0,
         "implicated_unknowns": [
           "boxA",
           "endA",
@@ -7666,7 +7678,7 @@
           "byte_start": 1361,
           "byte_end": 1374
         },
-        "max_normalized_residual": 1.0368508950123241e-18,
+        "max_normalized_residual": 0.0,
         "implicated_unknowns": [
           "boxA",
           "endA",
@@ -7680,7 +7692,7 @@
           "byte_start": 1411,
           "byte_end": 1424
         },
-        "max_normalized_residual": 6.79911233196162e-19,
+        "max_normalized_residual": 4.31895656951181e-17,
         "implicated_unknowns": [
           "boxA",
           "endA",
@@ -7694,7 +7706,7 @@
           "byte_start": 1461,
           "byte_end": 1474
         },
-        "max_normalized_residual": 3.8684035563638826e-19,
+        "max_normalized_residual": 0.0,
         "implicated_unknowns": [
           "boxA",
           "endA",
@@ -7708,7 +7720,7 @@
           "byte_start": 1511,
           "byte_end": 1524
         },
-        "max_normalized_residual": 9.376947807661443e-20,
+        "max_normalized_residual": 4.31895656951181e-17,
         "implicated_unknowns": [
           "boxA",
           "endA",
@@ -7722,7 +7734,7 @@
           "byte_start": 1631,
           "byte_end": 1645
         },
-        "max_normalized_residual": 0.0,
+        "max_normalized_residual": 4.3138258975660044e-18,
         "implicated_unknowns": [
           "boxB",
           "endB",
@@ -7749,7 +7761,7 @@
           "byte_start": 1804,
           "byte_end": 1818
         },
-        "max_normalized_residual": 0.0,
+        "max_normalized_residual": 3.566374565235357e-18,
         "implicated_unknowns": [
           "boxB",
           "endB",
@@ -7763,7 +7775,7 @@
           "byte_start": 1820,
           "byte_end": 1843
         },
-        "max_normalized_residual": 0.0,
+        "max_normalized_residual": 2.159478284755905e-17,
         "implicated_unknowns": [
           "r2",
           "p2b"
@@ -7776,7 +7788,7 @@
           "byte_start": 1882,
           "byte_end": 1896
         },
-        "max_normalized_residual": 0.0,
+        "max_normalized_residual": 1.3667681505474709e-17,
         "implicated_unknowns": [
           "boxC",
           "endC",
@@ -7803,7 +7815,7 @@
           "byte_start": 2065,
           "byte_end": 2079
         },
-        "max_normalized_residual": 0.0,
+        "max_normalized_residual": 2.481504750911599e-18,
         "implicated_unknowns": [
           "boxB",
           "endB",
@@ -7817,7 +7829,7 @@
           "byte_start": 2081,
           "byte_end": 2104
         },
-        "max_normalized_residual": 0.0,
+        "max_normalized_residual": 1.0797391423779526e-17,
         "implicated_unknowns": [
           "r3",
           "p3b"
@@ -7830,7 +7842,7 @@
           "byte_start": 2143,
           "byte_end": 2157
         },
-        "max_normalized_residual": 0.0,
+        "max_normalized_residual": 2.050152225821206e-17,
         "implicated_unknowns": [
           "boxC",
           "endC",
@@ -7844,7 +7856,7 @@
           "byte_start": 2159,
           "byte_end": 2182
         },
-        "max_normalized_residual": 0.0,
+        "max_normalized_residual": 1.0797391423779526e-17,
         "implicated_unknowns": [
           "r3",
           "p3c"
@@ -7857,7 +7869,7 @@
           "byte_start": 2348,
           "byte_end": 2362
         },
-        "max_normalized_residual": 0.0,
+        "max_normalized_residual": 1.734053418580952e-18,
         "implicated_unknowns": [
           "boxB",
           "endB",
@@ -7871,7 +7883,7 @@
           "byte_start": 2364,
           "byte_end": 2387
         },
-        "max_normalized_residual": 0.0,
+        "max_normalized_residual": 2.6993478559448814e-18,
         "implicated_unknowns": [
           "r4",
           "p4b"
@@ -7884,7 +7896,7 @@
           "byte_start": 2426,
           "byte_end": 2440
         },
-        "max_normalized_residual": 0.0,
+        "max_normalized_residual": 1.5854202684168693e-17,
         "implicated_unknowns": [
           "boxC",
           "endC",
@@ -7911,7 +7923,7 @@
           "byte_start": 2596,
           "byte_end": 2610
         },
-        "max_normalized_residual": 0.0,
+        "max_normalized_residual": 9.86602086250304e-19,
         "implicated_unknowns": [
           "boxB",
           "endB",
@@ -7938,7 +7950,7 @@
           "byte_start": 2674,
           "byte_end": 2688
         },
-        "max_normalized_residual": 0.0,
+        "max_normalized_residual": 3.416920376368676e-17,
         "implicated_unknowns": [
           "boxC",
           "endC",
@@ -7965,7 +7977,7 @@
           "byte_start": 2863,
           "byte_end": 2877
         },
-        "max_normalized_residual": 0.0,
+        "max_normalized_residual": 5.765692359127654e-19,
         "implicated_unknowns": [
           "boxB",
           "endB",
@@ -7979,7 +7991,7 @@
           "byte_start": 2879,
           "byte_end": 2902
         },
-        "max_normalized_residual": 0.0,
+        "max_normalized_residual": 1.0797391423779526e-17,
         "implicated_unknowns": [
           "r6",
           "p6b"
@@ -7992,7 +8004,7 @@
           "byte_start": 3427,
           "byte_end": 3448
         },
-        "max_normalized_residual": 0.0,
+        "max_normalized_residual": 4.31895656951181e-17,
         "implicated_unknowns": [
           "boxA",
           "boxB",
@@ -8020,7 +8032,7 @@
           "byte_start": 3490,
           "byte_end": 3531
         },
-        "max_normalized_residual": 8.175204384817687e-18,
+        "max_normalized_residual": 1.0797391423779526e-17,
         "implicated_unknowns": [
           "boxA",
           "endA",
@@ -8033,10 +8045,15 @@
           "l2",
           "p3b",
           "p3c",
+          "l3",
           "p4b",
           "p4c",
           "l4",
-          "p6b"
+          "p5b",
+          "p5c",
+          "l5",
+          "p6b",
+          "l6"
         ]
       },
       {
@@ -8046,7 +8063,7 @@
           "byte_start": 3536,
           "byte_end": 3566
         },
-        "max_normalized_residual": 8.175204384817687e-18,
+        "max_normalized_residual": 3.239217427133858e-17,
         "implicated_unknowns": [
           "r1",
           "r2",
@@ -8080,7 +8097,7 @@
           "byte_start": 3710,
           "byte_end": 3733
         },
-        "max_normalized_residual": 3.474461863547517e-17,
+        "max_normalized_residual": 2.6993478559448814e-18,
         "implicated_unknowns": [
           "boxC",
           "endC",
@@ -8116,7 +8133,7 @@
           "byte_start": 3794,
           "byte_end": 3817
         },
-        "max_normalized_residual": 0.0,
+        "max_normalized_residual": 6.748369639862204e-17,
         "implicated_unknowns": [
           "boxA",
           "endA",
@@ -8132,7 +8149,7 @@
           "byte_start": 3967,
           "byte_end": 3989
         },
-        "max_normalized_residual": 4.0876021924088435e-18,
+        "max_normalized_residual": 0.0,
         "implicated_unknowns": [
           "beta6_agent.shape",
           "beta6_agent.caption"
@@ -8155,7 +8172,7 @@
           "byte_start": 3967,
           "byte_end": 3989
         },
-        "max_normalized_residual": 0.0,
+        "max_normalized_residual": 4.31895656951181e-17,
         "implicated_unknowns": [
           "beta6_kernel.shape",
           "beta6_kernel.caption"
@@ -8168,7 +8185,7 @@
           "byte_start": 3998,
           "byte_end": 4021
         },
-        "max_normalized_residual": 0.0,
+        "max_normalized_residual": 4.31895656951181e-17,
         "implicated_unknowns": [
           "beta6_kernel.shape",
           "beta6_kernel.caption"
@@ -8181,7 +8198,7 @@
           "byte_start": 5780,
           "byte_end": 5831
         },
-        "max_normalized_residual": 0.0,
+        "max_normalized_residual": 8.63791313902362e-17,
         "implicated_unknowns": [
           "beta6_agent.shape",
           "beta6_kernel.shape"
@@ -8194,7 +8211,7 @@
           "byte_start": 5836,
           "byte_end": 5889
         },
-        "max_normalized_residual": 0.0,
+        "max_normalized_residual": 1.0797391423779526e-17,
         "implicated_unknowns": [
           "beta6_agent.shape",
           "beta6_kernel.shape"
@@ -8207,7 +8224,7 @@
           "byte_start": 5941,
           "byte_end": 5959
         },
-        "max_normalized_residual": 0.0,
+        "max_normalized_residual": 2.159478284755905e-17,
         "implicated_unknowns": [
           "beta6_agent.shape",
           "beta6_kernel.shape"
@@ -8223,8 +8240,7 @@
         "max_normalized_residual": 0.0,
         "implicated_unknowns": [
           "endA",
-          "beta6_agent.shape",
-          "beta6_kernel.shape"
+          "beta6_agent.shape"
         ]
       },
       {
@@ -8234,7 +8250,7 @@
           "byte_start": 5996,
           "byte_end": 6027
         },
-        "max_normalized_residual": 0.0,
+        "max_normalized_residual": 4.31895656951181e-17,
         "implicated_unknowns": [
           "boxA",
           "beta6_agent.shape"
@@ -8247,7 +8263,7 @@
           "byte_start": 4091,
           "byte_end": 4120
         },
-        "max_normalized_residual": 4.0876021924088435e-18,
+        "max_normalized_residual": 0.0,
         "implicated_unknowns": [
           "beta6_agent.shape",
           "beta6_source.finish"
@@ -8270,7 +8286,7 @@
           "byte_start": 4091,
           "byte_end": 4120
         },
-        "max_normalized_residual": 0.0,
+        "max_normalized_residual": 4.31895656951181e-17,
         "implicated_unknowns": [
           "beta6_kernel.shape",
           "beta6_target.finish"
@@ -8293,7 +8309,7 @@
           "byte_start": 4308,
           "byte_end": 4324
         },
-        "max_normalized_residual": 2.0438010962044237e-18,
+        "max_normalized_residual": 0.0,
         "implicated_unknowns": [
           "beta6_agent.shape",
           "beta6_source.finish",
@@ -8307,7 +8323,7 @@
           "byte_start": 4333,
           "byte_end": 4348
         },
-        "max_normalized_residual": 0.0,
+        "max_normalized_residual": 2.1594782847559066e-17,
         "implicated_unknowns": [
           "beta6_kernel.shape",
           "beta6_target.finish",
@@ -8334,12 +8350,10 @@
           "byte_start": 4477,
           "byte_end": 4507
         },
-        "max_normalized_residual": 3.474461863547517e-17,
+        "max_normalized_residual": 2.4294130703503932e-17,
         "implicated_unknowns": [
           "beta6_agent.shape",
-          "beta6_kernel.shape",
           "beta6_source.finish",
-          "beta6_target.finish",
           "beta6_request.tail",
           "beta6_request.tip",
           "beta6_request.caption"
@@ -8352,7 +8366,7 @@
           "byte_start": 4701,
           "byte_end": 4716
         },
-        "max_normalized_residual": 0.0,
+        "max_normalized_residual": 1.5208206164568026e-17,
         "implicated_unknowns": [
           "beta6_kernel.shape",
           "beta6_target.finish",
@@ -8366,7 +8380,7 @@
           "byte_start": 4725,
           "byte_end": 4739
         },
-        "max_normalized_residual": 0.0,
+        "max_normalized_residual": 1.2385683415869963e-17,
         "implicated_unknowns": [
           "beta6_kernel.shape",
           "beta6_target.finish",
@@ -8381,7 +8395,10 @@
           "byte_end": 4764
         },
         "max_normalized_residual": 0.0,
-        "implicated_unknowns": []
+        "implicated_unknowns": [
+          "beta6_work.tail",
+          "beta6_work.tip"
+        ]
       },
       {
         "span": {
@@ -8390,11 +8407,12 @@
           "byte_start": 4894,
           "byte_end": 4915
         },
-        "max_normalized_residual": 2.0438010962044217e-18,
+        "max_normalized_residual": 4.588891355106298e-17,
         "implicated_unknowns": [
           "beta6_kernel.shape",
           "beta6_target.finish",
           "beta6_work.tail",
+          "beta6_work.tip",
           "beta6_work.path",
           "beta6_work.caption"
         ]
@@ -8406,7 +8424,7 @@
           "byte_start": 4308,
           "byte_end": 4324
         },
-        "max_normalized_residual": 0.0,
+        "max_normalized_residual": 2.822522748698065e-18,
         "implicated_unknowns": [
           "beta6_kernel.shape",
           "beta6_target.finish",
@@ -8420,7 +8438,7 @@
           "byte_start": 4333,
           "byte_end": 4348
         },
-        "max_normalized_residual": 2.6713281298418406e-19,
+        "max_normalized_residual": 0.0,
         "implicated_unknowns": [
           "beta6_agent.shape",
           "beta6_source.finish",
@@ -8457,14 +8475,11 @@
           "byte_start": 6488,
           "byte_end": 6522
         },
-        "max_normalized_residual": 3.678841973167959e-17,
+        "max_normalized_residual": 0.0,
         "implicated_unknowns": [
-          "beta6_request.tail",
           "beta6_work.tail",
           "beta6_work.path",
           "beta6_work.caption",
-          "beta6_reply.tail",
-          "beta6_reply.tip",
           "beta6_frame"
         ]
       },
@@ -8475,7 +8490,7 @@
           "byte_start": 6527,
           "byte_end": 6560
         },
-        "max_normalized_residual": 6.54016350785415e-17,
+        "max_normalized_residual": 2.159478284755905e-17,
         "implicated_unknowns": [
           "beta6_agent.shape",
           "beta6_kernel.shape",
@@ -8489,7 +8504,7 @@
           "byte_start": 6620,
           "byte_end": 6653
         },
-        "max_normalized_residual": 8.175204384817687e-18,
+        "max_normalized_residual": 0.0,
         "implicated_unknowns": [
           "beta6_tab",
           "beta6_tab_text"
@@ -8502,7 +8517,7 @@
           "byte_start": 6658,
           "byte_end": 6692
         },
-        "max_normalized_residual": 4.0876021924088435e-18,
+        "max_normalized_residual": 0.0,
         "implicated_unknowns": [
           "beta6_tab",
           "beta6_tab_text"
@@ -8515,7 +8530,7 @@
           "byte_start": 6697,
           "byte_end": 6731
         },
-        "max_normalized_residual": 4.0876021924088435e-17,
+        "max_normalized_residual": 4.31895656951181e-17,
         "implicated_unknowns": [
           "beta6_frame",
           "beta6_tab"
@@ -8528,7 +8543,7 @@
           "byte_start": 6754,
           "byte_end": 6787
         },
-        "max_normalized_residual": 3.270081753927075e-17,
+        "max_normalized_residual": 0.0,
         "implicated_unknowns": [
           "beta6_frame",
           "beta6_tab"
@@ -8541,7 +8556,7 @@
           "byte_start": 6810,
           "byte_end": 6840
         },
-        "max_normalized_residual": 0.0,
+        "max_normalized_residual": 8.63791313902362e-17,
         "implicated_unknowns": [
           "beta6_request.tail",
           "beta6_request.tip",
@@ -8556,7 +8571,7 @@
           "byte_start": 6931,
           "byte_end": 6975
         },
-        "max_normalized_residual": 3.474461863547517e-17,
+        "max_normalized_residual": 4.31895656951181e-17,
         "implicated_unknowns": [
           "beta6_frame",
           "beta6_divider_left"
@@ -8569,7 +8584,7 @@
           "byte_start": 6980,
           "byte_end": 7025
         },
-        "max_normalized_residual": 6.54016350785415e-17,
+        "max_normalized_residual": 0.0,
         "implicated_unknowns": [
           "beta6_frame",
           "beta6_divider_right"
@@ -8582,7 +8597,7 @@
           "byte_start": 7030,
           "byte_end": 7085
         },
-        "max_normalized_residual": 0.0,
+        "max_normalized_residual": 4.31895656951181e-17,
         "implicated_unknowns": [
           "beta6_divider_left",
           "beta6_divider_right"
@@ -8595,7 +8610,7 @@
           "byte_start": 7165,
           "byte_end": 7225
         },
-        "max_normalized_residual": 0.0,
+        "max_normalized_residual": 4.31895656951181e-17,
         "implicated_unknowns": [
           "beta6_request.tail",
           "beta6_request.tip",
@@ -8631,7 +8646,11 @@
           "byte_end": 7331
         },
         "max_normalized_residual": 0.0,
-        "implicated_unknowns": []
+        "implicated_unknowns": [
+          "beta6_source.finish",
+          "beta6_reply.tail",
+          "beta6_reply.tip"
+        ]
       },
       {
         "span": {
@@ -8640,9 +8659,10 @@
           "byte_start": 5076,
           "byte_end": 5104
         },
-        "max_normalized_residual": 0.0,
+        "max_normalized_residual": 4.31895656951181e-17,
         "implicated_unknowns": [
           "beta6_kernel.shape",
+          "beta6_target.finish",
           "beta6_band.shape"
         ]
       },
@@ -8653,7 +8673,7 @@
           "byte_start": 5113,
           "byte_end": 5156
         },
-        "max_normalized_residual": 6.131403288613265e-18,
+        "max_normalized_residual": 3.509152212728346e-17,
         "implicated_unknowns": [
           "beta6_band.shape"
         ]
@@ -8665,13 +8685,11 @@
           "byte_start": 5165,
           "byte_end": 5186
         },
-        "max_normalized_residual": 3.270081753927075e-17,
+        "max_normalized_residual": 8.63791313902362e-17,
         "implicated_unknowns": [
           "beta6_request.tail",
           "beta6_request.tip",
           "beta6_request.caption",
-          "beta6_reply.tail",
-          "beta6_reply.tip",
           "beta6_band.shape"
         ]
       },
@@ -8738,7 +8756,7 @@
           "byte_start": 5605,
           "byte_end": 5625
         },
-        "max_normalized_residual": 0.0,
+        "max_normalized_residual": 1.0797391423779526e-17,
         "implicated_unknowns": [
           "beta6_legend.tail",
           "beta6_legend.tip",
@@ -8752,7 +8770,7 @@
           "byte_start": 7621,
           "byte_end": 7653
         },
-        "max_normalized_residual": 0.0,
+        "max_normalized_residual": 4.31895656951181e-17,
         "implicated_unknowns": [
           "beta6_frame",
           "beta6_legend.caption"
@@ -8765,7 +8783,7 @@
           "byte_start": 7658,
           "byte_end": 7695
         },
-        "max_normalized_residual": 3.474461863547517e-17,
+        "max_normalized_residual": 4.31895656951181e-17,
         "implicated_unknowns": [
           "beta6_frame",
           "beta6_legend.tail"

@@ -98,7 +98,7 @@ expression: stdout
       "definition": "rect f1(fw, bh)",
       "resolved": {
         "kind": "rect",
-        "area": 4.799999999999999,
+        "area": 4.800000000000001,
         "perimeter": 10.399999999999999
       }
     },
@@ -114,7 +114,7 @@ expression: stdout
       "definition": "rect f2(fw, bh)",
       "resolved": {
         "kind": "rect",
-        "area": 4.8,
+        "area": 4.800000000000001,
         "perimeter": 10.399999999999999
       }
     },
@@ -130,8 +130,8 @@ expression: stdout
       "definition": "rect f3(fw, bh)",
       "resolved": {
         "kind": "rect",
-        "area": 4.800000000000001,
-        "perimeter": 10.399999999999999
+        "area": 4.800000000000002,
+        "perimeter": 10.400000000000002
       }
     },
     {
@@ -146,7 +146,7 @@ expression: stdout
       "definition": "rect f4(fw, bh)",
       "resolved": {
         "kind": "rect",
-        "area": 4.799999999999999,
+        "area": 4.800000000000001,
         "perimeter": 10.399999999999999
       }
     },
@@ -518,7 +518,7 @@ expression: stdout
       "definition": "rect s1w(lerp(f1.w, f1.e, ov / (2 * fw)), ov, bh)",
       "resolved": {
         "kind": "rect",
-        "area": 1.2,
+        "area": 1.2000000000000002,
         "perimeter": 4.4
       }
     },
@@ -534,7 +534,7 @@ expression: stdout
       "definition": "rect s1e(lerp(f1.e, f1.w, ov / (2 * fw)), ov, bh)",
       "resolved": {
         "kind": "rect",
-        "area": 1.2,
+        "area": 1.2000000000000002,
         "perimeter": 4.4
       }
     },
@@ -550,7 +550,7 @@ expression: stdout
       "definition": "rect s2w(lerp(f2.w, f2.e, ov / (2 * fw)), ov, bh)",
       "resolved": {
         "kind": "rect",
-        "area": 1.2,
+        "area": 1.2000000000000002,
         "perimeter": 4.4
       }
     },
@@ -566,7 +566,7 @@ expression: stdout
       "definition": "rect s2e(lerp(f2.e, f2.w, ov / (2 * fw)), ov, bh)",
       "resolved": {
         "kind": "rect",
-        "area": 1.2,
+        "area": 1.2000000000000002,
         "perimeter": 4.4
       }
     },
@@ -614,8 +614,8 @@ expression: stdout
       "definition": "rect s4w(lerp(f4.w, f4.e, ov / (2 * fw)), ov, bh)",
       "resolved": {
         "kind": "rect",
-        "area": 1.1999999999999997,
-        "perimeter": 4.3999999999999995
+        "area": 1.2000000000000002,
+        "perimeter": 4.4
       }
     },
     {
@@ -1298,7 +1298,7 @@ expression: stdout
       "definition": "segment cap(cap_top, cap_bot)",
       "resolved": {
         "kind": "segment",
-        "length": 5.7999999999924805
+        "length": 5.799999999992625
       }
     },
     {
@@ -2361,7 +2361,7 @@ expression: stdout
       "definition": "segment o2drop(f2.sw, t192.position)",
       "resolved": {
         "kind": "segment",
-        "length": 3.149999999993499
+        "length": 3.1499999999932182
       }
     },
     {
@@ -2405,7 +2405,7 @@ expression: stdout
       "definition": "segment kline(kb, kdrop)",
       "resolved": {
         "kind": "segment",
-        "length": 3.1499999999932804
+        "length": 3.1499999999934287
       }
     },
     {
@@ -2420,8 +2420,8 @@ expression: stdout
       "definition": "rect td()",
       "resolved": {
         "kind": "rect",
-        "area": 5.914022031249993,
-        "perimeter": 13.828044062500004
+        "area": 5.914022031250001,
+        "perimeter": 13.828044062500002
       }
     },
     {
@@ -5263,7 +5263,7 @@ expression: stdout
     {
       "accepted": {
         "automatic_dimensions": false,
-        "height": 1.1999999999999997,
+        "height": 1.2000000000000002,
         "width": 4.0
       },
       "definition": {
@@ -5291,7 +5291,7 @@ expression: stdout
     {
       "accepted": {
         "automatic_dimensions": false,
-        "height": 1.2,
+        "height": 1.2000000000000002,
         "width": 4.0
       },
       "definition": {
@@ -5320,7 +5320,7 @@ expression: stdout
       "accepted": {
         "automatic_dimensions": false,
         "height": 1.2000000000000002,
-        "width": 4.0
+        "width": 4.000000000000001
       },
       "definition": {
         "source": "rect(fw, bh)",
@@ -5347,7 +5347,7 @@ expression: stdout
     {
       "accepted": {
         "automatic_dimensions": false,
-        "height": 1.1999999999999997,
+        "height": 1.2000000000000002,
         "width": 4.0
       },
       "definition": {
@@ -5927,7 +5927,7 @@ expression: stdout
     {
       "accepted": {
         "automatic_dimensions": false,
-        "height": 1.2,
+        "height": 1.2000000000000002,
         "width": 1.0
       },
       "definition": {
@@ -6009,7 +6009,7 @@ expression: stdout
     {
       "accepted": {
         "automatic_dimensions": false,
-        "height": 1.2,
+        "height": 1.2000000000000002,
         "width": 1.0
       },
       "definition": {
@@ -6091,7 +6091,7 @@ expression: stdout
     {
       "accepted": {
         "automatic_dimensions": false,
-        "height": 1.2,
+        "height": 1.2000000000000002,
         "width": 1.0
       },
       "definition": {
@@ -6173,7 +6173,7 @@ expression: stdout
     {
       "accepted": {
         "automatic_dimensions": false,
-        "height": 1.2,
+        "height": 1.2000000000000002,
         "width": 1.0
       },
       "definition": {
@@ -6419,7 +6419,7 @@ expression: stdout
     {
       "accepted": {
         "automatic_dimensions": false,
-        "height": 1.1999999999999997,
+        "height": 1.2000000000000002,
         "width": 1.0
       },
       "definition": {
@@ -6501,7 +6501,7 @@ expression: stdout
     {
       "accepted": {
         "clipped": false,
-        "logical_length": 15.99999999999995,
+        "logical_length": 15.999999999999936,
         "route": "direct"
       },
       "definition": {
@@ -7039,7 +7039,7 @@ expression: stdout
     {
       "accepted": {
         "clipped": false,
-        "logical_length": 0.2500000000000062,
+        "logical_length": 0.2499999999999849,
         "route": "direct"
       },
       "definition": {
@@ -7078,7 +7078,7 @@ expression: stdout
     {
       "accepted": {
         "clipped": false,
-        "logical_length": 3.2500000000000293,
+        "logical_length": 3.2499999999999405,
         "route": "direct"
       },
       "definition": {
@@ -7117,7 +7117,7 @@ expression: stdout
     {
       "accepted": {
         "clipped": false,
-        "logical_length": 6.250000000000057,
+        "logical_length": 6.2499999999998845,
         "route": "direct"
       },
       "definition": {
@@ -7156,7 +7156,7 @@ expression: stdout
     {
       "accepted": {
         "clipped": false,
-        "logical_length": 9.250000000000018,
+        "logical_length": 9.249999999999908,
         "route": "direct"
       },
       "definition": {
@@ -7195,7 +7195,7 @@ expression: stdout
     {
       "accepted": {
         "clipped": false,
-        "logical_length": 12.24999999999998,
+        "logical_length": 12.249999999999925,
         "route": "direct"
       },
       "definition": {
@@ -7331,8 +7331,8 @@ expression: stdout
     {
       "accepted": {
         "automatic_dimensions": true,
-        "height": 0.9999999999999982,
-        "width": 5.914022031250004
+        "height": 1.0,
+        "width": 5.914022031250001
       },
       "definition": {
         "source": "rect()",
@@ -7907,17 +7907,17 @@ expression: stdout
     "unknowns": 30,
     "equations": 34,
     "rank": 15,
-    "attempts": 4,
+    "attempts": 0,
     "outer_search_attempts": 1,
     "measurement_passes": 1,
     "routing_attempts": 0,
-    "accepted_steps": 4,
-    "max_normalized_residual": 1.7396752973332002e-13,
-    "final_damping": 1.0000000000000002e-7,
+    "accepted_steps": 0,
+    "max_normalized_residual": 1.9023879775800298e-13,
+    "final_damping": 0.001,
     "settling": {
       "settling_complete": true,
       "exit_reason": "complete",
-      "projected_gradient": 2.7221688571655755e-16,
+      "projected_gradient": 4.039201200784426e-17,
       "steps": 3,
       "accepted_moves": 1,
       "working_set_pivots": 1,
@@ -7975,12 +7975,6 @@ expression: stdout
           "byte_end": 4312
         },
         {
-          "line": 124,
-          "col": 5,
-          "byte_start": 4412,
-          "byte_end": 4429
-        },
-        {
           "line": 128,
           "col": 5,
           "byte_start": 4571,
@@ -7993,7 +7987,7 @@ expression: stdout
           "byte_end": 4653
         }
       ],
-      "active_remaining": 4
+      "active_remaining": 5
     },
     "dof": {
       "global_remaining": 15,
@@ -8191,7 +8185,7 @@ expression: stdout
           "byte_start": 937,
           "byte_end": 962
         },
-        "max_normalized_residual": 9.343321108209845e-14,
+        "max_normalized_residual": 1.0303031918180953e-13,
         "implicated_unknowns": [
           "f0",
           "f1",
@@ -8207,7 +8201,7 @@ expression: stdout
           "byte_start": 967,
           "byte_end": 990
         },
-        "max_normalized_residual": 1.099337423086098e-15,
+        "max_normalized_residual": 2.3544405663119182e-15,
         "implicated_unknowns": [
           "f0",
           "f1"
@@ -8220,7 +8214,7 @@ expression: stdout
           "byte_start": 995,
           "byte_end": 1018
         },
-        "max_normalized_residual": 1.2982651472635823e-15,
+        "max_normalized_residual": 2.9665951135530167e-15,
         "implicated_unknowns": [
           "f1",
           "f2"
@@ -8233,7 +8227,7 @@ expression: stdout
           "byte_start": 1023,
           "byte_end": 1046
         },
-        "max_normalized_residual": 1.8426989186966972e-15,
+        "max_normalized_residual": 1.2713979058084358e-15,
         "implicated_unknowns": [
           "f2",
           "f3"
@@ -8246,7 +8240,7 @@ expression: stdout
           "byte_start": 1051,
           "byte_end": 1074
         },
-        "max_normalized_residual": 1.7589398769377565e-15,
+        "max_normalized_residual": 8.475986038722906e-16,
         "implicated_unknowns": [
           "f3",
           "f4"
@@ -8259,7 +8253,7 @@ expression: stdout
           "byte_start": 2073,
           "byte_end": 2097
         },
-        "max_normalized_residual": 4.1879520879470395e-16,
+        "max_normalized_residual": 7.534209812198138e-16,
         "implicated_unknowns": [
           "f0",
           "A0"
@@ -8272,7 +8266,7 @@ expression: stdout
           "byte_start": 2102,
           "byte_end": 2128
         },
-        "max_normalized_residual": 1.5914217934198751e-15,
+        "max_normalized_residual": 4.708881132623836e-16,
         "implicated_unknowns": [
           "f4",
           "A512"
@@ -8285,7 +8279,7 @@ expression: stdout
           "byte_start": 2133,
           "byte_end": 2157
         },
-        "max_normalized_residual": 8.212574044464145e-14,
+        "max_normalized_residual": 8.951583033117913e-14,
         "implicated_unknowns": [
           "A0",
           "A512"
@@ -8298,7 +8292,7 @@ expression: stdout
           "byte_start": 2196,
           "byte_end": 2211
         },
-        "max_normalized_residual": 1.7396752973332002e-13,
+        "max_normalized_residual": 1.9023879775800298e-13,
         "implicated_unknowns": [
           "f4",
           "A0",
@@ -8312,7 +8306,7 @@ expression: stdout
           "byte_start": 2841,
           "byte_end": 2875
         },
-        "max_normalized_residual": 1.721248308146233e-14,
+        "max_normalized_residual": 1.8811980124832225e-14,
         "implicated_unknowns": [
           "f0",
           "cap_top"
@@ -8325,8 +8319,11 @@ expression: stdout
           "byte_start": 2880,
           "byte_end": 2898
         },
-        "max_normalized_residual": 0.0,
-        "implicated_unknowns": []
+        "max_normalized_residual": 8.005097925460521e-16,
+        "implicated_unknowns": [
+          "f0",
+          "cap_top"
+        ]
       },
       {
         "span": {
@@ -8335,7 +8332,7 @@ expression: stdout
           "byte_start": 4226,
           "byte_end": 4241
         },
-        "max_normalized_residual": 3.2247231077192204e-15,
+        "max_normalized_residual": 3.6729272834465925e-15,
         "implicated_unknowns": [
           "td",
           "ltd"
@@ -8348,7 +8345,7 @@ expression: stdout
           "byte_start": 4246,
           "byte_end": 4262
         },
-        "max_normalized_residual": 1.2145061055046414e-15,
+        "max_normalized_residual": 1.1065870661666015e-15,
         "implicated_unknowns": [
           "td",
           "ltd"
@@ -8361,7 +8358,7 @@ expression: stdout
           "byte_start": 4267,
           "byte_end": 4292
         },
-        "max_normalized_residual": 3.496939993435778e-15,
+        "max_normalized_residual": 4.755969943950075e-15,
         "implicated_unknowns": [
           "f2",
           "A0",
@@ -8376,7 +8373,7 @@ expression: stdout
           "byte_start": 4297,
           "byte_end": 4312
         },
-        "max_normalized_residual": 1.5608497431778617e-13,
+        "max_normalized_residual": 1.7055567462363536e-13,
         "implicated_unknowns": [
           "A0",
           "A512",
@@ -8390,7 +8387,7 @@ expression: stdout
           "byte_start": 4373,
           "byte_end": 4385
         },
-        "max_normalized_residual": 1.8824844635321942e-14,
+        "max_normalized_residual": 2.1237053908133503e-14,
         "implicated_unknowns": [
           "lg",
           "llg"
@@ -8403,11 +8400,8 @@ expression: stdout
           "byte_start": 4412,
           "byte_end": 4429
         },
-        "max_normalized_residual": 3.926205082450349e-17,
-        "implicated_unknowns": [
-          "f0",
-          "lg"
-        ]
+        "max_normalized_residual": 0.0,
+        "implicated_unknowns": []
       },
       {
         "span": {
@@ -8416,7 +8410,7 @@ expression: stdout
           "byte_start": 4434,
           "byte_end": 4460
         },
-        "max_normalized_residual": 3.815224352119753e-14,
+        "max_normalized_residual": 4.127334312744792e-14,
         "implicated_unknowns": [
           "f0",
           "lg"
@@ -8429,7 +8423,7 @@ expression: stdout
           "byte_start": 4571,
           "byte_end": 4584
         },
-        "max_normalized_residual": 1.997653145950738e-14,
+        "max_normalized_residual": 2.1943386078027076e-14,
         "implicated_unknowns": [
           "lg1",
           "lg2"
@@ -8442,7 +8436,7 @@ expression: stdout
           "byte_start": 4624,
           "byte_end": 4653
         },
-        "max_normalized_residual": 6.114410048402677e-14,
+        "max_normalized_residual": 6.696028970591095e-14,
         "implicated_unknowns": [
           "td",
           "lg1",
@@ -8456,7 +8450,7 @@ expression: stdout
           "byte_start": 4658,
           "byte_end": 4696
         },
-        "max_normalized_residual": 2.345253169250342e-15,
+        "max_normalized_residual": 2.4250737833012755e-15,
         "implicated_unknowns": [
           "td",
           "lg1",

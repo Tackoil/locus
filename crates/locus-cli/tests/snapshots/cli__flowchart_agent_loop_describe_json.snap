@@ -50,7 +50,7 @@ expression: stdout
       "definition": "rect n1(bw, bh)",
       "resolved": {
         "kind": "rect",
-        "area": 3.7399999999999993,
+        "area": 3.739999999999999,
         "perimeter": 9.0
       }
     },
@@ -80,8 +80,8 @@ expression: stdout
       "definition": "rect n2(bw, bh)",
       "resolved": {
         "kind": "rect",
-        "area": 3.740000000000002,
-        "perimeter": 9.000000000000002
+        "area": 3.7400000000000015,
+        "perimeter": 9.0
       }
     },
     {
@@ -110,7 +110,7 @@ expression: stdout
       "definition": "rect n3(bw, bh)",
       "resolved": {
         "kind": "rect",
-        "area": 3.7400000000000007,
+        "area": 3.7399999999999993,
         "perimeter": 9.0
       }
     },
@@ -170,7 +170,7 @@ expression: stdout
       "definition": "rect n5(bw, bh)",
       "resolved": {
         "kind": "rect",
-        "area": 3.7400000000000007,
+        "area": 3.74,
         "perimeter": 9.0
       }
     },
@@ -372,11 +372,11 @@ expression: stdout
       },
       "resolved": {
         "kind": "rounded_rect",
-        "width": 6.595039999998336,
-        "height": 1.0000000000001905,
-        "corner_radius": 0.15000000000002858,
-        "area": 6.575725834705356,
-        "perimeter": 14.932557796073942
+        "width": 6.595040000000001,
+        "height": 0.9999999999999959,
+        "corner_radius": 0.14999999999999938,
+        "area": 6.575725834705744,
+        "perimeter": 14.932557796076932
       }
     },
     {
@@ -465,11 +465,11 @@ expression: stdout
       },
       "resolved": {
         "kind": "rounded_rect",
-        "width": 6.595039999998829,
-        "height": 0.9999999999998098,
-        "corner_radius": 0.14999999999997146,
-        "area": 6.575725834703353,
-        "perimeter": 14.932557796074265
+        "width": 6.595040000000001,
+        "height": 1.000000000000004,
+        "corner_radius": 0.1500000000000006,
+        "area": 6.575725834705798,
+        "perimeter": 14.932557796076946
       }
     },
     {
@@ -664,8 +664,8 @@ expression: stdout
       "definition": "rect measured_banner()",
       "resolved": {
         "kind": "rect",
-        "area": 8.1394309519818,
-        "perimeter": 17.812849999997038
+        "area": 8.13943095198334,
+        "perimeter": 17.812849999999834
       }
     },
     {
@@ -1808,7 +1808,7 @@ expression: stdout
       "accepted": {
         "automatic_dimensions": false,
         "height": 1.0999999999999996,
-        "width": 3.4000000000000004
+        "width": 3.4
       },
       "definition": {
         "source": "rect(bw, bh)",
@@ -1883,7 +1883,7 @@ expression: stdout
       "accepted": {
         "automatic_dimensions": false,
         "height": 1.1000000000000005,
-        "width": 3.4000000000000004
+        "width": 3.4
       },
       "definition": {
         "source": "rect(bw, bh)",
@@ -1957,8 +1957,8 @@ expression: stdout
     {
       "accepted": {
         "automatic_dimensions": false,
-        "height": 1.1,
-        "width": 3.4000000000000004
+        "height": 1.0999999999999999,
+        "width": 3.4
       },
       "definition": {
         "source": "rect(bw, bh)",
@@ -2110,7 +2110,7 @@ expression: stdout
       "accepted": {
         "automatic_dimensions": false,
         "height": 1.1,
-        "width": 3.4000000000000004
+        "width": 3.4
       },
       "definition": {
         "source": "rect(bw, bh)",
@@ -2259,7 +2259,7 @@ expression: stdout
     {
       "accepted": {
         "clipped": false,
-        "logical_length": 0.2499999999998268,
+        "logical_length": 0.2499999999999991,
         "route": "direct"
       },
       "definition": {
@@ -2303,7 +2303,7 @@ expression: stdout
     {
       "accepted": {
         "clipped": false,
-        "logical_length": 0.2499999999996665,
+        "logical_length": 0.25,
         "route": "direct"
       },
       "definition": {
@@ -2347,7 +2347,7 @@ expression: stdout
     {
       "accepted": {
         "clipped": false,
-        "logical_length": 0.24999999999953681,
+        "logical_length": 0.2500000000000001,
         "route": "direct"
       },
       "definition": {
@@ -2391,7 +2391,7 @@ expression: stdout
     {
       "accepted": {
         "clipped": false,
-        "logical_length": 0.2500000000000018,
+        "logical_length": 0.2500000000000001,
         "route": "direct"
       },
       "definition": {
@@ -2494,7 +2494,7 @@ expression: stdout
     {
       "accepted": {
         "clipped": false,
-        "logical_length": 0.25,
+        "logical_length": 0.24999999999999933,
         "route": "direct"
       },
       "definition": {
@@ -2597,7 +2597,7 @@ expression: stdout
     {
       "accepted": {
         "clipped": false,
-        "logical_length": 3.311745572194896,
+        "logical_length": 3.311745572196099,
         "route": "direct"
       },
       "definition": {
@@ -2653,8 +2653,8 @@ expression: stdout
     {
       "accepted": {
         "automatic_dimensions": true,
-        "height": 1.0000000000001905,
-        "width": 6.595039999998336
+        "height": 0.9999999999999959,
+        "width": 6.595040000000001
       },
       "definition": {
         "source": "rounded_rect()",
@@ -2697,8 +2697,8 @@ expression: stdout
     {
       "accepted": {
         "automatic_dimensions": true,
-        "height": 0.9999999999998098,
-        "width": 6.595039999998829
+        "height": 1.000000000000004,
+        "width": 6.595040000000001
       },
       "definition": {
         "source": "rounded_rect()",
@@ -2741,7 +2741,7 @@ expression: stdout
     {
       "accepted": {
         "clipped": false,
-        "logical_length": 1.2499999999994125,
+        "logical_length": 1.2499999999999662,
         "route": "direct"
       },
       "definition": {
@@ -2837,7 +2837,7 @@ expression: stdout
     {
       "accepted": {
         "clipped": false,
-        "logical_length": 1.2500039999998374,
+        "logical_length": 1.2500019999999648,
         "route": "orthogonal",
         "side": "right"
       },
@@ -2955,8 +2955,8 @@ expression: stdout
     {
       "accepted": {
         "automatic_dimensions": true,
-        "height": 1.0339039999999022,
-        "width": 7.872520999998617
+        "height": 1.0339039999999158,
+        "width": 7.872521000000002
       },
       "definition": {
         "source": "rect()",
@@ -3300,39 +3300,27 @@ expression: stdout
   ],
   "solve": {
     "unknowns": 35,
-    "equations": 107,
+    "equations": 99,
     "rank": 15,
-    "attempts": 5,
-    "outer_search_attempts": 11,
+    "attempts": 0,
+    "outer_search_attempts": 2,
     "measurement_passes": 2,
     "routing_attempts": 0,
-    "accepted_steps": 5,
-    "max_normalized_residual": 2.4894909275121487e-14,
-    "final_damping": 1.0000000000000002e-8,
+    "accepted_steps": 0,
+    "max_normalized_residual": 4.408311952455597e-15,
+    "final_damping": 0.001,
     "settling": {
       "settling_complete": true,
       "exit_reason": "complete",
-      "projected_gradient": 7.169160338407916e-17,
-      "steps": 6,
-      "accepted_moves": 3,
-      "working_set_pivots": 2,
-      "model_rebuilds": 0,
-      "evaluations": 4,
-      "line_search_evaluations": 3,
-      "restoration_steps": 0,
+      "projected_gradient": 3.417837717350961e-17,
+      "steps": 7,
+      "accepted_moves": 5,
+      "working_set_pivots": 1,
+      "model_rebuilds": 1,
+      "evaluations": 18,
+      "line_search_evaluations": 5,
+      "restoration_steps": 8,
       "active_layout_requirements": [
-        {
-          "line": 32,
-          "col": 5,
-          "byte_start": 921,
-          "byte_end": 947
-        },
-        {
-          "line": 32,
-          "col": 5,
-          "byte_start": 921,
-          "byte_end": 947
-        },
         {
           "line": 32,
           "col": 5,
@@ -3394,12 +3382,6 @@ expression: stdout
           "byte_end": 2594
         },
         {
-          "line": 71,
-          "col": 5,
-          "byte_start": 2535,
-          "byte_end": 2594
-        },
-        {
           "line": 74,
           "col": 5,
           "byte_start": 2690,
@@ -3410,15 +3392,9 @@ expression: stdout
           "col": 5,
           "byte_start": 2771,
           "byte_end": 2827
-        },
-        {
-          "line": 75,
-          "col": 5,
-          "byte_start": 2771,
-          "byte_end": 2827
         }
       ],
-      "active_remaining": 4
+      "active_remaining": 8
     },
     "dof": {
       "global_remaining": 20,
@@ -3673,7 +3649,7 @@ expression: stdout
           "byte_start": 2690,
           "byte_end": 2766
         },
-        "choice": "route measured_panel.back: Right, five-span"
+        "choice": "route measured_panel.back: Right, three-span"
       },
       {
         "span": {
@@ -3682,7 +3658,7 @@ expression: stdout
           "byte_start": 2535,
           "byte_end": 2594
         },
-        "choice": "label measured_panel.next: Left, candidate 2"
+        "choice": "label measured_panel.next: Left, candidate 0"
       },
       {
         "span": {
@@ -3691,7 +3667,7 @@ expression: stdout
           "byte_start": 2771,
           "byte_end": 2827
         },
-        "choice": "label measured_panel.retry: Right, candidate 2"
+        "choice": "label measured_panel.retry: Right, candidate 0"
       }
     ],
     "hint_displacements": [],
@@ -3704,7 +3680,7 @@ expression: stdout
           "byte_start": 921,
           "byte_end": 947
         },
-        "max_normalized_residual": 1.869358558239864e-14,
+        "max_normalized_residual": 4.568198914461758e-17,
         "implicated_unknowns": [
           "n1",
           "n2",
@@ -3720,7 +3696,7 @@ expression: stdout
           "byte_start": 952,
           "byte_end": 963
         },
-        "max_normalized_residual": 2.2591816516407947e-14,
+        "max_normalized_residual": 1.353328928409296e-15,
         "implicated_unknowns": [
           "n4",
           "nf"
@@ -3733,7 +3709,7 @@ expression: stdout
           "byte_start": 2012,
           "byte_end": 2034
         },
-        "max_normalized_residual": 3.7279633759721166e-15,
+        "max_normalized_residual": 7.423323236000358e-17,
         "implicated_unknowns": [
           "measured_panel.first.shape",
           "measured_panel.first.caption"
@@ -3756,7 +3732,7 @@ expression: stdout
           "byte_start": 2012,
           "byte_end": 2034
         },
-        "max_normalized_residual": 1.237128230896516e-14,
+        "max_normalized_residual": 1.5988696200616154e-16,
         "implicated_unknowns": [
           "measured_panel.second.shape",
           "measured_panel.second.caption"
@@ -3769,7 +3745,7 @@ expression: stdout
           "byte_start": 2043,
           "byte_end": 2066
         },
-        "max_normalized_residual": 2.4375145150586913e-14,
+        "max_normalized_residual": 9.992935125385096e-18,
         "implicated_unknowns": [
           "measured_panel.second.shape",
           "measured_panel.second.caption"
@@ -3782,7 +3758,7 @@ expression: stdout
           "byte_start": 2278,
           "byte_end": 2292
         },
-        "max_normalized_residual": 2.3714238181889935e-14,
+        "max_normalized_residual": 1.730205338852391e-15,
         "implicated_unknowns": [
           "measured_panel.first.shape",
           "measured_panel.second.shape"
@@ -3795,7 +3771,7 @@ expression: stdout
           "byte_start": 2301,
           "byte_end": 2340
         },
-        "max_normalized_residual": 1.9930265740774008e-14,
+        "max_normalized_residual": 0.0,
         "implicated_unknowns": [
           "measured_panel.first.shape",
           "measured_panel.second.shape"
@@ -3808,7 +3784,7 @@ expression: stdout
           "byte_start": 2349,
           "byte_end": 2390
         },
-        "max_normalized_residual": 1.536888747546197e-14,
+        "max_normalized_residual": 4.1684815094463544e-16,
         "implicated_unknowns": [
           "measured_panel.first.shape",
           "measured_panel.second.shape"
@@ -3851,7 +3827,7 @@ expression: stdout
           "byte_start": 3424,
           "byte_end": 3449
         },
-        "max_normalized_residual": 6.308861097798966e-15,
+        "max_normalized_residual": 0.0,
         "implicated_unknowns": [
           "nf",
           "measured_panel.first.shape",
@@ -3865,7 +3841,7 @@ expression: stdout
           "byte_start": 3454,
           "byte_end": 3483
         },
-        "max_normalized_residual": 2.4894909275121487e-14,
+        "max_normalized_residual": 2.1584739870831807e-15,
         "implicated_unknowns": [
           "nf",
           "measured_panel.first.shape"
@@ -3878,7 +3854,7 @@ expression: stdout
           "byte_start": 3589,
           "byte_end": 3630
         },
-        "max_normalized_residual": 4.014729789508433e-15,
+        "max_normalized_residual": 4.453993941600214e-16,
         "implicated_unknowns": [
           "measured_banner",
           "measured_heading"
@@ -3891,7 +3867,7 @@ expression: stdout
           "byte_start": 3635,
           "byte_end": 3677
         },
-        "max_normalized_residual": 2.6615507756339388e-15,
+        "max_normalized_residual": 2.6152938785293566e-15,
         "implicated_unknowns": [
           "measured_banner",
           "measured_heading"
@@ -3904,12 +3880,8 @@ expression: stdout
           "byte_start": 3682,
           "byte_end": 3722
         },
-        "max_normalized_residual": 8.531300802705421e-15,
-        "implicated_unknowns": [
-          "measured_panel.first.shape",
-          "measured_panel.second.shape",
-          "measured_banner"
-        ]
+        "max_normalized_residual": 0.0,
+        "implicated_unknowns": []
       },
       {
         "span": {
@@ -3918,7 +3890,7 @@ expression: stdout
           "byte_start": 3727,
           "byte_end": 3765
         },
-        "max_normalized_residual": 4.3283805543137796e-15,
+        "max_normalized_residual": 4.408311952455597e-15,
         "implicated_unknowns": [
           "measured_panel.first.shape",
           "measured_banner"
