@@ -6,6 +6,7 @@ use crate::{AnnotationSpec, BBox, ResolvedObject, Segment, Vec2};
 use locus_syntax::{Constructor, Statement};
 
 type Boxes = BTreeMap<String, BBox>;
+mod carriers;
 mod clearance;
 
 pub(super) fn seed(
@@ -15,6 +16,7 @@ pub(super) fn seed(
     boxes: &mut Boxes,
 ) -> Result<(), EvalError> {
     let aliases = crate::program::alias_identities(prepared.file());
+    let carriers = carriers::index(prepared, sources);
     for source in sources {
         let Expr::Call { name, args, .. } = source.expression else {
             continue;
@@ -29,7 +31,14 @@ pub(super) fn seed(
         );
         let obstacles =
             crate::program::avoidance_operands(prepared.collections(), &aliases, &args[1..]);
-        seed_avoidance(prepared, system, sources, boxes, &subjects, &obstacles)?;
+        seed_avoidance(
+            prepared,
+            system,
+            sources,
+            boxes,
+            (&subjects, &obstacles),
+            &carriers,
+        )?;
     }
     Ok(())
 }
@@ -39,8 +48,8 @@ fn seed_avoidance(
     system: &mut UnknownSystem,
     sources: &[crate::solve::SourceRelation<'_>],
     boxes: &mut Boxes,
-    subjects: &[Expr],
-    obstacles: &[Expr],
+    (subjects, obstacles): (&[Expr], &[Expr]),
+    carriers: &BTreeMap<String, String>,
 ) -> Result<(), EvalError> {
     for expression in subjects {
         let trial = prepared.evaluate_trial(Some(&system.hints))?;
@@ -55,7 +64,7 @@ fn seed_avoidance(
         else {
             continue;
         };
-        let Some(carriers) = endpoint_carriers(prepared, sources, &label.path) else {
+        let Some(carriers) = endpoint_carriers(prepared, carriers, &label.path) else {
             continue;
         };
         if carriers[0] == carriers[1] {
@@ -108,7 +117,7 @@ fn find_object<'a>(
 
 fn endpoint_carriers(
     prepared: &PreparedEvaluation<'_>,
-    sources: &[crate::solve::SourceRelation<'_>],
+    carriers: &BTreeMap<String, String>,
     path: &str,
 ) -> Option<[String; 2]> {
     let Constructor::Call { args, .. } = &declaration(prepared, path)?.ctor else {
@@ -118,28 +127,13 @@ fn endpoint_carriers(
         return None;
     };
     let aliases = crate::program::alias_identities(prepared.file());
-    let first = on_carrier(sources, &aliases, &from.name)?;
-    let second = on_carrier(sources, &aliases, &to.name)?;
+    let first = carriers
+        .get(aliases.get(&from.name).unwrap_or(&from.name))?
+        .clone();
+    let second = carriers
+        .get(aliases.get(&to.name).unwrap_or(&to.name))?
+        .clone();
     Some([first, second])
-}
-
-fn on_carrier(
-    sources: &[crate::solve::SourceRelation<'_>],
-    aliases: &BTreeMap<String, String>,
-    point: &str,
-) -> Option<String> {
-    let expected = aliases.get(point).map_or(point, String::as_str);
-    sources.iter().find_map(|source| {
-        let Expr::Call { name, args, .. } = source.expression else {
-            return None;
-        };
-        let [Expr::Ref(subject), Expr::Ref(target)] = args.as_slice() else {
-            return None;
-        };
-        let identity = aliases.get(&subject.name).unwrap_or(&subject.name);
-        (name.name == "on" && identity == expected)
-            .then(|| aliases.get(&target.name).unwrap_or(&target.name).clone())
-    })
 }
 
 fn carrier_spacing(
@@ -434,6 +428,22 @@ mod tests {
             );
         }
         assert!((bounds["second"].center().x - bounds["right_finish"].center().x).abs() < 1e-12);
+    }
+
+    #[test]
+    fn constructed_endpoints_seed_their_measured_carrier_spacing() {
+        let source = GUIDES.replace(
+            "point tail() { mark: none }",
+            "point before()\npoint step()\nrel on(before,left_guide)\nrel on(step,left_guide)\npoint tail = translate(step,before,step)",
+        ).replace("point tip() { mark: none }", "point tip = foot(tail,right_guide)")
+            .replace("rel on(tail,left_guide)\n", "")
+            .replace("rel on(tip,right_guide)\n", "");
+        let bounds = seeded(&source, 7.0);
+        let gap = bounds["right_guide"].center().x - bounds["left_guide"].center().x;
+        assert!(
+            gap >= 7.34 - 1e-12,
+            "constructed caption guide distance {gap}"
+        );
     }
 
     #[test]

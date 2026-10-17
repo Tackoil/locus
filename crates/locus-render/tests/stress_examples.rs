@@ -120,9 +120,9 @@ fn passes() -> Result<usize, Box<dyn Error>> {
 
 fn repeat_case(case: &support::Case, passes: usize) -> Result<(), Box<dyn Error>> {
     let start = Instant::now();
-    let first = render_case(case)?;
-    for _ in 1..passes {
-        let again = render_case(case)?;
+    let first = measured_case(case, 1)?;
+    for pass in 2..=passes {
+        let again = measured_case(case, pass)?;
         assert_eq!(first, again, "{}: repeated pipeline changed", case.name);
     }
     eprintln!(
@@ -139,6 +139,24 @@ fn repeat_case(case: &support::Case, passes: usize) -> Result<(), Box<dyn Error>
     #[cfg(feature = "png")]
     export(case.name, "png", &first.png)?;
     Ok(())
+}
+
+fn measured_case(case: &support::Case, pass: usize) -> Result<Run, Box<dyn Error>> {
+    let start = Instant::now();
+    let result = if let Some(directory) = std::env::var_os("LOCUS_STRESS_TIMINGS_DIR") {
+        let (result, report) = locus_core::metrics::collect(|| render_case(case));
+        let directory = Path::new(&directory);
+        fs::create_dir_all(directory)?;
+        fs::write(
+            directory.join(format!("{}-{pass}.json", case.name)),
+            serde_json::to_vec_pretty(&report)?,
+        )?;
+        result
+    } else {
+        render_case(case)
+    };
+    eprintln!("{}: pass {pass} in {:?}", case.name, start.elapsed());
+    result
 }
 
 #[test]

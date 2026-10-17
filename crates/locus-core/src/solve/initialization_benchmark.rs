@@ -9,11 +9,15 @@ use serde_json::{Value, json};
 use std::time::Instant;
 
 fn checkout_inputs() -> crate::EvaluationInputs {
+    measured_inputs("examples/demonstrations/checkout_sequence.locus")
+}
+
+fn measured_inputs(source: &str) -> crate::EvaluationInputs {
     let fixture: Value = serde_json::from_str(include_str!(
         "../../../../tests/fixtures/text_measurements.json"
     ))
     .expect("measurement fixture");
-    let measurements = fixture["measurements"]["examples/demonstrations/checkout_sequence.locus"]
+    let measurements = fixture["measurements"][source]
         .as_object()
         .expect("checkout measurements");
     let mut inputs = crate::EvaluationInputs::default();
@@ -32,6 +36,20 @@ fn checkout_inputs() -> crate::EvaluationInputs {
         );
     }
     inputs
+}
+
+#[test]
+fn stress_sequence_initial_relations_are_feasible() {
+    let parsed = locus_syntax::parse(include_str!(
+        "../../../../examples/stress/sequence_check.locus"
+    ));
+    let expanded = crate::program::expand_program(&parsed.file).expect("expanded stress sequence");
+    let inputs = measured_inputs("examples/stress/sequence_check.locus");
+    let prepared = PreparedEvaluation::with_inputs(&expanded.file, &inputs, &expanded.collections)
+        .expect("prepared stress sequence");
+    let audit = relation_audit(&prepared);
+    assert_eq!(audit["failed_relations"], 0, "{audit}");
+    assert!(audit["max_residual"].as_f64().expect("finite residual") < SOLVE_EPSILON);
 }
 
 fn relation_audit(prepared: &PreparedEvaluation<'_>) -> Value {
