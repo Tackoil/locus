@@ -1574,6 +1574,64 @@
         "width_bits": 4613030973420105829
       }
     },
+    "examples/demonstrations/monge_theorem.locus": {
+      "lC1": {
+        "height": 0.24640000000000004,
+        "height_bits": 4598045515876008147,
+        "role": "normal",
+        "width": 0.26883171875000006,
+        "width_bits": 4598514461631457401
+      },
+      "lC2": {
+        "height": 0.24640000000000004,
+        "height_bits": 4598045515876008147,
+        "role": "normal",
+        "width": 0.26883171875000006,
+        "width_bits": 4598514461631457401
+      },
+      "lC3": {
+        "height": 0.24894515625000005,
+        "height_bits": 4598137214793920945,
+        "role": "normal",
+        "width": 0.26883171875000006,
+        "width_bits": 4598514461631457401
+      },
+      "lP12": {
+        "height": 0.24276000000000003,
+        "height_bits": 4597914371054859118,
+        "role": "normal",
+        "width": 0.3618234375,
+        "width_bits": 4600189651511101568
+      },
+      "lP13": {
+        "height": 0.24530515625000002,
+        "height_bits": 4598006069972771915,
+        "role": "normal",
+        "width": 0.3618234375,
+        "width_bits": 4600189651511101568
+      },
+      "lP23": {
+        "height": 0.24530515625000002,
+        "height_bits": 4598006069972771915,
+        "role": "normal",
+        "width": 0.3618234375,
+        "width_bits": 4600189651511101568
+      },
+      "theorem": {
+        "height": 0.8187199999999999,
+        "height_bits": 4605549593719117960,
+        "role": "normal",
+        "width": 4.2098,
+        "width_bits": 4616425831855213983
+      },
+      "title": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 2.31644,
+        "width_bits": 4612398577960430464
+      }
+    },
     "examples/demonstrations/packet_diagram.locus": {
       "bit0": {
         "height": 0.38136,

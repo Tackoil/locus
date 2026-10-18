@@ -1,6 +1,6 @@
 # Demonstrations
 
-This directory contains **42 self-contained figures** using `locus 0 beta 6`: eleven
+This directory contains **43 self-contained figures** using `locus 0 beta 6`: twelve
 geometry and technical examples, and one example for each of 31 diagram types.
 The agent-loop and checkout figures are the specification's reusable composition
 examples. Each figure has one canonical source in this directory.
@@ -15,6 +15,7 @@ examples. Each figure has one canonical source in this directory.
 | [ellipse_foci.locus](ellipse_foci.locus) | Rotated semiaxes, foci, containment, and area scaling |
 | [euler_nine_point.locus](euler_nine_point.locus) | Euler line and nine-point circle constructions |
 | [inscribed_angle.locus](inscribed_angle.locus) | Inscribed-angle geometry and arc marks |
+| [monge_theorem.locus](monge_theorem.locus) | Six common external tangents and the collinearity of their three pairwise intersections (Monge's theorem) |
 | [pentagon_golden.locus](pentagon_golden.locus) | Regular pentagon and golden-ratio relationships |
 | [point_relations.locus](point_relations.locus) | Parameterless points, relative placement, a 3-4-5 triangle, and a derived circumcircle |
 | [rounded_rect.locus](rounded_rect.locus) | Explicit rounded boxes/capsules plus an automatically sized diamond, measured caption, and curved connector |
@@ -97,7 +98,7 @@ cargo test --release -p locus-render --test corpus_acceptance --all-features \
 ```
 
 The source audit checks declarations and references. Native checks solve the
-relations and execute assertions. Corpus acceptance checks all 42 demonstration
+relations and execute assertions. Corpus acceptance checks all 43 demonstration
 figures with shared bundled-font measurements and SVG/TikZ/PNG backend parity.
 Normal checks may report incomplete layout-preference settling, so visual review
 remains part of authoring.

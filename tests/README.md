@@ -43,7 +43,7 @@ node --test crates/locus-cli/tests/visualizer.test.cjs
 The viewer logic tests use only Node's built-in test runner; the generated HTML
 requires no Node installation or external assets.
 
-Measure full release exports of all 42 demonstrations with:
+Measure full release exports of all 43 demonstrations with:
 
 ```sh
 cargo build --release --locked -p locus-cli --features png

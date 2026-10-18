@@ -27,6 +27,7 @@ The project is under active development. The `locus 0 beta 6` frontend supports 
 | [`benchmarks/`](benchmarks/) | Agent drawing benchmark harness and fixtures |
 | [`skills/locus/`](skills/locus/SKILL.md) | Beta 6 authoring skill and portable language reference |
 | [`assets/`](assets/) | Project logo source and artwork |
+| [`website/`](website/README.md) | Project introduction, rendered demo gallery, and documentation website |
 | [`licenses/`](licenses/) | Supplemental third-party license texts, provenance, and ReX licensing investigation |
 | [`vendor/`](vendor/) | Pinned compatibility patches for dependencies |
 

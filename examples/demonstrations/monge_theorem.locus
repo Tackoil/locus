@@ -1,0 +1,57 @@
+locus 0 beta 6
+
+meta title = "Monge's theorem"
+meta note = "The common external tangents of three pairs of circles meet at three collinear points."
+
+style textbook
+
+class pair12 { accent: #2563EB, weight: 1.25 }
+class pair13 { accent: #D97706, weight: 1.25 }
+class pair23 { accent: #0D9488, weight: 1.25 }
+class monge { accent: #9333EA, stroke: dashed, weight: 2 }
+
+// Three disjoint circles with different radii and noncollinear centers.
+circle c1(0.75)
+circle c2(1.5) where { hdist(c1.center, c2.center) == 4, vdist(c1.center, c2.center) == 2 }
+circle c3(2.5) where { hdist(c1.center, c3.center) == 1, vdist(c1.center, c3.center) == 6 }
+
+// External homothety centers select both common tangent branches for each pair.
+// Keep these construction helpers hidden; display the actual intersections below.
+point H12 = lerp(c1.center, c2.center, radius(c1) / (radius(c1) - radius(c2))) { mark: none }
+point H13 = lerp(c1.center, c3.center, radius(c1) / (radius(c1) - radius(c3))) { mark: none }
+point H23 = lerp(c2.center, c3.center, radius(c2) / (radius(c2) - radius(c3))) { mark: none }
+
+// Finite tangent segments reach the farther circle's point of contact.
+segment t12a(H12, foot(c2.center, tangent_line(H12, c1, 0))) [pair12]
+segment t12b(H12, foot(c2.center, tangent_line(H12, c1, 1))) [pair12]
+segment t13a(H13, foot(c3.center, tangent_line(H13, c1, 0))) [pair13]
+segment t13b(H13, foot(c3.center, tangent_line(H13, c1, 1))) [pair13]
+segment t23a(H23, foot(c3.center, tangent_line(H23, c2, 0))) [pair23]
+segment t23b(H23, foot(c3.center, tangent_line(H23, c2, 1))) [pair23]
+
+point P12 = intersect(t12a, t12b) [monge]
+point P13 = intersect(t13a, t13b) [monge]
+point P23 = intersect(t23a, t23b) [monge]
+line axis(P12, P23) [monge]
+
+label lC1(c1.center, $C_1$) { dir: center }
+label lC2(c2.center, $C_2$) { dir: center }
+label lC3(c3.center, $C_3$) { dir: center }
+label lP12(P12, $P_{12}$) [pair12] { dir: SW }
+label lP13(P13, $P_{13}$) [pair13] { dir: S }
+label lP23(P23, $P_{23}$) [pair23] { dir: SE }
+text_block title("Monge's theorem") { place: above }
+text_block theorem("Three pairs of external tangents\nThree collinear intersections") { place: below }
+
+// Verify the hypotheses, all six common tangents, and the theorem independently.
+assert dist(c1.center, c2.center) > radius(c1) + radius(c2)
+assert dist(c1.center, c3.center) > radius(c1) + radius(c3)
+assert dist(c2.center, c3.center) > radius(c2) + radius(c3)
+assert tangent(c1, t12a) and tangent(c2, t12a)
+assert tangent(c1, t12b) and tangent(c2, t12b)
+assert tangent(c1, t13a) and tangent(c3, t13a)
+assert tangent(c1, t13b) and tangent(c3, t13b)
+assert tangent(c2, t23a) and tangent(c3, t23a)
+assert tangent(c2, t23b) and tangent(c3, t23b)
+assert between(P12, P13, P23)
+assert collinear(P12, P13, P23)

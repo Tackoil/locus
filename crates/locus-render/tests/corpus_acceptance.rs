@@ -386,7 +386,7 @@ fn render_group(group: &str, expected: usize) -> Result<(), Box<dyn Error>> {
 
 #[test]
 fn all_demonstrations_render_with_shared_measurements() -> Result<(), Box<dyn Error>> {
-    render_group("examples/demonstrations", 42)
+    render_group("examples/demonstrations", 43)
 }
 
 #[test]

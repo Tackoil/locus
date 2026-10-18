@@ -1,0 +1,12 @@
+{
+  "name": "locus-website",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "preview": "python3 -m http.server 4173 --bind 127.0.0.1 --directory dist"
+  },
+  "devDependencies": {
+    "marked": "^16.4.1"
+  }
+}
