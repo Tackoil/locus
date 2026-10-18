@@ -8,6 +8,8 @@
 
 Locus is an agent-friendly relational language and CLI toolchain for deterministic plane-geometry figures and technical diagrams.
 
+**This project is under active development and may introduce breaking changes.**
+
 ## Agent-friendly by design
 
 The core goal of Locus is to let AI agents create, inspect, verify, and revise precise geometry through text feedback. Agents declare geometric relationships, use structured diagnostics and stable JSON output to understand failures, and verify intent through persistent assertions. Deterministic output and diffable `.locus` source files make every change reproducible and auditable.
