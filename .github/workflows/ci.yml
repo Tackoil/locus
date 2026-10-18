@@ -11,6 +11,23 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
+  wasm:
+    name: Browser WebAssembly
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install WebAssembly target
+        run: rustup target add wasm32-unknown-unknown
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install wasm-pack
+        run: cargo install wasm-pack --version 0.14.0 --locked
+      - name: Build WebAssembly library
+        run: wasm-pack build crates/locus-wasm --target web --release --no-opt --out-dir ../../target/wasm/pkg --out-name locus --locked
+      - name: Test WebAssembly pipeline
+        run: node crates/locus-wasm/tests/smoke.mjs --all
+
   zed-extension:
     name: Zed extension
     runs-on: ubuntu-latest

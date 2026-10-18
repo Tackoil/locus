@@ -1141,6 +1141,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "locus-wasm"
+version = "0.0.0-beta.6"
+dependencies = [
+ "locus-core",
+ "locus-layout",
+ "locus-render",
+ "locus-syntax",
+ "locus-tex",
+ "serde_json",
+ "wasm-bindgen",
+]
+
+[[package]]
 name = "log"
 version = "0.3.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"

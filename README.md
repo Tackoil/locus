@@ -219,6 +219,16 @@ Visible marker collisions and solve/construction diagnostics still apply.
 
 ## Rendering
 
+### In a browser
+
+The [`locus-wasm` library](crates/locus-wasm/README.md) compiles the same measured
+solve/layout and SVG pipeline to WebAssembly, including bundled text and math
+fonts. Its JavaScript API renders `.locus` source to SVG with structured
+diagnostics and assertion results, without a rendering server. See the library
+README for build instructions, integration, and WASM checks.
+
+### From the CLI
+
 Run `locus check figure.locus` first; after it exits 0, render for human review:
 
 ```sh

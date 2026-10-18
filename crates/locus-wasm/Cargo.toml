@@ -1,0 +1,25 @@
+[package]
+name = "locus-wasm"
+description = "Browser WebAssembly bindings for the Locus SVG pipeline"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+license.workspace = true
+readme = "README.md"
+publish = false
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+locus-core = { path = "../locus-core" }
+locus-layout = { path = "../locus-layout" }
+locus-render = { path = "../locus-render" }
+locus-syntax = { path = "../locus-syntax" }
+locus-tex = { path = "../locus-tex", features = ["rex"] }
+serde_json.workspace = true
+wasm-bindgen = "=0.2.128"
+
+[lints]
+workspace = true
