@@ -1,4 +1,7 @@
 //! Render the repository's banner from its checked-in Locus source.
+//!
+//! SVG: `cargo run -p locus-render --example logo > assets/locus-banner.svg`
+//! PNG: `cargo run -p locus-render --features png --example logo -- --png > assets/locus-banner.png`
 
 use std::error::Error;
 
@@ -16,9 +19,23 @@ fn main() -> Result<(), Box<dyn Error>> {
         return Err(format!("logo source diagnostics: {:?}", parsed.diagnostics).into());
     }
 
-    let metrics = LayoutMetrics::default();
-    let (inputs, measured) =
-        measure_file(&parsed.file, &PlaintextEngine::new(), &MockEngine, metrics)?;
+    let metrics = LayoutMetrics {
+        em_size: 1.6,
+        ..LayoutMetrics::default()
+    };
+    let font = PlaintextEngine::from_static_font(
+        include_bytes!("../../../assets/fonts/RobotoSerif-Regular.ttf"),
+        0,
+    )?;
+    let (inputs, measured) = measure_file(&parsed.file, &font, &MockEngine, metrics)?;
+    let wordmark = measured.get("wordmark").ok_or("missing banner wordmark")?;
+    if !wordmark.svg_body.contains("<path") {
+        return Err(format!(
+            "Roboto Serif produced no letter outlines: {}",
+            wordmark.svg_body
+        )
+        .into());
+    }
     let (scene, placed) = solve_layout(
         &parsed.file,
         inputs,
@@ -35,15 +52,21 @@ fn main() -> Result<(), Box<dyn Error>> {
     }
 
     let styles = StyleSheet::from_file(&scene.file)?;
-    let svg = render_svg(
-        resolved,
-        &placed,
-        &styles,
-        RenderOptions {
-            background: Some(Color(255, 255, 255, 255)),
-            ..RenderOptions::default()
-        },
-    )?;
-    print!("{svg}");
+    let options = RenderOptions {
+        background: Some(Color(255, 255, 255, 255)),
+        ..RenderOptions::default()
+    };
+    if std::env::args().any(|arg| arg == "--png") {
+        #[cfg(feature = "png")]
+        {
+            use std::io::Write as _;
+            let png = locus_render::png::render_with_dpi(resolved, &placed, &styles, options, 256)?;
+            std::io::stdout().lock().write_all(&png)?;
+        }
+        #[cfg(not(feature = "png"))]
+        return Err("PNG output requires --features png".into());
+    } else {
+        print!("{}", render_svg(resolved, &placed, &styles, options)?);
+    }
     Ok(())
 }
