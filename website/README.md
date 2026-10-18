@@ -20,6 +20,16 @@ Open <http://127.0.0.1:4173/#playground>. Serve the generated `website/dist/` di
 
 The build first creates the release WASM package using `wasm-pack`, then copies the JavaScript binding, binary, and required license notices into `dist/`. Run `npm run build:wasm --prefix website` to rebuild only WASM, or `node website/build.mjs` to package an already-built WASM library and rebuild the site.
 
+## GitHub Pages
+
+In the repository’s **Settings → Pages → Build and deployment**, set **Source** to **GitHub Actions**. This is the one-time setup required by [GitHub Pages custom workflows](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages).
+
+The [`pages.yml`](../.github/workflows/pages.yml) workflow builds and publishes the website on every push to `main`. After pushing the workflow, you can also run **Deploy website to GitHub Pages** manually from the Actions tab with `main` selected. Manual runs on other branches build and test the site without publishing it.
+
+The workflow installs the pinned Rust toolchain’s WASM target, wasm-pack, and Node.js dependencies; builds the native renderer and release WASM module; runs the website tests and all WASM examples; and uploads `website/dist/` to the `github-pages` deployment environment. Only the deployment job receives permission to publish. A failed build or test prevents publication.
+
+For this repository, the default project URL is <https://tackoil.github.io/locus/> and the playground is <https://tackoil.github.io/locus/#playground>. The workflow reports the actual URL in its deployment environment. These links become available after the first successful deployment. Assets, fonts, documentation, worker modules, and WASM URLs are relative to the site directory, so the same build supports a project subdirectory or a custom domain without a base-path setting. Hash routes can be opened and reloaded directly without server rewrite rules.
+
 ## Playground
 
 Open `#playground` from the navigation or homepage, or choose **Edit in playground** in a demo dialog (`#playground/<demo-id>`). Start with the triangle, load any canonical demo, or open a local `.locus` file. Edit in the source panel, toggle automatic rendering, or render with Ctrl/Command + Enter. Download the current source or the latest successful SVG. Editing invalidates the SVG download until the source is rendered again.
