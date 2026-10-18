@@ -1,0 +1,94 @@
+locus 0 beta 6
+
+meta title = "Simson line: three feet, one straight line"
+meta note = "An irregular triangle is inscribed in a circle. P is another point on that circle; its perpendicular projections onto the three supporting side lines are collinear. Z lies beyond A on the extension of AB."
+style textbook
+
+class backdrop { accent: #111C2B, fill: #111C2B, weight: 1 }
+class circum_ink { accent: #60758D, fill: none, weight: 1.1 }
+class triangle_ink { accent: #9AAEC7, fill: none, weight: 1.25 }
+class extension_ink { accent: #60758D, fill: none, stroke: dashed, weight: 1.1 }
+class drop_ink { accent: #F6CC73, fill: none, stroke: dash(5, 5), weight: 1.2, opacity: 0.78 }
+class angle_ink { accent: #B7A16F, fill: none, weight: 1 }
+class simson_ink { accent: #5EEAD4, fill: none, weight: 2.6 }
+class foot_ink { accent: #5EEAD4, fill: #5EEAD4, weight: 1.5 }
+class p_ink { accent: #F6CC73, fill: #F6CC73, weight: 1.7 }
+class white_ink { accent: #E7EEF7 }
+class muted_ink { accent: #9AAEC7 }
+
+// A real native rectangle supplies the dark canvas.
+rect canvas(13, 15) [backdrop]
+circle circum(4.3) [circum_ink]
+rel center(canvas, circum)
+
+// Four distinct angular choices give an asymmetric, nondegenerate instance.
+point A = circum.at(137deg) [white_ink]
+point B = circum.at(229deg) [white_ink]
+point C = circum.at(343deg) [white_ink]
+point P = circum.at(68deg) [p_ink]
+polygon triangle(A, B, C) [triangle_ink]
+
+// Projections use supporting lines, not finite segments.
+point X = foot(P, line(B, C)) [foot_ink]
+point Y = foot(P, line(C, A)) [foot_ink]
+point Z = foot(P, line(A, B)) [foot_ink]
+point side_end = extend(B, A, 1.5) { mark: none }
+segment side_extension(A, side_end) [extension_ink]
+segment drop_X(P, X) [drop_ink]
+segment drop_Y(P, Y) [drop_ink]
+segment drop_Z(P, Z) [drop_ink]
+right_angle right_X(X, P, B) [angle_ink] { size: 0.20 }
+right_angle right_Y(Y, P, C) [angle_ink] { size: 0.20 }
+right_angle right_Z(Z, P, A) [angle_ink] { size: 0.20 }
+
+// The focal line is drawn through the extremal constructed feet.
+// No collinearity relation enters the solver.
+point simson_start = extend(X, Z, 0.65) { mark: none }
+point simson_end = extend(Z, X, 0.65) { mark: none }
+segment simson(simson_start, simson_end) [simson_ink]
+circle mark_X(X, 0.055) [foot_ink]
+circle mark_Y(Y, 0.055) [foot_ink]
+circle mark_Z(Z, 0.055) [foot_ink]
+circle mark_P(P, 0.065) [p_ink]
+
+label lA(A, "A") [white_ink] { dir: NW, gap: 0.30 }
+label lB(B, "B") [white_ink] { dir: SW, gap: 0.30 }
+label lC(C, "C") [white_ink] { dir: SE, gap: 0.30 }
+label lP(P, "P") [p_ink] { dir: NE, gap: 0.40 }
+label lX(X, "X") [foot_ink] { dir: S, gap: 0.40 }
+label lY(Y, "Y") [foot_ink] { dir: E, gap: 0.40 }
+label lZ(Z, "Z") [foot_ink] { dir: W, gap: 0.40 }
+
+label title(canvas.n, "The Simson line") [white_ink] { role: title, dir: S, gap: 0.8 }
+label subtitle(canvas.n, "THREE PERPENDICULAR FEET. ONE STRAIGHT LINE.") [muted_ink] { dir: S, gap: 1.65 }
+label theorem(canvas.s, "P lies on the circumcircle. Drop perpendiculars to the sides.") [muted_ink] { dir: N, gap: 1.30 }
+label conclusion(canvas.s, "The feet X, Y and Z are collinear, even beyond a side.") [foot_ink] { dir: N, gap: 0.65 }
+
+// The theorem is checked as a consequence of the circle and foot constructions.
+assert area(triangle) > 20
+assert dist(A, B) < dist(B, C)
+assert dist(B, C) < dist(C, A)
+assert on(A, circum)
+assert on(B, circum)
+assert on(C, circum)
+assert on(P, circum)
+assert dist(P, A) > 1
+assert dist(P, B) > 1
+assert dist(P, C) > 1
+assert on(X, line(B, C))
+assert on(Y, line(C, A))
+assert on(Z, line(A, B))
+assert perpendicular(seg(P, X), line(B, C))
+assert perpendicular(seg(P, Y), line(C, A))
+assert perpendicular(seg(P, Z), line(A, B))
+assert dist(P, X) > 1
+assert dist(P, Y) > 1
+assert dist(P, Z) > 1
+assert between(B, X, C)
+assert between(C, Y, A)
+assert between(Z, A, B)
+assert dist(X, Y) > 1
+assert dist(Y, Z) > 1
+assert dist(Z, X) > 1
+assert collinear(X, Y, Z)
+assert on(Y, simson)

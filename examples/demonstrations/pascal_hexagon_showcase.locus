@@ -1,0 +1,101 @@
+locus 0 beta 6
+
+meta title = "Pascal's theorem: the mystical hexagon"
+meta note = "Six distinct points on a circle, connected in the crossed order ABCDEF. Opposite side lines determine P, Q, R independently; their collinearity is asserted, never imposed. The selected finite intersections are well away from parallel-line degeneracy."
+
+style textbook
+class night { accent: #111C2B, fill: #111C2B, weight: 1 }
+class white_ink { accent: #E7EFF7 }
+class quiet_ink { accent: #9AAFC3 }
+class circle_style { accent: #60758D, weight: 1, fill: none }
+class teal { accent: #5EEAD4, weight: 1.25 }
+class violet { accent: #A9A6FF, weight: 1.25 }
+class gold { accent: #F6CC73, weight: 1.25 }
+class teal_extension { accent: #5EEAD4, weight: 0.85, stroke: dash(3, 4) }
+class violet_extension { accent: #A9A6FF, weight: 0.85, stroke: dash(3, 4) }
+class coral { accent: #FF9AAB, weight: 2.1 }
+
+rect canvas(16.8, 15.8) [night]
+circle conic(4.5) [circle_style]
+rel center(conic, canvas)
+
+// The hexagon is a closed six-edge path, with crossings allowed in
+// Pascal's theorem. Individual segments avoid a filled self-crossing polygon.
+point A = conic.at(137deg) [white_ink]
+point B = conic.at(64deg) [white_ink]
+point C = conic.at(11deg) [white_ink]
+point D = conic.at(177deg) [white_ink]
+point E = conic.at(268deg) [white_ink]
+point F = conic.at(322deg) [white_ink]
+
+point P = intersect(line(A, B), line(D, E)) [coral]
+point Q = intersect(line(B, C), line(E, F)) [coral]
+point R = intersect(line(C, D), line(F, A)) [coral]
+
+// Match each pair of opposite sides by color; dotted pieces extend
+// the original sides only as far as the required finite intersection.
+segment side_ab(A, B) [teal]
+segment side_de(D, E) [teal]
+segment side_bc(B, C) [violet]
+segment side_ef(E, F) [violet]
+segment side_cd(C, D) [gold]
+segment side_fa(F, A) [gold]
+segment extend_ab(A, P) [teal_extension]
+segment extend_de(D, P) [teal_extension]
+segment extend_bc(C, Q) [violet_extension]
+segment extend_ef(F, Q) [violet_extension]
+
+point start = extend(Q, P, 0.7) { mark: none }
+point finish = extend(P, Q, 0.7) { mark: none }
+segment pascal_line(start, finish) [coral]
+
+label label_a(A, $A$) [white_ink] { dir: NW, gap: 0.23 }
+label label_b(B, $B$) [white_ink] { dir: N, gap: 0.23 }
+label label_c(C, $C$) [white_ink] { dir: E, gap: 0.23 }
+label label_d(D, $D$) [white_ink] { dir: W, gap: 0.23 }
+label label_e(E, $E$) [white_ink] { dir: S, gap: 0.23 }
+label label_f(F, $F$) [white_ink] { dir: SE, gap: 0.23 }
+label label_p(P, $P$) [coral] { dir: N, gap: 0.35 }
+label label_q(Q, $Q$) [coral] { dir: S, gap: 0.35 }
+label label_r(R, $R$) [coral] { dir: S, gap: 0.35 }
+
+label kicker("04 / THE MYSTICAL HEXAGON") [quiet_ink]
+label title("Pascal's theorem") [white_ink] { role: title }
+label subtitle("Six points on a circle. Three points on a line.") [quiet_ink]
+rel inset_top(kicker, canvas)
+rel column(kicker, title, subtitle)
+rel align_center_x(kicker, canvas)
+
+label pair_p($P=AB\cap DE$) [teal]
+label pair_q($Q=BC\cap EF$) [violet]
+label pair_r($R=CD\cap FA$) [gold]
+rel row(pair_p, pair_q, pair_r)
+rel align_center_x(pair_q, canvas)
+rel gap_y(conic, pair_q)
+label result("The three opposite-side intersections lie on the Pascal line.") [coral]
+rel column(pair_q, result)
+rel inset_bottom(result, canvas)
+rel align_center_x(result, canvas)
+rel contain(canvas, conic, pascal_line, kicker, title, subtitle, pair_p, pair_q, pair_r, result)
+
+// Incidence is a given; collinearity is the independent theorem conclusion.
+assert on(A, conic) and on(B, conic) and on(C, conic)
+assert on(D, conic) and on(E, conic) and on(F, conic)
+assert on(P, line(A, B)) and on(P, line(D, E))
+assert on(Q, line(B, C)) and on(Q, line(E, F))
+assert on(R, line(C, D)) and on(R, line(F, A))
+assert collinear(P, Q, R)
+assert on(R, line(P, Q))
+assert between(P, R, Q)
+assert dist(P, Q) > 10
+assert dist(P, R) > 5 and dist(Q, R) > 5
+assert dist(conic.center, P) < 8
+assert dist(conic.center, Q) < 8
+assert inside(R, conic)
+
+// All six vertices are separated and every opposite pair meets transversely.
+assert dist(A, B) > 2 and dist(B, C) > 2 and dist(C, D) > 2
+assert dist(D, E) > 2 and dist(E, F) > 2 and dist(F, A) > 2
+assert angle(A, P, D) > 20deg and angle(A, P, D) < 160deg
+assert angle(B, Q, E) > 20deg and angle(B, Q, E) < 160deg
+assert angle(C, R, F) > 20deg and angle(C, R, F) < 160deg

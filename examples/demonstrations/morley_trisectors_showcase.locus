@@ -1,0 +1,106 @@
+locus 0 beta 6
+
+meta title = "Morley's trisector theorem"
+meta note = "The six internal angle trisectors of an irregular triangle determine an equilateral triangle. The three intersections are constructed first; equality is checked only by assertions."
+
+style textbook
+class dark { accent: #111C2B, fill: #111C2B, weight: 1 }
+class hidden { opacity: 0 }
+class boundary { accent: #AABACC, fill: none, weight: 1.5, join: round }
+class guide { accent: #60758D, weight: 0.9 }
+class gold { accent: #F6CC73, fill: #F6CC7328, weight: 2.4, join: round }
+class white { accent: #EBF2F8 }
+class muted { accent: #A1B3C6 }
+class gold_text { accent: #F6CC73 }
+class teal { accent: #5EEAD4, weight: 1.0 }
+
+// The background is a native Locus rectangle, sized by measured content.
+rect background(15.2, 15.8) [dark]
+circle carrier(6) [hidden]
+point A = carrier.at(210deg) [white]
+point B = carrier.at(330deg) [white]
+point C = carrier.at(112deg) [white]
+polygon triangle(A, B, C) [boundary]
+
+// A, B, C are counterclockwise. Rotate toward the interior at each vertex.
+// Helpers are invisible; only the finite interior portions are drawn below.
+point a1 = rotate(B, A, angle(B, A, C) / 3) [hidden] { mark: none }
+point a2 = rotate(B, A, 2 * angle(B, A, C) / 3) [hidden] { mark: none }
+point b1 = rotate(C, B, angle(C, B, A) / 3) [hidden] { mark: none }
+point b2 = rotate(C, B, 2 * angle(C, B, A) / 3) [hidden] { mark: none }
+point c1 = rotate(A, C, angle(A, C, B) / 3) [hidden] { mark: none }
+point c2 = rotate(A, C, 2 * angle(A, C, B) / 3) [hidden] { mark: none }
+
+// Adjacent trisectors: P near AB, Q near BC, R near CA.
+point P = intersect(line(A, a1), line(B, b2)) [gold_text]
+point Q = intersect(line(B, b1), line(C, c2)) [gold_text]
+point R = intersect(line(C, c1), line(A, a2)) [gold_text]
+point AP = intersect(line(A, P), line(B, C)) [hidden] { mark: none }
+point AR = intersect(line(A, R), line(B, C)) [hidden] { mark: none }
+point BP = intersect(line(B, P), line(C, A)) [hidden] { mark: none }
+point BQ = intersect(line(B, Q), line(C, A)) [hidden] { mark: none }
+point CQ = intersect(line(C, Q), line(A, B)) [hidden] { mark: none }
+point CR = intersect(line(C, R), line(A, B)) [hidden] { mark: none }
+segment trisector_a1(A, AP) [guide]
+segment trisector_a2(A, AR) [guide]
+segment trisector_b1(B, BQ) [guide]
+segment trisector_b2(B, BP) [guide]
+segment trisector_c1(C, CR) [guide]
+segment trisector_c2(C, CQ) [guide]
+polygon morley(P, Q, R) [gold]
+
+// Three equal angle sectors at every original vertex.
+arc angle_a1 = angle_arc(B, A, P, 0.85) [teal]
+arc angle_a2 = angle_arc(P, A, R, 0.85) [teal]
+arc angle_a3 = angle_arc(R, A, C, 0.85) [teal]
+arc angle_b1 = angle_arc(C, B, Q, 0.95) [teal]
+arc angle_b2 = angle_arc(Q, B, P, 0.95) [teal]
+arc angle_b3 = angle_arc(P, B, A, 0.95) [teal]
+arc angle_c1 = angle_arc(A, C, R, 0.9) [teal]
+arc angle_c2 = angle_arc(R, C, Q, 0.9) [teal]
+arc angle_c3 = angle_arc(Q, C, B, 0.9) [teal]
+
+label label_a(A, $A$) [white] { dir: SW, gap: 0.24 }
+label label_b(B, $B$) [white] { dir: SE, gap: 0.24 }
+label label_c(C, $C$) [white] { dir: N, gap: 0.24 }
+label label_p(P, $P$) [gold_text] { dir: S, gap: 0.18 }
+label label_q(Q, $Q$) [gold_text] { dir: NE, gap: 0.22 }
+label label_r(R, $R$) [gold_text] { dir: NW, gap: 0.18 }
+
+group illustration(triangle, label_a, label_b, label_c, label_p, label_q, label_r)
+label kicker("03   /   THE GEOMETRY OF SURPRISE") [muted]
+label title("Morley's theorem") [white] { role: title }
+label subtitle("Six trisectors. One perfect equilateral triangle.") [muted]
+rel column(kicker, title, subtitle)
+rel inset_top(kicker, background)
+rel align_center_x(kicker, background)
+label identity($PQ=QR=RP$) [gold_text] { role: title }
+label explanation("Trisect each angle. Meet adjacent rays. An equilateral triangle appears.") [muted]
+rel column(identity, explanation)
+rel inset_bottom(explanation, background)
+rel align_center_x(explanation, background)
+rel align_center_x(carrier, background)
+rel vdist(carrier.center, background.center) == 1.2
+
+// Independent numerical contract: no equal-side or 60-degree relation is solved.
+assert inside(P, triangle) and inside(Q, triangle) and inside(R, triangle)
+assert between(B, AP, C) and between(B, AR, C)
+assert between(C, BP, A) and between(C, BQ, A)
+assert between(A, CQ, B) and between(A, CR, B)
+assert angle(B, A, P) == angle(P, A, R)
+assert angle(P, A, R) == angle(R, A, C)
+assert 3 * angle(B, A, P) == angle(B, A, C)
+assert angle(C, B, Q) == angle(Q, B, P)
+assert angle(Q, B, P) == angle(P, B, A)
+assert 3 * angle(C, B, Q) == angle(C, B, A)
+assert angle(A, C, R) == angle(R, C, Q)
+assert angle(R, C, Q) == angle(Q, C, B)
+assert 3 * angle(A, C, R) == angle(A, C, B)
+assert dist(P, Q) == dist(Q, R) tol 1e-9
+assert dist(Q, R) == dist(R, P) tol 1e-9
+assert angle(R, P, Q) == 60deg tol 1e-9
+assert angle(P, Q, R) == 60deg tol 1e-9
+assert angle(Q, R, P) == 60deg tol 1e-9
+assert abs(dist(A, B) - dist(B, C)) > 0.5
+assert abs(dist(B, C) - dist(C, A)) > 0.5
+assert abs(dist(C, A) - dist(A, B)) > 0.5

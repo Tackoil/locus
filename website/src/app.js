@@ -1,7 +1,17 @@
 const { demos, docs } = window.LOCUS_DATA;
 const $ = selector => document.querySelector(selector);
 const filters = [...document.querySelectorAll('[data-filter]')];
-const state = { category: 'All', search: '', expanded: false, selected: null, returnHash: '#demos', doc: null };
+const mobileViewport = window.matchMedia('(max-width: 580px)');
+const tabletViewport = window.matchMedia('(max-width: 800px)');
+const featuredDemos = [
+  'ellipse_foci',
+  'sankey',
+  'flowchart_agent_loop',
+  'architecture',
+  'checkout_sequence',
+  'monge_theorem',
+].map(id => demos.find(demo => demo.id === id)).filter(Boolean);
+const state = { category: 'All', search: '', selected: null, returnHash: '#demos', doc: null, view: 'home' };
 const dialog = $('#demo-dialog');
 let toastTimer;
 
@@ -33,19 +43,28 @@ function matchesDemo(demo) {
   return categoryMatches && `${demo.name} ${demo.title} ${demo.id} ${demo.description}`.toLowerCase().includes(state.search);
 }
 
+function renderFeaturedGallery() {
+  const count = mobileViewport.matches ? 3 : tabletViewport.matches ? 4 : 6;
+  const featured = featuredDemos.slice(0, count);
+  $('#featured-demo-grid').innerHTML = featured.map(card).join('');
+  $('#featured-gallery-count').textContent = `${String(featured.length).padStart(2, '0')} / ${demos.length} EXAMPLES`;
+}
+
 function renderGallery() {
   const matches = demos.filter(matchesDemo);
-  const limited = !state.expanded && state.category === 'All' && !state.search;
-  const visible = limited ? matches.slice(0, 6) : matches;
-  $('#demo-grid').innerHTML = visible.map(card).join('') || '<p class="gallery-empty">No examples found. Try another search or category.</p>';
-  $('#gallery-count').textContent = `${String(visible.length).padStart(2, '0')} / ${matches.length} EXAMPLES`;
-  $('#gallery-status').textContent = `${matches.length} demonstrations found. Showing ${visible.length}.`;
-  $('#show-more').hidden = !limited || matches.length <= 6;
+  $('#demo-grid').innerHTML = matches.map(card).join('') || '<p class="gallery-empty">No examples found. Try another search or category.</p>';
+  $('#gallery-count').textContent = `${String(matches.length).padStart(2, '0')} / ${demos.length} EXAMPLES`;
+  $('#gallery-status').textContent = `${matches.length} demonstrations found.`;
   filters.forEach(button => {
     const active = button.dataset.filter === state.category;
     button.classList.toggle('active', active);
     button.setAttribute('aria-pressed', active);
   });
+}
+
+function selectDemo(event) {
+  const button = event.target.closest('[data-demo]');
+  if (button) location.hash = `demo/${button.dataset.demo}`;
 }
 
 function openDemo(id) {
@@ -90,7 +109,9 @@ function showDocument(id, heading) {
   const doc = docs.find(item => item.id === id) || docs[0];
   const changed = state.doc !== doc.id;
   state.doc = doc.id;
+  state.view = 'docs';
   $('#home-view').hidden = true;
+  $('#examples-view').hidden = true;
   $('#docs-view').hidden = false;
   $('#document-content').innerHTML = doc.html;
   $('#document-breadcrumb').textContent = `${doc.group} / ${doc.title}`;
@@ -109,6 +130,17 @@ function showDocument(id, heading) {
   else if (changed) window.scrollTo({ top: 0, behavior: 'instant' });
 }
 
+function showCollection() {
+  const changed = state.view !== 'examples';
+  state.view = 'examples';
+  state.doc = null;
+  $('#home-view').hidden = true;
+  $('#docs-view').hidden = true;
+  $('#examples-view').hidden = false;
+  document.title = 'Examples — Locus';
+  if (changed) window.scrollTo({ top: 0, behavior: 'instant' });
+}
+
 function route() {
   const hash = location.hash;
   const [, section, id, heading] = hash.match(/^#([^/]+)\/?([^/]*)\/?(.*)$/) || [];
@@ -122,9 +154,15 @@ function route() {
     showDocument(id, heading);
     return;
   }
+  if (section === 'examples') {
+    showCollection();
+    return;
+  }
   state.doc = null;
+  state.view = 'home';
   $('#home-view').hidden = false;
   $('#docs-view').hidden = true;
+  $('#examples-view').hidden = true;
   document.title = 'Locus — Geometry, declared.';
   if (hash) requestAnimationFrame(() => document.getElementById(hash.slice(1))?.scrollIntoView());
   else window.scrollTo({ top: 0, behavior: 'instant' });
@@ -168,14 +206,10 @@ $('#demo-search').addEventListener('input', event => {
   state.search = event.target.value.trim().toLowerCase();
   renderGallery();
 });
-$('#show-more').addEventListener('click', () => {
-  state.expanded = true;
-  renderGallery();
-});
-$('#demo-grid').addEventListener('click', event => {
-  const button = event.target.closest('[data-demo]');
-  if (button) location.hash = `demo/${button.dataset.demo}`;
-});
+$('#featured-demo-grid').addEventListener('click', selectDemo);
+$('#demo-grid').addEventListener('click', selectDemo);
+mobileViewport.addEventListener('change', renderFeaturedGallery);
+tabletViewport.addEventListener('change', renderFeaturedGallery);
 $('#close-dialog').addEventListener('click', closeDemo);
 dialog.addEventListener('cancel', event => { event.preventDefault(); closeDemo(); });
 dialog.addEventListener('click', event => { if (event.target === dialog) closeDemo(); });
@@ -193,5 +227,7 @@ $('.skip-link').addEventListener('click', event => {
   $('#main').scrollIntoView();
 });
 documentNavigation();
+document.querySelectorAll('[data-demo-total]').forEach(element => { element.textContent = demos.length; });
+renderFeaturedGallery();
 renderGallery();
 route();

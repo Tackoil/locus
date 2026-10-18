@@ -5,6 +5,7 @@ import { cp, mkdir, readFile, readdir, stat, writeFile } from 'node:fs/promises'
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { marked, Renderer } from 'marked';
+import { themeHeroSource } from './hero-theme.mjs';
 
 const run = promisify(execFile);
 const site = path.dirname(fileURLToPath(import.meta.url));
@@ -47,8 +48,13 @@ async function readCache(file) {
 
 async function renderDemo(file, binaryKey) {
   const id = path.basename(file, '.locus');
-  const input = path.join(root, 'examples/demonstrations', file);
-  const source = await readFile(input, 'utf8');
+  let input = path.join(root, 'examples/demonstrations', file);
+  let source = await readFile(input, 'utf8');
+  if (id === 'euler_nine_point_showcase') {
+    source = themeHeroSource(source);
+    input = path.join(site, '.cache', file);
+    await writeFile(input, source);
+  }
   const key = createHash('sha256').update(source + binaryKey).digest('hex');
   const cacheFile = path.join(site, '.cache', `${id}.json`);
   const cache = await readCache(cacheFile);

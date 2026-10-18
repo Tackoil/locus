@@ -1,0 +1,66 @@
+locus 0 beta 6
+
+meta title = "Miquel: three circles, one meeting point"
+meta note = "A scalene triangle with independent interior points D, E, F on BC, CA, AB. The circumcircles AEF and BFD determine M; incidence with CDE is asserted, never constrained."
+style textbook
+
+class backdrop { accent: #111C2B, fill: #111C2B, weight: 1 }
+class auxiliary_ink { accent: #60758D, fill: none, weight: 1.1 }
+class teal_circle { accent: #5EEAD4, fill: none, weight: 2.2 }
+class gold_circle { accent: #F6CC73, fill: none, weight: 2.2 }
+class violet_circle { accent: #A9A6FF, fill: none, weight: 2.2 }
+class white_ink { accent: #E7EEF7 }
+class muted_ink { accent: #9AAEC7 }
+class focal_ink { accent: #F6CC73, fill: #F6CC73, weight: 2 }
+
+// A native rectangle supplies the dark background.
+rect canvas(13.7, 15.6) [backdrop]
+
+// The common translation is free; signed dimensions select an asymmetric triangle.
+point A() [white_ink]
+point B() where { align_center_y(A, B), hdist(A, B) == 9 } [white_ink]
+point C() where { hdist(A, C) == 2.3, vdist(A, C) == 7.5 } [white_ink]
+polygon triangle(A, B, C) [auxiliary_ink]
+point D = lerp(B, C, 0.47) [white_ink]
+point E = lerp(C, A, 0.54) [white_ink]
+point F = lerp(A, B, 0.37) [white_ink]
+
+// Each circle is determined only by its own vertex and adjacent side points.
+circle at_A = circumcircle(A, E, F) [teal_circle]
+circle at_B = circumcircle(B, F, D) [gold_circle]
+circle at_C = circumcircle(C, D, E) [violet_circle]
+
+// Branch 0 is the non-F intersection in this selected configuration.
+point M = intersect(at_A, at_B, 0) [focal_ink]
+circle focus(M, 0.075) [focal_ink]
+
+label lA(A, "A") [white_ink] { dir: SW, gap: 0.25 }
+label lB(B, "B") [white_ink] { dir: SE, gap: 0.25 }
+label lC(C, "C") [white_ink] { dir: N, gap: 0.28 }
+label lD(D, "D") [white_ink] { dir: NE, gap: 0.65 }
+label lE(E, "E") [white_ink] { dir: NW, gap: 0.65 }
+label lF(F, "F") [white_ink] { dir: S, gap: 0.60 }
+label lM(M, "M") [focal_ink] { dir: N, gap: 0.70 }
+
+// Independent contract: nondegeneracy, the intended branch, and Miquel concurrence.
+assert area(triangle) > 25
+assert dist(A, B) < dist(B, C)
+assert between(B, D, C)
+assert between(C, E, A)
+assert between(A, F, B)
+assert dist(M, F) > 1
+assert dist(M, D) > 1
+assert dist(M, E) > 1
+assert on(M, at_A)
+assert on(M, at_B)
+assert on(M, at_C)
+assert concyclic(A, E, F, M)
+assert concyclic(B, F, D, M)
+assert concyclic(C, D, E, M)
+
+// Fixed dimensions frame the circles; measured labels stay within the inset.
+rel center(canvas, triangle)
+label title(canvas.n, "Miquel's theorem") [white_ink] { role: title, dir: S, gap: 0.8 }
+label subtitle(canvas.n, "THREE CIRCLES. ONE MEETING POINT.") [muted_ink] { dir: S, gap: 1.65 }
+label theorem(canvas.s, "Choose one point on each side of a triangle.") [muted_ink] { dir: N, gap: 1.30 }
+label conclusion(canvas.s, "The three vertex circles all pass through M.") [white_ink] { dir: N, gap: 0.65 }

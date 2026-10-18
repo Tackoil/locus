@@ -1,0 +1,104 @@
+locus 0 beta 6
+
+meta title = "Desargues's theorem: from a point to a line"
+meta note = "Two independently shaped triangles are constructed along three rays from O. Corresponding-side intersections P, Q, R are derived separately; their collinearity is a checked consequence, never a defining relation. All intersections are finite and transverse."
+style textbook
+
+class paper { accent: #FFFFFF, fill: #FFFFFF, weight: 1 }
+class ink { accent: #24384B }
+class muted { accent: #63778A }
+class hidden { opacity: 0 }
+class first { accent: #007E73, fill: #007E7308, weight: 1.8 }
+class second { accent: #7052B3, fill: #7052B308, weight: 1.8 }
+class first_extension { accent: #007E73, weight: 0.85, stroke: dash(3, 4), opacity: 0.8 }
+class second_extension { accent: #7052B3, weight: 0.85, stroke: dash(3, 4), opacity: 0.8 }
+class connectors { accent: #8B9CAA, weight: 0.9, stroke: dash(7, 5) }
+class axis_style { accent: #C23F61, weight: 2.2 }
+
+rect canvas(20, 22) [paper]
+point O() [ink]
+circle carrier(O, 1) [hidden]
+point A = extend(O, carrier.at(-21deg), 4) [first]
+point B = extend(O, carrier.at(13deg), 5.5) [first]
+point C = extend(O, carrier.at(52deg), 3) [first]
+
+// Different radial multipliers give perspective triangles without
+// assuming similarity, parallel sides, or an axis of perspectivity.
+point Aprime = extend(O, A, 0.35 * dist(O, A)) [second]
+point Bprime = extend(O, B, 0.7 * dist(O, B)) [second]
+point Cprime = extend(O, C, 1.4 * dist(O, C)) [second]
+segment join_a(O, Aprime) [connectors]
+segment join_b(O, Bprime) [connectors]
+segment join_c(O, Cprime) [connectors]
+polygon triangle_abc(A, B, C) [first]
+polygon triangle_prime(Aprime, Bprime, Cprime) [second]
+
+point P = intersect(line(A, B), line(Aprime, Bprime)) [axis_style]
+point Q = intersect(line(B, C), line(Bprime, Cprime)) [axis_style]
+point R = intersect(line(C, A), line(Cprime, Aprime)) [axis_style]
+segment ab_to_p(A, P) [first_extension]
+segment aprime_to_p(Aprime, P) [second_extension]
+segment bc_to_q(B, Q) [first_extension]
+segment bprime_to_q(Bprime, Q) [second_extension]
+segment ca_to_r(A, R) [first_extension]
+segment aprime_to_r(Aprime, R) [second_extension]
+
+point axis_start = extend(Q, P, 0.75) { mark: none }
+point axis_end = extend(P, Q, 0.75) { mark: none }
+segment perspective_axis(axis_start, axis_end) [axis_style]
+
+// Frame follows the actual extremal construction, without absolute pins.
+point frame_x = midpoint(O, Q) { mark: none }
+point frame_y = midpoint(P, Cprime) { mark: none }
+rel align_center_x(canvas, frame_x)
+rel align_center_y(canvas, frame_y)
+
+label label_o(O, $O$) [ink] { dir: W, gap: 0.3 }
+label label_a(A, $A$) [first] { dir: SW, gap: 0.55 }
+label label_b(B, $B$) [first] { dir: SE, gap: 0.55 }
+label label_c(C, $C$) [first] { dir: NW, gap: 0.3 }
+label label_aprime(Aprime, "A′") [second] { dir: E, gap: 0.3 }
+label label_bprime(Bprime, "B′") [second] { dir: NE, gap: 0.3 }
+label label_cprime(Cprime, "C′") [second] { dir: N, gap: 0.3 }
+label label_p(P, $P$) [axis_style] { dir: S, gap: 0.35 }
+label label_q(Q, $Q$) [axis_style] { dir: S, gap: 0.35 }
+label label_r(R, $R$) [axis_style] { dir: S, gap: 0.35 }
+
+label title(canvas.n, "Desargues's theorem") [ink] { role: title, dir: S, gap: 0.8 }
+label subtitle(canvas.n, "Perspective from a point. Perspective on a line.") [muted] { dir: S, gap: 1.65 }
+label given(canvas.s, "The connectors AA′, BB′ and CC′ meet at O.") [muted] { dir: N, gap: 1.3 }
+label result(canvas.s, "The corresponding-side intersections P, Q and R are collinear.") [axis_style] { dir: N, gap: 0.65 }
+
+// The input condition: three distinct corresponding-vertex connectors.
+assert collinear(O, A, Aprime)
+assert collinear(O, B, Bprime)
+assert collinear(O, C, Cprime)
+assert between(O, A, Aprime) and between(O, B, Bprime) and between(O, C, Cprime)
+assert angle(A, O, B) > 25deg and angle(B, O, C) > 25deg
+assert area(triangle_abc) > 4
+assert area(triangle_prime) > 10
+assert abs(dist(A, B) - dist(B, C)) > 0.2
+assert abs(dist(Aprime, Bprime) - dist(Bprime, Cprime)) > 0.2
+assert dist(O, Aprime) / dist(O, A) == 1.35
+assert dist(O, Bprime) / dist(O, B) == 1.7
+assert dist(O, Cprime) / dist(O, C) == 2.4
+
+// Independent side incidences, with non-parallel finite intersections.
+assert on(P, line(A, B)) and on(P, line(Aprime, Bprime))
+assert on(Q, line(B, C)) and on(Q, line(Bprime, Cprime))
+assert on(R, line(C, A)) and on(R, line(Cprime, Aprime))
+assert angle(A, P, Aprime) > 15deg and angle(A, P, Aprime) < 165deg
+assert angle(B, Q, Bprime) > 15deg and angle(B, Q, Bprime) < 165deg
+assert angle(A, R, Aprime) > 15deg and angle(A, R, Aprime) < 165deg
+assert between(P, A, B) and between(P, Aprime, Bprime)
+assert between(Q, B, C) and between(Q, Bprime, Cprime)
+assert between(C, A, R) and between(Cprime, Aprime, R)
+
+// Desargues's theorem: the output condition is asserted only.
+assert collinear(P, Q, R)
+assert on(R, line(P, Q))
+assert between(P, R, Q)
+assert dist(P, R) > 4
+assert dist(R, Q) > 8
+assert dist(P, Q) < 16
+assert dist(O, P) < 16 and dist(O, Q) < 16 and dist(O, R) < 16

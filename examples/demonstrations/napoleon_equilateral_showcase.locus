@@ -1,0 +1,93 @@
+locus 0 beta 6
+
+meta title = "Napoleon's theorem"
+meta note = "Construct equilateral triangles externally on the sides of a scalene triangle. Their centroids form an equilateral triangle; no equilateral condition is imposed on those centers."
+
+style textbook
+class dark { accent: #111C2B, fill: #111C2B, weight: 1 }
+class hidden { opacity: 0 }
+class original { accent: #DEE8F1, fill: none, weight: 1.7, join: round }
+class first { accent: #5EEAD4, fill: #5EEAD420, weight: 1.1, join: round }
+class second { accent: #A9A6FF, fill: #A9A6FF20, weight: 1.1, join: round }
+class third { accent: #F6CC73, fill: #F6CC7320, weight: 1.1, join: round }
+class result { accent: #F6CC73, fill: #F6CC7318, weight: 2.5, join: round }
+class white { accent: #EBF2F8 }
+class muted { accent: #A1B3C6 }
+class gold_text { accent: #F6CC73 }
+
+rect background(15.6, 17.4) [dark]
+circle carrier(3.5) [hidden]
+point A = carrier.at(210deg) [white]
+point B = carrier.at(330deg) [white]
+point C = carrier.at(112deg) [white]
+
+// A, B, C are counterclockwise. A negative 60-degree rotation
+// places the new vertex on the exterior side of every directed edge.
+point D = rotate(B, A, -60deg) { mark: none }
+point E = rotate(C, B, -60deg) { mark: none }
+point F = rotate(A, C, -60deg) { mark: none }
+polygon equilateral_ab(A, B, D) [first]
+polygon equilateral_bc(B, C, E) [second]
+polygon equilateral_ca(C, A, F) [third]
+polygon original_triangle(A, B, C) [original]
+
+// The focal triangle is constructed from centroids alone.
+point P = centroid(A, B, D) [gold_text]
+point Q = centroid(B, C, E) [gold_text]
+point R = centroid(C, A, F) [gold_text]
+polygon napoleon(P, Q, R) [result]
+
+label label_a(A, $A$) [white] { dir: W, gap: 0.22 }
+label label_b(B, $B$) [white] { dir: E, gap: 0.22 }
+label label_c(C, $C$) [white] { dir: N, gap: 0.22 }
+label label_p(P, $P$) [gold_text] { dir: SW, gap: 0.2 }
+label label_q(Q, $Q$) [gold_text] { dir: E, gap: 0.2 }
+label label_r(R, $R$) [gold_text] { dir: NW, gap: 0.2 }
+
+label kicker("04   /   ORDER FROM ANY TRIANGLE") [muted]
+label title("Napoleon's theorem") [white] { role: title }
+label subtitle("Three outward triangles. Their centers find perfect symmetry.") [muted]
+rel column(kicker, title, subtitle)
+rel inset_top(kicker, background)
+rel align_center_x(kicker, background)
+label identity($PQ=QR=RP$) [gold_text] { role: title }
+label explanation("Build equilateral triangles on the sides. Join their centers.") [muted]
+rel column(identity, explanation)
+rel inset_bottom(explanation, background)
+rel align_center_x(explanation, background)
+rel align_center_x(carrier, background)
+rel vdist(carrier.center, background.center) == -1.2
+
+// Input is scalene, with three distinct angles and side lengths.
+assert abs(dist(A, B) - dist(B, C)) > 0.3
+assert abs(dist(B, C) - dist(C, A)) > 0.3
+assert abs(dist(C, A) - dist(A, B)) > 0.3
+
+// Each added triangle is equilateral, independently checked.
+fn verify_equilateral(U, V, W) {
+    assert dist(U, V) == dist(V, W) tol 1e-9
+    assert dist(V, W) == dist(W, U) tol 1e-9
+    assert angle(W, U, V) == 60deg tol 1e-9
+    assert angle(U, V, W) == 60deg tol 1e-9
+    assert angle(V, W, U) == 60deg tol 1e-9
+}
+verify_equilateral ab(A, B, D)
+verify_equilateral bc(B, C, E)
+verify_equilateral ca(C, A, F)
+
+// Half-plane checks: each original opposite vertex and each external apex
+// are separated by the original side. The connector must cross that side's
+// supporting line strictly between its endpoints (no outside/inside ambiguity).
+point cross_ab = intersect(line(C, D), line(A, B)) [hidden] { mark: none }
+point cross_bc = intersect(line(A, E), line(B, C)) [hidden] { mark: none }
+point cross_ca = intersect(line(B, F), line(C, A)) [hidden] { mark: none }
+assert between(C, cross_ab, D)
+assert between(A, cross_bc, E)
+assert between(B, cross_ca, F)
+assert not inside(D, original_triangle)
+assert not inside(E, original_triangle)
+assert not inside(F, original_triangle)
+
+// Napoleon's theorem is the checked output, never a solver constraint.
+verify_equilateral center_triangle(P, Q, R)
+assert area(napoleon) > 1

@@ -1,0 +1,117 @@
+locus 0 beta 6
+
+meta title = "Nine points. One circle. The Euler line."
+meta note = "A scalene acute triangle. The highlighted circle is constructed from side midpoints; all other six incidences and the four-center alignment are checked independently."
+
+style textbook
+
+class night { accent: #111C2B, fill: #111C2B, weight: 0.5 }
+class white_ink { accent: #E7EFF7 }
+class quiet_ink { accent: #9AAFC3 }
+class triangle_style { accent: #B5C6D6, weight: 1.1, fill: none }
+class circum_style { accent: #60758D, weight: 0.9, fill: none }
+class altitude_style { accent: #60758D, weight: 0.75, stroke: dash(3, 4) }
+class teal { accent: #5EEAD4, weight: 2, fill: none }
+class gold { accent: #F6CC73, weight: 1.1 }
+class violet { accent: #A9A6FF }
+class euler_style { accent: #F6CC73, weight: 1.2, stroke: dash(7, 4) }
+
+// A native Locus rectangle supplies the dark canvas; no SVG edits.
+rect backdrop(12, 15) [night]
+circle circum(4.7) [circum_style]
+rel center(circum, backdrop)
+point A = circum.at(72deg) [white_ink]
+point B = circum.at(218deg) [white_ink]
+point C = circum.at(350deg) [white_ink]
+polygon triangle(A, B, C) [triangle_style]
+
+point O = circum.center [gold]
+point G = centroid(A, B, C) [gold]
+point H = orthocenter(A, B, C) [gold]
+
+point D = foot(A, line(B, C)) [gold]
+point E = foot(B, line(C, A)) [gold]
+point F = foot(C, line(A, B)) [gold]
+segment altitude_a(A, D) [altitude_style]
+segment altitude_b(B, E) [altitude_style]
+segment altitude_c(C, F) [altitude_style]
+right_angle right_a(D, A, B) [circum_style] { size: 0.16 }
+right_angle right_b(E, B, C) [circum_style] { size: 0.16 }
+right_angle right_c(F, C, A) [circum_style] { size: 0.16 }
+
+point M_a = midpoint(B, C) [teal]
+point M_b = midpoint(C, A) [teal]
+point M_c = midpoint(A, B) [teal]
+point T_a = midpoint(A, H) [violet]
+point T_b = midpoint(B, H) [violet]
+point T_c = midpoint(C, H) [violet]
+
+circle nine = circumcircle(M_a, M_b, M_c) [teal]
+point N = nine.center [gold]
+point euler_start = extend(H, O, 2.6) { mark: none }
+point euler_end = extend(O, H, 1.7) { mark: none }
+segment euler_line(euler_start, euler_end) [euler_style]
+
+label label_a(A, $A$) [white_ink] { dir: N, gap: 0.25 }
+label label_b(B, $B$) [white_ink] { dir: SW, gap: 0.25 }
+label label_c(C, $C$) [white_ink] { dir: E, gap: 0.25 }
+label label_o(O, $O$) [gold] { dir: SW, gap: 0.25 }
+label label_g(G, $G$) [gold] { dir: NW, gap: 0.3 }
+label label_n(N, $N$) [gold] { dir: N, gap: 0.35 }
+label label_h(H, $H$) [gold] { dir: NE, gap: 0.65 }
+
+label series("01 / CLASSICAL GEOMETRY") [quiet_ink]
+label heading("The nine-point circle") [white_ink] { role: title }
+label subheading("Nine distinct points. Four aligned centers.") [quiet_ink]
+rel inset_top(series, backdrop)
+rel column(series, heading, subheading)
+rel align_center_x(series, backdrop)
+
+label key_midpoints("3 side midpoints") [teal]
+label key_feet("3 altitude feet") [gold]
+label key_halves("3 vertex–H midpoints") [violet]
+rel row(key_midpoints, key_feet, key_halves)
+rel gap_y(circum, key_midpoints)
+rel align_center_y(key_midpoints, key_feet, key_halves)
+rel align_center_x(key_feet, backdrop)
+label footer("Euler line: $O,G,N,H$     ·     $ON=NH$     ·     $R_9=R/2$") [quiet_ink]
+rel inset_bottom(footer, backdrop)
+rel align_center_x(footer, backdrop)
+rel contain(backdrop, series, heading, subheading, circum, key_midpoints, key_feet, key_halves, footer)
+
+// Independent theorem assertions; no concurrence or concyclicity relations.
+assert dist(A, B) > dist(B, C)
+assert dist(B, C) > dist(C, A)
+assert inside(H, triangle)
+assert perpendicular(seg(A, D), seg(B, C))
+assert perpendicular(seg(B, E), seg(C, A))
+assert perpendicular(seg(C, F), seg(A, B))
+assert on(H, altitude_a) and on(H, altitude_b) and on(H, altitude_c)
+assert on(M_a, nine) and on(M_b, nine) and on(M_c, nine)
+assert on(D, nine) and on(E, nine) and on(F, nine)
+assert on(T_a, nine) and on(T_b, nine) and on(T_c, nine)
+assert collinear(O, G, N, H)
+assert between(O, G, N) and between(G, N, H)
+assert dist(H, G) == 2 * dist(G, O)
+assert dist(O, N) == dist(N, H)
+assert radius(nine) == radius(circum) / 2
+assert not center(O, H)
+assert center(N, midpoint(O, H))
+
+// Distinctness makes all nine points visible as nine, even for this sample.
+fn distinct_from_six(p) {
+    assert dist(p, D) > 0.1
+    assert dist(p, E) > 0.1
+    assert dist(p, F) > 0.1
+    assert dist(p, T_a) > 0.1
+    assert dist(p, T_b) > 0.1
+    assert dist(p, T_c) > 0.1
+}
+distinct_from_six distinct_ma(M_a)
+distinct_from_six distinct_mb(M_b)
+distinct_from_six distinct_mc(M_c)
+assert dist(D, E) > 0.1 and dist(E, F) > 0.1 and dist(F, D) > 0.1
+assert dist(T_a, T_b) > 0.1 and dist(T_b, T_c) > 0.1 and dist(T_c, T_a) > 0.1
+assert dist(D, T_a) > 0.1 and dist(D, T_b) > 0.1 and dist(D, T_c) > 0.1
+assert dist(E, T_a) > 0.1 and dist(E, T_b) > 0.1 and dist(E, T_c) > 0.1
+assert dist(F, T_a) > 0.1 and dist(F, T_b) > 0.1 and dist(F, T_c) > 0.1

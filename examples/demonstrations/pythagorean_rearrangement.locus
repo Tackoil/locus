@@ -1,0 +1,131 @@
+locus 0 beta 6
+
+meta title = "Pythagoras: a rearrangement proof"
+meta note = "Four congruent right triangles tile each equal outer square. The remaining areas are a² + b² and c². Shown with legs 3 and 4; the construction works for any positive a and b."
+
+style textbook
+
+class outline { accent: #344653, fill: none, weight: 1.6 }
+class triangle_style { accent: #8B7963, fill: #EDE3D5, weight: 1.1 }
+class a_style { accent: #276B68, fill: #D3E9E3, weight: 1.4 }
+class b_style { accent: #38677E, fill: #D9E8F1, weight: 1.4 }
+class c_style { accent: #565B8A, fill: #E0E1F3, weight: 1.6 }
+class ink_style { accent: #263C4B }
+class muted { accent: #62727C }
+class a_ink { accent: #276B68 }
+class b_ink { accent: #38677E }
+class c_ink { accent: #565B8A }
+
+num a = 3
+num b = 4
+num side = a + b
+
+// Equal outer squares; the renderer owns their common translation.
+rect left(side, side) [outline]
+rect right(side, side) [outline]
+rel row(left, right)
+rel hdist(left.e, right.w) == 2.6
+
+// Left: a² and b² occupy opposite corners. Split each remaining
+// a-by-b rectangle along a diagonal to obtain four congruent triangles.
+rect square_a(a, a) [a_style]
+rect square_b(b, b) [b_style]
+rel center(square_a.nw, left.nw)
+rel center(square_b.se, left.se)
+
+polygon left_t1(square_a.ne, left.ne, square_b.ne) [triangle_style]
+polygon left_t2(square_a.ne, square_b.ne, square_a.se) [triangle_style]
+polygon left_t3(square_a.sw, square_a.se, square_b.sw) [triangle_style]
+polygon left_t4(square_a.sw, square_b.sw, left.sw) [triangle_style]
+
+// Right: points cut the boundary cyclically into lengths a and b.
+// Consecutive inner edges are hypotenuses and meet at right angles.
+point top = lerp(right.nw, right.ne, a / side) { mark: none }
+point east = lerp(right.ne, right.se, a / side) { mark: none }
+point bottom = lerp(right.se, right.sw, a / side) { mark: none }
+point west = lerp(right.sw, right.nw, a / side) { mark: none }
+
+polygon right_t1(right.nw, top, west) [triangle_style]
+polygon right_t2(right.ne, east, top) [triangle_style]
+polygon right_t3(right.se, bottom, east) [triangle_style]
+polygon right_t4(right.sw, west, bottom) [triangle_style]
+polygon square_c(top, east, bottom, west) [c_style]
+
+// Area labels sit well inside the unoccupied regions.
+label area_a($a^2$) [a_ink] { role: title }
+rel center(area_a, square_a)
+rel contain(square_a, area_a)
+label area_b($b^2$) [b_ink] { role: title }
+rel center(area_b, square_b)
+rel contain(square_b, area_b)
+label area_c($c^2$) [c_ink] { role: title }
+rel center(area_c, square_c)
+rel contain(square_c, area_c)
+
+// Leg labels identify a single corner triangle on the right.
+point a_mid = midpoint(right.nw, top) { mark: none }
+point b_mid = midpoint(right.nw, west) { mark: none }
+point c_mid = midpoint(top, west) { mark: none }
+label leg_a(a_mid, $a$) [a_ink] { dir: S, gap: 0.22 }
+label leg_b(b_mid, $b$) [b_ink] { dir: E, gap: 0.22 }
+label leg_c(c_mid, $c$) [c_ink] { dir: SE, gap: 0.22 }
+right_angle corner(right.nw, top, west) [muted] { size: 0.25 }
+
+label panel_left("01   Keep the two squares") [ink_style]
+label panel_right("02   Rearrange the triangles") [ink_style]
+rel align_center_x(panel_left, left)
+rel align_center_x(panel_right, right)
+rel gap_y(panel_left, left)
+rel gap_y(panel_right, right)
+rel align_center_y(panel_left, panel_right)
+
+label remainder_left("Remaining area: $a^2+b^2$") [muted]
+label remainder_right("Remaining area: $c^2$") [muted]
+rel column(left, remainder_left)
+rel column(right, remainder_right)
+rel align_center_y(remainder_left, remainder_right)
+
+group panels(left, right)
+label title("Pythagoras") [ink_style] { role: title }
+label subtitle("A rearrangement proof") [muted]
+rel column(title, subtitle)
+rel gap_y(subtitle, panel_left)
+rel gap_y(subtitle, panel_right)
+rel align_center_x(title, panels)
+
+label explanation("Equal outer squares. The same four triangles. Equal area left over.") [muted]
+label identity($a^2+b^2=c^2$) [ink_style] { role: title }
+rel gap_y(remainder_left, explanation)
+rel gap_y(remainder_right, explanation)
+rel column(explanation, identity)
+rel align_center_x(explanation, panels)
+
+// Mathematical contract: congruent right triangles and a square hole.
+fn verify_triangle(shape, vertex, p, q) {
+    assert area(shape) == a * b / 2
+    assert angle(p, vertex, q) == 90deg
+    assert min(dist(vertex, p), dist(vertex, q)) == a
+    assert max(dist(vertex, p), dist(vertex, q)) == b
+    assert dist(p, q) == sqrt(a * a + b * b)
+}
+verify_triangle lt1(left_t1, left.ne, square_a.ne, square_b.ne)
+verify_triangle lt2(left_t2, square_a.se, square_a.ne, square_b.ne)
+verify_triangle lt3(left_t3, square_a.se, square_a.sw, square_b.sw)
+verify_triangle lt4(left_t4, left.sw, square_a.sw, square_b.sw)
+verify_triangle rt1(right_t1, right.nw, top, west)
+verify_triangle rt2(right_t2, right.ne, east, top)
+verify_triangle rt3(right_t3, right.se, bottom, east)
+verify_triangle rt4(right_t4, right.sw, west, bottom)
+
+assert dist(top, east) == dist(east, bottom)
+assert dist(east, bottom) == dist(bottom, west)
+assert dist(bottom, west) == dist(west, top)
+assert angle(west, top, east) == 90deg
+assert angle(top, east, bottom) == 90deg
+assert angle(east, bottom, west) == 90deg
+assert angle(bottom, west, top) == 90deg
+assert area(left) == area(right)
+assert area(square_a) + area(square_b) + area(left_t1) + area(left_t2) + area(left_t3) + area(left_t4) == area(left)
+assert area(square_c) + area(right_t1) + area(right_t2) + area(right_t3) + area(right_t4) == area(right)
+assert area(square_a) + area(square_b) == area(square_c)
+assert area(square_c) == dist(top, east) * dist(top, east)

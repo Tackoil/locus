@@ -1,0 +1,43 @@
+locus 0 beta 6
+
+meta title = "The 3–4–5 right triangle"
+meta note = "Matches the website demo figure point_relations: A at the right angle, B to its right, C above it, M at the hypotenuse midpoint, and the dotted circumcircle centered at M. Uniform scale u = 2.5 scene units per mathematical unit."
+style textbook
+
+class paper { accent: #FFFFFF, fill: #FFFFFF, weight: 1 }
+class ink { accent: #24384B }
+class muted { accent: #63778A }
+class triangle_style { accent: #24384B, weight: 1.7, fill: none }
+class circum_style { accent: #8B9CAA, weight: 0.9, fill: none, stroke: dotted }
+
+rect canvas(16.8, 15.8) [paper]
+num u = 2.5
+point A() [ink]
+point B() where { align_center_y(A, B), hdist(A, B) == 4 * u } [ink]
+point C() where { align_center_x(A, C), vdist(A, C) == 3 * u } [ink]
+polygon triangle(A, B, C) [triangle_style]
+rel center(triangle, canvas)
+point M = midpoint(B, C) [ink]
+circle circum(M, dist(M, A)) [circum_style]
+right_angle corner(A, B, C) [ink] { size: 0.42 }
+
+label label_a(A, $A$) [ink] { dir: SW, gap: 0.3 }
+label label_b(B, $B$) [ink] { dir: SE, gap: 0.3 }
+label label_c(C, $C$) [ink] { dir: NW, gap: 0.3 }
+label label_m(M, $M$) [ink] { dir: NE, gap: 0.3 }
+
+label title(canvas.n, "The 3–4–5 triangle") [ink] { role: title, dir: S, gap: 0.8 }
+label identity(canvas.s, $3^2+4^2=5^2$) [ink] { role: title, dir: N, gap: 0.8 }
+
+assert perpendicular(seg(A, B), seg(A, C))
+assert angle(B, A, C) == 90deg
+assert dist(A, B) / u == 4
+assert dist(A, C) / u == 3
+assert dist(B, C) / u == 5
+assert dist(A, B) * dist(A, B) + dist(A, C) * dist(A, C) == dist(B, C) * dist(B, C)
+assert area(triangle) / (u * u) == 6
+assert dist(B, C) > dist(A, B) and dist(A, B) > dist(A, C)
+assert on(A, circum) and on(B, circum) and on(C, circum)
+assert dist(M, A) == dist(M, B) and dist(M, B) == dist(M, C)
+assert radius(circum) / u == 2.5
+assert center(M, midpoint(B, C))
