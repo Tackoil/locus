@@ -1,3 +1,5 @@
+import { createPlayground } from './playground.js';
+
 const { demos, docs } = window.LOCUS_DATA;
 const $ = selector => document.querySelector(selector);
 const filters = [...document.querySelectorAll('[data-filter]')];
@@ -13,6 +15,7 @@ const featuredDemos = [
 ].map(id => demos.find(demo => demo.id === id)).filter(Boolean);
 const state = { category: 'All', search: '', selected: null, returnHash: '#demos', doc: null, view: 'home' };
 const dialog = $('#demo-dialog');
+const playground = createPlayground(demos);
 let toastTimer;
 
 function escapeHTML(value) {
@@ -81,6 +84,7 @@ function openDemo(id) {
   $('#dialog-code').innerHTML = highlight(demo.source);
   $('#download-locus').href = `demos/${demo.id}.locus`;
   $('#download-svg').href = `demos/${demo.id}.svg`;
+  $('#edit-demo').href = `#playground/${demo.id}`;
   if (!dialog.open) dialog.showModal();
   document.body.classList.add('dialog-open');
 }
@@ -150,6 +154,16 @@ function route() {
   }
   if (dialog.open) closeDemo();
   state.returnHash = hash || '#';
+  $('#playground-view').hidden = section !== 'playground';
+  if (section === 'playground') {
+    state.view = 'playground';
+    state.doc = null;
+    ['#home-view', '#docs-view', '#examples-view'].forEach(view => { $(view).hidden = true; });
+    document.title = 'Playground — Locus';
+    playground.show(id);
+    return;
+  }
+  playground.hide();
   if (section === 'docs') {
     showDocument(id, heading);
     return;
@@ -221,6 +235,7 @@ $('#doc-search-results').addEventListener('click', event => {
   searchDocuments('');
 });
 window.addEventListener('hashchange', route);
+window.addEventListener('pageshow', event => { if (event.persisted) route(); });
 $('.skip-link').addEventListener('click', event => {
   event.preventDefault();
   $('#main').focus();

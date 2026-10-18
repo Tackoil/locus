@@ -27,6 +27,14 @@ jobs:
         run: wasm-pack build crates/locus-wasm --target web --release --no-opt --out-dir ../../target/wasm/pkg --out-name locus --locked
       - name: Test WebAssembly pipeline
         run: node crates/locus-wasm/tests/smoke.mjs --all
+      - name: Build website CLI
+        run: cargo build --release -p locus-cli --locked
+      - name: Install website dependencies
+        run: npm ci --prefix website
+      - name: Test playground controls
+        run: npm test --prefix website
+      - name: Build website with WebAssembly playground
+        run: npm run build --prefix website
 
   zed-extension:
     name: Zed extension

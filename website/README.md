@@ -1,6 +1,6 @@
 # Locus project website
 
-A static introduction, gallery of all 43 canonical demonstrations, and searchable documentation reader. The gallery contains native Locus SVG output and downloadable original source. Documentation is generated from the repository, including the complete specification.
+A static introduction, gallery of all 43 canonical demonstrations, browser playground, and searchable documentation reader. The gallery contains native Locus SVG output and downloadable original source. Documentation is generated from the repository, including the complete specification.
 
 ## Build and preview
 
@@ -8,12 +8,29 @@ From the repository root:
 
 ```sh
 cargo build --release -p locus-cli --locked
+rustup target add wasm32-unknown-unknown
+cargo install wasm-pack --version 0.14.0 --locked
 npm ci --prefix website
+npm test --prefix website
 npm run build --prefix website
 npm run preview --prefix website
 ```
 
-Open <http://127.0.0.1:4173>. Serve the generated `website/dist/` directory on any static host. There is no browser-side package dependency or application server. The page uses optional Google Fonts, with system-font fallbacks.
+Open <http://127.0.0.1:4173/#playground>. Serve the generated `website/dist/` directory on any static host. There is no application server. The page uses optional Google Fonts, with system-font fallbacks. Serve `.wasm` as `application/wasm` and enable HTTP compression for the approximately 21 MB module.
+
+The build first creates the release WASM package using `wasm-pack`, then copies the JavaScript binding, binary, and required license notices into `dist/`. Run `npm run build:wasm --prefix website` to rebuild only WASM, or `node website/build.mjs` to package an already-built WASM library and rebuild the site.
+
+## Playground
+
+Open `#playground` from the navigation or homepage, or choose **Edit in playground** in a demo dialog (`#playground/<demo-id>`). Start with the triangle, load any canonical demo, or open a local `.locus` file. Edit in the source panel, toggle automatic rendering, or render with Ctrl/Command + Enter. Download the current source or the latest successful SVG. Editing invalidates the SVG download until the source is rendered again.
+
+The full Locus pipeline runs locally in a module worker, loaded only when the playground opens. Source never goes to a rendering server. Cancel terminates the worker, as does a 30-second timeout; another render starts a fresh instance. Runtime traps and loading failures offer a retry. Source errors retain the last successful preview with an explicit stale-preview caption. Failed assertions keep the SVG available and appear beside warnings and source-linked diagnostics.
+
+The source editor highlights Locus keywords, functions, strings, TeX, comments, numbers, colors, and properties. Its line-number gutter follows vertical scrolling while the highlighted source follows both axes. Highlighting updates as you type, load examples, or open files, and preserves native selection, copy/paste, undo, resizing, and diagnostic navigation. The decorative layers are hidden from assistive technology; forced-color mode uses native text colors.
+
+The current draft is saved in local storage when available and survives navigation/reloads. Choosing an example or opening a file replaces that draft; save `.locus` first to keep another copy. Browser storage restrictions do not prevent editing or rendering. The playground stacks its source and preview panels on smaller screens and follows the website’s light/dark theme.
+
+`npm test --prefix website` checks syntax highlighting (including incomplete input, escaping, and source preservation), cancellation, stale responses, retry after errors/timeouts, diagnostic formatting, and draft storage without a browser. The CI WASM job also builds the website and verifies the full WASM demonstration suite.
 
 The build runs native checks, executes assertions, and renders every `.locus` file in `examples/demonstrations/`. A failed check stops the build. Checks with non-fatal warnings are identified in the demo viewer. Render results are cached against source contents and the CLI binary’s size and modification time. Delete `website/.cache/` to force revalidation. Set `LOCUS_BIN` to use another CLI executable.
 

@@ -115,10 +115,19 @@ async function renderDocument(document) {
   return { ...document, html, headings };
 }
 
+async function packageWasm() {
+  const pkg = path.join(root, 'target/wasm/pkg');
+  await mkdir(path.join(dist, 'wasm'), { recursive: true });
+  await Promise.all(['locus.js', 'locus_bg.wasm'].map(file => cp(path.join(pkg, file), path.join(dist, 'wasm', file))));
+  await cp(path.join(root, 'licenses'), path.join(dist, 'licenses'), { recursive: true });
+  await Promise.all(['LICENSE-MIT', 'LICENSE-APACHE', 'THIRD-PARTY-NOTICES.md'].map(file => cp(path.join(root, file), path.join(dist, file))));
+}
+
 async function main() {
   await Promise.all(['demos', 'docs', 'assets'].map(directory => mkdir(path.join(dist, directory), { recursive: true })));
   await mkdir(path.join(site, '.cache'), { recursive: true });
   await cp(path.join(site, 'src'), dist, { recursive: true, filter: file => !file.endsWith('.md') });
+  await packageWasm();
   await Promise.all(['locus-mark.svg', 'locus-banner.svg'].map(file => cp(path.join(root, 'assets', file), path.join(dist, 'assets', file))));
   const binaryInfo = await stat(binary);
   const files = (await readdir(path.join(root, 'examples/demonstrations'))).filter(file => file.endsWith('.locus'));
