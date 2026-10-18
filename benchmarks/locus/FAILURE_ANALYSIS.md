@@ -1,5 +1,9 @@
 # Beta 6 failed-case analysis
 
+> Historical record: the provider HTTP benchmark has been retired. Commands and
+> protocol references below describe the original runs; their launchers are no
+> longer shipped. The observations and measurements are preserved.
+
 Analysis of `provider-beta6-20261016-1`, completed 2026-10-16. This uses the
 existing 54 trials, archived tool conversations, final sources, diagnostics,
 and image ratings. Additional local CLI probes are separate from the benchmark;

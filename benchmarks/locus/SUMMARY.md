@@ -1,5 +1,9 @@
 # Beta 6 skill and native SVG benchmark
 
+> Historical record: the provider HTTP benchmark has been retired. Commands and
+> protocol references below describe the original runs; their launchers are no
+> longer shipped. The observations and measurements are preserved.
+
 ## Completed DSH/Pi/OpenCode comparison: 2026-10-16
 
 **Post-run correction:** [Failed-case analysis](FAILURE_ANALYSIS.md) found

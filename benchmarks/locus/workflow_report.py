@@ -5,8 +5,7 @@ import json
 from pathlib import Path
 from statistics import mean
 
-from harnesses import write_json
-from report import rating_total
+from report import rating_total, write_json
 
 
 def load_groups(folder, task, backend):

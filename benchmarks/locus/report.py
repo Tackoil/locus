@@ -6,9 +6,15 @@ import hashlib
 import json
 from pathlib import Path
 from statistics import mean
-from meter import PROTOCOL
 
-LIMITS = PROTOCOL["rubric"]
+LIMITS = json.loads(Path(__file__).with_name("provider_protocol.json").read_text())["rubric"]
+
+
+def write_json(path, data):
+    path = Path(path)
+    temporary = path.with_suffix(path.suffix + ".tmp")
+    temporary.write_text(json.dumps(data, indent=2) + "\n")
+    temporary.replace(path)
 
 
 def rating_total(rating, result, folder):

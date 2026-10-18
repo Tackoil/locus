@@ -133,7 +133,7 @@ remove the directory when you no longer need them.
 ## Authoring skill and drawing benchmark
 
 The [Locus skill](skills/locus/SKILL.md) teaches the current beta 6 authoring and
-verification workflow. The [agent drawing benchmark](benchmarks/locus/README.md)
+verification workflow. The offline [agent drawing benchmark](benchmarks/locus/README.md)
 compares it with handwritten native SVG on the same triangle, sequence, and
 flowchart tasks. It freezes trial inputs, retains failed attempts, and keeps
 image review separate from native syntax checks.

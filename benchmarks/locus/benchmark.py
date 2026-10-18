@@ -320,7 +320,7 @@ def parser():
     prepare_parser.add_argument("--agent", default="codex")
     prepare_parser.add_argument("--repetitions", type=int, default=1)
     prepare_parser.add_argument("--node", default="node")
-    prepare_parser.add_argument("--sharp", default=str(ROOT / "target/locus-benchmark-tools/node_modules/sharp"))
+    prepare_parser.add_argument("--sharp", default=str(HERE / "node_modules/sharp"))
     record_parser = commands.add_parser("record")
     record_parser.add_argument("--output", required=True)
     record_parser.add_argument("--trial", required=True)
