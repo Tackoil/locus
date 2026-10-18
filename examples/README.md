@@ -2,7 +2,7 @@
 
 The positive `.locus` corpus is split by purpose:
 
-- [`demonstrations/`](demonstrations/README.md) contains 43 readable examples of the
+- [`demonstrations/`](demonstrations/README.md) contains 52 readable examples of the
   [`0 beta 6` specification](../spec/specification.md): geometry, measured content,
   reusable functions, and relational layouts spanning 31 diagram types.
 - [`stress/`](stress) contains 14 expanded workloads. These exercise large construction
@@ -12,8 +12,8 @@ The positive `.locus` corpus is split by purpose:
 Invalid-input fixtures remain in [`tests/fixtures/errors/`](../tests/fixtures/errors) so they are not
 mistaken for runnable examples.
 
-All 57 runnable examples use `0 beta 6`. The source audit also covers the historical solver-limit fixture in `tests/fixtures/solver/`.
-All 43 demonstrations and 14 stress examples participate in the beta 6 measured-solver, assertion, and SVG/TikZ/PNG parity checks with bundled fonts. The historical solver-limit fixture remains a negative acceptance contract. Feasible preference settling may remain incomplete and produces a strict-check warning.
+All 66 runnable examples use `0 beta 6`. The source audit also covers the historical solver-limit fixture in `tests/fixtures/solver/`.
+All 52 demonstrations and 14 stress examples participate in the beta 6 measured-solver, assertion, and SVG/TikZ/PNG parity checks with bundled fonts. The historical solver-limit fixture remains a negative acceptance contract. Feasible preference settling may remain incomplete and produces a strict-check warning.
 
 Run the available source audit from the repository root:
 
@@ -41,7 +41,7 @@ cargo test -p locus-render --test corpus_acceptance --all-features
 
 ## Demonstrations
 
-The [demonstration catalog](demonstrations/README.md) lists all 43 figures: twelve
+The [demonstration catalog](demonstrations/README.md) lists all 52 figures: twenty-one
 geometry and technical examples plus 31 diagram types, including the canonical
 reusable agent-loop and checkout examples.
 
@@ -50,7 +50,7 @@ reusable agent-loop and checkout examples.
 The demonstrations exercise parameterless points; dimension-only circles, ellipses,
 rectangles, rounded rectangles, and diamonds; derived object aliases; explicit external and internal tangency;
 and cubic, open, non-rational, clamped B-splines. The unified demonstration corpus
-contains 164 assertion statements and 1,313 declared objects after expansion,
+contains 406 assertion statements and 1,629 declared objects after expansion,
 as counted by the source audit.
 
 Same-kind constructors use `kind id(args)`; aliases and differently named constructions
@@ -105,7 +105,7 @@ legitimately take zero solver iterations.
 equation, and numerical-attempt counts for the original workloads. The source audit checks
 discovery and expanded object/assertion minima; equation/attempt counts require the native
 runtime and are not inferred by the audit. No original assertion was removed or workload
-threshold lowered. The 43 demonstrations and 14 stress sources contain 1,124
+threshold lowered. The 52 demonstrations and 14 stress sources contain 1,366
 assertion statements after expansion; the audit also checks three assertions in
 the historical solver fixture. Existing stress placement, nonlinear branch magnitudes,
 and free numeric seeds retain their original values.

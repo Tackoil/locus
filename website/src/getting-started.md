@@ -71,7 +71,7 @@ The strict layout check can fail on warnings, including incomplete preference se
 
 ## Explore the examples
 
-Open [the triangle demonstration](../../examples/demonstrations/point_relations.locus), try [the agent workflow](../../examples/demonstrations/flowchart_agent_loop.locus), or read the [demonstration guide](../../examples/demonstrations/README.md) for all 43 figures.
+Open [the triangle demonstration](../../examples/demonstrations/point_relations.locus), try [the agent workflow](../../examples/demonstrations/flowchart_agent_loop.locus), or read the [demonstration guide](../../examples/demonstrations/README.md) for all 52 figures.
 
 ## Choose an export
 

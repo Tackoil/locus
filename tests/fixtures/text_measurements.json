@@ -803,6 +803,106 @@
         "width_bits": 4613944573640514208
       }
     },
+    "examples/demonstrations/desargues_perspective_showcase.locus": {
+      "given": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 5.59328,
+        "width_bits": 4617983491858332616
+      },
+      "label_a": {
+        "height": 0.18508000000000002,
+        "height_bits": 4595836230042805276,
+        "role": "normal",
+        "width": 0.20636000000000002,
+        "width_bits": 4596602922843368829
+      },
+      "label_aprime": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.25116000000000005,
+        "width_bits": 4598196116247547416
+      },
+      "label_b": {
+        "height": 0.18396,
+        "height_bits": 4595795877790144036,
+        "role": "normal",
+        "width": 0.17612000000000003,
+        "width_bits": 4595513412021515359
+      },
+      "label_bprime": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.25424,
+        "width_bits": 4598251600594956620
+      },
+      "label_c": {
+        "height": 0.19068000000000004,
+        "height_bits": 4596037991306111475,
+        "role": "normal",
+        "width": 0.18256000000000003,
+        "width_bits": 4595745437474317487
+      },
+      "label_cprime": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.24920000000000003,
+        "width_bits": 4598146396507661246
+      },
+      "label_o": {
+        "height": 0.19068000000000004,
+        "height_bits": 4596037991306111475,
+        "role": "normal",
+        "width": 0.19628000000000004,
+        "width_bits": 4596239752569417673
+      },
+      "label_p": {
+        "height": 0.18396,
+        "height_bits": 4595795877790144036,
+        "role": "normal",
+        "width": 0.168,
+        "width_bits": 4595220858189721371
+      },
+      "label_q": {
+        "height": 0.23576000000000005,
+        "height_bits": 4597662169475726371,
+        "role": "normal",
+        "width": 0.19628000000000004,
+        "width_bits": 4596239752569417673
+      },
+      "label_r": {
+        "height": 0.18396,
+        "height_bits": 4595795877790144036,
+        "role": "normal",
+        "width": 0.17444,
+        "width_bits": 4595452883642523499
+      },
+      "result": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 8.000440000000001,
+        "width_bits": 4620693465380108402
+      },
+      "subtitle": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 6.147400000000001,
+        "width_bits": 4618607375514712252
+      },
+      "title": {
+        "height": 0.533904,
+        "height_bits": 4602984199256179651,
+        "role": "title",
+        "width": 3.9149040000000004,
+        "width_bits": 4615997998897813041
+      }
+    },
     "examples/demonstrations/ellipse_foci.locus": {
       "identity": {
         "height": 0.24276000000000003,
@@ -940,6 +1040,106 @@
         "role": "normal",
         "width": 0.19628000000000004,
         "width_bits": 4596239752569417673
+      }
+    },
+    "examples/demonstrations/euler_nine_point_showcase.locus": {
+      "footer": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 6.465601406250001,
+        "width_bits": 4618965638448366319
+      },
+      "heading": {
+        "height": 0.533904,
+        "height_bits": 4602984199256179651,
+        "role": "title",
+        "width": 3.7349760000000005,
+        "width_bits": 4615592837060936282
+      },
+      "key_feet": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 1.8258800000000002,
+        "width_bits": 4610901851660270154
+      },
+      "key_halves": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 2.7988800000000005,
+        "width_bits": 4613484936262544776
+      },
+      "key_midpoints": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 2.17056,
+        "width_bits": 4612070085403610060
+      },
+      "label_a": {
+        "height": 0.18508000000000002,
+        "height_bits": 4595836230042805276,
+        "role": "normal",
+        "width": 0.20636000000000002,
+        "width_bits": 4596602922843368829
+      },
+      "label_b": {
+        "height": 0.18396,
+        "height_bits": 4595795877790144036,
+        "role": "normal",
+        "width": 0.17612000000000003,
+        "width_bits": 4595513412021515359
+      },
+      "label_c": {
+        "height": 0.19068000000000004,
+        "height_bits": 4596037991306111475,
+        "role": "normal",
+        "width": 0.18256000000000003,
+        "width_bits": 4595745437474317487
+      },
+      "label_g": {
+        "height": 0.19068000000000004,
+        "height_bits": 4596037991306111475,
+        "role": "normal",
+        "width": 0.18928000000000003,
+        "width_bits": 4595987550990284925
+      },
+      "label_h": {
+        "height": 0.18396,
+        "height_bits": 4595795877790144036,
+        "role": "normal",
+        "width": 0.22904000000000005,
+        "width_bits": 4597420055959758933
+      },
+      "label_n": {
+        "height": 0.18620000000000003,
+        "height_bits": 4595876582295466516,
+        "role": "normal",
+        "width": 0.22512000000000004,
+        "width_bits": 4597278823075444594
+      },
+      "label_o": {
+        "height": 0.19068000000000004,
+        "height_bits": 4596037991306111475,
+        "role": "normal",
+        "width": 0.19628000000000004,
+        "width_bits": 4596239752569417673
+      },
+      "series": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 3.5266000000000006,
+        "width_bits": 4615123616022959805
+      },
+      "subheading": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 5.467000000000001,
+        "width_bits": 4617841313218096531
       }
     },
     "examples/demonstrations/event_modeling.locus": {
@@ -1574,6 +1774,85 @@
         "width_bits": 4613030973420105829
       }
     },
+    "examples/demonstrations/miquel_concurrence_showcase.locus": {
+      "conclusion": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 5.628840000000001,
+        "width_bits": 4618023528859019941
+      },
+      "lA": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.17892000000000002,
+        "width_bits": 4595614292653168458
+      },
+      "lB": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.18200000000000002,
+        "width_bits": 4595725261347986867
+      },
+      "lC": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.17696,
+        "width_bits": 4595543676211011288
+      },
+      "lD": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.20440000000000003,
+        "width_bits": 4596532306401211660
+      },
+      "lE": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.15568000000000004,
+        "width_bits": 4594776983410447736
+      },
+      "lF": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.14532,
+        "width_bits": 4594403725073331268
+      },
+      "lM": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.25396,
+        "width_bits": 4598246556563373965
+      },
+      "subtitle": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 5.02348,
+        "width_bits": 4617341954091413689
+      },
+      "theorem": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 5.772200000000001,
+        "width_bits": 4618184937869664899
+      },
+      "title": {
+        "height": 0.533904,
+        "height_bits": 4602984199256179651,
+        "role": "title",
+        "width": 3.2120480000000002,
+        "width_bits": 4614415307887965482
+      }
+    },
     "examples/demonstrations/monge_theorem.locus": {
       "lC1": {
         "height": 0.24640000000000004,
@@ -1630,6 +1909,164 @@
         "role": "normal",
         "width": 2.31644,
         "width_bits": 4612398577960430464
+      }
+    },
+    "examples/demonstrations/morley_trisectors_showcase.locus": {
+      "explanation": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 9.275,
+        "width_bits": 4621410978872741069
+      },
+      "identity": {
+        "height": 0.330064,
+        "height_bits": 4599617524347539582,
+        "role": "title",
+        "width": 2.5802726250000005,
+        "width_bits": 4612992676216249555
+      },
+      "kicker": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 4.71912,
+        "width_bits": 4616999275195767068
+      },
+      "label_a": {
+        "height": 0.18508000000000002,
+        "height_bits": 4595836230042805276,
+        "role": "normal",
+        "width": 0.20636000000000002,
+        "width_bits": 4596602922843368829
+      },
+      "label_b": {
+        "height": 0.18396,
+        "height_bits": 4595795877790144036,
+        "role": "normal",
+        "width": 0.17612000000000003,
+        "width_bits": 4595513412021515359
+      },
+      "label_c": {
+        "height": 0.19068000000000004,
+        "height_bits": 4596037991306111475,
+        "role": "normal",
+        "width": 0.18256000000000003,
+        "width_bits": 4595745437474317487
+      },
+      "label_p": {
+        "height": 0.18396,
+        "height_bits": 4595795877790144036,
+        "role": "normal",
+        "width": 0.168,
+        "width_bits": 4595220858189721371
+      },
+      "label_q": {
+        "height": 0.23576000000000005,
+        "height_bits": 4597662169475726371,
+        "role": "normal",
+        "width": 0.19628000000000004,
+        "width_bits": 4596239752569417673
+      },
+      "label_r": {
+        "height": 0.18396,
+        "height_bits": 4595795877790144036,
+        "role": "normal",
+        "width": 0.17444,
+        "width_bits": 4595452883642523499
+      },
+      "subtitle": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 6.0334400000000015,
+        "width_bits": 4618479067961328467
+      },
+      "title": {
+        "height": 0.533904,
+        "height_bits": 4602984199256179651,
+        "role": "title",
+        "width": 3.234392,
+        "width_bits": 4614465622103002465
+      }
+    },
+    "examples/demonstrations/napoleon_equilateral_showcase.locus": {
+      "explanation": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 7.493080000000001,
+        "width_bits": 4620122476501352234
+      },
+      "identity": {
+        "height": 0.330064,
+        "height_bits": 4599617524347539582,
+        "role": "title",
+        "width": 2.5802726250000005,
+        "width_bits": 4612992676216249555
+      },
+      "kicker": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 4.6718,
+        "width_bits": 4616945997612175275
+      },
+      "label_a": {
+        "height": 0.18508000000000002,
+        "height_bits": 4595836230042805276,
+        "role": "normal",
+        "width": 0.20636000000000002,
+        "width_bits": 4596602922843368829
+      },
+      "label_b": {
+        "height": 0.18396,
+        "height_bits": 4595795877790144036,
+        "role": "normal",
+        "width": 0.17612000000000003,
+        "width_bits": 4595513412021515359
+      },
+      "label_c": {
+        "height": 0.19068000000000004,
+        "height_bits": 4596037991306111475,
+        "role": "normal",
+        "width": 0.18256000000000003,
+        "width_bits": 4595745437474317487
+      },
+      "label_p": {
+        "height": 0.18396,
+        "height_bits": 4595795877790144036,
+        "role": "normal",
+        "width": 0.168,
+        "width_bits": 4595220858189721371
+      },
+      "label_q": {
+        "height": 0.23576000000000005,
+        "height_bits": 4597662169475726371,
+        "role": "normal",
+        "width": 0.19628000000000004,
+        "width_bits": 4596239752569417673
+      },
+      "label_r": {
+        "height": 0.18396,
+        "height_bits": 4595795877790144036,
+        "role": "normal",
+        "width": 0.17444,
+        "width_bits": 4595452883642523499
+      },
+      "subtitle": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 8.077440000000001,
+        "width_bits": 4620736812526521843
+      },
+      "title": {
+        "height": 0.533904,
+        "height_bits": 4602984199256179651,
+        "role": "title",
+        "width": 3.7436000000000003,
+        "width_bits": 4615612256582529503
       }
     },
     "examples/demonstrations/packet_diagram.locus": {
@@ -1781,6 +2218,120 @@
         "width_bits": 4617660358585068784
       }
     },
+    "examples/demonstrations/pascal_hexagon_showcase.locus": {
+      "kicker": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 3.8897600000000003,
+        "width_bits": 4615941379643297739
+      },
+      "label_a": {
+        "height": 0.18508000000000002,
+        "height_bits": 4595836230042805276,
+        "role": "normal",
+        "width": 0.20636000000000002,
+        "width_bits": 4596602922843368829
+      },
+      "label_b": {
+        "height": 0.18396,
+        "height_bits": 4595795877790144036,
+        "role": "normal",
+        "width": 0.17612000000000003,
+        "width_bits": 4595513412021515359
+      },
+      "label_c": {
+        "height": 0.19068000000000004,
+        "height_bits": 4596037991306111475,
+        "role": "normal",
+        "width": 0.18256000000000003,
+        "width_bits": 4595745437474317487
+      },
+      "label_d": {
+        "height": 0.18396,
+        "height_bits": 4595795877790144036,
+        "role": "normal",
+        "width": 0.19964,
+        "width_bits": 4596360809327401391
+      },
+      "label_e": {
+        "height": 0.18396,
+        "height_bits": 4595795877790144036,
+        "role": "normal",
+        "width": 0.18004000000000003,
+        "width_bits": 4595654644905829698
+      },
+      "label_f": {
+        "height": 0.18396,
+        "height_bits": 4595795877790144036,
+        "role": "normal",
+        "width": 0.18116000000000002,
+        "width_bits": 4595694997158490937
+      },
+      "label_p": {
+        "height": 0.18396,
+        "height_bits": 4595795877790144036,
+        "role": "normal",
+        "width": 0.168,
+        "width_bits": 4595220858189721371
+      },
+      "label_q": {
+        "height": 0.23576000000000005,
+        "height_bits": 4597662169475726371,
+        "role": "normal",
+        "width": 0.19628000000000004,
+        "width_bits": 4596239752569417673
+      },
+      "label_r": {
+        "height": 0.18396,
+        "height_bits": 4595795877790144036,
+        "role": "normal",
+        "width": 0.17444,
+        "width_bits": 4595452883642523499
+      },
+      "pair_p": {
+        "height": 0.19404000000000005,
+        "height_bits": 4596159048064095194,
+        "role": "normal",
+        "width": 1.6063884375000002,
+        "width_bits": 4609913349541184186
+      },
+      "pair_q": {
+        "height": 0.23604000000000006,
+        "height_bits": 4597672257538891681,
+        "role": "normal",
+        "width": 1.5912684375000001,
+        "width_bits": 4609845255114818344
+      },
+      "pair_r": {
+        "height": 0.19656000000000004,
+        "height_bits": 4596249840632582983,
+        "role": "normal",
+        "width": 1.6187084375,
+        "width_bits": 4609968833888593390
+      },
+      "result": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 7.692160000000001,
+        "width_bits": 4620346620654806464
+      },
+      "subtitle": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 5.733840000000001,
+        "width_bits": 4618141748349238416
+      },
+      "title": {
+        "height": 0.533904,
+        "height_bits": 4602984199256179651,
+        "role": "title",
+        "width": 3.1038560000000004,
+        "width_bits": 4614171681162523248
+      }
+    },
     "examples/demonstrations/pentagon_golden.locus": {
       "lA": {
         "height": 0.18508000000000002,
@@ -1883,6 +2434,106 @@
         "role": "normal",
         "width": 0.26236000000000004,
         "width_bits": 4598397877510853614
+      }
+    },
+    "examples/demonstrations/pythagorean_rearrangement.locus": {
+      "area_a": {
+        "height": 0.322340375,
+        "height_bits": 4599478387888851784,
+        "role": "title",
+        "width": 0.36303640625,
+        "width_bits": 4600211502413543616
+      },
+      "area_b": {
+        "height": 0.367420375,
+        "height_bits": 4600290476973659232,
+        "role": "title",
+        "width": 0.34853240625000004,
+        "width_bits": 4599950221577562090
+      },
+      "area_c": {
+        "height": 0.322340375,
+        "height_bits": 4599478387888851784,
+        "role": "title",
+        "width": 0.30776440625,
+        "width_bits": 4599215810579127528
+      },
+      "explanation": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 8.6212,
+        "width_bits": 4621042922193194215
+      },
+      "identity": {
+        "height": 0.37839637500000006,
+        "height_bits": 4600488203011699307,
+        "role": "title",
+        "width": 2.01936503125,
+        "width_bits": 4611729624601148663
+      },
+      "leg_a": {
+        "height": 0.13748000000000002,
+        "height_bits": 4594121259304702591,
+        "role": "normal",
+        "width": 0.15540000000000004,
+        "width_bits": 4594766895347282426
+      },
+      "leg_b": {
+        "height": 0.20076000000000002,
+        "height_bits": 4596401161580062631,
+        "role": "normal",
+        "width": 0.14504000000000003,
+        "width_bits": 4594393637010165959
+      },
+      "leg_c": {
+        "height": 0.13748000000000002,
+        "height_bits": 4594121259304702591,
+        "role": "normal",
+        "width": 0.11592000000000002,
+        "width_bits": 4593017336964041536
+      },
+      "panel_left": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 3.3796000000000004,
+        "width_bits": 4614792601450348073
+      },
+      "panel_right": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 3.6470000000000002,
+        "width_bits": 4615394732720527508
+      },
+      "remainder_left": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 3.0507859375,
+        "width_bits": 4614052178005673483
+      },
+      "remainder_right": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 2.4363117187500003,
+        "width_bits": 4612668505074377845
+      },
+      "subtitle": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 3.05872,
+        "width_bits": 4614070043926132750
+      },
+      "title": {
+        "height": 0.533904,
+        "height_bits": 4602984199256179651,
+        "role": "title",
+        "width": 2.080736,
+        "width_bits": 4611867819737145596
       }
     },
     "examples/demonstrations/quadrant_chart.locus": {
@@ -2150,6 +2801,50 @@
         "width_bits": 4606719809046293911
       }
     },
+    "examples/demonstrations/right_triangle_345_showcase.locus": {
+      "identity": {
+        "height": 0.354876375,
+        "height_bits": 4600064504358756290,
+        "role": "title",
+        "width": 1.98918103125,
+        "width_bits": 4611637294123756871
+      },
+      "label_a": {
+        "height": 0.18508000000000002,
+        "height_bits": 4595836230042805276,
+        "role": "normal",
+        "width": 0.20636000000000002,
+        "width_bits": 4596602922843368829
+      },
+      "label_b": {
+        "height": 0.18396,
+        "height_bits": 4595795877790144036,
+        "role": "normal",
+        "width": 0.17612000000000003,
+        "width_bits": 4595513412021515359
+      },
+      "label_c": {
+        "height": 0.19068000000000004,
+        "height_bits": 4596037991306111475,
+        "role": "normal",
+        "width": 0.18256000000000003,
+        "width_bits": 4595745437474317487
+      },
+      "label_m": {
+        "height": 0.18396,
+        "height_bits": 4595795877790144036,
+        "role": "normal",
+        "width": 0.26236000000000004,
+        "width_bits": 4598397877510853614
+      },
+      "title": {
+        "height": 0.533904,
+        "height_bits": 4602984199256179651,
+        "role": "title",
+        "width": 3.379824,
+        "width_bits": 4614793105853506338
+      }
+    },
     "examples/demonstrations/rounded_rect.locus": {
       "end_text": {
         "height": 0.38136,
@@ -2329,6 +3024,85 @@
         "role": "normal",
         "width": 2.5732,
         "width_bits": 4612976750080592288
+      }
+    },
+    "examples/demonstrations/simson_line_showcase.locus": {
+      "conclusion": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 6.816320000000001,
+        "width_bits": 4619360512480397420
+      },
+      "lA": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.17892000000000002,
+        "width_bits": 4595614292653168458
+      },
+      "lB": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.18200000000000002,
+        "width_bits": 4595725261347986867
+      },
+      "lC": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.17696,
+        "width_bits": 4595543676211011288
+      },
+      "lP": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.16940000000000002,
+        "width_bits": 4595271298505547921
+      },
+      "lX": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.16408,
+        "width_bits": 4595079625305407032
+      },
+      "lY": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.15848000000000004,
+        "width_bits": 4594877864042100835
+      },
+      "lZ": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 0.16016000000000002,
+        "width_bits": 4594938392421092694
+      },
+      "subtitle": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 6.6978800000000005,
+        "width_bits": 4619227160895430979
+      },
+      "theorem": {
+        "height": 0.38136,
+        "height_bits": 4600541590933481969,
+        "role": "normal",
+        "width": 7.761880000000001,
+        "width_bits": 4620425118396311531
+      },
+      "title": {
+        "height": 0.533904,
+        "height_bits": 4602984199256179651,
+        "role": "title",
+        "width": 2.9008000000000003,
+        "width_bits": 4613714439699555576
       }
     },
     "examples/demonstrations/state_diagram.locus": {

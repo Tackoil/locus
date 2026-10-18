@@ -1,6 +1,6 @@
 # Demonstrations
 
-This directory contains **43 self-contained figures** using `locus 0 beta 6`: twelve
+This directory contains **52 self-contained figures** using `locus 0 beta 6`: twenty-one
 geometry and technical examples, and one example for each of 31 diagram types.
 The agent-loop and checkout figures are the specification's reusable composition
 examples. Each figure has one canonical source in this directory.
@@ -21,6 +21,15 @@ examples. Each figure has one canonical source in this directory.
 | [rounded_rect.locus](rounded_rect.locus) | Explicit rounded boxes/capsules plus an automatically sized diamond, measured caption, and curved connector |
 | [sequence_check.locus](sequence_check.locus) | Explicit message geometry plus generic function instances, frame/tab layout, finite edges, preset dimensions, and clipped paths |
 | [tangent_circles.locus](tangent_circles.locus) | Solved tangent circles and common tangents |
+| [desargues_perspective_showcase.locus](desargues_perspective_showcase.locus) | Desargues perspective showcase |
+| [euler_nine_point_showcase.locus](euler_nine_point_showcase.locus) | Euler nine-point circle showcase |
+| [miquel_concurrence_showcase.locus](miquel_concurrence_showcase.locus) | Miquel concurrence showcase |
+| [morley_trisectors_showcase.locus](morley_trisectors_showcase.locus) | Morley trisector showcase |
+| [napoleon_equilateral_showcase.locus](napoleon_equilateral_showcase.locus) | Napoleon equilateral triangle showcase |
+| [pascal_hexagon_showcase.locus](pascal_hexagon_showcase.locus) | Pascal hexagon showcase |
+| [pythagorean_rearrangement.locus](pythagorean_rearrangement.locus) | Pythagorean rearrangement showcase |
+| [right_triangle_345_showcase.locus](right_triangle_345_showcase.locus) | 3–4–5 right-triangle showcase |
+| [simson_line_showcase.locus](simson_line_showcase.locus) | Simson line showcase |
 
 ## Diagram examples
 
@@ -98,7 +107,7 @@ cargo test --release -p locus-render --test corpus_acceptance --all-features \
 ```
 
 The source audit checks declarations and references. Native checks solve the
-relations and execute assertions. Corpus acceptance checks all 43 demonstration
+relations and execute assertions. Corpus acceptance checks all 52 demonstration
 figures with shared bundled-font measurements and SVG/TikZ/PNG backend parity.
 Normal checks may report incomplete layout-preference settling, so visual review
 remains part of authoring.

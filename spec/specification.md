@@ -53,6 +53,7 @@ Initialization, numerical layout, routing search, and preset constants are speci
 - Header: `locus 0 beta 6`. This exact header is mandatory.
 - The file stores the **relational program**. Resolved geometry is always derived by solving + evaluation.
 - Machine interchange: `locus fmt --json` emits the parsed AST as JSON (§9.4). The DSL is the authoring format; JSON is derived, never authored.
+- Stack-safety limit: expression trees, parser recursion, and named function composition are limited to 64 levels. This includes expression depth introduced by argument substitution. Excessive nesting produces source-anchored E161 diagnostics; subsequent statements remain recoverable. Wide argument lists do not consume additional nesting levels.
 
 ### 1.2 File shape
 

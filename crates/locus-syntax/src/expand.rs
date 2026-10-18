@@ -10,6 +10,7 @@ use crate::{
         CallStmt, ClassStmt, Constructor, Expr, File, FnStmt, GroupStmt, Ident, Kind, OpStmt,
         PropValue, RelStmt, Statement, StyleAttr,
     },
+    limits::{MAX_SYNTAX_DEPTH, depth_diagnostic, expression_depth_exceeded},
 };
 use serde::Serialize;
 use std::collections::{BTreeMap, BTreeSet};
@@ -275,6 +276,10 @@ impl Expander {
     }
 
     fn call(&mut self, call: &CallStmt, scope: &mut Scope) {
+        if scope.invocations.len() >= MAX_SYNTAX_DEPTH {
+            self.depth_error(call.span, scope);
+            return;
+        }
         if !scope.functions.contains(&call.function.name) {
             self.error(
                 "E158",
@@ -504,6 +509,18 @@ impl Expander {
     }
 
     fn expr(&mut self, expr: &Expr, scope: &Scope) -> Expr {
+        let value = self.expr_inner(expr, scope);
+        if expression_depth_exceeded(&value) {
+            self.depth_error(expr.span(), scope);
+            return Expr::Boolean {
+                value: false,
+                span: expr.span(),
+            };
+        }
+        value
+    }
+
+    fn expr_inner(&mut self, expr: &Expr, scope: &Scope) -> Expr {
         if let Expr::Ref(ident) = expr {
             return self.resolve(ident, scope);
         }
@@ -676,6 +693,11 @@ impl Expander {
     fn emit(&mut self, statement: Statement, scope: &Scope) {
         self.output.origins.push(origin(statement.span(), scope));
         self.output.file.statements.push(statement);
+    }
+
+    fn depth_error(&mut self, span: Span, scope: &Scope) {
+        let diagnostic = depth_diagnostic(span);
+        self.error(diagnostic.code, diagnostic.span, diagnostic.message, scope);
     }
 
     fn error(&mut self, code: &'static str, span: Span, message: impl Into<String>, scope: &Scope) {

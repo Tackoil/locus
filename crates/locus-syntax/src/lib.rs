@@ -10,6 +10,7 @@ pub mod expand;
 pub mod format;
 pub mod json;
 pub mod lexer;
+mod limits;
 pub mod parser;
 pub mod span;
 pub mod vocabulary;

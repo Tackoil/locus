@@ -24,7 +24,7 @@ const documents = [
   { id: 'language', title: 'Authoring reference', subtitle: 'Syntax, geometry, relations, and reusable functions.', file: 'skills/locus/references/language.md', group: 'The language' },
   { id: 'specification', title: 'Language specification', subtitle: 'The complete, normative beta 6 contract.', file: 'spec/specification.md', group: 'The language' },
   { id: 'project', title: 'Project & CLI guide', subtitle: 'Rendering, inspection, diagnostics, and development.', file: 'README.md', group: 'The toolchain' },
-  { id: 'examples', title: 'Demonstration guide', subtitle: 'All 43 examples, their scope, and validation.', file: 'examples/demonstrations/README.md', group: 'The toolchain' },
+  { id: 'examples', title: 'Demonstration guide', subtitle: 'All 52 examples, their scope, and validation.', file: 'examples/demonstrations/README.md', group: 'The toolchain' },
   { id: 'agent', title: 'Working with agents', subtitle: 'The project’s authoring and verification workflow.', file: 'skills/locus/SKILL.md', group: 'The toolchain' },
   { id: 'editor', title: 'Zed editor integration', subtitle: 'Highlighting, completion, and language-server setup.', file: 'ecosystem/zed/README.md', group: 'The toolchain' },
   { id: 'typography', title: 'Text & mathematics', subtitle: 'Bundled fonts, TeX support, and rendering details.', file: 'crates/locus-tex/README.md', group: 'The toolchain' },

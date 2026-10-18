@@ -47,6 +47,42 @@ fn stdio_exit_without_shutdown_is_unsuccessful() {
     assert!(!wait_for_exit(&mut child).success());
 }
 
+#[test]
+fn deeply_nested_document_reports_a_diagnostic_and_keeps_the_server_alive() {
+    let mut child = spawn_server();
+    initialize(&mut child);
+    send(
+        &mut child,
+        &json!({"jsonrpc": "2.0", "method": "initialized", "params": {}}),
+    );
+    let source = format!(
+        "locus 0 beta 6\nassert {}true{}\n",
+        "(".repeat(5000),
+        ")".repeat(5000)
+    );
+    send(
+        &mut child,
+        &json!({"jsonrpc": "2.0", "method": "textDocument/didOpen", "params": {
+            "textDocument": {"uri": "file:///depth-limit.locus", "languageId": "locus", "version": 1, "text": source}
+        }}),
+    );
+    let response = receive(&mut child);
+    assert_eq!(response["method"], "textDocument/publishDiagnostics");
+    assert_eq!(response["params"]["diagnostics"][0]["code"], "E161");
+    send(
+        &mut child,
+        &json!({"jsonrpc": "2.0", "id": 2, "method": "shutdown", "params": null}),
+    );
+    let response = receive(&mut child);
+    assert_eq!(response["id"], 2);
+    send(
+        &mut child,
+        &json!({"jsonrpc": "2.0", "method": "exit", "params": null}),
+    );
+    drop(child.stdin.take());
+    assert!(wait_for_exit(&mut child).success());
+}
+
 fn spawn_server() -> Child {
     Command::new(env!("CARGO_BIN_EXE_locus-lsp"))
         .stdin(Stdio::piped())

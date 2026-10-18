@@ -4,7 +4,7 @@ The twelve demonstrations named in `GOLDEN_DEMONSTRATIONS` in
 `crates/locus-cli/tests/golden.rs` have three committed expectations each:
 `<name>.describe.json`, `<name>.inspect.json`, and `<name>.svg`. This keeps the
 exhaustive measurement reports focused while retaining the existing golden coverage.
-The separate determinism test discovers all 43 demonstrations in sorted order,
+The separate determinism test discovers all 52 demonstrations in sorted order,
 including newly added files. Renderer corpus acceptance also checks every source
 with SVG/TikZ/PNG parity and real bundled-font measurements.
 Paths in reports are repository-relative because the CLI runs from the workspace

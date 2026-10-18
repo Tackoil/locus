@@ -7,6 +7,7 @@ use crate::ast::{
 };
 use crate::diag::did_you_mean;
 use crate::lexer::{LexTextSegment, Token, TokenKind, lex};
+use crate::limits::{MAX_SYNTAX_DEPTH, depth_diagnostic, expression_depth_exceeded};
 use crate::vocabulary::{
     BUILTIN_ATTR_NAMES, CONSTRUCTOR_NAMES, KIND_NAMES, PREDICATE_NAMES, PROP_NAMES, PROPERTY_NAMES,
     STYLE_PROP_NAMES, all_call_names, is_known_call, prop_names_for_kind,
@@ -103,6 +104,7 @@ struct FileParser {
     defined: Vec<String>,
     classes: Vec<String>,
     beta6: bool,
+    function_depth: usize,
 }
 
 impl FileParser {
@@ -121,6 +123,7 @@ impl FileParser {
             defined: Vec::new(),
             classes: Vec::new(),
             beta6: false,
+            function_depth: 0,
         }
     }
 
@@ -186,6 +189,16 @@ impl FileParser {
     }
 
     fn parse_function_body(&mut self, function: &mut FnStmt) {
+        if self.function_depth >= MAX_SYNTAX_DEPTH {
+            self.diagnostics.push(depth_diagnostic(function.span));
+            return;
+        }
+        self.function_depth += 1;
+        self.parse_function_body_inner(function);
+        self.function_depth -= 1;
+    }
+
+    fn parse_function_body_inner(&mut self, function: &mut FnStmt) {
         while self.line_index < self.lines.len() {
             let line = &self.lines[self.line_index];
             if matches!(
@@ -399,6 +412,7 @@ struct LineParser<'a> {
     position: usize,
     diagnostics: Vec<Diagnostic>,
     beta6: bool,
+    expression_depth: usize,
 }
 
 impl<'a> LineParser<'a> {
@@ -409,6 +423,7 @@ impl<'a> LineParser<'a> {
             position: 0,
             diagnostics: Vec::new(),
             beta6: false,
+            expression_depth: 0,
         }
     }
 
@@ -961,8 +976,20 @@ impl<'a> LineParser<'a> {
     }
 
     fn parse_expr(&mut self, min_binding_power: u8) -> Option<Expr> {
+        if self.expression_depth >= MAX_SYNTAX_DEPTH {
+            self.diagnostics.push(depth_diagnostic(self.current_span()));
+            return None;
+        }
+        self.expression_depth += 1;
+        let result = self.parse_expr_inner(min_binding_power);
+        self.expression_depth -= 1;
+        result
+    }
+
+    fn parse_expr_inner(&mut self, min_binding_power: u8) -> Option<Expr> {
         let mut lhs = self.parse_prefix()?;
         loop {
+            self.check_expression_depth(&lhs)?;
             if self.at_simple(is_dot) {
                 lhs = self.parse_property(lhs)?;
                 continue;
@@ -992,6 +1019,14 @@ impl<'a> LineParser<'a> {
             };
         }
         Some(lhs)
+    }
+
+    fn check_expression_depth(&mut self, expr: &Expr) -> Option<()> {
+        if expression_depth_exceeded(expr) {
+            self.diagnostics.push(depth_diagnostic(expr.span()));
+            return None;
+        }
+        Some(())
     }
 
     fn parse_prefix(&mut self) -> Option<Expr> {

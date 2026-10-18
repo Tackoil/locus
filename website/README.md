@@ -1,6 +1,6 @@
 # Locus project website
 
-A static introduction, gallery of all 43 canonical demonstrations, browser playground, and searchable documentation reader. The gallery contains native Locus SVG output and downloadable original source. Documentation is generated from the repository, including the complete specification.
+A static introduction, gallery of all 52 canonical demonstrations, browser playground, and searchable documentation reader. The gallery contains native Locus SVG output and downloadable original source. Documentation is generated from the repository, including the complete specification.
 
 ## Build and preview
 
